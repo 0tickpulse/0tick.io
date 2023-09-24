@@ -1,0 +1,114 @@
+---
+title: Is Python Really a Good First Language?
+description: A look at the pros and cons of Python as a first programming language.
+authors:
+- 0tick
+---
+
+## Introduction
+
+If you're considering learning programming, you've likely heard that Python is an excellent starting point. It's widely regarded as one of the most beginner-friendly languages.
+
+However, is Python truly the optimal choice for beginners?
+
+<!--truncate-->
+
+### High-level Abstractions
+
+High-level languages like Python simplify complex technical details, such as memory management and pointers. This ease of learning is a significant advantage.
+
+However, relying solely on Python might delay understanding low-level concepts, making other languages seem less approachable. For instance, transitioning to Rust could be challenging due to unfamiliarity with memory safety and related concepts.
+
+Consider Python's file handling abstraction:
+
+```python
+with open("file.txt", "r") as f:
+    print(f.read())
+```
+
+This code opens a file, reads it, and prints the contents. It contains a few abstractions:
+
+* The `with` statement automatically handles the closing of the file and error handling.
+* The `open` function abstracts away the lower-level system calls that are required to interact with the file system. It takes care of several tasks, such as reading the contents, and releasing the system resources when the file is closed.
+
+While this is great because it allows you to focus on the task at hand, when this is all a beginner sees, they get a false sense of how things like the file system work.
+
+Here's another example of an abstraction in Python:
+
+```python
+my_list = [1, 2, 3, 4, 5]
+my_list.append(6)
+```
+
+This code creates a list, and then appends an item to it.
+Python handles the memory allocation and resizing of the list, so you don't have to worry about it.
+Once again, while this is great because it allows you to focus on the list instead of dealing with memory and pointers, if this is all a beginner learns, they have little understanding of how "lists" work in the background.
+
+However, you might be thinking, "Why is this a bad thing? Isn't it good that beginners don't have to worry about these things?"
+This is a valid point, and it's true that Python's high-level abstractions can be a great asset for beginners.
+However, it is absolutely critical that these concepts are introduced as the student progresses, and we will now delve into why this is important.
+
+## The Understanding of Fundamentals
+
+As mentioned above, Python abstracts away many low-level concepts.
+It's great for programmers who want rapid prototyping and want to focus on problem-solving,
+but because Python shields beginners from these concepts, there is a significant risk that they will not gain a deep understanding of many computer science fundamental concepts.
+Compare someone learning Python and someone learning C, and you'll probably see a significantly greater understanding of concepts like memory management and pointers in the C programmer.
+
+Now, why is it important to understand these concepts?
+
+### Transition Between languages
+
+One important reason is that if you eventually want to learn a different language that requires a low-level understanding, you'll have a much easier time if you already understand these concepts.
+For example, if you want to learn Go, you'll have a much easier time if you already understand pointers.
+If you want to learn Rust, you'll have a much easier time with the borrowing system if you already understand memory management.
+
+### Optimizing Code
+
+Another reason is that if you want to optimize your code, you'll need to understand these concepts.
+For example, understanding how memory works can help you optimize your code by reducing the number of allocations and deallocations (A common pattern in game development is to use object pools to reduce the number of allocations and deallocations.).
+Another example is understanding how arguments are passed by value or reference, which can reduce the number of copies of objects that are made.
+Additionally, understanding concepts like memoization can help reduce the amount of expensive computations that are made.
+
+### Debugging
+
+Finally, understanding these concepts can help you debug your code.
+For instance, understanding data types and mutability can help you spot issues with data mutations and side effects.
+Understanding memory management can help you spot memory leaks and other memory-related issues.
+
+:::info An Alternative Path
+
+I've thought about having beginners learn a low-level language like C as their first language.
+C is a low-level language that requires a deep understanding of many computer science fundamental concepts.
+It provides very few abstractions, and provides a more direct interaction to the underlying hardware.
+Learning C as a first language offers a unique experience with key benefits:
+
+* Gain a deep understanding of memory allocation, pointers, and system interactions.
+* Smooth transition to languages like C++, Rust, or assembly for systems programming or performance-critical projects.
+* Develop strong debugging skills in low-level coding, honing your ability to spot memory management and data type issues.
+
+However, I personally would not recommend learning C as a first language.
+For a beginner, it can be overwhelming to learn a language that requires a deep understanding of many computer science fundamental concepts.
+Being extremely easy to make very serious mistakes, it can be frustrating to debug your code.
+Additionally, for the most of the time, your learning will be very disconnected with real world applications.
+For instance, when learning C, you might spend a significant amount of time working on exercises that involve writing code to perform intricate operations on arrays or manipulate memory directly.
+While these exercises are valuable for building a strong foundation, they may not immediately translate to everyday programming tasks, such as web development or data analysis, where higher-level languages like Python are often the preferred choice.
+
+Hence, I still believe that the best choice is to start with a high-level language like Python.
+
+:::
+
+## The Role of Education
+
+To summarize, Python is a great language for beginners due to its simplicity, low-learning curve, and high-level abstractions.
+It can help you get started with programming quickly as you can focus on the problem at hand instead of spending time learning low-level concepts.
+However, it's important to understand that Python abstracts away many low-level concepts, and if you want to learn a different language that requires a low-level understanding, you'll have a much easier time if you already understand these concepts.
+Understanding these concepts helps you optimize and debug your code.
+
+It's difficult to answer the question of whether Python is a good beginner language - it largely depends on *how it's taught*.
+Good programming curriculums will gradually introduce low-level concepts as the student progresses, helping them gain a well-rounded understanding of programming.
+However, if the curriculum fails to do this, the student may not gain a deep understanding of many computer science fundamental concepts.
+
+## Conclusion
+
+Python's high-level abstractions can be a valuable asset for beginners. When coupled with a well-rounded curriculum that introduces fundamental concepts, Python becomes an outstanding foundation for learning programming.
