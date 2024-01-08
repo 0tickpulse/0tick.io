@@ -5,6 +5,9 @@ import type * as Preset from "@docusaurus/preset-classic";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 
+const lightCodeTheme = themes.vsLight;
+const darkCodeTheme = themes.vsDark;
+
 const config = {
     title: "0tick.io",
     tagline: "My personal website",
@@ -88,8 +91,8 @@ const config = {
         navbar: {
             title: "0tick.io",
             logo: {
-                alt: "My Site Logo",
-                src: "img/logo.svg",
+                alt: "Logo",
+                src: "img/logo.png",
             },
             items: [
                 {
@@ -118,8 +121,8 @@ const config = {
             copyright: `Copyright © ${new Date().getFullYear()} 0TickPulse. Built with Docusaurus.`,
         },
         prism: {
-            theme: themes.vsLight,
-            darkTheme: themes.vsDark,
+            theme: lightCodeTheme,
+            darkTheme: darkCodeTheme,
         },
     } satisfies Preset.ThemeConfig,
 } satisfies Config;
