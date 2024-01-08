@@ -18,6 +18,9 @@ function HomepageHeader() {
                     <Link className="button button--secondary button--lg" to="/portfolio/intro">
                         Go to portfolio
                     </Link>
+                    <Link className="button button--secondary button--lg" to="/notes/intro">
+                        Go to notes
+                    </Link>
                     <Link className="button button--secondary button--lg" to="/blog">
                         Go to blog
                     </Link>
