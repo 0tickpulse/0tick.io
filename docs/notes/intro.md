@@ -1,3 +1,3 @@
 # Introduction
 
-This section is for all of my personal notes on various topics.
+This section is for my personal notes on various topics. Note that most of my notes aren't actually here because I write them on my iPad.
