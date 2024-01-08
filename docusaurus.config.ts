@@ -44,21 +44,6 @@ const config = {
         },
     ],
 
-    // plugins: [
-    //     [
-    //         "@docusaurus/plugin-content-docs",
-    //         {
-    //             id: "notes",
-    //             path: "notes",
-    //             sidebarPath: "./sidebars.ts",
-    //             // Please change this to your repo.
-    //             // Remove this to remove the "edit this page" links.
-    //             editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
-    //             routeBasePath: "/notes",
-    //         },
-    //     ],
-    // ],
-
     presets: [
         [
             "classic",
@@ -86,8 +71,6 @@ const config = {
     ],
 
     themeConfig: {
-        // Replace with your project's social card
-        image: "img/docusaurus-social-card.jpg",
         navbar: {
             title: "0tick.io",
             logo: {
