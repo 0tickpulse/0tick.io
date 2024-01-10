@@ -14,16 +14,14 @@
             <guid>https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language</guid>
             <pubDate>Sun, 24 Sep 2023 00:00:00 GMT</pubDate>
             <description><![CDATA[A look at the pros and cons of Python as a first programming language.]]></description>
-            <content:encoded><![CDATA[<h2 id="introduction">Introduction</h2>
+            <content:encoded><![CDATA[<h2 class="anchor anchorWithStickyNavbar_MHlx" id="introduction">Introduction<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#introduction" class="hash-link" aria-label="Direct link to Introduction" title="Direct link to Introduction">​</a></h2>
 <p>If you're considering learning programming, you've likely heard that Python is an excellent starting point. It's widely regarded as one of the most beginner-friendly languages.</p>
 <p>However, is Python truly the optimal choice for beginners?</p>
-<h3 id="high-level-abstractions">High-level Abstractions</h3>
+<h3 class="anchor anchorWithStickyNavbar_MHlx" id="high-level-abstractions">High-level Abstractions<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#high-level-abstractions" class="hash-link" aria-label="Direct link to High-level Abstractions" title="Direct link to High-level Abstractions">​</a></h3>
 <p>High-level languages like Python simplify complex technical details, such as memory management and pointers. This ease of learning is a significant advantage.</p>
 <p>However, relying solely on Python might delay understanding low-level concepts, making other languages seem less approachable. For instance, transitioning to Rust could be challenging due to unfamiliarity with memory safety and related concepts.</p>
 <p>Consider Python's file handling abstraction:</p>
-<pre><code class="language-python">with open("file.txt", "r") as f:
-    print(f.read())
-</code></pre>
+<div class="language-python codeBlockContainer_mmUU theme-code-block" style="--prism-color:#000000;--prism-background-color:#ffffff"><div class="codeBlockContent_vFQ6"><pre tabindex="0" class="prism-code language-python codeBlock_xJH4 thin-scrollbar" style="color:#000000;background-color:#ffffff"><code class="codeBlockLines_tffB"><span class="token-line" style="color:#000000"><span class="token keyword" style="color:rgb(0, 0, 255)">with</span><span class="token plain"> </span><span class="token builtin" style="color:rgb(0, 112, 193)">open</span><span class="token punctuation" style="color:rgb(4, 81, 165)">(</span><span class="token string" style="color:rgb(163, 21, 21)">"file.txt"</span><span class="token punctuation" style="color:rgb(4, 81, 165)">,</span><span class="token plain"> </span><span class="token string" style="color:rgb(163, 21, 21)">"r"</span><span class="token punctuation" style="color:rgb(4, 81, 165)">)</span><span class="token plain"> </span><span class="token keyword" style="color:rgb(0, 0, 255)">as</span><span class="token plain"> f</span><span class="token punctuation" style="color:rgb(4, 81, 165)">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#000000"><span class="token plain">    </span><span class="token keyword" style="color:rgb(0, 0, 255)">print</span><span class="token punctuation" style="color:rgb(4, 81, 165)">(</span><span class="token plain">f</span><span class="token punctuation" style="color:rgb(4, 81, 165)">.</span><span class="token plain">read</span><span class="token punctuation" style="color:rgb(4, 81, 165)">(</span><span class="token punctuation" style="color:rgb(4, 81, 165)">)</span><span class="token punctuation" style="color:rgb(4, 81, 165)">)</span><br></span></code></pre><div class="buttonGroup_eOKW"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_DJ0g" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_a9WI"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_jikD"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
 <p>This code opens a file, reads it, and prints the contents. It contains a few abstractions:</p>
 <ul>
 <li>The <code>with</code> statement automatically handles the closing of the file and error handling.</li>
@@ -31,35 +29,33 @@
 </ul>
 <p>While this is great because it allows you to focus on the task at hand, when this is all a beginner sees, they get a false sense of how things like the file system work.</p>
 <p>Here's another example of an abstraction in Python:</p>
-<pre><code class="language-python">my_list = [1, 2, 3, 4, 5]
-my_list.append(6)
-</code></pre>
+<div class="language-python codeBlockContainer_mmUU theme-code-block" style="--prism-color:#000000;--prism-background-color:#ffffff"><div class="codeBlockContent_vFQ6"><pre tabindex="0" class="prism-code language-python codeBlock_xJH4 thin-scrollbar" style="color:#000000;background-color:#ffffff"><code class="codeBlockLines_tffB"><span class="token-line" style="color:#000000"><span class="token plain">my_list </span><span class="token operator" style="color:rgb(0, 0, 0)">=</span><span class="token plain"> </span><span class="token punctuation" style="color:rgb(4, 81, 165)">[</span><span class="token number" style="color:rgb(9, 134, 88)">1</span><span class="token punctuation" style="color:rgb(4, 81, 165)">,</span><span class="token plain"> </span><span class="token number" style="color:rgb(9, 134, 88)">2</span><span class="token punctuation" style="color:rgb(4, 81, 165)">,</span><span class="token plain"> </span><span class="token number" style="color:rgb(9, 134, 88)">3</span><span class="token punctuation" style="color:rgb(4, 81, 165)">,</span><span class="token plain"> </span><span class="token number" style="color:rgb(9, 134, 88)">4</span><span class="token punctuation" style="color:rgb(4, 81, 165)">,</span><span class="token plain"> </span><span class="token number" style="color:rgb(9, 134, 88)">5</span><span class="token punctuation" style="color:rgb(4, 81, 165)">]</span><span class="token plain"></span><br></span><span class="token-line" style="color:#000000"><span class="token plain">my_list</span><span class="token punctuation" style="color:rgb(4, 81, 165)">.</span><span class="token plain">append</span><span class="token punctuation" style="color:rgb(4, 81, 165)">(</span><span class="token number" style="color:rgb(9, 134, 88)">6</span><span class="token punctuation" style="color:rgb(4, 81, 165)">)</span><br></span></code></pre><div class="buttonGroup_eOKW"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_DJ0g" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_a9WI"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_jikD"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
 <p>This code creates a list, and then appends an item to it.
 Python handles the memory allocation and resizing of the list, so you don't have to worry about it.
 Once again, while this is great because it allows you to focus on the list instead of dealing with memory and pointers, if this is all a beginner learns, they have little understanding of how "lists" work in the background.</p>
 <p>However, you might be thinking, "Why is this a bad thing? Isn't it good that beginners don't have to worry about these things?"
 This is a valid point, and it's true that Python's high-level abstractions can be a great asset for beginners.
 However, it is absolutely critical that these concepts are introduced as the student progresses, and we will now delve into why this is important.</p>
-<h2 id="the-understanding-of-fundamentals">The Understanding of Fundamentals</h2>
+<h2 class="anchor anchorWithStickyNavbar_MHlx" id="the-understanding-of-fundamentals">The Understanding of Fundamentals<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#the-understanding-of-fundamentals" class="hash-link" aria-label="Direct link to The Understanding of Fundamentals" title="Direct link to The Understanding of Fundamentals">​</a></h2>
 <p>As mentioned above, Python abstracts away many low-level concepts.
 It's great for programmers who want rapid prototyping and want to focus on problem-solving,
 but because Python shields beginners from these concepts, there is a significant risk that they will not gain a deep understanding of many computer science fundamental concepts.
 Compare someone learning Python and someone learning C, and you'll probably see a significantly greater understanding of concepts like memory management and pointers in the C programmer.</p>
 <p>Now, why is it important to understand these concepts?</p>
-<h3 id="transition-between-languages">Transition Between languages</h3>
+<h3 class="anchor anchorWithStickyNavbar_MHlx" id="transition-between-languages">Transition Between languages<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#transition-between-languages" class="hash-link" aria-label="Direct link to Transition Between languages" title="Direct link to Transition Between languages">​</a></h3>
 <p>One important reason is that if you eventually want to learn a different language that requires a low-level understanding, you'll have a much easier time if you already understand these concepts.
 For example, if you want to learn Go, you'll have a much easier time if you already understand pointers.
 If you want to learn Rust, you'll have a much easier time with the borrowing system if you already understand memory management.</p>
-<h3 id="optimizing-code">Optimizing Code</h3>
+<h3 class="anchor anchorWithStickyNavbar_MHlx" id="optimizing-code">Optimizing Code<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#optimizing-code" class="hash-link" aria-label="Direct link to Optimizing Code" title="Direct link to Optimizing Code">​</a></h3>
 <p>Another reason is that if you want to optimize your code, you'll need to understand these concepts.
 For example, understanding how memory works can help you optimize your code by reducing the number of allocations and deallocations (A common pattern in game development is to use object pools to reduce the number of allocations and deallocations.).
 Another example is understanding how arguments are passed by value or reference, which can reduce the number of copies of objects that are made.
 Additionally, understanding concepts like memoization can help reduce the amount of expensive computations that are made.</p>
-<h3 id="debugging">Debugging</h3>
+<h3 class="anchor anchorWithStickyNavbar_MHlx" id="debugging">Debugging<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#debugging" class="hash-link" aria-label="Direct link to Debugging" title="Direct link to Debugging">​</a></h3>
 <p>Finally, understanding these concepts can help you debug your code.
 For instance, understanding data types and mutability can help you spot issues with data mutations and side effects.
 Understanding memory management can help you spot memory leaks and other memory-related issues.</p>
-<h2 id="the-role-of-education">The Role of Education</h2>
+<h2 class="anchor anchorWithStickyNavbar_MHlx" id="the-role-of-education">The Role of Education<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#the-role-of-education" class="hash-link" aria-label="Direct link to The Role of Education" title="Direct link to The Role of Education">​</a></h2>
 <p>You might have been mislead by all my points that I believe Python to be a bad starting language.
 However, I think it is actually pretty good - Python is a great language for beginners due to its simplicity, low-learning curve, and high-level abstractions.
 It can help you get started with programming quickly as you can focus on the problem at hand instead of spending time learning low-level concepts.</p>
@@ -68,7 +64,7 @@ Understanding these concepts helps you optimize and debug your code.</p>
 <p>The negative aspects of Python can all be mitigated by a good programming curriculum.
 Good programming curriculums will gradually introduce low-level concepts as the student progresses, helping them gain a well-rounded understanding of programming.
 However, if the curriculum fails to do this, the student may not gain a deep understanding of many computer science fundamental concepts.</p>
-<h2 id="conclusiontldr">Conclusion/TL;DR</h2>
+<h2 class="anchor anchorWithStickyNavbar_MHlx" id="conclusiontldr">Conclusion/TL;DR<a href="https://0tick.io/blog/2023/9/24/Is-Python-Really-A-Good-First-Language#conclusiontldr" class="hash-link" aria-label="Direct link to Conclusion/TL;DR" title="Direct link to Conclusion/TL;DR">​</a></h2>
 <p>Python's high-level abstractions can be a valuable asset for beginners. When coupled with a well-rounded curriculum that introduces fundamental concepts, Python becomes an outstanding foundation for learning programming.</p>]]></content:encoded>
         </item>
     </channel>
