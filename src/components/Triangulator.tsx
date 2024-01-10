@@ -83,7 +83,7 @@ export default function Triangulator() {
                     min="2"
                     max="10"
                     value={dimensions}
-                    onChange={(e) => Number(e.target.value) > 2 && setDimensions(Number(e.target.value))}
+                    onChange={(e) => Number(e.target.value) >= 2 && setDimensions(Number(e.target.value))}
                 />
             </div>
             <table style={{ border: "0" }} key="inputtable">
