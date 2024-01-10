@@ -21,8 +21,8 @@ const config = {
 
     // GitHub pages deployment config.
     // If you aren't using GitHub pages, you don't need these.
-    organizationName: "facebook", // Usually your GitHub org/user name.
-    projectName: "docusaurus", // Usually your repo name.
+    organizationName: "0tickpulse", // Usually your GitHub org/user name.
+    projectName: "0tick.io", // Usually your repo name.
 
     onBrokenLinks: "throw",
     onBrokenMarkdownLinks: "warn",
@@ -89,6 +89,12 @@ const config = {
                     sidebarId: "sidebarNotes",
                     position: "left",
                     label: "Notes",
+                },
+                {
+                    type: "docSidebar",
+                    sidebarId: "sidebarTools",
+                    position: "left",
+                    label: "Tools",
                 },
                 { to: "/blog", label: "Blog", position: "left" },
                 {
