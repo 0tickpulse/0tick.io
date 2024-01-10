@@ -1,5 +1,5 @@
 import { MathEquation } from "@site/src/components/Math";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, memo, useCallback } from "react";
 import numeric from "numeric";
 import { findIntersectionPoint } from "@site/src/utilities/intersection";
 import { toLatex } from "@site/src/utilities/latex";
@@ -22,6 +22,37 @@ function triangulatePoints(pointA: Point, pointB: Point, pointC: Point, pointD: 
 }
 
 type Points = [Point, Point, Point, Point];
+type Inputs = [string[], string[], string[], string[]];
+
+type TableRowProps = {
+    label: string;
+    inputIndex: number;
+    dimensions: number;
+    inputs: Inputs;
+    handleChange: (inputIndex: number, idx: number, e: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+const TableRow = ({ label, inputIndex, dimensions, inputs, handleChange }: TableRowProps) => {
+    return (
+        <tr>
+            <td>{label}</td>
+            {Array.from({ length: dimensions }).map((_, idx) => (
+                <td key={idx}>
+                    <input
+                        style={{
+                            background: Number.isNaN(Number(inputs[inputIndex][idx]))
+                                ? "var(--ifm-color-danger)"
+                                : "var(--ifm-navbar-search-input-background-color)",
+                        }}
+                        className="tick-input"
+                        value={inputs[inputIndex][idx]}
+                        onChange={handleChange.bind(null, inputIndex, idx)}
+                    />
+                </td>
+            ))}
+        </tr>
+    );
+};
 
 export default function Triangulator() {
     const [dimensions, setDimensions] = useState(2);
@@ -30,6 +61,12 @@ export default function Triangulator() {
         [0, 0],
         [0, 0],
         [0, 0],
+    ]);
+    const [inputs, setInputs] = useState<Inputs>([
+        ["0", "0"],
+        ["0", "0"],
+        ["0", "0"],
+        ["0", "0"],
     ]);
     const [result, setResult] = useState<TriangulationResult | null>(null);
 
@@ -49,6 +86,8 @@ export default function Triangulator() {
 
     const handleChange = (index: number, idx: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const newPoints: Points = structuredClone(points);
+        const newInputs: Inputs = structuredClone(inputs);
+
         const input = e.target.value;
         if (input.match(/(\d+\.?\d* )*\d+\.?\d*/)) {
             const split = input.split(" ");
@@ -57,20 +96,29 @@ export default function Triangulator() {
                 if (!Number.isNaN(nums[i])) {
                     newPoints[index][idx + i] = nums[i];
                 }
+                newInputs[index][idx + i] = split[i];
             }
         } else {
             const num = Number(input);
             if (!Number.isNaN(num)) {
                 newPoints[index][idx] = num;
             }
+            newInputs[index][idx] = input;
         }
         setPoints(newPoints);
+        setInputs(newInputs);
     };
 
     const displayLine = (idx: number, p: Point, q: Point) => {
         return String.raw`\mathbf{r_${idx}}(t) = ${toLatex(p.slice(0, dimensions))} + t\left(${toLatex(
             numeric.sub(q.slice(0, dimensions), p.slice(0, dimensions))
         )}\right)`;
+    };
+
+    const tableRowProps = {
+        dimensions,
+        inputs,
+        handleChange,
     };
 
     return (
@@ -87,46 +135,10 @@ export default function Triangulator() {
                 />
             </div>
             <table style={{ border: "0" }} key="inputtable">
-                <tr>
-                    <td>Start of Location 1</td>
-                    {Array.from({ length: dimensions }).map((_, idx) => {
-                        return (
-                            <td key={idx}>
-                                <input className="tick-input" value={points[0][idx]} onChange={(e) => handleChange(0, idx, e)} />
-                            </td>
-                        );
-                    })}
-                </tr>
-                <tr>
-                    <td>End of Location 1</td>
-                    {Array.from({ length: dimensions }).map((_, idx) => {
-                        return (
-                            <td key={idx}>
-                                <input className="tick-input" value={points[1][idx]} onChange={(e) => handleChange(1, idx, e)} />
-                            </td>
-                        );
-                    })}
-                </tr>
-                <tr>
-                    <td>Start of Location 2</td>
-                    {Array.from({ length: dimensions }).map((_, idx) => {
-                        return (
-                            <td key={idx}>
-                                <input className="tick-input" value={points[2][idx]} onChange={(e) => handleChange(2, idx, e)} />
-                            </td>
-                        );
-                    })}
-                </tr>
-                <tr>
-                    <td>End of Location 2</td>
-                    {Array.from({ length: dimensions }).map((_, idx) => {
-                        return (
-                            <td key={idx}>
-                                <input className="tick-input" value={points[3][idx]} onChange={(e) => handleChange(3, idx, e)} />
-                            </td>
-                        );
-                    })}
-                </tr>
+                <TableRow {...tableRowProps} key={`start-location-1`} label="Start of Location 1" inputIndex={0} />
+                <TableRow {...tableRowProps} key={`end-location-1`} label="End of Location 1" inputIndex={1} />
+                <TableRow {...tableRowProps} key={`start-location-2`} label="Start of Location 2" inputIndex={2} />
+                <TableRow {...tableRowProps} key={`end-location-2`} label="End of Location 2" inputIndex={3} />
             </table>
             {result && (
                 <div>
