@@ -1,0 +1,307 @@
+import Triangulator from "@site/src/components/Triangulator";
+
+# Triangulator
+
+This is a tool for triangulating a set of points in a space of arbitrary dimensions.
+THis has various purposes, like finding someone's base in Minecraft using arrow knockback trajectories.
+
+## Use it here
+
+<Triangulator />
+
+## Explanation
+
+Given the two pairs of points, the tool creates a vector for each point, $P_1$, $Q_1$, $P_2$, and $Q_2$.
+
+To calculate a line crossing two points, $P$ and $Q$, given $D$ as the direction of the vector, we can express the line as such:
+
+$$
+\mathbf{r} = \mathbf{P} + t\mathbf{D}
+$$
+
+Since the direction can be expressed as the difference between the two points, i.e. $D = Q - P$, we can simplify the equation to:
+
+$$
+\mathbf{r} = \mathbf{P} + t(\mathbf{Q} - \mathbf{P})
+$$
+
+So we create two of these parametric equations, one for each pair of points, and expand them into the vector form:
+
+$$
+\begin{align*}
+    \mathbf{r_1} &= \mathbf{P_1} + t_1(\mathbf{Q_1} - \mathbf{P_1}) &= \begin{bmatrix} (\mathbf{P_1})_0 \\ (\mathbf{P_1})_1 \\ \vdots{} \\ \mathbf{(P_1)_n} \end{bmatrix} + t_1\begin{bmatrix} (\mathbf{Q_1})_0 - (\mathbf{P_1})_0 \\ (\mathbf{Q_1})_1 - (\mathbf{P_1})_1 \\ \vdots{} \\ \mathbf{(Q_1)_n} - \mathbf{(P_1)_n} \end{bmatrix} \\
+    \mathbf{r_2} &= \mathbf{P_2} + t_2(\mathbf{Q_2} - \mathbf{P_2}) &= \begin{bmatrix} (\mathbf{P_2})_0 \\ (\mathbf{P_2})_1 \\ \vdots{} \\ \mathbf{(P_2)_n} \end{bmatrix} + t_2\begin{bmatrix} (\mathbf{Q_2})_0 - (\mathbf{P_2})_0 \\ (\mathbf{Q_2})_1 - (\mathbf{P_2})_1 \\ \vdots{} \\ \mathbf{(Q_2)_n} - \mathbf{(P_2)_n} \end{bmatrix}
+\end{align*}
+$$
+
+Note that I use 0-based indexing for notating elements of the vectors because it's closer to how the code is written.
+We can then set these two equations equal to each other:
+
+$$
+\mathbf{P_1} + t_1(\mathbf{Q_1} - \mathbf{P_1}) = \mathbf{P_2} + t_2(\mathbf{Q_2} - \mathbf{P_2})
+$$
+
+Expand the parametric equation so that it becomes a system of equations:
+
+$$
+\begin{cases}
+    (\mathbf{P_1})_0 + t_1((\mathbf{Q_1})_0 - (\mathbf{P_1})_0) &= (\mathbf{P_2})_0 + t_2((\mathbf{Q_2})_0 - (\mathbf{P_2})_0) \\
+    (\mathbf{P_1})_1 + t_1((\mathbf{Q_1})_1 - (\mathbf{P_1})_1) &= (\mathbf{P_2})_1 + t_2((\mathbf{Q_2})_1 - (\mathbf{P_2})_1) \\
+    &\vdots{} \\
+    \mathbf{(P_1)_n} + t_1(\mathbf{(Q_1)_n} - \mathbf{(P_1)_n}) &= \mathbf{(P_2)_n} + t_2(\mathbf{(Q_2)_n} - \mathbf{(P_2)_n})
+\end{cases}
+$$
+
+Only two of them are needed to solve for $t_1$ and $t_2$, so we can pick any two. Let's pick the first and second equations:
+
+$$
+\begin{cases}
+    (\mathbf{P_1})_0 + t_1((\mathbf{Q_1})_0 - (\mathbf{P_1})_0) &= (\mathbf{P_2})_0 + t_2((\mathbf{Q_2})_0 - (\mathbf{P_2})_0) \\
+    (\mathbf{P_1})_1 + t_1((\mathbf{Q_1})_1 - (\mathbf{P_1})_1) &= (\mathbf{P_2})_1 + t_2((\mathbf{Q_2})_1 - (\mathbf{P_2})_1)
+\end{cases}
+$$
+
+For the sake of simplicity, let's define the following variables for the coefficients and the constants:
+
+$$
+\begin{align*}
+    a &= (\mathbf{P_1})_0 \\
+    b &= (\mathbf{Q_1})_0 - (\mathbf{P_1})_0 \\
+    c &= (\mathbf{P_2})_0 \\
+    d &= (\mathbf{Q_2})_0 - (\mathbf{P_2})_0 \\
+    e &= (\mathbf{P_1})_1 \\
+    f &= (\mathbf{Q_1})_1 - (\mathbf{P_1})_1 \\
+    g &= (\mathbf{P_2})_1 \\
+    h &= (\mathbf{Q_2})_1 - (\mathbf{P_2})_1
+\end{align*}
+$$
+
+Hence, the system of equations becomes:
+
+$$
+\begin{cases}
+    a + t_1b &= c + t_2d \\
+    e + t_1f &= g + t_2h
+\end{cases}
+$$
+
+We will need to solve for $t_1$ and $t_2$.
+Two methods are shown below, one using substitution and the other using Cramer's rule.
+Other methods, like the Row Reduction (Gaussian Elimination) Method, can also be used.
+
+<details>
+<summary>Click to expand for the derivation using substitution</summary>
+<div>
+We can express $t_1$ in terms of $t_2$ in the first equation:
+
+$$
+t_1 = \frac{c + t_2d - a}{b}
+$$
+
+Then, we can substitute this into the second equation, after which we can solve for $t_2$:
+
+$$
+\begin{align*}
+    e + \frac{c + t_2d - a}{b}f &= g + t_2h \\
+    be + cf + t_2df - af &= bg + bt_2h \\
+    fd \cdot t_2 - bh \cdot t_2 &= bg - be + af - cf \\
+    t_2 &= \frac{bg - be + af - cf}{fd - bh}
+\end{align*}
+$$
+
+Finally, we can substitute this back into the first equation to solve for $t_1$, which gives us the following:
+
+$$
+t_1 = \frac{d(g - e) + h(a - c)}{df - bh}
+$$
+
+</div>
+</details>
+
+<details>
+<summary>Click to expand for the derivation using Cramer's rule</summary>
+<div>
+
+The Cramer's rule allows us to solve systems of equations using determinants.
+Generally, for a system with two variables:
+
+$$
+a_{11}x_1 + a_{12}x_2 = b_1 \\
+a_{21}x_1 + a_{22}x_2 = b_2
+$$
+
+The solution can be expressed as follows:
+
+$$
+x = \frac{\Delta_x}{\Delta} \\
+y = \frac{\Delta_y}{\Delta}
+$$
+
+Where:
+
+-   $\Delta$ is the determinant of the coefficient matrix,
+-   $\Delta_x$ is the determinant obtained by replacing the first column of the coefficient matrix with the column vector on the right side, and
+-   $\Delta_y$ is the determinant obtained by replacing the second column.
+
+To apply this to our system of equations, we can first rearrange our system of equations as follows:
+
+$$
+\begin{cases}
+    t_1b - t_2d &= c - a \\
+    t_1f - t_2h &= g - e
+\end{cases}
+$$
+
+In this case, the coefficient matrix is:
+
+$$
+\begin{bmatrix}
+    b & -d \\
+    f & -h
+\end{bmatrix}
+$$
+
+And the column vectors are:
+
+$$
+\begin{bmatrix}
+    c - a \\
+    g - e
+\end{bmatrix}
+$$
+
+Hence, the determinants are:
+
+$$
+\begin{align*}
+\Delta &=
+    \begin{vmatrix}
+        b & -d \\ f & -h
+    \end{vmatrix}
+= -bh + df \\
+
+\Delta_x &=
+    \begin{vmatrix}
+        c - a & -d \\ g - e & -h
+    \end{vmatrix}
+= -h(c - a) + d(g - e)\\
+
+\Delta_y &=
+    \begin{vmatrix}
+        b & c - a \\ f & g - e
+    \end{vmatrix}
+= b(g - e) - f(c - a)
+\end{align*}
+$$
+
+Therefore, the solution is:
+
+$$
+\begin{align*}
+    t_1 &= \frac{d(g - e) + h(a - c)}{df - bh} \\
+    t_2 &= \frac{b(g - e) - f(a - c)}{df - bh} \\
+\end{align*}
+$$
+
+</div>
+</details>
+
+Solving for $t_1$ and $t_2$ gives us the following:
+
+$$
+\begin{align*}
+    t_1 &= \frac{d(g - e) + h(a - c)}{df - bh} \\
+    t_2 &= \frac{b(g - e) - f(a - c)}{df - bh} \\
+\end{align*}
+$$
+
+:::info
+
+By the way, if you put the values for $a$ to $h$ back into the system of equations, you'll get this absolute monstrosity of an equation:
+
+$$
+\begin{align*}
+    t_1 &= \frac{
+                ((\mathbf{Q_2})_0 - (\mathbf{P_2})_0)((\mathbf{P_2})_1 - (\mathbf{P_1})_1)
+                + ((\mathbf{Q_2})_1 - (\mathbf{P_2})_1)((\mathbf{P_1})_0 - (\mathbf{P_2})_0)
+            }{
+                ((\mathbf{Q_2})_0 - (\mathbf{P_2})_0)((\mathbf{Q_1})_1 - (\mathbf{P_1})_1)
+                - ((\mathbf{Q_1})_0 - (\mathbf{P_1})_0)((\mathbf{Q_2})_1 - (\mathbf{P_2})_1)
+            } \\
+        &= \frac{
+                ((\mathbf{Q_2})_0)((\mathbf{P_2})_1) - ((\mathbf{Q_2})_0)((\mathbf{P_1})_1)
+                - ((\mathbf{P_2})_0)((\mathbf{P_2})_1) + ((\mathbf{P_2})_0)((\mathbf{P_1})_1)
+                + ((\mathbf{Q_2})_1)((\mathbf{P_1})_0) - ((\mathbf{Q_2})_1)((\mathbf{P_2})_0)
+                - ((\mathbf{P_2})_1)((\mathbf{P_1})_0) + ((\mathbf{P_2})_1)((\mathbf{P_2})_0)
+            }{
+                ((\mathbf{Q_2})_0)((\mathbf{Q_1})_1) - ((\mathbf{Q_2})_0)((\mathbf{P_1})_1)
+                - ((\mathbf{P_2})_0)((\mathbf{Q_1})_1) + ((\mathbf{P_2})_0)((\mathbf{P_1})_1)
+                + ((\mathbf{Q_1})_0)((\mathbf{Q_2})_1) - ((\mathbf{Q_1})_0)((\mathbf{P_2})_1)
+                - ((\mathbf{P_1})_0)((\mathbf{Q_2})_1) + ((\mathbf{P_1})_0)((\mathbf{P_2})_1)
+            } \\
+    t_2 &= \frac{
+                ((\mathbf{Q_1})_0 - (\mathbf{P_1})_0)((\mathbf{P_2})_1 - (\mathbf{P_1})_1)
+                - ((\mathbf{Q_1})_1 - (\mathbf{P_1})_1)((\mathbf{P_1})_0 - (\mathbf{P_2})_0)
+            }{
+                ((\mathbf{Q_2})_0 - (\mathbf{P_2})_0)((\mathbf{Q_1})_1 - (\mathbf{P_1})_1)
+                - ((\mathbf{Q_1})_0 - (\mathbf{P_1})_0)((\mathbf{Q_2})_1 - (\mathbf{P_2})_1)
+            } \\
+        &= \frac{
+                ((\mathbf{Q_1})_0)((\mathbf{P_2})_1) - ((\mathbf{Q_1})_0)((\mathbf{P_1})_1)
+                - ((\mathbf{P_1})_0)((\mathbf{P_2})_1) + ((\mathbf{P_1})_0)((\mathbf{P_1})_1)
+                - ((\mathbf{Q_1})_1)((\mathbf{P_1})_0) + ((\mathbf{Q_1})_1)((\mathbf{P_2})_0)
+                + ((\mathbf{P_1})_1)((\mathbf{P_1})_0) - ((\mathbf{P_1})_1)((\mathbf{P_2})_0)
+            }{
+                ((\mathbf{Q_2})_0)((\mathbf{Q_1})_1) - ((\mathbf{Q_2})_0)((\mathbf{P_1})_1)
+                - ((\mathbf{P_2})_0)((\mathbf{Q_1})_1) + ((\mathbf{P_2})_0)((\mathbf{P_1})_1)
+                + ((\mathbf{Q_1})_0)((\mathbf{Q_2})_1) - ((\mathbf{Q_1})_0)((\mathbf{P_2})_1)
+                - ((\mathbf{P_1})_0)((\mathbf{Q_2})_1) + ((\mathbf{P_1})_0)((\mathbf{P_2})_1)
+            }
+\end{align*}
+$$
+
+:::
+
+Now that we have $t_1$ and $t_2$, we can finally start doing this inside code.
+I made a utility file called `intersection.ts` with the following code:
+
+```ts title="src/utilities/intersection.ts"
+import numeric from "numeric";
+
+type Point = number[];
+type IntersectionResult = {
+    point: Point | null;
+    t1: number;
+    t2: number;
+};
+
+export function findIntersectionPoint(p1: Point, q1: Point, p2: Point, q2: Point): IntersectionResult {
+    const a = p1[0];
+    const b = q1[0] - p1[0];
+    const c = p2[0];
+    const d = q2[0] - p2[0];
+
+    const e = p1[1];
+    const f = q1[1] - p1[1];
+    const g = p2[1];
+    const h = q2[1] - p2[1];
+
+    const t2 = (b * (g - e) - f * (c - a)) / (d * f - b * h);
+    const t1 = (c - a + d * t2) / b;
+
+    const r1 = numeric.add(p1, numeric.mul(t1, numeric.sub(q1, p1)));
+    const r2 = numeric.add(p2, numeric.mul(t2, numeric.sub(q2, p2)));
+
+    return {
+        point: numeric.eq(r1, r2) ? r1 : null,
+        t1,
+        t2,
+    };
+}
+```
+
+-   The `numeric` package is used for vector operations.
+-   The `findIntersectionPoint` takes in two pairs of points and returns the intersection point, if it exists, and the values of $t_1$ and $t_2$.
+
+That's it.
+Now we can use this to find the intersection point of two lines created by two pairs of points in any number of dimensions.
