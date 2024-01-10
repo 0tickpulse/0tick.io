@@ -13,7 +13,7 @@ interface TriangulationResult {
 }
 
 function triangulatePoints(pointA: Point, pointB: Point, pointC: Point, pointD: Point): TriangulationResult {
-    const {point: intersection, t1, t2} = findIntersectionPoint( pointA, pointB, pointC, pointD );
+    const { point: intersection, t1, t2 } = findIntersectionPoint(pointA, pointB, pointC, pointD);
     return {
         intersection,
         t1,
@@ -68,7 +68,9 @@ export default function Triangulator() {
     };
 
     const displayLine = (idx: number, p: Point, q: Point) => {
-        return String.raw`\mathbf{r_${idx}}(t) = ${toLatex(p)} + t\left(${toLatex(numeric.sub(q, p))}\right)`;
+        return String.raw`\mathbf{r_${idx}}(t) = ${toLatex(p.slice(0, dimensions))} + t\left(${toLatex(
+            numeric.sub(q.slice(0, dimensions), p.slice(0, dimensions))
+        )}\right)`;
     };
 
     return (
@@ -139,9 +141,14 @@ export default function Triangulator() {
                     </p>
                     <h3>Calculated result</h3>
                     <p>
-                        <MathEquation displayMode={true}>{String.raw`\begin{align*}t_1 &= ${result.t1} \\ t_2 &= ${result.t2}\end{align*}`}</MathEquation>
+                        <MathEquation
+                            displayMode={true}
+                        >{String.raw`\begin{align*}t_1 &= ${result.t1} \\ t_2 &= ${result.t2}\end{align*}`}</MathEquation>
                     </p>
-                    <p>Intersection point: {result.intersection ? <MathEquation>{result.intersection.join(", ")}</MathEquation> : "none"}</p>
+                    <p>
+                        Intersection point:{" "}
+                        {result.intersection ? <MathEquation>{result.intersection.slice(0, dimensions).join(", ")}</MathEquation> : "none"}
+                    </p>
                 </div>
             )}
         </div>
