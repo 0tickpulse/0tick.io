@@ -28,3 +28,25 @@
     --ifm-color-primary-lightest: #ffffff;
     --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.tick-input {
+    appearance: none;
+    background: var(--ifm-navbar-search-input-background-color);
+    border: none;
+    border-radius: 2rem;
+    color: var(--ifm-navbar-search-input-color);
+    cursor: text;
+    display: inline-block;
+    font-size: 0.9rem;
+    height: 2rem;
+    padding: 0 0.5rem 0 0.75rem;
+}
+
+.tick-input-slider {
+    background: var(--ifm-navbar-search-input-background-color);
+    border: none;
+    border-radius: 2rem;
+    cursor: pointer;
+    display: inline-block;
+    height: 2rem;
+}
