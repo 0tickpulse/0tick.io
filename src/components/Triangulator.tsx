@@ -40,12 +40,12 @@ const TableRow = ({ label, inputIndex, dimensions, inputs, handleChange }: Table
                 <td key={idx}>
                     <input
                         style={{
-                            background: Number.isNaN(Number(inputs[inputIndex][idx]))
+                            background: Number.isNaN(Number(inputs[inputIndex][idx] ?? "0"))
                                 ? "var(--ifm-color-danger)"
                                 : "var(--ifm-navbar-search-input-background-color)",
                         }}
                         className="tick-input"
-                        value={inputs[inputIndex][idx]}
+                        value={inputs[inputIndex][idx] ?? "0"}
                         onChange={handleChange.bind(null, inputIndex, idx)}
                     />
                 </td>
@@ -70,13 +70,19 @@ export default function Triangulator() {
     ]);
     const [result, setResult] = useState<TriangulationResult | null>(null);
 
-    // expand points if dimensions change
+    // expand points and inputs if dimensions change
     useEffect(() => {
         const newPoints = [...points];
         while (newPoints[0].length < dimensions) {
             newPoints.forEach((point) => point.push(0));
         }
         setPoints(newPoints as Points);
+
+        const newInputs = [...inputs];
+        while (newInputs[0].length < dimensions) {
+            newInputs.forEach((input) => input.push("0"));
+        }
+        setInputs(newInputs as Inputs);
     }, [dimensions]);
 
     useEffect(() => {
