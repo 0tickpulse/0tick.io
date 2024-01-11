@@ -11,15 +11,15 @@ THis has various purposes, like finding someone's base in Minecraft using arrow 
 
 ## Explanation
 
-Given the two pairs of points, the tool creates a vector for each point, $P_1$, $Q_1$, $P_2$, and $Q_2$.
+Given the two pairs of points, the tool creates a vector for each point, $\mathbf{P_1}$, $\mathbf{Q_1}$, $\mathbf{P_2}$, and $\mathbf{Q_2}$.
 
-To calculate a line crossing two points, $P$ and $Q$, given $D$ as the direction of the vector, we can express the line as such:
+To calculate a line crossing two points, $\mathbf{P}$ and $\mathbf{Q}$, given $\mathbf{D}$ as the direction vector, we can use the following parametric equation:
 
 $$
 \mathbf{r} = \mathbf{P} + t\mathbf{D}
 $$
 
-Since the direction can be expressed as the difference between the two points, i.e. $D = Q - P$, we can simplify the equation to:
+Since the direction can be expressed as the difference between the two points, i.e. $\mathbf{D} = \mathbf{Q} - \mathbf{P}$, we can simplify the equation to:
 
 $$
 \mathbf{r} = \mathbf{P} + t(\mathbf{Q} - \mathbf{P})
