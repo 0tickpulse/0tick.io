@@ -47,6 +47,7 @@ const TableRow = ({ label, inputIndex, dimensions, inputs, handleChange }: Table
                         className="tick-input"
                         value={inputs[inputIndex][idx] ?? "0"}
                         onChange={handleChange.bind(null, inputIndex, idx)}
+                        size={Math.max(3, inputs[inputIndex][idx]?.toString().length ?? 0)}
                     />
                 </td>
             ))}
