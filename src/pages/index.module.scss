@@ -18,6 +18,12 @@
 
     &.shrunk {
         height: 50vh;
+        h1 {
+            font-size: 3rem;
+        }
+        img {
+            max-width: 300px;
+        }
     }
     &.glow {
         img {
@@ -25,12 +31,17 @@
         }
     }
 
+    h1 {
+        // big big
+        font-size: 5rem;
+        transition: font-size 2s ease;
+    }
+
     img {
         width: 100%;
-        max-width: 300px;
+        max-width: 500px;
         padding: 1rem;
-        // glow
-        transition: filter 2s ease;
+        transition: filter 2s ease, max-width 2s ease;
     }
 }
 .row {

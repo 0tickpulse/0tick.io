@@ -45,7 +45,7 @@ export default function Home(): JSX.Element {
         setTimeout(() => {
             setShrunk(true);
             setIconGlow(true);
-        }, 250);
+        }, 500);
     });
 
     return (
