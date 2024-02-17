@@ -45,6 +45,8 @@ const config = {
         },
     ],
 
+    plugins: ["docusaurus-plugin-sass"],
+
     presets: [
         [
             "classic",
@@ -65,7 +67,7 @@ const config = {
                     editUrl: "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/",
                 },
                 theme: {
-                    customCss: require.resolve("./src/css/custom.css"),
+                    customCss: require.resolve("./src/css/custom.scss"),
                 },
             } satisfies Preset.Options,
         ],
