@@ -605,6 +605,7 @@ export function EpsilonDeltaGraph() {
                 type="range"
                 min="0"
                 max="4999"
+                value={narrow * 1000}
                 onChange={(e) => setNarrow(Number(e.target.value / 1000))}
             />
         </>
