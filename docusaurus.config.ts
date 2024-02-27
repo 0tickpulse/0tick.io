@@ -36,6 +36,10 @@ const config = {
         locales: ["en"],
     },
 
+    markdown: {
+        mermaid: true
+    },
+
     stylesheets: [
         {
             href: "https://cdn.jsdelivr.net/npm/katex@0.13.24/dist/katex.min.css",
@@ -46,6 +50,7 @@ const config = {
     ],
 
     plugins: ["docusaurus-plugin-sass"],
+    themes: ["@docusaurus/theme-mermaid"],
 
     presets: [
         [
