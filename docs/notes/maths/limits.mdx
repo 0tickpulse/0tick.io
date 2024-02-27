@@ -1,5 +1,6 @@
-import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, vec, Vector, LaTeX, Polygon } from "mafs";
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon } from "mafs";
 import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
 
 # Limits
 
@@ -445,6 +446,7 @@ export function UnitCircle({
                     \begin{align*}
                         \theta &= ${(angle / Math.PI).toFixed(2)}\pi \\
                         ${showTan ? String.raw`\tan{\theta} &= ${Math.tan(angle).toFixed(2)} \\` : ""}
+                        ${showSector ? String.raw`\text{Area of sector} &= ${(angle / 2).toFixed(2)} \\` : ""}
                     \end{align*}
                 `}</MathEquation>
             </p>
@@ -533,3 +535,104 @@ $$
 $$
 
 That's it. We've proven that the limit of $\frac{\sin(x)}{x}$ as $x$ approaches 0 is 1.
+
+## Formal things
+
+Our definition of limits is simple and intuitive, but it's not rigorous. We can't just say "the function gets closer and closer to a value" - everything in Mathematics needs to be defined precisely.
+
+One way to define limits rigorously is using the $(\varepsilon$-$\delta)$ definition of limits, or the "epsilon-delta" definition of limits.
+
+Graphically, this is what it looks like:
+
+export function EpsilonDeltaGraph() {
+    const a = 0; // The point we're approaching
+    const f = (x) => 0.5 * x + Math.sin(x) / x;
+    const [narrow, setNarrow] = useState(0);
+    const x_diff = 1 - narrow / 5;
+
+    const x_min = a - x_diff;
+    const x_max = a + x_diff;
+    const y_min = f(x_min);
+    const y_max = f(x_max);
+
+    return (
+        <>
+            <Mafs
+                viewBox={{
+                    y: [0, 2.5],
+                }}
+            >
+                <Coordinates.Cartesian />
+                <Plot.OfX y={(x) => {
+                    if (Math.abs(x - a) < 0.035 || x < 0) {
+                        return undefined;
+                    }
+                    return f(x);
+                }} />
+                <Plot.OfX y={(x) => {
+                    if (Math.abs(x - a) < 0.035 || x > 0) {
+                        return undefined;
+                    }
+                    return f(x);
+                }} />
+                <Circle center={[a, 1]} radius={0.05} />
+
+                {/* X axis line */}
+                <Line.Segment weight={5} color={Theme.red} point1={[x_min, 0]} point2={[x_max, 0]} />
+                {/* Y axis line */}
+                <Line.Segment weight={5} color={Theme.blue} point1={[x_min, y_min]} point2={[x_min, y_max]} />
+
+                {/* X boundaries vertical lines */}
+                <Plot.OfY style="dashed" x={(y) => {
+                    if (y < 0) {
+                        return NaN;
+                    }
+                    return x_min;
+                }} />
+                <Plot.OfY style="dashed" x={(y) => {
+                    if (y < 0) {
+                        return NaN;
+                    }
+                    return x_max;
+                }} />
+
+                {/* Y boundaries horizontal lines */}
+                <Plot.OfX style="dashed" y={(x) => y_max} />
+                <Plot.OfX style="dashed" y={(x) => y_min} />
+            </Mafs>
+            {/* Slider */}
+            <input
+                type="range"
+                min="0"
+                max="4999"
+                onChange={(e) => setNarrow(Number(e.target.value / 1000))}
+            />
+        </>
+    );
+}
+
+<EpsilonDeltaGraph />
+
+Suppose we want to find out what this function approaches as $x$ approaches $0$.
+We've already done this by looking at values around $x = 0$. In this case, we have a range of $x$ values around $0$ shown by the red lines, and a range of $f(x)$ values around $f(0)$ shown by the blue lines.
+The $(\varepsilon$-$\delta)$ definition of limits tells us that if we decrease the size of the range of $x$ values, the size of the range of $f(x)$ values also decreases.
+
+The key point being that the size of the range of $f(x)$ values can decrease however much we want (try moving that slider).
+
+How do $\varepsilon$ and $\delta$ fit into this? Take this example:
+
+$$
+\lim_{x \to a} f(x) = L
+$$
+
+Think of any distance from $L$, and call it $\varepsilon$.
+
+What it means in terms of the limit is that you will always be able to find a range of inputs around $a$, some distance $\delta$ away from $a$, such that the outputs of $f(x)$ will always be within $\varepsilon$ of $L$.
+
+And this is true for any $\varepsilon$ you choose, no matter how small.
+
+Here's a formal way to write this to impress your friends:
+
+$$
+(\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in \mathbb{R})(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)
+$$
