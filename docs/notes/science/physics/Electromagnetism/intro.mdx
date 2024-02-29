@@ -380,24 +380,35 @@ export function CombinedElectricFields({ added = false, smooth = false }) {
     let parametricTotalAccelerationCache = {};
 
     const point1 = useMovablePoint([-1, 0], { color: Theme.red });
-    const charge1 = 3;
-    const vector1 = ([x, y]) => {
-        const dy = y - point1.y;
-        const dx = x - point1.x;
-        const r = Math.sqrt(dy ** 2 + dx ** 2);
-        const force = charge1 / r ** 2;
-        return [force * dx, force * dy];
+    const charge1 = -3;
+    const vectorGenerator = (point, charge) => {
+        return ([x, y]) => {
+            const dy = y - point.y;
+            const dx = x - point.x;
+            const r = Math.sqrt(dy ** 2 + dx ** 2);
+            const force = charge / r ** 2;
+            return [force * dx, force * dy];
+        }
     }
+    // const vector1 = ([x, y]) => {
+    //     const dy = y - point1.y;
+    //     const dx = x - point1.x;
+    //     const r = Math.sqrt(dy ** 2 + dx ** 2);
+    //     const force = charge1 / (r ** 2);
+    //     return [force * dx, force * dy];
+    // }
+    const vector1 = vectorGenerator(point1, charge1);
 
     const point2 = useMovablePoint([1, 0], { color: Theme.green });
-    const charge2 = -3;
-    const vector2 = ([x, y]) => {
-        const dy = y - point2.y;
-        const dx = x - point2.x;
-        const r = Math.sqrt(dy ** 2 + dx ** 2);
-        const force = charge2 / r ** 2;
-        return [force * dx, force * dy];
-    }
+    const charge2 = 3;
+    // const vector2 = ([x, y]) => {
+    //     const dy = y - point2.y;
+    //     const dx = x - point2.x;
+    //     const r = Math.sqrt(dy ** 2 + dx ** 2);
+    //     const force = charge2 / (r ** 2);
+    //     return [force * dx, force * dy];
+    // }
+    const vector2 = vectorGenerator(point2, charge2);
 
     const totalAcceleration = ([x, y]) => vec.add(vector1([x, y]), vector2([x, y]));
 
