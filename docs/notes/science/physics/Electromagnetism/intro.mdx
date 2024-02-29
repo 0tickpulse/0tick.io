@@ -1,3 +1,7 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Text } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useMemo, useRef } from "react";
+
 # Electromagnetism Introduction
 
 Electromagnetism: electricity and magnetism, two aspects of the same fundamental interaction.
@@ -10,8 +14,8 @@ There are two types of charge: positive and negative. These are arbitrary labels
 
 Two common "units" of charge:
 
-* The Coulomb ($C$) is the SI unit of charge.
-* The "elementary charge" ($e$) is the charge of a proton or electron. It is approximately $1.6 \times 10^{-19} C$.
+-   The Coulomb ($C$) is the SI unit of charge.
+-   The "elementary charge" ($e$) is the charge of a proton or electron. It is approximately $1.6 \times 10^{-19} C$.
 
 ## Electric Force
 
@@ -24,9 +28,482 @@ $$ F = k \frac{q_1 q_2}{r^2} $$
 
 Where:
 
-* $F$ is the force between the charges.
-* $k$ is Coulomb's constant, approximately $8.99 \times 10^9 N m^2 C^{-2}$.
-* $q_1$ and $q_2$ are the charges.
-* $r$ is the distance between the charges.
+-   $F$ is the force between the charges.
+-   $k$ is Coulomb's constant, approximately $8.99 \times 10^9 N m^2 C^{-2}$.
+-   $q_1$ and $q_2$ are the charges.
+-   $r$ is the distance between the charges.
 
+export function CoulombForceDemonstration() {
+    const p1 = useMovablePoint([0, 0], { color: Theme.red });
+    const p2 = useMovablePoint([2, 2], { color: Theme.green });
 
+    // Charges
+    const c1 = 1;
+    const c2 = -1;
+
+    const r = Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
+    const vectorScaleMultiplier = 2;
+
+    // Force that p2 exerts on p1
+    const F_p1p2 = vec.scale(
+        vec.normalize([p2.x - p1.x, p2.y - p1.y]),
+        Math.abs(c1 * c2) / r ** 2 * vectorScaleMultiplier
+    );
+
+    const F_p2p1 = vec.scale(
+        vec.normalize([p1.x - p2.x, p1.y - p2.y]),
+        Math.abs(c1 * c2) / r ** 2 * vectorScaleMultiplier
+    );
+
+    return (
+        <Mafs
+            viewBox={{
+                y: [-1, 2],
+            }}
+        >
+            <Coordinates.Cartesian />
+            <Vector
+                tip={vec.add(p1.point, F_p1p2)}
+                tail={p1.point}
+                color={Theme.red}
+            />
+            <Vector
+                tip={vec.add(p2.point, F_p2p1)}
+                tail={p2.point}
+                color={Theme.green}
+            />
+            {p1.element}
+            {p2.element}
+        </Mafs>
+    );
+
+}
+
+<CoulombForceDemonstration />
+
+Try dragging the points around to see how the force changes (the force is shown by the vectors).
+
+You would notice that the force gets way stronger when the charges are closer together.
+
+Mathematically, this is due to proportionality: $F \propto \frac{1}{r^2}$.
+
+## Materials and Electricity
+
+Electricity is the flow of electric charge. This flow, or "current", is what powers our electronics.
+
+Materials can be classified based on their ability to conduct electricity.
+
+-   Conductors: materials that allow electric charge to flow freely. Metals are good conductors.
+-   Insulators: materials that do not allow electric charge to flow freely. Rubber and plastic are good insulators.
+
+There are also semiconductors and superconductors, but for the purposes of this introduction, we simplify things by ignoring them.
+
+In a conductor, electrons can move freely. In an insulator, they cannot. This is due to the structure of the material.
+For instance, $d$-block metals have a "sea of electrons" that can move freely, while covalent bonds in insulators hold electrons in place.
+This is why metals like copper are good conductors, while plastics are good insulators.
+
+However, insulators also have usages in electronics.
+For instance, putting an insulator in an electric field can cause its nucleus to move, which polarizes the material.
+
+export function PolarizingInsulators() {
+    const radius = 1;
+    const electron = useMovablePoint([-1, 0], { color: Theme.red, constrain: (point) => {
+        const angle = Math.atan2(point[1], point[0]);
+
+        const snap = Math.PI / 180;
+        const roundedAngle = Math.round(angle / snap) * snap;
+        return vec.rotate([radius, 0], roundedAngle);
+    } });
+    return (
+        <>
+            <Mafs
+                viewBox={{
+                    y: [-1, 1],
+                }}
+            >
+                {/* Linear electric field */}
+                <Plot.VectorField xy={(x, y) => [1, 0]} step={0.5} xyOpacity={() => 0.5} color={Theme.blue} />
+                {/* Electron orbital */}
+                <Circle center={[0, 0]} radius={1} fillOpacity={0} />
+                {/* Nucleus */}
+                <Circle center={[0, 0]} radius={0.05} fillOpacity={1} color={Theme.green} />
+                {/* Electron */}
+                {electron.element}
+
+                {/* Force on nucleus by field */}
+                <Vector
+                    tail={[0, 0]}
+                    tip={[0.4, 0]}
+                    color={Theme.blue}
+                />
+
+            </Mafs>
+        </>
+    );
+
+}
+
+<PolarizingInsulators />
+
+The rightwards arrows represent an electric field.
+This field acts on the positively charged nucleus by pulling it to the right.
+
+## Induction
+
+One way to charge an object without touching it is through induction.
+
+export function Induction() {
+    // const { time, start, stop } = useStopwatch();
+    const [time, setTime] = useState(0);
+    const keyframes = {
+        rod1startsMoving: 0,
+        rod1stopsMoving: 2.5,
+        chargeStartsMoving: 3,
+        chargeStopsMoving: 3.3,
+        electronsEscapeToGround: 3.5,
+    };
+
+    const rod1base = Math.min(time, keyframes.rod1stopsMoving);
+    const rod1electronOffset = Math.min(
+        time > keyframes.rod1stopsMoving ? time - keyframes.rod1stopsMoving : 0,
+        keyframes.chargeStartsMoving - keyframes.rod1stopsMoving
+    );
+    const rod2electronOffset = rod1electronOffset;
+    const rod2positiveOffset = -rod1electronOffset;
+
+    return (
+        <>
+            <Mafs
+                viewBox={{
+                    y: [0, 5],
+                    x: [0, 5],
+                }}
+            >
+                {/* Temporary coordinates for debuggin */}
+                {/* <Coordinates.Cartesian /> */}
+                {/* First rod */}
+                <Polygon
+                    points={[
+                        [rod1base, 0.5],
+                        [rod1base, 4.5],
+                        [rod1base + 1, 4.5],
+                        [rod1base + 1, 0.5]
+                    ]}
+                    color={Theme.red}
+                />
+                {/* Rod A Label */}
+                <Text x={rod1base + 0.5} y={4.8}>Rod A</Text>
+                {/* Neg charge in first rod */}
+                {Array.from({ length: 8 }, (_, i) => (
+                    <Circle
+                        center={[0.5 + rod1base + rod1electronOffset, 4.5 - 0.25 - i / 2]}
+                        radius={0.1}
+                        color={Theme.red}
+                        fillOpacity={1}
+                    />
+                ))}
+
+                {/* Second rod */}
+                <Polygon
+                    points={[
+                        [4, 0.5],
+                        [4, 4.5],
+                        [5, 4.5],
+                        [5, 0.5]
+                    ]}
+                    color={(time > keyframes.electronsEscapeToGround) ? Theme.green : Theme.white}
+                />
+                {/* Rod B Label */}
+                <Text x={4.5} y={4.8}>Rod B</Text>
+
+                {/* Charge in second rod */}
+                {Array.from({ length: 8 }, (_, i) => {
+                    const isPositive = i % 2 === 0;
+                    let xOffset = isPositive ? rod2positiveOffset : rod2electronOffset;
+                    let yOffset = 4.5 - 0.25 - i / 2;
+                    if (time > keyframes.electronsEscapeToGround && !isPositive) {
+                        yOffset -= (time - keyframes.electronsEscapeToGround) * 2;
+                        if (yOffset < 0.5) {
+                            // move it along the diagonal
+                            xOffset += (0.5 - yOffset);
+                        }
+                    }
+                    return <Circle
+                        center={[4.5 + xOffset, yOffset]}
+                        radius={0.1}
+                        color={isPositive ? Theme.green : Theme.red}
+                        fillOpacity={1}
+                    />;
+                })}
+
+                {/* Line for ground */}
+                <Plot.OfX
+                    y={() => 0}
+                />
+
+                {/* Connect rod2 to ground */}
+                <Line.Segment
+                    point1={[5, 0.5]}
+                    point2={[5.5, 0]}
+                />
+            </Mafs>
+            {/* <button className="button button--primary" onClick={start}>Start</button> */}
+            {/* <button className="button button--primary" onClick={stop}>Stop</button> */}
+            <input type="range" min="0" max="10" step="0.05" value={time} onChange={(e) => setTime(parseFloat(e.target.value))} />
+        </>
+    )
+
+}
+
+<Induction />
+
+Here we have two rods. The red rod (Rod A) is negatively charged, and the white rod (Rod B) is neutral. This white rod is connected to the ground.
+
+When we bring Rod A closer to Rod B:
+
+1. The negative charges in Rod A repel the negative charges in Rod B, causing them to move to the right.
+2. The positive charges in Rod B are attracted to the negative charges in the red rod, causing them to move to the left.
+3. The negative charges in Rod B escape to the ground.
+
+This leaves Rod B with a net positive charge, even though we didn't ever touch it.
+
+## Conservation of Charge
+
+Like energy and momentum, charge is conserved. Mathematically,
+
+$$
+\frac{dQ}{dt} = \dot{Q}_{\text{in}} - \dot{Q}_{\text{out}}
+$$
+
+Looks complicated, but these are what the symbols mean:
+
+-   $\frac{dQ}{dt}$ is the rate of change of charge.
+-   $\dot{Q}_{\text{in}}$ is the rate of charge entering a system.
+-   $\dot{Q}_{\text{out}}$ is the rate of charge leaving a system.
+
+In a system where no charge is entering or leaving, the total charge is therefore constant:
+
+$$
+\frac{dQ}{dt} = 0
+$$
+
+In other words,
+
+$$
+\Sigma Q = \text{constant}
+$$
+
+This is true even at the quantum level. For instance, when a photon emits an electron, it also emits a positron to conserve charge.
+
+## Electric Field
+
+People have asked the question of: "How does charge apply a force over a distance?"
+
+Michael Faraday, a British scientist, came up with the concept of the electric field to answer this question.
+
+The electric field is a vector field that describes the force that a charge would experience at any point in space.
+This field exists everywhere in space just like the gravitational field.
+
+export function ElectricField() {
+    const point = useMovablePoint([-1, 0], { color: Theme.green });
+    const charge = 3;
+    const vector = ([x, y]) => {
+        const dy = y - point.y;
+        const dx = x - point.x;
+        const r = Math.sqrt(dy ** 2 + dx ** 2);
+        const force = charge / r ** 2;
+        return [force * dx, force * dy];
+    }
+
+    const testPoint = useMovablePoint([1, 0], { color: Theme.blue });
+    const testCharge = 1;
+    const distance = Math.sqrt((testPoint.x - point.x) ** 2 + (testPoint.y - point.y) ** 2);
+    const force = vec.scale(vec.normalize([testPoint.x - point.x, testPoint.y - point.y]), charge * 5 / distance ** 2);
+
+    return (
+        <Mafs
+            viewBox={{
+                y: [-5, 5],
+            }}
+        >
+            <Coordinates.Cartesian />
+            <Plot.VectorField xy={vector} step={1} xyOpacity={() => 0.5} color={Theme.green} />
+            {point.element}
+
+            <Vector
+                tail={testPoint.point}
+                tip={vec.add(testPoint.point, force)}
+                color={Theme.blue}
+            />
+            {testPoint.element}
+        </Mafs>
+    );
+
+}
+
+<ElectricField />
+
+In the diagram above, the green arrows represent the electric field. The blue arrow represents a test charge. (You need to move the green point a bit for the field to render properly due to a bug.)
+
+A **test charge** is a charge that is so small that it does not affect the electric field. It is used to measure the electric field at a point.
+
+Technically, test charges don't exist. However, they are a useful concept for understanding the electric field.
+
+Move the blue point around. You would notice that the force on the test charge changes as it moves around.
+
+Mathematically, the electric field at a point is given by:
+
+$$
+\vec{E} = \frac{\vec{F}}{q}
+$$
+
+Where:
+
+-   $\vec{E}$ is the electric field.
+-   $\vec{F}$ is the force on a test charge.
+-   $q$ is the magnitude of the test charge.
+
+$\vec{E}$ hence has units of force per charge, or $\text{N} \text{C}^{-1}$.
+
+As a vector field, the electric field has both magnitude and direction.
+If the charge is positive, the field points away from the charge. If the charge is negative, the field points towards the charge.
+
+### Combining Fields
+
+The electric field is a vector field, so it can be added together.
+
+For instance, if we have two charges, the electric field at a point is the sum of the electric fields due to each charge.
+
+export function CombinedElectricFields({ added = false, smooth = false }) {
+    // only used for smooth = true
+    const { time, start, stop } = useStopwatch();
+    let parametricTotalAccelerationCache = {};
+
+    const point1 = useMovablePoint([-1, 0], { color: Theme.red });
+    const charge1 = 3;
+    const vector1 = ([x, y]) => {
+        const dy = y - point1.y;
+        const dx = x - point1.x;
+        const r = Math.sqrt(dy ** 2 + dx ** 2);
+        const force = charge1 / r ** 2;
+        return [force * dx, force * dy];
+    }
+
+    const point2 = useMovablePoint([1, 0], { color: Theme.green });
+    const charge2 = -3;
+    const vector2 = ([x, y]) => {
+        const dy = y - point2.y;
+        const dx = x - point2.x;
+        const r = Math.sqrt(dy ** 2 + dx ** 2);
+        const force = charge2 / r ** 2;
+        return [force * dx, force * dy];
+    }
+
+    const totalAcceleration = ([x, y]) => vec.add(vector1([x, y]), vector2([x, y]));
+
+    const parametricTotalAcceleration = (t, x, y) => {
+        const interval = 0.05;
+        const roundedT = Math.round(t / interval) * interval;
+        const key = `${roundedT}-${x}-${y}`;
+        console.log({ key, parametricTotalAccelerationCache })
+        if (parametricTotalAccelerationCache[key] !== undefined) {
+            console.log("Cache hit");
+            return parametricTotalAccelerationCache[key];
+        }
+        console.log("Cache miss");
+        if (roundedT <= interval) {
+            const newPoint = vec.add([x, y], vec.scale(totalAcceleration([x, y]), t / interval * 5));
+            parametricTotalAccelerationCache[key] = newPoint;
+            return newPoint;
+        }
+        const prevPoint = parametricTotalAcceleration(roundedT - interval, x, y);
+        const newPoint = vec.add(prevPoint, vec.scale(totalAcceleration(prevPoint), interval * 5));
+        parametricTotalAccelerationCache[key] = newPoint;
+        return newPoint;
+    }
+
+    const testPoint = useMovablePoint([3, 1], { color: Theme.blue });
+    const testCharge = 1;
+    const distance1 = Math.sqrt((testPoint.x - point1.x) ** 2 + (testPoint.y - point1.y) ** 2);
+    const force1 = vec.scale(vec.normalize([testPoint.x - point1.x, testPoint.y - point1.y]), charge1 * 5 / distance1 ** 2);
+    const distance2 = Math.sqrt((testPoint.x - point2.x) ** 2 + (testPoint.y - point2.y) ** 2);
+    const force2 = vec.scale(vec.normalize([testPoint.x - point2.x, testPoint.y - point2.y]), charge2 * 5 / distance2 ** 2);
+
+    return (
+        <>
+            <Mafs
+                viewBox={{
+                    y: [-5, 5],
+                }}
+            >
+                <Coordinates.Cartesian />
+                {!added && <Plot.VectorField xy={vector1} step={1} xyOpacity={() => 0.5} color={Theme.red} />}
+                {point1.element}
+                {!added && <Plot.VectorField xy={vector2} step={1} xyOpacity={() => 0.5} color={Theme.green} />}
+                {point2.element}
+
+                {added && (() => {
+                    const vectorField = <Plot.VectorField xy={totalAcceleration} step={1} xyOpacity={() => smooth ? 0.5 : 1} color={Theme.blue} />;
+                    if (!smooth) {
+                        return vectorField;
+                    }
+                    // every point in the grid from [-10, -5] to [10, 5], interval of 0.5
+                    const points = [];
+                    for (let x = -10; x <= 10; x += 1) {
+                        for (let y = -5; y <= 5; y += 1) {
+                            points.push([x, y]);
+                        }
+                    }
+
+                    return points.map((point) => {
+                        const [x, y] = point;
+                        const newPoint = parametricTotalAcceleration(time, x, y);
+                        return <Circle center={newPoint} radius={0.05} fillOpacity={0.5} color={Theme.blue} />;
+                    }).concat(vectorField);
+                })()}
+
+                {!added && <Vector
+                    tail={testPoint.point}
+                    tip={vec.add(testPoint.point, force1)}
+                    color={Theme.red}
+                />}
+
+                {!added && <Vector
+                    tail={testPoint.point}
+                    tip={vec.add(testPoint.point, force2)}
+                    color={Theme.green}
+                />}
+
+                {added && <Vector
+                    tail={testPoint.point}
+                    tip={vec.add(testPoint.point, vec.add(force1, force2))}
+                    color={Theme.blue}
+                />}
+
+                {testPoint.element}
+            </Mafs>
+            {smooth && (time > 0
+                ? <button className="button button--primary" onClick={() => {
+                    stop();
+                    parametricTotalAccelerationCache = {};
+                }}>Reset</button>
+                : <button className="button button--primary" onClick={start}>Run</button>)
+            }
+        </>
+    );
+
+}
+
+<CombinedElectricFields />
+
+In the diagram above, the red and green arrows represent the electric fields due to the red and green charges respectively. The blue arrow represents a test charge.
+
+Now, if we combine these fields into a new field, it looks like this:
+
+<CombinedElectricFields added />
+
+The blue arrow represents the electric field at the test charge due to both charges. To visualize this, if you start at each individual point in this grid, here's what it looks like:
+
+<CombinedElectricFields smooth added />
+
+> This was made by simulating the path of a test charge in the combined field. The path is calculated by taking small steps in the direction of the field at each point. As far as I know, there is no known closed-form solution for this two-charge problem.
