@@ -416,12 +416,9 @@ export function CombinedElectricFields({ added = false, smooth = false }) {
         const interval = 0.05;
         const roundedT = Math.round(t / interval) * interval;
         const key = `${roundedT}-${x}-${y}`;
-        console.log({ key, parametricTotalAccelerationCache })
         if (parametricTotalAccelerationCache[key] !== undefined) {
-            console.log("Cache hit");
             return parametricTotalAccelerationCache[key];
         }
-        console.log("Cache miss");
         if (roundedT <= interval) {
             const newPoint = vec.add([x, y], vec.scale(totalAcceleration([x, y]), t / interval * 5));
             parametricTotalAccelerationCache[key] = newPoint;
