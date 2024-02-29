@@ -632,8 +632,15 @@ What it means in terms of the limit is that you will always be able to find a ra
 
 And this is true for any $\varepsilon$ you choose, no matter how small.
 
-Here's a formal way to write this to impress your friends:
+The formal way to write this is:
 
 $$
 (\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in \mathbb{R})(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)
 $$
+
+Meaning:
+
+- $(\forall \varepsilon > 0)$: For any $\varepsilon$ greater than 0,
+- $(\exists \delta > 0)$: there exists a $\delta$ greater than 0,
+- $(\forall x \in \mathbb{R})$: such that for any $x$ in the real numbers,
+- $(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)$: if $x$ is within $\delta$ of $a$, then $f(x)$ is within $\varepsilon$ of $L$.
