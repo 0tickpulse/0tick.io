@@ -1,8 +1,8 @@
-import { MathEquation } from "@site/src/components/Math";
-import React, { useState, useRef, useEffect, memo, useCallback } from "react";
-import numeric from "numeric";
+import MathEquation from "@site/src/components/Math";
 import { findIntersectionPoint } from "@site/src/utilities/intersection";
 import { toLatex } from "@site/src/utilities/latex";
+import numeric from "numeric";
+import React, { useEffect, useState } from "react";
 
 type Point = number[];
 
