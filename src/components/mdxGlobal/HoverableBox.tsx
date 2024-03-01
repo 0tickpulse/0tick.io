@@ -1,46 +1,29 @@
-import React, { ReactNode, useState } from "react";
-import './HoverableBox.module.scss'; // Import the SCSS file for styles
+import React, { CSSProperties, ReactNode, useState } from "react";
+import styles from "./HoverableBox.module.scss"; // Import the SCSS file for styles
 
 type HoverableBoxProps = {
     children?: ReactNode;
     triggerText: ReactNode;
-    bgColor?: string;
-    textColor?: string;
-    darkBgColor?: string;
-    darkTextColor?: string;
+    color?: string;
     href?: string;
 };
 
-export default function HoverableBox({ children, triggerText, bgColor = '#D1D5DB', textColor = '#000000', darkBgColor = '#4B5563', darkTextColor = '#FFFFFF', href }: HoverableBoxProps) {
+export default function HoverableBox({ children, triggerText, color = "var(--ifm-color-primary)", href }: HoverableBoxProps) {
     const [hovered, setHovered] = useState(false);
 
-    const triggerStyle = {
-        backgroundColor: hovered ? darkBgColor : bgColor,
-        color: hovered ? darkTextColor : textColor,
-    };
-
     return (
-        <span className="hoverable-box">
-            <div
-                className="trigger"
-                style={triggerStyle}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => setHovered(false)}
-            >
+        <span className={`${styles["hoverable-box"]}`}>
+            <div className={`${styles["trigger"]}`} style={{ color, borderColor: color }} onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}>
                 {href ? (
-                    <a href={href} className="trigger-link" style={{ color: triggerStyle.color }}>
+                    <a href={href} className={`${styles["trigger-link"]}`} style={{ color }}>
                         <span>{triggerText}</span>
-                        <span className="link-icon">🔗</span>
+                        <span className={`${styles["link-icon"]}`}>🔗</span>
                     </a>
                 ) : (
-                    <span className="trigger-text">{triggerText}</span>
+                    <span className={`${styles["trigger-text"]}`}>{triggerText}</span>
                 )}
             </div>
-            {children && hovered && (
-                <div className="content">
-                    {children}
-                </div>
-            )}
+            {children && hovered && <div className={`${styles["content"]}`}>{children}</div>}
         </span>
     );
 }

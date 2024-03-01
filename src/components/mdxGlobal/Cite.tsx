@@ -26,11 +26,6 @@ export default function Cite(props: CiteProps) {
         <HoverableBox
             triggerText={text}
             href={link}
-            // green color
-            bgColor="bg-emerald-500 bg-opacity-50"
-            textColor="text-black"
-            darkBgColor="dark:bg-emerald-500"
-            darkTextColor="dark:text-white"
         />
     );
 }
