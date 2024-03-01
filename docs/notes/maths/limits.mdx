@@ -188,7 +188,7 @@ This is not exactly why, but it's good enough for now. A better explanation like
 
 Another way to estimate a limit is by creating a table of values. This is especially useful when the function is not graphable, or you don't have access to a graphing calculator.
 
-#### Example 2
+#### Basic Example
 
 Let's say this table is given:
 
@@ -205,7 +205,7 @@ Generally, look for these things when constructing or analyzing a table like thi
 -   If the values of $f(x)$ are getting closer and closer to a single value, then that value is our estimate for the limit.
 -   The limit can be two-sided, and that's shown by the values of $f(x)$ getting closer and closer to a single value from both sides.
 
-#### Example 3
+#### Double-Sided Tables
 
 | $x$    | $0.9$  | $0.99$ | $0.999$ | $1.001$ | $1.01$ | $1.1$  |
 | ------ | ------ | ------ | ------- | ------- | ------ | ------ |
@@ -240,7 +240,7 @@ You can apply this general procedure:
 4. If it's indeterminate, try to rewrite the limit by factoring, rationalizing, or using trigonometric identities.
 5. If all else fails, try to estimate the limit using a graph or a table.
 
-### Example 4
+### Trig Identity Example
 
 > The function $f(x)$ is defined as follows:
 >
@@ -277,6 +277,87 @@ $$
 &= \cos\left(-\frac{\pi}{4}\right) - \sin\left(-\frac{\pi}{4}\right) \\
 &= \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} \\
 &= \sqrt{2}
+\end{align*}
+$$
+
+### Factoring Example
+
+> The function $g(x)$ is defined as follows:
+>
+> $$
+> g(x) = \frac{x^2 + x - 6}{x - 2}
+> $$
+>
+> Find the limit of $g(x)$ as $x$ approaches 2.
+
+As always, let's first try to substitute in $x = 2$:
+
+$$
+\begin{align*}
+g(2) &= \frac{2^2 + 2 - 6}{2 - 2} \\
+&= \frac{0}{0}
+\end{align*}
+$$
+
+Once again, we got an indeterminate form. This means we should rewrite the limit.
+In this case, the numerator, $x^2 + x - 6$, can be factored:
+
+$$
+x^2 + x - 6 = (x - 2)(x + 3)
+$$
+
+So the limit becomes:
+
+$$
+\begin{align*}
+g(x) &= \frac{(x - 2)(x + 3)}{x - 2} \\
+&= (x + 3) && \text{if } x \neq 2 \\
+\end{align*}
+$$
+
+Note that **this new function works for $x \neq 2$** because if $x = 2$, then we are dividing by $0$.
+
+However, it allows us to understand what happens for values close to $2$, and as such, we can calculate the limit.
+
+$$
+\begin{align*}
+\lim_{x \to 2} g(x) &= \lim_{x \to 2} (x + 3) \\
+&= 2 + 3 \\
+&= 5
+\end{align*}
+$$
+
+### Rationalizing Example
+
+> The function $h(x)$ is defined as follows:
+>
+> $$
+> h(x) = \frac{\sqrt{x+2} - 2}{x-2}
+> $$
+>
+> Find the limit of $h(x)$ as $x$ approaches 2.
+
+This also gives us an indeterminate form when we try to substitute in $x = 2$.
+We can rewrite the limit by rationalizing the numerator through multiplying by the conjugate:
+
+$$
+\begin{align*}
+h(x) &= \frac{\sqrt{x+2} - 2}{x-2} \\
+&= \frac{\sqrt{x+2} - 2}{x-2} \cdot \frac{\sqrt{x+2} + 2}{\sqrt{x+2} + 2} \\
+&= \frac{(x+2) - 4}{(x-2)(\sqrt{x+2} + 2)} \\
+&= \frac{x-2}{(x-2)(\sqrt{x+2} + 2)} \\
+&= \frac{1}{\sqrt{x+2} + 2} && \text{if } x \neq 2 \\
+\end{align*}
+$$
+
+While this new function works for $x \neq 2$, it allows us to understand what happens for values close to $2$, and as such, we can calculate the limit.
+
+$$
+\begin{align*}
+\lim_{x \to 2} h(x) &= \lim_{x \to 2} \frac{1}{\sqrt{x+2} + 2} \\
+&= \frac{1}{\sqrt{2+2} + 2} \\
+&= \frac{1}{2 + 2} \\
+&= \frac{1}{4}
 \end{align*}
 $$
 
@@ -327,7 +408,7 @@ Let's say we know Alice's height to be $160\text{cm}$ and Charlie's height to al
 
 This is the essence of the squeeze theorem. If you have a function $f(x)$ that's always between two other functions $g(x)$ and $h(x)$, and the limits of $g(x)$ and $h(x)$ as $x$ approaches $a$ are the same, then the limit of $f(x)$ as $x$ approaches $a$ is also the same.
 
-### Example 5
+### Squeeze Theorem Example 1
 
 Remember our function $\frac{\sin(x)}{x}$? We estimated the limit to be 1 by graphing the function. However, we can also use the squeeze theorem to rigorously prove that the limit is 1.
 
@@ -536,7 +617,7 @@ $$
 
 That's it. We've proven that the limit of $\frac{\sin(x)}{x}$ as $x$ approaches 0 is 1.
 
-## Formal things
+## $(\varepsilon$-$\delta)$ Definition of Limits
 
 Our definition of limits is simple and intuitive, but it's not rigorous. We can't just say "the function gets closer and closer to a value" - everything in Mathematics needs to be defined precisely.
 
@@ -644,3 +725,31 @@ Meaning:
 - $(\exists \delta > 0)$: there exists a $\delta$ greater than 0,
 - $(\forall x \in \mathbb{R})$: such that for any $x$ in the real numbers,
 - $(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)$: if $x$ is within $\delta$ of $a$, then $f(x)$ is within $\varepsilon$ of $L$.
+
+## Continuity
+
+Conceptually, a function is continuous if you can draw it without lifting your pen.
+This means that the function doesn't have any jumps or holes.
+
+Formally, a function $f(x)$ is continuous at $x = a$ if:
+
+1. $f(a)$ is defined.
+2. $\lim_{x \to a} f(x)$ exists.
+3. $\lim_{x \to a} f(x) = f(a)$.
+
+For example:
+
+$$
+f(x) = \frac{10x}{x^2 + 5x}
+$$
+
+This function is continuous for all $x \in \mathbb{R}$. Therefore:
+
+$$
+\begin{align*}
+f(0) &= \lim_{x \to 0} \left(\frac{10x}{x^2 + 5x}\right) \\
+&= \lim_{x \to 0} \left(\frac{10}{x + 5}\right) \\
+&= \frac{10}{5} \\
+&= 2
+\end{align*}
+$$
