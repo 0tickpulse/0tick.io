@@ -1,3 +1,7 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Text } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useMemo, useRef } from "react";
+
 # Big-O Notation
 
 Categorizes algorithms on time/memory based on input.
@@ -92,6 +96,23 @@ In interviews, almost always assume the worst-case scenario.
 | $O(n!)$               | Factorial   | Traveling salesperson | Very slow |
 
 ![Time Complexities](bigo-time-complexities.png)
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => Math.log2(x)} />
+    <Plot.OfX y={(x) => x} />
+    <Plot.OfX y={(x) => x * Math.log2(x)} />
+    <Plot.OfX y={(x) => x ** 2} />
+    <Plot.OfX y={(x) => x ** 3} />
+    <Plot.OfX y={(x) => 2 ** x} />
+    <Plot.OfX y={(x) => {
+        let i = 1;
+        for (let j = 1; j <= x; j++) {
+            i *= j;
+        }
+        return i;
+    }} />
+</Mafs>
 
 ### Simple examples
 
