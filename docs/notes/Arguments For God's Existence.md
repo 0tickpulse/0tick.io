@@ -95,6 +95,33 @@ The argument is often used to support the idea of a moral lawgiver, and it is of
 4. The Argument from Scale - The argument from scale suggests that if God is the source of morality, then what is the source of God's morality? If God is the source of morality, then what is the source of God's goodness?
 5. Evolution - The theory of evolution provides a naturalistic explanation for the apparent existence of objective moral values and duties. The theory of evolution suggests that the apparent existence of objective moral values and duties is the result of natural selection and that there is no need to posit a God.
 
+## Argument from Change
+
+Advanced by Aristotle and Aquinas, and later shown in Five Proofs of the Existence of God by Edward Feser, the First Cause Argument is based on the idea that everything in the universe has a cause, and that there must be a first cause that caused everything to exist. This first cause is God. It goes like this:
+
+1. Change occurs in the world.
+2. Change is the actualization of a potential.
+3. Potential cannot be actualized unless something actual causes it to be actual.
+4. Therefore, all change is caused by something actual.
+5. The chain of causes cannot be infinite.
+6. Therefore, there must be a first, unchanging cause. This cause cannot have any potential, as it would need to be actualized by something else, and it cannot be caused by anything else, as it is the first cause.
+7. This first cause is what we call God.
+
+### What is Change?
+
+Before we can understand the argument, we need to define the various terms used. Firstly, change.
+
+Parmenides, a pre-Socratic philosopher, argued that change is an illusion. He argued that change is impossible because it would require something that at one point doesn't exist to exist (come into existence) at another point. For example, a seed becoming a tree. This tree does not exist at one point, and if it doesn't exist, it is nothing. Therefore, something is coming from nothing. According to ex nihilo nihil fit, "nothing from nothing," you cannot get something from nothing. Therefore, if change involves something coming from nothing, change is impossible.
+
+Aristotle, however, argued that change is real. Change doesn't involve something coming from nothing, instead something coming from a *potential*. The tree doesn't just come from nothing, it comes from the potential of the seed. The seed has the potential to become a tree, and this potential is actualized when the seed becomes a tree.
+
+### Objections to the Argument from Change
+
+1. The Nature of God - The argument from change does not provide any details about the nature of the first cause. It does not establish that the first cause has the attributes of a personal God, such as omnipotence, omniscience, and omnibenevolence.
+2. A-theory of Time - The argument can only function on the A-theory of time, which posits that the present is the only real time, and that the past and future are not real. The B-theory of time instead argues that the past, present, and future are all equally real. The seed has its three dimensions, and an additional temporal dimension. The future tree and the seed are equally real, and the only reason its called a seed is because its observer occupies the same temporal dimension as the seed. The "actual" seed and the "potential" tree both exist, and if an observer "steps out" of the temporal dimension, it would see all of them at once. Therefore, calling something "potential" and "actual" based solely on the position of the observer is not a valid argument because its no longer a property of the seed, but a property of the observer. If the B-theory of time is true, if we were to look from outside of time, the concept of "change" would not exist because the past, present, and future all exist. Einstein's theory of relativity also supports the B-theory of time, as it suggests that time is relative to the observer.
+3. Treating "potential" as something real - The argument treats potential as something real, but potential is not something that exists in the world. It is a concept that we use to describe the world. Therefore, the argument is based on a misunderstanding of the nature of potential. Furthermore, things can have many potentials. The seed can become a tall tree, a short tree, a dead tree, etc. In fact, the seed has an *infinite* number of potentials. In order to prevent Parmenides' argument, the argument from change would have to argue that all of these potentials already exist in the seed. It would have an infinite number of properties, which for many reasons is not possible.
+4. Change is the actualization of potential, but not all actualization is change. The seed has the potential to become a tree, but it also has the potential of remaining a seed. Therefore, things have the potential to remain the same, and if not, they are not able to remain the same and will stop existing. Hence, actual things will always have at least one potential. However, the argument establishes that the first cause cannot have any potential, as it would need to be actualized by something else, but as we have demonstrated, God will need to have the potential to remain the same, and if not, it will stop existing.
+
 ## Arguments from Religious Experience
 
 Many people claim to have had religious experiences, such as miracles, visions, and encounters with God. These experiences are often used as evidence for the existence of God.
