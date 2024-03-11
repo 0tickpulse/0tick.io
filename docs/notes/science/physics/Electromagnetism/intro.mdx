@@ -527,3 +527,86 @@ The blue arrow represents the electric field at the test charge due to both char
 <CombinedElectricFields smooth added />
 
 > This was made by simulating the path of a test charge in the combined field. The path is calculated by taking small steps in the direction of the field at each point. As far as I know, there is no known closed-form solution for this two-charge problem.
+
+## Field from Infinite Plate
+
+Imagine a plate that extends infinitely in all directions. This plate has a uniform charge density $\sigma$.
+
+To simplify the problem first, we think of a 1D version.
+We can find the electric field at a point above the plate.
+Imagine a test charge $q$ that is a distance $h$ above the plate.
+Then, imagine two points on the plate $r$ away from the point above the plate.
+The $y$-component of the field would be $E\cos(\theta)$, and the $x$-components cancel out.
+Since cosine is adjacent over hypotenuse, we can use trigonometry to find the field at the point above the plate.
+
+$$
+\begin{align*}
+\text{$y$-component} &= E\cos(\theta) \\
+&= \frac{h}{\sqrt{h^2 + r^2}} \\
+\end{align*}
+$$
+
+Now we do this in 2D: instead of two points, we imagine a ring of radius $r$ and thickness $\text{d}r$ on the plate.
+The charge can be written as area times charge density, which is:
+
+$$
+Q_r = 2\pi r \cdot \text{d}r \cdot \sigma
+$$
+
+The force experienced by $q$ is:
+
+$$
+\begin{align*}
+F &= k\frac{Q_r q}{\sqrt{h^2 + r^2}^2} \\
+&= k\frac{Q_r q}{h^2 + r^2}
+\end{align*}
+$$
+
+And the electric field is hence:
+
+$$
+E_F = k\frac{Q_r}{h^2 + r^2}
+$$
+
+Like the 2D version, we take the $y$-component because the horizontal components cancel out.
+
+$$
+\begin{align*}
+E_Fy &= k\frac{Q_r}{h^2 + r^2}\cdot\frac{h}{\sqrt{h^2 + r^2}} \\
+&= k\frac{h2\pi r\text{d}r}{(h^2 + r^2)^{3/2}} \\
+\end{align*}
+$$
+
+This is just for a ring. To get the field at the point above the plate, we integrate over all rings.
+
+$$
+\begin{align*}
+E &= \int_0^\infty k\frac{h2\pi r}{(h^2 + r^2)^{3/2}}\text{d}r \\
+&= kh\pi\sigma \int_0^\infty \frac{2r}{(h^2 + r^2)^{3/2}}\text{d}r \\
+\end{align*}
+$$
+
+We can use a substitution to solve this integral.
+
+$$
+\begin{align*}
+u &= h^2 + r^2 \\
+\text{d}u &= 2r\text{d}r \\
+\int \frac{2r}{(h^2 + r^2)^{3/2}}\text{d}r &= \int \frac{1}{u^{3/2}}\text{d}u \\
+&= -\frac{2}{\sqrt{u}} \tag{ignore constant} \\
+&= -\frac{2}{\sqrt{h^2 + r^2}} \\
+\end{align*}
+$$
+
+So the integral becomes:
+
+$$
+\begin{align*}
+E &= kh\pi\sigma \left[ -\frac{2}{\sqrt{h^2 + r^2}} \right]_0^\infty \\
+&= 2k\pi\sigma
+\end{align*}
+$$
+
+This is the electric field at a point above an infinite plate.
+The interesting thing is that this doesn't depend on $h$ at all.
+Hence, this field is **uniform** - it is the same at all points above the plate.
