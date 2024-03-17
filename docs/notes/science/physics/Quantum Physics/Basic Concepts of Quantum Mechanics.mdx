@@ -1,0 +1,642 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Text } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useMemo, useRef } from "react";
+
+# Basic Concepts of Quantum Mechanics
+
+> "The most incomprehensible thing about the world is that it is comprehensible." - Albert Einstein
+
+> "Give for one instant an intelligence which could comprehend all the forces by which nature is animated and the respective positions of the beings which compose it - an intelligence sufficiently vast to submit these data to analysis - it would embrace in the same formula the movements of the greatest bodies of the universe and those of the lightest atom; nothing would be uncertain for it, and the future, as the past, would be present to its eyes." - Pierre-Simon Laplace (c. 1820)
+
+> "The most important fundamental laws and facts of physical science have all been discovered... Our future discoveries must be looked for in the sixth place of decimals." - Albert Michelson (c. 1903)
+
+Quantum mechanics is a fundamental theory in physics that provides a description of the physical properties of nature at the smallest scales.
+
+## The Dark Cloud of Classical Physics
+
+In the early 20<sup>th</sup> century, there were three phenomena that could not be explained by classical physics, which was the dominant theory at the time.
+
+### Blackbody Spectrum
+
+To recap, a blackbody is an idealized physical body that absorbs all incident electromagnetic radiation, regardless of frequency or angle of incidence. A blackbody in thermal equilibrium emits electromagnetic radiation called blackbody radiation. The radiation has a specific spectrum and intensity that depends only on the body's temperature.
+
+Let's say we have some hot blackbody with temperature $T$. The intensity of the radiation emitted by the blackbody at a given wavelength $\lambda$ is shown in this graph:
+
+export function BlackbodySpectrum() {
+    const scaleFactor = [1 / 100, 1];
+    // Returns another function that takes a wavelength and returns the intensity of the radiation
+    function generateData(T) {
+        // Planck's constant
+        const h = 6.62607015e-34;
+        // Speed of light
+        const c = 299792458;
+        // Boltzmann constant
+        const k = 1.380649e-23;
+        return (lambda) => {
+            // Frequency
+            const f = c / lambda;
+            console.log({ lambda, f });
+            // Intensity
+            return (((2 * h * f ** 3) / c ** 2) * 1) / (Math.exp((h * f) / (k * T)) - 1);
+        };
+    }
+    function maxPoint(T) {
+        const data = generateData(T);
+        let max = 0;
+        let maxLambda = 0;
+        for (let lambda = 0; lambda < 1500; lambda += 1) {
+            const y = data(lambda * 10e-9);
+            // console.log({ T, lambda, y })
+            if (y > max) {
+                max = y;
+                maxLambda = lambda;
+            }
+        }
+        console.log({ T, maxLambda, max });
+        return [maxLambda, max];
+    }
+    function generatePlot(T) {
+        const [maxLambda, max] = maxPoint(T);
+        return (
+            <>
+                <Plot.OfX y={(x) => generateData(T)((x * 10e-9) / scaleFactor[0]) * scaleFactor[1]} />
+                <Text x={maxLambda * scaleFactor[0]} y={max * scaleFactor[1]} attach="n">
+                    T = {T} k
+                </Text>
+            </>
+        );
+    }
+    return (
+        <Mafs
+            viewBox={{
+                x: [0, 20],
+                y: [0, 10],
+            }}
+        >
+            <Coordinates.Cartesian />
+            {generatePlot(3500)}
+            {generatePlot(4000)}
+            {generatePlot(5000)}
+            {generatePlot(5500)}
+        </Mafs>
+    );
+}
+
+<BlackbodySpectrum />
+
+Classical physics had mainly two ways to explain it:
+
+1. The Rayleigh-Jeans law, which was derived from classical electromagnetism, predicted that the intensity of the radiation would increase without bound as the wavelength decreased:
+
+    $$
+    B_{\lambda}(\lambda, T) = \frac{2 c k T}{\lambda^4}
+    $$
+
+2. Wien's law, which was derived from thermodynamics, predicted that the intensity of the radiation would decrease exponentially as the wavelength increased:
+
+    $$
+    \lambda_{\text{max}} = \frac{b}{T}
+    $$
+
+However, neither of these laws matched the experimental data. The Rayleigh-Jeans law predicted that the intensity of the radiation would increase without bound as the wavelength decreased, which is known as the ultraviolet catastrophe. On the other hand, Wien's law predicted that the intensity of the radiation would decrease exponentially as the wavelength increased, which is also not true.
+
+### Photoelectric Effect
+
+When light shines on a metal surface, electrons are emitted from the surface. This is known as the photoelectric effect. The photoelectric effect is a phenomenon in which electrons are emitted from a material when it is exposed to light. The emitted electrons are called photoelectrons.
+
+The general setup is to have another material above the metal surface. A battery is connected to the two materials, and the voltage is adjusted so that the photoelectrons never makes it to the other material. This voltage, $V_\text{stop}$, is called the stopping voltage.
+
+Classical electromagnetism predicted:
+
+1. As EM radiation's intensity increases, the photoelectrons' kinetic energy should increase. Hence, the stopping voltage should increase.
+2. As EM radiation's frequency increases, the electric field's magnitude stays the same. Hence, the stopping voltage should not change.
+
+However, the experimental data showed that the stopping voltage was independent of the intensity of the radiation and depended only on the frequency of the radiation.
+
+### Atomic Spectra
+
+When atoms are excited, they emit light at specific wavelengths. This is known as atomic spectra. The wavelengths of the emitted light are characteristic of the element and are known as the atomic spectra.
+
+This really kicked off the quantum revolution. Classical physics predicted that the emitted light would be continuous, but the experimental data showed that the emitted light was discrete.
+
+## The Birth of Quantum Mechanics
+
+In 1900, Max Planck proposed that the energy of light was quantized. This was the first time that the concept of quantization was introduced in physics. Planck's law of blackbody radiation was the first example of a quantum theory and the first example of a theory that was fundamentally different from classical physics.
+
+## Domain of Quantum Mechanics
+
+| Classical Physics | Quantum Mechanics |
+| ----------------- | ----------------- |
+| Certain           | Uncertain         |
+| Deterministic     | Probabilistic     |
+| Large             | Small             |
+| Continuous        | Discrete          |
+
+### Situations where QM apply
+
+1. When angular momentum $L \sim \hbar$.
+2. When uncertainties $\Delta p \Delta x \sim \hbar$.
+3. When uncertainties $\Delta E \Delta t \sim \hbar$.
+4. When the action $S = \int L dt \sim n \hbar$.
+
+The $~$ symbol means "is of the order of".
+
+Generally the second and third conditions are the most useful and the last condition is the most fundamental.
+
+#### Example: Electron in a Hydrogen Atom
+
+Let's just say that its energy is $10\text{ eV}$.\_createMdxContent
+
+Classical approximation of momentum-energy relation:
+
+$$
+\begin{align*}
+E &\sim \frac{p^2}{2m} \\
+p &\sim 1.7 \times 10^{-24} \text{ kg ms}^{-1}
+\end{align*}
+$$
+
+Since the atom is not moving, the average momentum is zero. Hence, what the above equation means is the uncertainty in momentum is $1.7 \times 10^{-24} \text{ kg ms}^{-1}$.
+
+Let's also assume that the size of the H atom is $10^{-10} \text{ m}$.
+Its uncertainty in position is $10^{-10} \text{ m}$.
+
+$$
+\begin{align*}
+\Delta p \Delta x & \sim 1.7 \times 10^{-34} \text{ kg ms}^{-1} \times 10^{-10} \text{ m} \\
+& \sim 1.7 \times 10^{-24} \text{ kg m s}^{-1} \\
+& \sim \hbar
+\end{align*}
+$$
+
+Therefore quantum mechanics is applicable.
+
+### Examples of systems where QM is important
+
+-   Singular particles (molecules, atoms, electrons, photons, etc.)
+-   Semiconductors
+-   Lasers
+-   Low temperatures ($<100 \text{ K}$)
+-   ...adding more all the time
+
+## Key Concepts of QM
+
+### Wavefunction
+
+The wavefunction, $\Psi$, is a mathematical function that describes the quantum state of a system.
+
+$$
+\Psi(x, y, z, t)
+$$
+
+-   It's a complex-valued function.
+-   It tells you about the state of the system but without certainty; only probabilities.
+-   The square of the wavefunction, $|\Psi|^2$, gives the probability density of finding a particle at a given position.
+
+### Operator
+
+An operator is a function that acts on the wavefunction to give another wavefunction. It's generally represented by a letter with a hat on top, e.g. $\hat{Q}$. It connects the wavefunction to observable quantities.
+
+For instance, the position operator, $\hat{x}$:
+
+$$
+\hat{x} = x \times
+$$
+
+or
+Or the momentum operator, $\hat{p}$:
+
+$$
+\hat{p} = -i \hbar \frac{\partial}{\partial x}
+$$
+
+### Schrödinger Equation
+
+The Schrödinger equation is a partial differential equation that describes how the wavefunction of a physical system evolves over time.
+
+$$
+i \hbar \frac{\partial \Psi}{\partial t} = \hat{H} \Psi
+$$
+
+$\hat{H}$ is the Hamiltonian operator, which is like the "total energy" operator.
+As total energy is kinetic energy plus potential energy, the Hamiltonian operator is the sum of the kinetic energy operator and the potential energy operator.
+
+$$
+\begin{align*}
+\hat{H} &= \hat{T} + \hat{V} \\
+\hat{T} &= -\frac{\hbar^2}{2m} \frac{\partial^2}{\partial x^2} \\
+\hat{V} &= V(x) \times
+\end{align*}
+$$
+
+Hence, the Schrödinger equation can be written as:
+
+$$
+i \hbar \frac{\partial \Psi}{\partial t} = \left(-\frac{\hbar^2}{2m} \frac{\partial^2}{\partial x^2} + V(x)\right) \Psi
+$$
+
+However, for the sake of simplicity, the $\Psi$ will only be multiplied by the potential energy operator, $\hat{V}$, in the following examples:
+
+$$
+i \hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m} \frac{\partial^2 \Psi}{\partial x^2} + V(x) \Psi
+$$
+
+While less mathematically rigorous, this is sufficient for our purposes.
+
+## Probability Distributions
+
+Probability is extremely important in quantum mechanics. The square of the wavefunction, $|\Psi|^2$, gives the probability density of finding a particle at a given position.
+
+We will lookk at the various properties of probability distributions using a discrete example and a continuous example.
+
+Our discrete data looks like this: $[0, 0, 1, 1, 1, 2, 2, 3, 4, 5]$.
+
+And our continuous data looks like this:
+
+$$
+\rho(x) = \begin{cases}
+0 & \text{if } x < 0 \\
+e^{-x} & \text{if } x \ge 0
+\end{cases}
+$$
+
+### Probability
+
+For discrete data, the probability of a value is the number of times it occurs divided by the total number of values:
+
+$$
+P(x) = \frac{\text{number of times } x \text{ occurs}}{\text{total number of values}}
+$$
+
+For continuous data, the probability of a single value is zero. Imagine going to someone and asking them "Were you born in Jan 4th 1990 at 12 pm 11 minutes 34.92875434 seconds?" The probability of them saying "yes" is zero. Instead, when dealing with continuous data, we deal with ranges of values. The probability of a value being in a range is the integral of the probability density function over that range:
+
+$$
+P(x) = \int_{-\infty}^{x} \rho(x) dx
+$$
+
+### Mode
+
+The mode is the value that occurs most frequently. For our discrete data, simply count the number of times each value occurs and find the one that occurs the most. For our continuous data, the mode is the value that maximizes the probability density function.
+
+### Median
+
+The median is the value that separates the higher half from the lower half. For our discrete data, sort the values and find the middle one. For our continuous data, the median is the value that satisfies:
+
+$$
+\int_{-\infty}^{x} \rho(x) dx = \frac{1}{2}
+$$
+
+### Mean/Expectation Value
+
+The mean, denoted by $\mu$ is the average value. For our discrete data, it's the sum of all the values divided by the total number of values:
+
+$$
+\mu = \sum_{i=1}^{n} x_i P(x = x_i)
+$$
+
+Like always, for our continuous data, we integrate:
+
+$$
+\mu = \int_{-\infty}^{\infty} x \rho(x) dx
+$$
+
+Using our continous data as an example:
+
+$$
+\begin{align*}
+\mu &= \int_{0}^{\infty} x e^{-x} dx \\
+u &= \int_{0}^{\infty} x e^{-x} dx \\
+\end{align*}
+$$
+
+By using integration by parts:
+
+$$
+\begin{align*}
+u &= x \\
+dv &= e^{-x} dx \\
+du &= dx \\
+v &= -e^{-x}
+\end{align*}
+$$
+
+Hence:
+
+$$
+\begin{align*}
+\mu &= \left. -xe^{-x} \right|_0^\infty + \int_0^\infty e^{-x} dx \\
+&= 0 + 1 \\
+&= 1
+\end{align*}
+$$
+
+The expectation value can also be written as:
+
+$$
+\mu = \langle x \rangle
+$$
+
+### Expectation Value of a Function
+
+The expectation value of a function, $f(x)$, is the average value of the function. For our discrete data, it's the sum of the function evaluated at each value multiplied by the probability of that value:
+
+$$
+\langle f(x) \rangle = \sum_{i=1}^{n} f(x_i) P(x = x_i)
+$$
+
+You begin to see a pattern here. When it's discrete, you sum. When it's continuous, you integrate:
+
+$$
+\langle f(x) \rangle = \int_{-\infty}^{\infty} f(x) \rho(x) dx
+$$
+
+### Variance and Standard Deviation
+
+In quantum mechanics, it's often useful to know how "spread out" the distribution is. Statistics provide a way to quantify this, the variance, denoted by $\sigma^2$.
+
+The way variance is calculated is to have a point, and have it subtract the mean, and then take the average of these differences:
+
+$$
+\langle \Delta x \rangle = \langle x - \langle x \rangle \rangle
+$$
+
+However, the problem with this is that $\langle \Delta x \rangle = 0$ because the positive and negative values cancel each other out. One way to fix this is to take the absolute value:
+
+$$
+\langle |\Delta x| \rangle
+$$
+
+Unfortunately, absolute values are very difficult to work with mathematically because you have to keep track of the sign. Instead, we square the values:
+
+$$
+\langle (\Delta x)^2 \rangle
+$$
+
+This is the variance. The standard deviation, $\sigma$, is the square root of the variance.
+
+There's an alternative way to calculate the variance, and here's how its derived:
+
+$$
+\begin{align*}
+\langle (\Delta x)^2 \rangle &= \int_{-\infty}^{\infty} (x - \langle x \rangle)^2 \rho(x) dx \\
+&= \int_{-\infty}^{\infty} (x^2 - 2x\langle x \rangle + \langle x \rangle^2) \rho(x) dx \\
+&= \textcolor{red}{\int_{-\infty}^{\infty} x^2 \rho(x) dx} - 2\langle x \rangle \textcolor{blue}{\int_{-\infty}^{\infty} x \rho(x) dx} + \langle x \rangle^2 \textcolor{green}{\int_{-\infty}^{\infty} \rho(x) dx} \\
+&= \textcolor{red}{\langle x^2 \rangle} - 2\langle x \rangle \textcolor{blue}{\langle x \rangle} + \langle x \rangle^2 \textcolor{green}{1} \\
+&= \langle x^2 \rangle - \langle x \rangle^2
+\end{align*}
+$$
+
+Hence, the variance can also be written as:
+
+$$
+\sigma^2 = \langle x^2 \rangle - \langle x \rangle^2
+$$
+
+## Probability Normalization and the Wavefunction
+
+Normalization makes the total probability equal to 1. This means that if you were to measure the position of a particle, the probability of it being within $-\infty$ and $\infty$ must be 1. Mathematically:
+
+$$
+\int_{-\infty}^{\infty} \rho(x)^2 dx = 1
+$$
+
+Normalization makes it much easier to calculate probabilities. For instance, for a normalized probability distribution, the probability of a value being in a range is simply the integral of the probability density function over that range.
+
+As we know, the square of the wavefunction, $|\Psi|^2$, gives the probability density of finding a particle at a given position. Therefore:
+
+$$
+\int_{-\infty}^{\infty} |\Psi(x)|^2 dx = 1
+$$
+
+For a probability distribution to be normalizable, it should not approach infinity at any point, or else it can't be "squeezed" into a finite area. Instead, it should approach zero at infinity. Mathematically:
+
+$$
+\begin{align*}
+\lim_{x \to \infty} \rho(x) &= 0 \\
+\lim_{x \to -\infty} \rho(x) &= 0
+\end{align*}
+$$
+
+Therefore, the wavefunction should also approach zero at infinity:
+
+$$
+\begin{align*}
+\lim_{x \to \infty} \Psi(x) &= 0 \\
+\lim_{x \to -\infty} \Psi(x) &= 0
+\end{align*}
+$$
+
+Now, let's use the Schrödinger equation to find out if normalization works:
+
+$$
+i \hbar \frac{\partial \Psi}{\partial t} = -\frac{\hbar^2}{2m} \frac{\partial^2 \Psi}{\partial x^2} + V(x) \Psi
+$$
+
+As you can see, all terms in the Schrödinger equation are linear. This means that if $\Psi$ is a solution to the Schrödinger equation, then $c \Psi$ is also a solution to the Schrödinger equation, where $c$ is a constant. This is known as the principle of superposition.
+
+However this is only true if $c$ is constant. This means that we might run into issues with time evolution. To prove that this is not the case, we establish:
+
+$$
+\frac{d}{dt} \int_{-\infty}^{\infty} |\Psi(x, t)|^2 dx = 0
+$$
+
+This is known as the conservation of probability. It means that the total probability of finding a particle at any position does not change with time.
+
+Since $\Psi^2 = \Psi^* \Psi$, we can write:
+
+$$
+\frac{d}{dt} \int_{-\infty}^{\infty} |\Psi(x, t)|^2 dx = \frac{d}{dt} \int_{-\infty}^{\infty} \Psi^* \Psi dx
+$$
+
+Additionally, we can bring the time derivative inside the integral. Note that the total derivative becomes a partial derivative.
+
+$$
+\frac{d}{dt} \int_{-\infty}^{\infty} \Psi^* \Psi dx = \int_{-\infty}^{\infty} \frac{\partial}{\partial t} \Psi^* \Psi dx
+$$
+
+Using the product rule:
+
+$$
+\begin{align*}
+\int_{-\infty}^{\infty} \frac{\partial}{\partial t} \Psi^* \Psi dx &= \int_{-\infty}^{\infty} \left( \frac{\partial \Psi^*}{\partial t} \Psi + \Psi^* \frac{\partial \Psi}{\partial t} \right) dx \\
+\end{align*}
+$$
+
+Now, we can use the Schrödinger equation to replace the time derivatives:
+
+$$
+\begin{align*}
+i \hbar \frac{\partial \Psi}{\partial t} &= -\frac{\hbar^2}{2m} \frac{\partial^2 \Psi}{\partial x^2} + V(x) \Psi \\
+\color{red} \frac{\partial \Psi}{\partial t} &= \frac{i \hbar}{2m} \frac{\partial^2 \Psi}{\partial x^2} - i\frac{V(x)}{\hbar} \Psi \\
+\color{blue} \frac{\partial \Psi^*}{\partial t} &= -\frac{i \hbar}{2m} \frac{\partial^2 \Psi^*}{\partial x^2} + i\frac{V(x)}{\hbar} \Psi^* \\
+\end{align*}
+$$
+
+Hence:
+
+$$
+\begin{align*}
+\int_{-\infty}^{\infty} \left( {\color{blue} \frac{\partial \Psi^*}{\partial t}} \Psi + \Psi^* {\color{red} \frac{\partial \Psi}{\partial t}} \right) dx &= \int_{-\infty}^{\infty} \textcolor{blue}{\left( -\frac{i \hbar}{2m} \frac{\partial^2 \Psi^*}{\partial x^2} + i\frac{V(x)}{\hbar} \Psi^* \right)} \Psi + \Psi^* \textcolor{red}{\left( \frac{i \hbar}{2m} \frac{\partial^2 \Psi}{\partial x^2} - i\frac{V(x)}{\hbar} \Psi \right)} dx \\
+&= \int_{-\infty}^{\infty} \left( -\textcolor{red}{\frac{i \hbar}{2m}} \frac{\partial^2 \Psi^*}{\partial x^2} \Psi + \cancel{i\frac{V(x)}{\hbar} \Psi^* \Psi} + \textcolor{red}{\frac{i \hbar}{2m}} \frac{\partial^2 \Psi}{\partial x^2} \Psi^* - \cancel{i\frac{V(x)}{\hbar} \Psi^* \Psi} \right) dx \\
+&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \left( \frac{\partial^2 \Psi^*}{\partial x^2} \Psi - \frac{\partial^2 \Psi}{\partial x^2} \Psi^* \right) dx \\
+&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \frac{\partial}{\partial x} \left( \frac{\partial \Psi^*}{\partial x} \Psi \right) - \frac{\partial}{\partial x} \left( \frac{\partial \Psi}{\partial x} \Psi^* \right) dx \\
+&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \frac{\partial}{\partial x} \left( \frac{\partial \Psi^*}{\partial x} \Psi - \frac{\partial \Psi}{\partial x} \Psi^* \right) dx \tag{Completely time-independent} \\
+&= \frac{i \hbar}{2m} \left. \left( \frac{\partial \Psi^*}{\partial x} \Psi - \frac{\partial \Psi}{\partial x} \Psi^* \right) \right|_{-\infty}^{\infty} \tag{Fundamental theorem of calculus} \\
+&= 0 \tag{$\Psi$ approaches zero at infinity}
+\end{align*}
+$$
+
+This means that the total probability of finding a particle at any position does not change with time.
+As such, the wavefunction is normalized.
+
+### Example: Normalization of a Wavefunction
+
+Let's normalize this wavefunction:
+
+$$
+\Psi(x) = \begin{cases}
+0 & \text{if } |x| > 1 \\
+Ae^{ix}(1 - x^2) & \text{otherwise}
+\end{cases}
+$$
+
+In other words, we want to find the value of $A$ that makes the wavefunction normalized.
+
+The case where $\Psi(x) = 0$ is not important because the probability of finding a particle at any position is zero. Therefore, we only need to normalize the wavefunction in the range $|x| \le 1$, which is the same as $-1 \le x \le 1$.
+
+Therefore:
+
+$$
+\int_{-1}^{1} |\Psi(x)|^2 dx = 1
+$$
+
+Remember that $|\Psi|^2 = \Psi^* \Psi$. Hence:
+
+$$
+\begin{align*}
+\int_{-1}^{1} \textcolor{red}{\Psi^*} \textcolor{blue}{\Psi} dx &= 1 \\
+\int_{-1}^{1} \textcolor{red}{Ae^{-ix}(1 - x^2)} \textcolor{blue}{Ae^{ix}(1 - x^2)} dx &= 1 \\
+A^2 \int_{-1}^{1} e^{-ix} e^{ix} (1 - x^2)^2 dx &= 1 \\\
+A^2 \int_{-1}^{1} (1 - x^2)^2 dx &= 1 \tag{$e^{-ix} e^{ix} = 1$} \\
+A^2 \int_{-1}^{1} (1 - 2x^2 + x^4) dx &= 1 \\
+A^2 \left. \left( x - \frac{2}{3}x^3 + \frac{1}{5}x^5 \right) \right|_{-1}^{1} &= 1 \\
+A^2 \left(2 - \frac{2}{3} 2 + \frac{1}{5} 2\right) &= 1 \\
+A^2 \left(\frac{16}{15}\right) &= 1 \\
+A &= \sqrt{\frac{15}{16}}
+\end{align*}
+$$
+
+\herefore, the wavefunction is normalized when $A = \sqrt{\frac{15}{16}}$.
+
+## Operators
+
+As mentioned earlier, an operator is a function that connects the wavefunction to observable quantities.
+
+$$
+P(\text{Particle in } [a, b]) = \int_a^b |\Psi(x)|^2 dx
+$$
+
+Remembering the expected value of a function:
+
+$$
+\begin{align*}
+\langle x \rangle &= \int_{-\infty}^{\infty} x |\Psi(x)|^2 dx \\
+&= \int_{-\infty}^{\infty} \Psi^* x \Psi dx
+\end{align*}
+$$
+
+Now imagine a box with a particle in it. We measure its position at $t = 0$, $t = 1$, $t = 2$, and $t = 3$. While we know the positions at those times, the position is not observable at any given $t$ with complete impunity because of the way observation affects the wavefunciton.
+
+We need an ensemble, which is a collection of identicallly-prepared systems. We make one measurement per system and for each system measure it at different times.
+
+How can we predict its motion as a function of time? To do that, we consider the rate of change of the expected value of the position:
+
+$$
+\frac{d}{dt} \langle x \rangle
+$$
+
+It's a velocity, as a motion of an expectation. Like before, we put the time derivative inside the integral:
+
+$$
+\frac{d}{dt} \langle x \rangle = \int_{-\infty}^{\infty} x \textcolor{yellow}{\frac{\partial}{\partial t} \Psi^* \Psi} dx
+$$
+
+Remember when we tested the normalization of the wavefunction? We calculated what the yellow part, $\frac{\partial}{\partial t} \Psi^* \Psi$, was:
+
+$$
+\int_{-\infty}^{\infty} x \textcolor{yellow}{\frac{\partial}{\partial t} \Psi^* \Psi} dx = \textcolor{yellow}{\frac{i \hbar}{2m}} \int_{-\infty}^{\infty} x \textcolor{yellow}{\frac{\partial}{\partial x} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right)} dx
+$$
+
+Using integration by parts:
+
+$$
+\begin{align*}
+u &= x \\
+dv &= \frac{\partial}{\partial x} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) dx \\
+du &= dx \\
+v &= \Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi
+\end{align*}
+$$
+
+Hence:
+
+$$
+\begin{align*}
+\frac{i \hbar}{2m} \int_{-\infty}^{\infty} x \frac{\partial}{\partial x} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) dx &= \frac{i \hbar}{2m} \left[\textcolor{red}{ \cancel{\left. x \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) \right|_{-\infty}^{\infty}}} - \int_{-\infty}^{\infty} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) dx \right] \\
+&= \frac{i \hbar}{2m} \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \textcolor{green}{\int_{-\infty}^{\infty} \frac{\partial \Psi^*}{\partial x} \Psi dx} \right] \\
+\end{align*}
+$$
+
+The integral on the right can once again be integrated by parts:
+
+$$
+\begin{align*}
+u &= \Psi \\
+dv &= \frac{\partial \Psi^*}{\partial x} dx \\
+du &= \frac{\partial \Psi}{\partial x} dx \\
+v &= \Psi^*
+\end{align*}
+$$
+
+Therefore:
+
+$$
+\begin{align*}
+\frac{i \hbar}{2m} \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \textcolor{green}{\int_{-\infty}^{\infty} \frac{\partial \Psi^*}{\partial x} \Psi dx} \right] &= \frac{i \hbar}{2m}\ \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \cancel{\left. \Psi^* \Psi \right|_{-\infty}^{\infty}} + \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx \right] \\
+&= \frac{i \hbar}{m} \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx \\
+&= \langle \hat{v} \rangle
+\end{align*}
+$$
+
+We found out the expected value of the velocity operator, $\langle \hat{v} \rangle$. Since momentum is the product of mass and velocity, we can also find the expected value of the momentum operator, $\langle \hat{p} \rangle$. Let's put these together and see if we find a pattern:
+
+$$
+\begin{align*}
+\langle \hat{v} \rangle = -\frac{i \hbar}{m} \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx &= \int_{-\infty}^{\infty} \Psi^* \textcolor{yellow}{\left( -\frac{i \hbar}{m} \frac{\partial}{\partial x} \right)} &&\Psi dx \\
+\langle \hat{p} \rangle &= \int_{-\infty}^{\infty} \Psi^* \textcolor{yellow}{\left( -i \hbar \frac{\partial}{\partial x} \right)} &&\Psi dx \\
+\langle \hat{x} \rangle &= \int_{-\infty}^{\infty} \Psi^* \textcolor{yellow}{(x)} &&\Psi dx
+\end{align*}
+$$
+
+We get the same pattern where the expected value of an observable is the integral of the product of the wavefunction and the operator. Using this we can find the operators. For our case,
+
+$$
+\begin{align*}
+\hat{x} &= x \times \\
+\hat{v} &= -\frac{i \hbar}{m} \frac{\partial}{\partial x} \\
+\hat{p} &= -i \hbar \frac{\partial}{\partial x}
+\end{align*}
+$$
+
+Another example of these operators is the kinetic energy operator, $\hat{T}$, and the potential energy operator, $\hat{V}$:
+
+$$
+\begin{align*}
+\hat{T} &= -\frac{\hbar^2}{2m} \frac{\partial^2}{\partial x^2} \\
+\hat{V} &= V(x) \times
+\end{align*}
+$$
