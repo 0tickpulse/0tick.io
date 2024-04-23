@@ -1,0 +1,875 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+
+# Limits
+
+Limits are a fundamental concept in calculus. They are used to define the derivative and the integral, and are used to define continuity.
+
+In essence, a limit asks the question: "What value does a function approach as it gets closer and closer to a certain point?"
+
+## Notation
+
+The limit of a function $f(x)$ as $x$ approaches $a$ is denoted by:
+
+$$
+\lim_{x \to a} f(x)
+$$
+
+This is read as "the limit of $f(x)$ as $x$ approaches $a$." It asks, "what value does $f(x)$ approach as $x$ gets closer and closer to $a$?"
+
+## Examples
+
+For instance, consider the function $f(x) = \left| \frac{1}{x} \right|$. As $x$ gets closer and closer to 0, $f(x)$ gets larger and larger.
+This can also be viewed on a graph:
+
+export const FunctionGraph = () => {
+    return (
+        <Mafs
+            viewBox={{
+                x: [-10, 10],
+            }}
+        >
+            <Coordinates.Cartesian />
+            <Plot.OfX y={(x) => Math.abs(1 / x)} />
+        </Mafs>
+    );
+};
+
+<FunctionGraph />
+
+Notice how while it is impossible to actually reach 0, the function gets larger and larger as $x$ gets closer and closer to 0. This is why the limit of $f(x)$ as $x$ approaches 0 is $\infty$.
+
+Written mathematically:
+
+$$
+\lim_{x \to 0} \left| \frac{1}{x} \right| = \infty
+$$
+
+## One-Sided Limits
+
+Let's say we want to get the limit of a function. This time, we're not going to get the function itself, but rather just the graph.
+
+export const OSL1 = ({ annotations }) => {
+    const fn1 = (x) => -(Math.E ** (-(x + 2)));
+    const fn2 = (x) => 5 / (x + 2) - 5;
+    const fn1bounded = (x) => {
+        if (x < -2) {
+            return fn1(x);
+        }
+        return NaN;
+    };
+    const fn2bounded = (x) => {
+        if (x > -2) {
+            return fn2(x);
+        }
+        return NaN;
+    };
+    const dfn1_dx = (x) => Math.E ** (-(x + 2));
+    return (
+        <Mafs
+            viewBox={{
+                x: [-10, 10],
+            }}
+        >
+            <Coordinates.Cartesian />
+            <Plot.OfX y={fn1bounded} />
+            <Plot.OfX y={fn2bounded} />
+            <Circle center={[-2, -1]} radius={0.15} />
+            <Plot.OfY style="dashed" x={(y) => {
+                if (y > -1) {
+                    return -2;
+                }
+                return NaN;
+            }} />
+            {annotations && <>
+                <Plot.Parametric t={[-3, -2]} xy={(t) => {
+                    let x = t;
+                    let y = fn1(x);
+                    if (x < -3 || x > -2) {
+                        return NaN;
+                    }
+                    const vel = dfn1_dx(x);
+                    const angle = Math.atan(vel);
+                    const angle_rotated = Math.PI / 2 - angle;
+
+                    y += 0.5 * Math.sin(angle_rotated);
+                    x -= 0.5 * Math.cos(angle_rotated);
+
+                    return [x, y];
+                }} />
+            </>}
+        </Mafs>
+    );
+
+}
+
+<OSL1 />
+
+If we try to approach $x = -2$, you see that there's a massive (infinite) gap between the two sides.
+And you approach different values depending on which side you're coming from.
+
+This is why we have the concept of one-sided limits.
+
+The limit of $f(x)$ as $x$ approaches $a$ from the left is denoted by:
+
+$$
+\lim_{x \to a^-} f(x)
+$$
+
+And similarly, the limit of $f(x)$ as $x$ approaches $a$ from the right is denoted by:
+
+$$
+\lim_{x \to a^+} f(x)
+$$
+
+In this case, using the graph alone, we can see that:
+
+$$
+\begin{align*}
+\lim_{x \to -2^-} f(x) &= -1 \\
+\lim_{x \to -2^+} f(x) &= \infty
+\end{align*}
+$$
+
+## Estimating Limits
+
+There are many ways to estimate a limit. In fact, we just approximated one by looking at the graph above.
+
+### Graph Visualization
+
+Graphing the function and seeing what value it approaches as $x$ gets closer and closer to the point in question is a good way to estimate a limit.
+
+#### Example 1
+
+$$
+\lim_{x \to 0} \left(\frac{\sin(x)}{x}\right)
+$$
+
+Before anything, we can try to evaluate the limit by naively plugging in $x = 0$:
+
+$$
+\frac{\sin(0)}{0} = \frac{0}{0}
+$$
+
+Oh no! We can't divide by 0! This is a problem. However, we can still try to estimate the limit by graphing the function:
+
+<Mafs
+    viewBox={{
+        x: [-10, 10],
+    }}
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => {
+            if (Math.abs(x) < 0.15) {
+                return NaN;
+            }
+            return Math.sin(x) / x;
+        }}
+    />
+    {/* A circle for the gap at 0 */}
+    <Circle center={[0, 1]} radius={0.15} />
+</Mafs>
+
+Notice that while there's a gap at $x = 0$, the function seems to approach 1 as $x$ gets closer and closer to 0. This is why:
+
+$$
+\lim_{x \to 0} \left(\frac{\sin(x)}{x}\right) = 1
+$$
+
+:::note
+
+This is not exactly why, but it's good enough for now. A better explanation like using the squeeze theorem will be given later.
+
+:::
+
+### Tables
+
+Another way to estimate a limit is by creating a table of values. This is especially useful when the function is not graphable, or you don't have access to a graphing calculator.
+
+#### Basic Example
+
+Let's say this table is given:
+
+| $x$    | $3.9$   | $3.99$  | $3.999$ | $4.001$ | $4.01$  | $4.1$   |
+| ------ | ------- | ------- | ------- | ------- | ------- | ------- |
+| $f(x)$ | $11.21$ | $11.92$ | $11.99$ | $12.01$ | $12.08$ | $12.61$ |
+
+We can estimate the limit of $f(x)$ as $x$ approaches 4 by looking at the values of $f(x)$ as $x$ gets closer and closer to 4.
+
+Generally, look for these things when constructing or analyzing a table like this:
+
+-   The values chosen for $x$ should get closer and closer to the value in question.
+-   The values of $f(x)$ should be getting closer and closer to a single value.
+-   If the values of $f(x)$ are getting closer and closer to a single value, then that value is our estimate for the limit.
+-   The limit can be two-sided, and that's shown by the values of $f(x)$ getting closer and closer to a single value from both sides.
+
+#### Double-Sided Tables
+
+| $x$    | $0.9$  | $0.99$ | $0.999$ | $1.001$ | $1.01$ | $1.1$  |
+| ------ | ------ | ------ | ------- | ------- | ------ | ------ |
+| $g(x)$ | $9.21$ | $9.94$ | $9.99$  | $7.01$  | $7.05$ | $7.66$ |
+
+Let's say we want to find the limit of $g(x)$ as $x$ approaches 1. Looking at the table though, it seems like there's a gap between $(0.999, 9.99)$ and $(1.001, 7.01)$.
+This means that there is likely no limit.
+
+However, if we look at the values of $g(x)$ as $x$ gets closer and closer to 1 from the left, we see that the values of $g(x)$ are getting closer and closer to 10.
+Likewise, if we look at the values of $g(x)$ as $x$ gets closer and closer to 1 from the right, we see that the values of $g(x)$ are getting closer and closer to 7.
+
+$$
+\begin{align*}
+\lim_{x \to 1^-} g(x) &= 10 \\
+\lim_{x \to 1^+} g(x) &= 7
+\end{align*}
+$$
+
+## General Procedure
+
+For this limit:
+
+$$
+\lim_{x \to a} f(x)
+$$
+
+You can apply this general procedure:
+
+1. Try to substitute in $x = a$. If you get a number, then that's probably the limit.
+2. If you get $\frac{b}{0}$ where $b \neq 0$, then you probably hit an asymptote.
+3. If you get $\frac{0}{0}$, then you got an indeterminate form.
+4. If it's indeterminate, try to rewrite the limit by factoring, rationalizing, or using trigonometric identities.
+5. If all else fails, try to estimate the limit using a graph or a table.
+
+### Trig Identity Example
+
+> The function $f(x)$ is defined as follows:
+>
+> $$
+> f(x) = \frac{\cos(2x)}{\cos(x) + \sin(x)}
+> $$
+>
+> Find the limit of $f(x)$ as $x$ approaches $-\frac{\pi}{4}$.
+
+Let's first try to substitute in $x = -\frac{\pi}{4}$:
+
+$$
+\begin{align*}
+f\left(-\frac{\pi}{4}\right) &= \frac{\cos\left(2 \cdot -\frac{\pi}{4}\right)}{\cos\left(-\frac{\pi}{4}\right) + \sin\left(-\frac{\pi}{4}\right)} \\
+&= \frac{\cos\left(-\frac{\pi}{2}\right)}{\frac{1}{\sqrt{2}} - \frac{1}{\sqrt{2}}} \\
+&= \frac{0}{0}
+\end{align*}
+$$
+
+We got an indeterminate form. This means we should rewrite the limit.
+In this case, the numerator, $\cos(2x)$, can be rewritten using the double angle identity:
+
+$$
+\cos(2x) = \cos^2(x) - \sin^2(x)
+$$
+
+So the limit becomes:
+
+$$
+\begin{align*}
+\lim_{x \to -\frac{\pi}{4}} f(x) &= \lim_{x \to -\frac{\pi}{4}} \frac{\cos^2(x) - \sin^2(x)}{\cos(x) + \sin(x)} \\
+&= \lim_{x \to -\frac{\pi}{4}} \frac{(\cos(x) - \sin(x)) {\color{Red}(\cos(x) + \sin(x))}}{{\color{Red}\cos(x) + \sin(x)}} \tag{factoring} \\
+&= \lim_{x \to -\frac{\pi}{4}} (\cos(x) - \sin(x)) \tag{canceling} \\
+&= \cos\left(-\frac{\pi}{4}\right) - \sin\left(-\frac{\pi}{4}\right) \\
+&= \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} \\
+&= \sqrt{2}
+\end{align*}
+$$
+
+### Factoring Example
+
+> The function $g(x)$ is defined as follows:
+>
+> $$
+> g(x) = \frac{x^2 + x - 6}{x - 2}
+> $$
+>
+> Find the limit of $g(x)$ as $x$ approaches 2.
+
+As always, let's first try to substitute in $x = 2$:
+
+$$
+\begin{align*}
+g(2) &= \frac{2^2 + 2 - 6}{2 - 2} \\
+&= \frac{0}{0}
+\end{align*}
+$$
+
+Once again, we got an indeterminate form. This means we should rewrite the limit.
+In this case, the numerator, $x^2 + x - 6$, can be factored:
+
+$$
+x^2 + x - 6 = (x - 2)(x + 3)
+$$
+
+So the limit becomes:
+
+$$
+\begin{align*}
+g(x) &= \frac{(x - 2)(x + 3)}{x - 2} \\
+&= (x + 3) && \text{if } x \neq 2 \\
+\end{align*}
+$$
+
+Note that **this new function works for $x \neq 2$** because if $x = 2$, then we are dividing by $0$.
+
+However, it allows us to understand what happens for values close to $2$, and as such, we can calculate the limit.
+
+$$
+\begin{align*}
+\lim_{x \to 2} g(x) &= \lim_{x \to 2} (x + 3) \\
+&= 2 + 3 \\
+&= 5
+\end{align*}
+$$
+
+:::
+
+The more formal way to say this is:
+
+Let $f(x) = x + 3$ for all $x \in \mathbb{R}$. Then:
+
+$$
+\lim_{x \to 2} g(x) = \lim_{x \to 2} f(x) = f(2) = 5
+$$
+
+:::
+
+### Rationalizing Example
+
+> The function $h(x)$ is defined as follows:
+>
+> $$
+> h(x) = \frac{\sqrt{x+2} - 2}{x-2}
+> $$
+>
+> Find the limit of $h(x)$ as $x$ approaches 2.
+
+This also gives us an indeterminate form when we try to substitute in $x = 2$.
+We can rewrite the limit by rationalizing the numerator through multiplying by the conjugate:
+
+$$
+\begin{align*}
+h(x) &= \frac{\sqrt{x+2} - 2}{x-2} \\
+&= \frac{\sqrt{x+2} - 2}{x-2} \cdot \frac{\sqrt{x+2} + 2}{\sqrt{x+2} + 2} \\
+&= \frac{(x+2) - 4}{(x-2)(\sqrt{x+2} + 2)} \\
+&= \frac{x-2}{(x-2)(\sqrt{x+2} + 2)} \\
+&= \frac{1}{\sqrt{x+2} + 2} && \text{if } x \neq 2 \\
+\end{align*}
+$$
+
+While this new function works for $x \neq 2$, it allows us to understand what happens for values close to $2$, and as such, we can calculate the limit.
+
+$$
+\begin{align*}
+\lim_{x \to 2} h(x) &= \lim_{x \to 2} \frac{1}{\sqrt{x+2} + 2} \\
+&= \frac{1}{\sqrt{2+2} + 2} \\
+&= \frac{1}{2 + 2} \\
+&= \frac{1}{4}
+\end{align*}
+$$
+
+## Combining Functions
+
+If you have a limit of a function that's a combination of other functions, you can use the limit laws to simplify the limit.
+
+### Sum and Difference
+
+> The limit of sum is the sum of limits.
+
+$$
+\lim_{x \to a} \left(f(x) + g(x)\right) = \lim_{x \to a} f(x) + \lim_{x \to a} g(x)
+$$
+
+### Products
+
+> The limit of a product is the product of limits.
+
+$$
+\lim_{x \to a} \left(f(x) \cdot g(x)\right) = \lim_{x \to a} f(x) \cdot \lim_{x \to a} g(x)
+$$
+
+### Composition
+
+This is a bit more interesting. Let's say you want to find the limit of $f(g(x))$ as $x$ approaches $a$. This is called a composition of functions, where you first apply $g(x)$ and then apply $f(x)$ to the result.
+
+For this to work, two conditions must be met:
+
+1. A value $L$ must exist such that $\lim_{x \to a} g(x) = L$.
+2. The function $f(x)$ must be continuous at $L$.
+
+If these conditions are met, then:
+
+$$
+\lim_{x \to a} f(g(x)) = f\left(\lim_{x \to a} g(x)\right) = f(L)
+$$
+
+## Squeeze Theorem
+
+The squeeze theorem is a powerful tool for finding limits. It's especially useful when you have a function that's hard to evaluate directly.
+
+Let's use an analogy: Alice, Bob, and Charlie all have different heights. Bob is taller than Alice, and Charlie is taller than Bob.
+
+Mathematically: $\text{Alice's height} \leq \text{Bob's height} \leq \text{Charlie's height}$.
+
+Let's say we know Alice's height to be $160\text{cm}$ and Charlie's height to also be $160\text{cm}$. Since Bob's height must be between Alice's and Charlie's, we can conclude that Bob's height is also $160\text{cm}$.
+
+This is the essence of the squeeze theorem. If you have a function $f(x)$ that's always between two other functions $g(x)$ and $h(x)$, and the limits of $g(x)$ and $h(x)$ as $x$ approaches $a$ are the same, then the limit of $f(x)$ as $x$ approaches $a$ is also the same.
+
+### Squeeze Theorem Example 1
+
+Remember our function $\frac{\sin(x)}{x}$? We estimated the limit to be 1 by graphing the function. However, we can also use the squeeze theorem to rigorously prove that the limit is 1.
+
+As we know, trigonomic functions can be modeled by the unit circle. We will use this to visualize this proof.
+
+Firstly, this is the unit circle:
+
+export function UnitCircle({
+    showTan = false,
+    blueTriangleAdjusted = false,
+    showSector = false,
+}) {
+    const radius = 1;
+    const radialPoint = useMovablePoint([Math.PI / 6, Math.sqrt(1 - (Math.PI / 6) ** 2)], {
+        constrain: (point) => {
+            let angle = Math.atan2(point[1], point[0]);
+
+            // restrict angle to between -60 and 60 degrees
+            if (angle < -Math.PI / 3) {
+                angle = -Math.PI / 3;
+            } else if (angle > Math.PI / 3) {
+                angle = Math.PI / 3;
+            }
+
+            const snap = Math.PI / 180;
+            const roundedAngle = Math.round(angle / snap) * snap;
+            return vec.rotate([radius, 0], roundedAngle);
+        },
+    });
+    const angle = Math.atan2(radialPoint.point[1], radialPoint.point[0]);
+    /**
+     * Basically e^(i * angle)
+     */
+    function rotatedPoint(angle, radius = 0.2) {
+        return [Math.cos(angle) * radius, Math.sin(angle) * radius];
+    }
+    const labelOffset = Math.cos(angle) > 0 ? 0.25 : -0.25;
+    return (
+        <span>
+            <Mafs
+                style={{ width: "10em" }}
+                viewBox={{
+                    x: [-0.5, 1.25],
+                    y: [-0.5, 1.25],
+                }}
+            >
+                <Coordinates.Cartesian />
+                <Circle center={[0, 0]} radius={radius} />
+                {/* Main point */}
+                <Vector tail={[0, 0]} tip={radialPoint.point} />
+                {radialPoint.element}
+                {/* Line for sine */}
+                <Line.Segment point1={[radialPoint.point[0], radialPoint.point[1]]} point2={[radialPoint.point[0], 0]} />
+                {/* Label for sine */}
+                {!blueTriangleAdjusted && <LaTeX at={[radialPoint.point[0] + labelOffset, radialPoint.point[1] / 2]} tex={String.raw`\sin(\theta)`} />}
+                {/* Triangle for visualization */}
+                <Polygon
+                    points={[
+                        [0, 0],
+                        radialPoint.point,
+                        blueTriangleAdjusted ? [1, 0] : [radialPoint.point[0], 0],
+                    ]}
+                    color={Theme.blue}
+                    fillOpacity={0.2}
+                />
+
+                {showTan && <>
+                    {/* Extension of vector */}
+                    <Line.Segment point1={radialPoint.point} point2={[1, Math.tan(angle)]} />
+                    {/* Line for tangent */}
+                    <Line.Segment point1={[1, 0]} point2={[1, Math.tan(angle)]} />
+                    {/* Label for tangent */}
+                    <LaTeX at={[1 + 1.5 * labelOffset, Math.tan(angle) / 2]} tex={String.raw`h = \tan(\theta)`} />
+                    {/* Triangle for visualization */}
+                    <Polygon
+                        points={[
+                            [0, 0],
+                            [1, Math.tan(angle)],
+                            [1, 0],
+                        ]}
+                        color={Theme.red}
+                        fillOpacity={0.1}
+                    />
+                </>}
+
+                {showSector && <>
+                    {/* Sector */}
+                    <Polygon
+                        points={[
+                            [0, 0],
+                            ...(() => {
+                                const points = [];
+                                if (angle > 0) {
+                                    for (let t = 0; t <= angle; t += 0.01) {
+                                        points.push([Math.cos(t), Math.sin(t)]);
+                                    }
+                                } else {
+                                    for (let t = 0; t >= angle; t -= 0.01) {
+                                        points.push([Math.cos(t), Math.sin(t)]);
+                                    }
+                                }
+                                return points;
+                            })(),
+                            radialPoint.point,
+                        ]}
+                        color={Theme.green}
+                        fillOpacity={0.1}
+                    />
+                </>}
+
+                {/* The angle */}
+                <Plot.Parametric xy={(t) => rotatedPoint(t)} t={[0, angle]} />
+            </Mafs>
+            <p>
+                <MathEquation displayMode={true}>{String.raw`
+                    \begin{align*}
+                        \theta &= ${(angle / Math.PI).toFixed(2)}\pi \\
+                        ${showTan ? String.raw`\tan{\theta} &= ${Math.tan(angle).toFixed(2)} \\` : ""}
+                        ${showSector ? String.raw`\text{Area of sector} &= ${(angle / 2).toFixed(2)} \\` : ""}
+                    \end{align*}
+                `}</MathEquation>
+            </p>
+        </span>
+    );
+
+}
+
+<UnitCircle />
+
+The function $\frac{\sin(x)}{x}$ can be visualized as the height of the small, blue triangle.
+If we extend the line to the right and draw a line from the right to the top, we get a new triangle.
+
+<UnitCircle showTan />
+
+The tangent of the angle would be the opposite over the adjacent, which is $\frac{h}{1}$.
+Therefore, the height of the triangle is $\tan(\theta)$.
+
+Now we are going to adjust our blue triangle to touch the unit circle on the right.
+
+<UnitCircle showTan blueTriangleAdjusted />
+
+
+With this in mind, simply looking at the unit circle, we can see that the red triangle is bigger than the blue triangle.
+
+$$
+\begin{align*}
+\text{Area of blue triangle} &\leq \text{Area of red triangle} \\
+\frac{1}{2} \left|\sin(\theta)\right| &\leq \frac{1}{2} \left|\tan(\theta)\right| \\
+\end{align*}
+$$
+
+Finally, let's consider the area of the unit circle sector.
+
+<UnitCircle blueTriangleAdjusted showSector />
+
+The area of the sector can be expressed as a fraction of the area of the whole circle:
+
+$$
+\text{Area of sector} = \frac{\theta}{2\pi} \cdot \pi = \frac{\theta}{2}
+$$
+
+And looking at the unit circle, we can see that the area of the sector is bigger than our original blue triangle.
+
+$$
+\frac{\theta}{2} \leq \frac{1}{2} \left|\tan(\theta)\right|
+$$
+
+Combining the two inequalities and performing some algebraic manipulation, we get:
+
+$$
+\begin{align*}
+\frac{1}{2} \left|\sin(\theta)\right| &\leq \frac{1}{2} \left|\theta\right| &&\leq \frac{1}{2} \left|\tan(\theta)\right| \\
+\left|\sin(\theta)\right| &\leq \left|\theta\right| &&\leq \left|\tan(\theta)\right| \tag{Multiplying by 2} \\
+\left|\sin(\theta)\right| &\leq \left|\theta\right| &&\leq \frac{\left|\sin(\theta)\right|}{\left|\cos(\theta)\right|} \tag{Since $\tan(\theta) = \frac{\sin(\theta)}{\cos(\theta)}$} \\
+1 &\leq \frac{\left|\theta\right|}{\left|\sin(\theta)\right|} &&\leq \frac{1}{\left|\cos(\theta)\right|} \tag{Dividing by $\left|\sin(\theta)\right|$} \\
+1 &\geq \frac{\left|\sin(\theta)\right|}{\left|\theta\right|} &&\geq \left|\cos(\theta)\right| \tag{Reciprocal}
+\end{align*}
+$$
+
+Now let's consider our limit again. Since we just want to find out when the angle approaches $0$, we only need to consider the first and fourth quadrants:
+
+* In the first quadrant, $\theta$ is positive and $\sin(\theta)$ is positive.
+* In the fourth quadrant, $\theta$ is negative and $\sin(\theta)$ is negative.
+* In both quadrants, $\cos(\theta)$ is positive.
+
+As such, we can drop the absolute value signs:
+
+$$
+1 \geq \frac{\sin(\theta)}{\theta} \geq \cos(\theta)
+$$
+
+
+
+This can be seen on the graph as well:
+
+<Mafs
+    viewBox={{
+        x: [-Math.PI, Math.PI],
+    }}
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => Math.sin(x) / x} color={Theme.red}/>
+    <Plot.OfX y={(x) => Math.cos(x)} />
+    <Plot.OfX y={(x) => 1} />
+</Mafs>
+
+The red line represents $\frac{\sin(\theta)}{\theta}$. Notice how it is always sandwiched between the other two lines.
+And more crucially, that they all seem to approach the same value as $x$ approaches $0$.
+To confirm, let's take the limit of all three sides as $\theta$ approaches $0$:
+
+$$
+\begin{align*}
+\lim_{\theta \to 0} 1 &\geq \lim_{\theta \to 0} \frac{\sin(\theta)}{\theta} &&\geq \lim_{\theta \to 0} \cos(\theta) \\
+1 &\geq \lim_{\theta \to 0} \frac{\sin(\theta)}{\theta} &&\geq 1
+\end{align*}
+$$
+
+And since the limit of $\cos(\theta)$ as $\theta$ approaches $0$ is 1, we can conclude that:
+
+$$
+\lim_{\theta \to 0} \frac{\sin(\theta)}{\theta} = 1
+$$
+
+That's it. We've proven that the limit of $\frac{\sin(x)}{x}$ as $x$ approaches 0 is 1.
+
+## $(\varepsilon$-$\delta)$ Definition of Limits
+
+Our definition of limits is simple and intuitive, but it's not rigorous. We can't just say "the function gets closer and closer to a value" - everything in Mathematics needs to be defined precisely.
+
+One way to define limits rigorously is using the $(\varepsilon$-$\delta)$ definition of limits, or the "epsilon-delta" definition of limits.
+
+Graphically, this is what it looks like:
+
+export function EpsilonDeltaGraph() {
+    const a = 0; // The point we're approaching
+    const f = (x) => 0.5 * x + Math.sin(x) / x;
+    const [narrow, setNarrow] = useState(0);
+    const x_diff = 1 - narrow / 5;
+
+    const x_min = a - x_diff;
+    const x_max = a + x_diff;
+    const y_min = f(x_min);
+    const y_max = f(x_max);
+
+    return (
+        <>
+            <Mafs
+                viewBox={{
+                    y: [0, 2.5],
+                }}
+            >
+                <Coordinates.Cartesian />
+                <Plot.OfX y={(x) => {
+                    if (Math.abs(x - a) < 0.035 || x < 0) {
+                        return undefined;
+                    }
+                    return f(x);
+                }} />
+                <Plot.OfX y={(x) => {
+                    if (Math.abs(x - a) < 0.035 || x > 0) {
+                        return undefined;
+                    }
+                    return f(x);
+                }} />
+                <Circle center={[a, 1]} radius={0.05} />
+
+                {/* X axis line */}
+                <Line.Segment weight={5} color={Theme.red} point1={[x_min, 0]} point2={[x_max, 0]} />
+                {/* Y axis line */}
+                <Line.Segment weight={5} color={Theme.blue} point1={[x_min, y_min]} point2={[x_min, y_max]} />
+
+                {/* X boundaries vertical lines */}
+                <Plot.OfY style="dashed" x={(y) => {
+                    if (y < 0) {
+                        return NaN;
+                    }
+                    return x_min;
+                }} />
+                <Plot.OfY style="dashed" x={(y) => {
+                    if (y < 0) {
+                        return NaN;
+                    }
+                    return x_max;
+                }} />
+
+                {/* Y boundaries horizontal lines */}
+                <Plot.OfX style="dashed" y={(x) => y_max} />
+                <Plot.OfX style="dashed" y={(x) => y_min} />
+            </Mafs>
+            {/* Slider */}
+            <input
+                type="range"
+                min="0"
+                max="4999"
+                value={narrow * 1000}
+                onChange={(e) => setNarrow(Number(e.target.value / 1000))}
+            />
+        </>
+    );
+}
+
+<EpsilonDeltaGraph />
+
+Suppose we want to find out what this function approaches as $x$ approaches $0$.
+We've already done this by looking at values around $x = 0$. In this case, we have a range of $x$ values around $0$ shown by the red lines, and a range of $f(x)$ values around $f(0)$ shown by the blue lines.
+The $(\varepsilon$-$\delta)$ definition of limits tells us that if we decrease the size of the range of $x$ values, the size of the range of $f(x)$ values also decreases.
+
+The key point being that the size of the range of $f(x)$ values can decrease however much we want (try moving that slider).
+
+How do $\varepsilon$ and $\delta$ fit into this? Take this example:
+
+$$
+\lim_{x \to a} f(x) = L
+$$
+
+Think of any distance from $L$, and call it $\varepsilon$.
+
+What it means in terms of the limit is that you will always be able to find a range of inputs around $a$, some distance $\delta$ away from $a$, such that the outputs of $f(x)$ will always be within $\varepsilon$ of $L$.
+
+And this is true for any $\varepsilon$ you choose, no matter how small.
+
+The formal way to write this is:
+
+$$
+(\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in \mathbb{R})(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)
+$$
+
+Meaning:
+
+- $(\forall \varepsilon > 0)$: For any $\varepsilon$ greater than 0,
+- $(\exists \delta > 0)$: there exists a $\delta$ greater than 0,
+- $(\forall x \in \mathbb{R})$: such that for any $x$ in the real numbers,
+- $(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)$: if $x$ is within $\delta$ of $a$, then $f(x)$ is within $\varepsilon$ of $L$.
+
+## Continuity
+
+Conceptually, a function is continuous if you can draw it without lifting your pen.
+This means that the function doesn't have any jumps or holes.
+
+Formally, a function $f(x)$ is continuous at $x = a$ if:
+
+1. $f(a)$ is defined.
+2. $\lim_{x \to a} f(x)$ exists.
+3. $\lim_{x \to a} f(x) = f(a)$.
+
+For example:
+
+$$
+f(x) = \frac{10x}{x^2 + 5x}
+$$
+
+Provided that this function is continuous for all $x \in \mathbb{R}$,
+
+$$
+\begin{align*}
+f(0) &= \lim_{x \to 0} \left(\frac{10x}{x^2 + 5x}\right) \\
+&= \lim_{x \to 0} \left(\frac{10}{x + 5}\right) \\
+&= \frac{10}{5} \\
+&= 2
+\end{align*}
+$$
+
+Counterexample:
+
+$$
+g(x) = \ln{x}
+$$
+
+Provided that this function is *not* continuous at $x = 0$,
+
+$$
+\begin{align*}
+\lim_{x \to 0} \ln{x} &\neq \ln{0} \\
+\end{align*}
+$$
+
+Hence, knowing whether a function is continuous at a point is important for understanding the behavior of the function.
+
+## Limits at Infinity
+
+Limits at infinity are used to describe the behavior of a function as $x$ gets larger and larger.
+
+### Definition
+
+The limit of $f(x)$ as $x$ approaches $\infty$ is denoted by:
+
+$$
+\lim_{x \to \infty} f(x)
+$$
+
+AKA, "what value does $f(x)$ approach as $x$ gets larger and larger?"
+
+### Simple Example
+
+$$
+\lim_{x \to \infty} \frac{1}{x} = 0
+$$
+
+This is because as $x$ gets larger and larger, $\frac{1}{x}$ gets smaller and smaller.
+As such, the limit of $\frac{1}{x}$ as $x$ approaches $\infty$ is 0.
+
+### Exponents
+
+It's often useful to think of limits at infinity in terms of exponents.
+In a fraction, it's useful to look for the highest power of $x$ in the numerator and the denominator, because that tells us how fast they grow.
+
+For instance, consider the function:
+
+$$
+f(x) = \frac{3x^3 + 4}{x - 2}
+$$
+
+As $x$ gets larger and larger, the $3x^3$ grows the fastest. The $4$, $x$, and $-2$ matter less and less.
+So while both the numerator and the denominator grow as $x$ gets larger, the numerator grows faster, and the entire fraction increases.
+Hence:
+
+$$
+\lim_{x \to \infty} \frac{3x^3 + 4}{x - 2} = \infty
+$$
+
+If the highest power of $x$ in the numerator and the denominator are the same:
+
+$$
+f(x) = \frac{3x^3 + 4x}{2x^3 - 5}
+$$
+
+If you think about it, as $x$ gets larger and larger, $3x^3$ and $2x^3$ increase, causing $4x$ and $-5$ to matter less.
+Therefore, we can ignore them for now.
+
+While the numerator and denominator grows, they grow at the same rate; $3x^3$ will always be $\frac{3}{2}$ of $2x^3$.
+Therefore:
+
+$$
+\lim_{x \to \infty} \frac{3x^3 + 4x}{2x^3 - 5} = \frac{3}{2}
+$$
+
+In general, you look for the coefficients of the highest powers.
+
+:::info
+
+Another way to think of it is,
+
+(This is purely conceptual and not mathematically precise, but is nevertheless a helpful intuition)
+
+$$
+\lim_{x \to \infty} \frac{3x^3 + 4}{x - 2} = \lim_{x \to \infty} \frac{3x^3 + 4}{0x^3 + x - 2}
+$$
+
+So, the ratio of coefficients is $\frac{3}{0}$, which is $\infty$.
+This is purely metaphorical and shouldn't be taken as a mathematical proof or be used during a test.
+
+:::
