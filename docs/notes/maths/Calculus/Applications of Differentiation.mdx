@@ -1,6 +1,68 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+
 # Applications of Differentiation
 
 Differentiation is a powerful tool in mathematics, and it has many applications in real life.
+
+## Mean Value Theorem
+
+Imagine a function $f(x)$ that is continuous over the closed interval $[a, b]$, but is differentiable over the _open_ interval $(a, b)$.
+So, at exactly $a$ and $b$, no derivative exists but there is still a point there.
+
+What the mean value theorem tells us is that at some point between $a$ and $b$, the slope at that point is equal to the average slope over the whole interval.
+
+Formally it is written like this:
+
+$$
+\frac{f(b) - f(a)}{b - a} = f'(c)
+$$
+
+Where $c$ is some point between $a$ and $b$.
+
+<Mafs
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => (x >= 0 && x <= 5) ? Math.sin(2 * x) : undefined} />
+    <Line.Segment
+        point1={[0, 0]}
+        point2={[5, Math.sin(2 * 5)]}
+        color={Theme.green}
+    />
+</Mafs>
+
+### Proof
+
+Taking the expression above (which is the average slope of the function), we get the slope of a line that intersects $(a, f(a))$ and $(b, f(b))$.
+
+Let's define a new function $g(x) = f(x) - mx$, where $m$ is a constant.
+Given that $f$ is continuous and differentiable, $g$ is also continuous and differentiable.
+
+$$
+g(a) = g(b) \iff f(a) - ma = f(b) - mb
+$$
+
+Solving for $m$ gives:
+
+$$
+\begin{align*}
+f(a) - ma &= f(b) - mb \\
+m &= \frac{f(b) - f(a)}{b - a}
+\end{align*}
+$$
+
+According to Rolle's theorem, there must be a point on the graph where it is flat (horizontal), that is, $(\exists c \in (a, b)) \, g'(c) = 0$.
+
+Based on the definition of $g(x)$:
+
+$$
+\begin{align*}
+g'(c) &= f'(c) - m = 0 \\
+f'(c) &= m \\
+f'(c) &= \frac{f(b) - f(a)}{b - a}
+\end{align*}
+$$
 
 ## Modeling Motion
 
