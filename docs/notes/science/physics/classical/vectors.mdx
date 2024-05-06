@@ -1,0 +1,551 @@
+---
+sidebar_position: 1
+---
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+
+# Vectors
+
+export function SingleVector() {
+    const v = useMovablePoint([1, 2]);
+
+    const magnitudeText = `\\|\\mathbf{v}\\| = \\sqrt{(${v.point[0].toFixed(2)})^2 + (${v.point[1].toFixed(2)})^2}`;
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+            />
+            <LaTeX
+                tex={magnitudeText}
+                at={[v.point[0] / 2 + (v.point[0] > 0 ? -2 : +2), v.point[1] / 2]}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0], 0]}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v}_x = ${v.point[0].toFixed(2)}`}
+                at={[v.point[0] / 2, -0.3]}
+            />
+
+            <Vector
+                tail={[v.point[0], 0]}
+                tip={v.point}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v}_y = ${v.point[1].toFixed(2)}`}
+                at={[v.point[0] + (v.point[0] > 0 ? 0.8 : -0.8), v.point[1] / 2]}
+            />
+
+            {v.element}
+        </Mafs>
+    );
+
+}
+
+Vectors are a mathematical object that has both magnitude and direction.
+
+Conversely, a scalar is a mathematical object that has only magnitude.
+
+:::info This page
+
+This page describes vectors in 3D space, but diagrams are in 2D for simplicity.
+The thing about vectors that makes them so useful is that they can be used in any number of dimensions, without changing the underlying mathematics.
+
+:::
+
+## Vector Notation
+
+Vectors are typically denoted by a lowercase boldface letter, like $\mathbf{v}$.
+
+Alternatively, a vector can be denoted by a letter with an arrow on top, like $\vec{v}$.
+Both are valid notations.
+
+## Magnitude
+
+The magnitude of a vector $\mathbf{v}$ is denoted by $\|\mathbf{v}\|$, and it is the length of the vector.
+Sometimes a single bar is used, like $|v|$, but this can be confused with the absolute value of a scalar.
+
+<SingleVector />
+
+## Addition
+
+Firstly think of a vector as a displacement in space, like moving by some amount in some direction.
+
+Adding two vectors is like moving by the first vector and then moving by the second vector.
+
+Addition is commutative, meaning $\mathbf{v} + \mathbf{w} = \mathbf{w} + \mathbf{v}$. This can be visually seen:
+
+export function VectorAddition() {
+    const v = useMovablePoint([1, 2]);
+    const w = useMovablePoint([2, 1]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={Theme.red}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v}`}
+                at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={w.point}
+                color={Theme.blue}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{w}`}
+                at={lineLabel([0, 0], w.point, "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0] + w.point[0], v.point[1] + w.point[1]]}
+                color={Theme.green}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v} + \mathbf{w}`}
+                at={lineLabel([0, 0], [v.point[0] + w.point[0], v.point[1] + w.point[1]], "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={w.point}
+                tip={[v.point[0] + w.point[0], v.point[1] + w.point[1]]}
+                color={Theme.red}
+            />
+            <Vector
+                tail={v.point}
+                tip={[v.point[0] + w.point[0], v.point[1] + w.point[1]]}
+                color={Theme.blue}
+            />
+
+            {v.element}
+            {w.element}
+        </Mafs>
+    );
+
+}
+
+<VectorAddition />
+
+The red and blue vectors are the original vectors, and the green vector is the sum of the two.
+You can see that the green vector is the same no matter which order you add the red and blue vectors.
+
+The addition of vectors is also associative, meaning $(\mathbf{v} + \mathbf{w}) + \mathbf{u} = \mathbf{v} + (\mathbf{w} + \mathbf{u})$.
+
+export function VectorAdditionAssociative() {
+    const v = useMovablePoint([1, 2]);
+    const w = useMovablePoint([2, 1]);
+    const u = useMovablePoint([1, 1]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={Theme.red}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v}`}
+                at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={w.point}
+                color={Theme.blue}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{w}`}
+                at={lineLabel([0, 0], w.point, "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={u.point}
+                color={Theme.green}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{u}`}
+                at={lineLabel([0, 0], u.point, "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0] + w.point[0] + u.point[0], v.point[1] + w.point[1] + u.point[1]]}
+                color={Theme.purple}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v} + \mathbf{w} + \mathbf{u}`}
+                at={lineLabel([0, 0], [v.point[0] + w.point[0] + u.point[0], v.point[1] + w.point[1] + u.point[1]], "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={w.point}
+                tip={[v.point[0] + w.point[0], v.point[1] + w.point[1]]}
+                color={Theme.red}
+            />
+            <Vector
+                tail={u.point}
+                tip={[v.point[0] + w.point[0] + u.point[0], v.point[1] + w.point[1] + u.point[1]]}
+                color={Theme.blue}
+            />
+            <Vector
+                tail={v.point}
+                tip={[v.point[0] + w.point[0], v.point[1] + w.point[1]]}
+                color={Theme.green}
+            />
+
+            {v.element}
+            {w.element}
+            {u.element}
+        </Mafs>
+    );
+
+}
+
+<VectorAdditionAssociative />
+
+## Identity Element
+
+The identity element for vector addition is the zero vector, denoted by $\mathbf{0}$.
+The zero vector has a magnitude of 0 and is the only vector that has a magnitude of 0.
+
+Formally, $(\exists \mathbf{0} \in \mathbb{R}^n) \, \forall \mathbf{v} \in \mathbb{R}^n \, \mathbf{v} + \mathbf{0} = \mathbf{v}$.
+This means that adding the zero vector to any vector gives the original vector.
+
+## Inverse Element
+
+There's also an inverse element for vector addition, denoted by $-\mathbf{v}$.
+The inverse element is the vector that, when added to the original vector, gives the zero vector.
+
+Formally, $(\forall \mathbf{v} \in \mathbb{R}^n) \, \exists -\mathbf{v} \in \mathbb{R}^n \, \mathbf{v} + (-\mathbf{v}) = \mathbf{0}$.
+
+Conceptually, it's like going in some direction and then going back in the opposite direction.
+
+## Scalar Multiplication
+
+Scalar multiplication is multiplying a vector by a scalar (a number).
+Multiplying by the magnitude of a vector is the same as the magnitude of a vector multiplied by a scalar.
+Meaning, $c\|\mathbf{v}\| = \|c\mathbf{v}\|$.
+
+export function ScalarMultiplication() {
+    const v = useMovablePoint([1, 2]);
+    const scalar = useState(2);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0] * scalar[0], v.point[1] * scalar[0]]}
+                color={Theme.blue}
+                weight={4}
+            />
+            <LaTeX
+                tex={String.raw`2\mathbf{v}`}
+                at={lineLabel(v.point, [v.point[0] * scalar[0], v.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={Theme.red}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v}`}
+                at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
+            />
+
+            {v.element}
+        </Mafs>
+    );
+
+}
+
+<ScalarMultiplication />
+
+Scalar multiplication is associative, meaning $c(d\mathbf{v}) = (cd)\mathbf{v}$.
+
+## Distributive Law
+
+Scalar multiplication is distributive over vector addition, meaning $c(\mathbf{v} + \mathbf{w}) = c\mathbf{v} + c\mathbf{w}$.
+
+export function DistributiveLaw() {
+    const v = useMovablePoint([1, 2]);
+    const w = useMovablePoint([2, 1]);
+    const scalar = useState(2);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0] + w.point[0], v.point[1] + w.point[1]]}
+                color={Theme.green}
+            />
+            <LaTeX
+                tex={String.raw`\mathbf{v} + \mathbf{w}`}
+                at={lineLabel([0, 0], [v.point[0] + w.point[0], v.point[1] + w.point[1]], "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0] * scalar[0], v.point[1] * scalar[0]]}
+                color={Theme.red}
+            />
+            <LaTeX
+                tex={String.raw`2\mathbf{v}`}
+                at={lineLabel([0, 0], [v.point[0] * scalar[0], v.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[w.point[0] * scalar[0], w.point[1] * scalar[0]]}
+                color={Theme.orange}
+            />
+            <LaTeX
+                tex={String.raw`2\mathbf{w}`}
+                at={lineLabel([0, 0], [w.point[0] * scalar[0], w.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0] * scalar[0] + w.point[0] * scalar[0], v.point[1] * scalar[0] + w.point[1] * scalar[0]]}
+                color={Theme.purple}
+            />
+            <LaTeX
+                tex={String.raw`2\mathbf{v} + 2\mathbf{w}`}
+                at={lineLabel([0, 0], [v.point[0] * scalar[0] + w.point[0] * scalar[0], v.point[1] * scalar[0] + w.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
+            />
+
+            {v.element}
+            {w.element}
+        </Mafs>
+    );
+
+}
+
+<DistributiveLaw />
+
+## Identity Element for Scalar Multiplication
+
+The identity element for scalar multiplication is 1.
+This means that $1\mathbf{v} = \mathbf{v}$.
+
+## Coordinate Systems
+
+Coordinate systems are used to describe the position of vectors in space.
+A coordinate system can be broken down into these components:
+
+1. **Origin**: The point where all axes intersect.
+2. **Axes**: Lines that extend from the origin in different directions. For example $x$, $y$, and $z$ axes.
+3. **Positive Direction**: The direction in which the axes increase (more positive).
+4. **Basis Vectors**: Vectors of length 1 that point in the positive direction of each axis.
+
+### Cartesian Coordinates
+
+Cartesian coordinates are the most common coordinate system.
+The components of the Cartesian coordinate system include:
+
+1. **Origin**: denoted as $(0, 0, 0)$.
+2. **Axes**: $x$, $y$, and $z$ axes.
+3. **Positive Direction**: We are free to choose the positive direction of each axis. In physics it's best to choose it such that it best fits a given problem. Many problems that are difficult to solve in the conventional choices can be solved much more easily by choosing different axes.
+
+For the basis vectors, let $\mathbf{P}$ be a point in space. For that point, the basis vectors are:
+
+-   $\hat{\mathbf{i}}_P$: The basis vector in the direction of the $x$-axis.
+-   $\hat{\mathbf{j}}_P$: The basis vector in the direction of the $y$-axis.
+-   $\hat{\mathbf{k}}_P$: The basis vector in the direction of the $z$-axis.
+
+If another point $\mathbf{Q}$ is chosen, the basis vectors remain the same; $\hat{\mathbf{i}}_Q = \hat{\mathbf{i}}_P$, $\hat{\mathbf{j}}_Q = \hat{\mathbf{j}}_P$, and $\hat{\mathbf{k}}_Q = \hat{\mathbf{k}}_P$.
+Therefore, the references are dropped and the basis vectors are denoted as $\hat{\mathbf{i}}$, $\hat{\mathbf{j}}$, and $\hat{\mathbf{k}}$.
+
+<Mafs>
+    <Coordinates.Cartesian />
+</Mafs>
+
+### Cylindrical Coordinates
+
+Cylindrical coordinates are a different way to describe the position of a point in space.
+The components of the cylindrical coordinate system include:
+
+1. **Origin**: just like in Cartesian coordinates, denoted as $(0, 0, 0)$.
+2. **Axes**: $r$, $\theta$, and $z$ axes. The $r$ axis is the distance from the origin, $\theta$ is the angle from the $x$-axis, and $z$ is the same as the $z$ axis in Cartesian coordinates.
+3. **Positive Direction**: The positive direction of the $r$ axis is outwards from the origin, the positive direction of the $\theta$ axis is counterclockwise from the $x$-axis, and the positive direction of the $z$ axis is the same as the $z$ axis in Cartesian coordinates.
+
+Unlike Cartesian coordinates, the basis vectors in cylindrical coordinates change based on the point.
+Hence, references are kept, and for point $\mathbf{P}$, the basis vectors are:
+
+-   $\hat{\mathbf{r}}_P$: The basis vector in the direction of the $r$-axis.
+-   $\hat{\mathbf{\theta}}_P$: The basis vector in the direction of the $\theta$-axis.
+-   $\hat{\mathbf{k}}_P$: The basis vector in the direction of the $z$-axis.
+
+(Diagram coming soon)
+
+In this system, the $r$ and $\theta$ components are polar coordinates.
+To convert between Cartesian and cylindrical coordinates, trigonometry is used:
+
+$$
+\begin{align*}
+x &= r\cos(\theta) \\
+y &= r\sin(\theta) \\
+z &= z
+\end{align*}
+$$
+
+export function CylindricalCoordinates() {
+    const v = useMovablePoint([1, 2]);
+    const length = Math.sqrt(v.point[0] ** 2 + v.point[1] ** 2);
+    const angle = Math.atan2(v.point[1], v.point[0]);
+
+    const basisRTip = [Math.cos(angle), Math.sin(angle)];
+    const basisThetaTip = [-Math.sin(angle), Math.cos(angle)];
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={Theme.red}
+            />
+            <LaTeX
+                tex={String.raw`r`}
+                at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={[v.point[0], 0]}
+                color={Theme.blue}
+            />
+            <LaTeX
+                tex={String.raw`x`}
+                at={lineLabel([0, 0], [v.point[0], 0], "right", { sideOffset: 0.3 })}
+            />
+            <Vector
+                tail={[v.point[0], 0]}
+                tip={v.point}
+                color={Theme.green}
+            />
+            <LaTeX
+                tex={String.raw`y`}
+                at={lineLabel([v.point[0], 0], v.point, "above", { sideOffset: 0.3 })}
+            />
+
+            {/* Unfortunately the angle must be manually created using an arc */}
+            <Plot.Parametric
+                xy={(t) => [0.5 * Math.cos(Math.PI / 4 * t), 0.5 * Math.sin(Math.PI / 4 * t)]}
+                t={[0, angle / (Math.PI / 4)]}
+            />
+
+            {/* Circle */}
+            <Circle
+                center={[0, 0]}
+                radius={length}
+                color={Theme.blue}
+            />
+
+            {/* Basis vectors */}
+            <Transform
+                translate={v.point}
+            >
+                {/* i */}
+                <Vector
+                    tail={[0, 0]}
+                    tip={[1, 0]}
+                    color={Theme.blue}
+                />
+                <LaTeX
+                    tex={String.raw`\hat{\mathbf{i}}`}
+                    at={[1.3, 0]}
+                />
+
+                {/* j */}
+                <Vector
+                    tail={[0, 0]}
+                    tip={[0, 1]}
+                    color={Theme.green}
+                />
+                <LaTeX
+                    tex={String.raw`\hat{\mathbf{j}}`}
+                    at={[0, 1.3]}
+                />
+
+                {/* r */}
+                <Vector
+                    tail={[0, 0]}
+                    tip={basisRTip}
+                    color={Theme.red}
+                />
+                <LaTeX
+                    tex={String.raw`\hat{\mathbf{r}}`}
+                    at={basisRTip}
+                />
+
+                {/* theta */}
+                <Vector
+                    tail={[0, 0]}
+                    tip={basisThetaTip}
+                    color={Theme.purple}
+                />
+                <LaTeX
+                    tex={String.raw`\hat{\mathbf{\theta}}`}
+                    at={basisThetaTip}
+                />
+            </Transform>
+
+            {/* Arc from i to r */}
+            <Plot.Parametric
+                xy={(t) => [0.5 * Math.cos(Math.PI / 4 * t) + v.point[0], 0.5 * Math.sin(Math.PI / 4 * t) + v.point[1]]}
+                t={[0, angle / (Math.PI / 4)]}
+                color={Theme.red}
+            />
+
+            {/* Arc from j to theta */}
+            <Plot.Parametric
+                xy={(t) => [0.4 * Math.cos(Math.PI / 4 * t) + v.point[0], 0.4 * Math.sin(Math.PI / 4 * t) + v.point[1]]}
+                t={[(Math.PI / 2) / (Math.PI / 4), (angle + Math.PI / 2) / (Math.PI / 4)]}
+                color={Theme.red}
+            />
+
+            {v.element}
+        </Mafs>
+    );
+
+}
+
+<CylindricalCoordinates />
+
+Likewise,
+
+$$
+\begin{align*}
+r &= \sqrt{x^2 + y^2} \\
+\theta &= \tan^{-1}\left(\frac{y}{x}\right) \\
+z &= z
+\end{align*}
+$$
+
+## Vector Product (Cross Product)
+
+The cross product of two vectors $\mathbf{v}$ and $\mathbf{w}$ is denoted by $\mathbf{v} \times \mathbf{w}$.

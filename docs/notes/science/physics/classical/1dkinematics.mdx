@@ -1,0 +1,362 @@
+---
+sidebar_position: 2
+---
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentiation";
+
+# One-Dimensional Kinematics
+
+One-dimensional kinematics is the study of motion in one dimension.
+
+## Kinematics vs Dynamics
+
+Kinematics studies how objects move, considering the various trajectories and velocities.
+
+On the other hand, dynamics studies the causes of motion, the forces that cause objects to move.
+
+## Position
+
+Position is the location of an object in space. It is a vector quantity, meaning it has both magnitude and direction.
+
+Usually, position is denoted as a function of time $\mathbf{r}(t)$, where $t$ is time.
+In one-dimensional kinematics, the position can be written as $x(t)\hat{\mathbf{i}}$. Here, $\hat{\mathbf{i}}$ is the unit vector in the direction of motion.
+
+{(() => {
+    const x = useMovablePoint([2, 0], { constrain: ([x, y]) => [x, 0] });
+    return <Mafs>
+        <Coordinates.Cartesian />
+        <Vector
+            tail={[0, 0]}
+            tip={x.point}
+            color={Theme.green}
+        />
+        <LaTeX
+            tex={`\\mathbf{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\mathbf{i}}`}
+            at={[x.point[0] / 2, 0.3]}
+        />
+
+        <Vector
+            tail={[0, 0]}
+            tip={[1, 0]}
+            color={Theme.red}
+        />
+        <LaTeX
+            tex={`\\hat{\\mathbf{i}}`}
+            at={[0.5, -0.3]}
+        />
+        {x.element}
+</Mafs>
+})()}
+
+## Displacement
+
+Displacement is the change in position of an object, or $\Delta \mathbf{r}$. It is also a vector quantity.
+Displacement can be expressed as follows:
+
+$$
+\Delta \mathbf{r} = \mathbf{r}(t_2) - \mathbf{r}(t_1)
+$$
+
+In one-dimensional kinematics, the displacement can be written as:
+
+$$
+\Delta \mathbf{r} = x(t_2)\hat{\mathbf{i}} - x(t_1)\hat{\mathbf{i}} \equiv \Delta x\hat{\mathbf{i}}
+$$
+
+## Velocity
+
+Velocity is the rate of change of position with respect to time. It is a vector quantity.
+The SI unit of velocity is meters per second ($\text{ms}^{-1}$).
+
+The average velocity, which is the average rate of change of position, is given by:
+
+$$
+\mathbf{v}_{\text{avg}} = \frac{\Delta \mathbf{r}}{\Delta t}
+$$
+
+In one-dimensional kinematics, the average velocity can be written as:
+
+$$
+v_{\text{avg}} = \frac{\Delta x}{\Delta t} = \frac{x(t + \Delta t) - x(t)}{\Delta t}
+$$
+
+<DerivativeFromLimits yvar="x" xvar="t" />
+
+The instantaneous velocity is the velocity at a specific point in time. It is the limit of the average velocity as the time interval approaches zero:
+
+$$
+v = \lim_{\Delta t \to 0} \frac{x(t + \Delta t) - x(t)}{\Delta t} = \frac{dx}{dt}
+$$
+
+The vector form of velocity is:
+
+$$
+\mathbf{v} = \frac{d\mathbf{r}}{dt}
+$$
+
+And in one-dimensional kinematics:
+
+$$
+\mathbf{v} = \frac{d}{dt}(x\hat{\mathbf{i}}) = \frac{dx}{dt}\hat{\mathbf{i}}
+$$
+
+## Acceleration
+
+Acceleration is the rate of change of velocity with respect to time. It is a vector quantity.
+The SI unit of acceleration is meters per second squared ($\text{ms}^{-2}$).
+
+The average acceleration, which is the average rate of change of velocity, is given by:
+
+$$
+\mathbf{a}_{\text{avg}} = \frac{\Delta \mathbf{v}}{\Delta t}
+$$
+
+In one-dimensional kinematics, the average acceleration can be written as:
+
+$$
+a_{\text{avg}} = \frac{\Delta v}{\Delta t} = \frac{v(t + \Delta t) - v(t)}{\Delta t}
+$$
+
+Just like velocity, the instantaneous acceleration is the acceleration at a specific point in time. It is the limit of the average acceleration as the time interval approaches zero:
+
+$$
+a = \lim_{\Delta t \to 0} \frac{v(t + \Delta t) - v(t)}{\Delta t} = \frac{dv}{dt}
+$$
+
+The vector form of acceleration is:
+
+$$
+\mathbf{a} = \frac{d\mathbf{v}}{dt}
+$$
+
+And in one-dimensional kinematics:
+
+$$
+\mathbf{a} = \frac{d}{dt}(v\hat{\mathbf{i}}) = \frac{dv}{dt}\hat{\mathbf{i}}
+$$
+
+## Constant Acceleration
+
+If acceleration is constant, problems are very easy to solve.
+
+Let $a(t) = a$ where $a$ is a constant.
+
+For a constant slope of $a$, the velocity-time graph is a straight line.
+It can move anywhere vertically. Let the initial velocity be $v(0) = v_0$. Sometimes $v_0$ is written as $u$.
+
+{(() => {
+    const v0 = useMovablePoint([0, 1], { constrain: ([x, y]) => [0, y] });
+    return <Mafs
+        viewbox={{
+            x: [-1, 10],
+            y: [-1, 5]
+        }}
+    >
+        <Coordinates.Cartesian />
+        <Plot.OfX
+            y={(t) => v0.point[1] + t / 2}
+        />
+        <LaTeX
+            tex={`v(t) = ${v0.point[1].toFixed(2)} + at`}
+            at={[2, v0.point[1] + 2]}
+        />
+        {v0.element}
+
+        {/* bottom rectangle */}
+        <Polygon
+            points={[
+                [0, 0],
+                [0, v0.point[1]],
+                [5, v0.point[1]],
+                [5, 0]
+            ]}
+        />
+        <LaTeX
+            tex={`A_1`}
+            at={[2.5, v0.point[1] / 2]}
+        />
+
+        {/* top triangle */}
+        <Polygon
+            points={[
+                [0, v0.point[1]],
+                [5, v0.point[1]],
+                [5, v0.point[1] + 2.5]
+            ]}
+        />
+        <LaTeX
+            tex={`A_2`}
+            at={[3, v0.point[1] + 1]}
+        />
+    </Mafs>
+})()}
+
+Shown above is the velocity-time graph for a constant acceleration.
+The displacement of the object is the area under the graph, which can be divided into two parts: $A_1$ and $A_2$.
+$x_0$ is the initial position of the object. Changing $x_0$ does not affect the velocity-time graph.
+
+$$
+\begin{align*}
+x(t) &= x_0 + A_1 + A_2 \\
+&= x_0 + v_0 t + \frac{1}{2} a t^2
+\end{align*}
+$$
+
+In vector form in one-dimensional kinematics, the displacement can be written as:
+
+$$
+\mathbf{x}(t) = \mathbf{x}_0 + \mathbf{v}_0 t + \frac{1}{2} \mathbf{a} t^2
+$$
+
+## Example: Vehicles
+
+Imagine a train traveling at a constant velocity of $20 \text{ms}^{-1}$.
+Then, imagine a road parallel to the train tracks, with a car stopping at a traffic light.
+
+The moment the traffic light turns green, the train passes the car, and the car starts accelerating at $2 \text{ms}^{-2}$.
+At what time does the car catch up to the train?
+
+To solve this problem, first evaluate the position functions for both the train and the car.
+
+For the train, the position function is:
+
+$$
+x_{\text{train}}(t) = v_{\text{train}} t
+$$
+
+For the car, the position function is:
+
+$$
+x_{\text{car}}(t) = \frac{1}{2} a_{\text{car}} t^2
+$$
+
+When the car catches up to the train, that means the positions are equal, so the lines on the graph intersect.
+
+<Mafs
+    viewBox={{
+        x: [-1, 25],
+        y: [-50, 500]
+    }}
+    preserveAspectRatio={false}
+>
+    <Coordinates.Cartesian
+        yAxis={{
+            labels: (n) => n % 50 === 0 ? n : "",
+            lines: 10,
+        }}
+    />
+    <Plot.OfX
+        y={(t) => 20 * t}
+    />
+    <Plot.OfX
+        y={(t) => t ** 2}
+    />
+</Mafs>
+
+$$
+\begin{align*}
+x_{\text{car}}(t) &= x_{\text{train}}(t) \\
+\frac{1}{2} a_{\text{car}} t^2 &= v_{\text{train}} t \\
+t &= \frac{2 v_{\text{train}}}{a_{\text{car}}} \\
+&= \frac{2 \times 20 \text{ms}^{-1}}{2 \text{ms}^{-2}} \\
+&= 20 \text{s}
+\end{align*}
+$$
+
+The car catches up to the train at $t = 20 \text{s}$. (Technically the algebra neglected $t = 0$ as a solution, which is the initial position of the car.)
+
+To find out how far the car has traveled, substitute $t = 20$ into the car's position function:
+
+$$
+x_{\text{car}}(20) = 20^2 = 400 \text{m}
+$$
+
+The car has traveled $400 \text{m}$ when it catches up to the train.
+
+## Non-Constant Acceleration
+
+For non-constant acceleration, the velocity-time graph is not a straight line.
+
+To get the velocity, we need to make use of calculus.
+
+$$
+a(t) = \frac{dv}{dt} \implies v(t) = \int a(t) \, dt
+$$
+
+This is an antiderivative, which is the reverse of differentiation.
+For example, if $a(t) = bt^2$ where $b$ is a constant, then:
+
+$$
+v(t) = \int bt^2 \, dt = \frac{1}{3} bt^3 + v_0
+$$
+
+Consider an acceleration-time graph. The area under the graph is the velocity.
+The area is thought of as a sum of rectangles, each with a width of $dt$ and a height of $a(t)$.
+To find the area, notice that a small change in time $dt$ incurs a small change in area, which is a rectangle and as such can be calculated as $a(t) dt$.
+
+{(() => {
+    const k = 3
+    const f = (t) => -3 * Math.exp(-0.3 * t) + k
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Plot.OfX y={f} />
+            <Line.Segment
+                point1={[3, 0]}
+                point2={[3, f(3)]}
+                color={Theme.white}
+            />
+            <Line.Segment
+                point1={[3.5, 0]}
+                point2={[3.5, f(3.5)]}
+                color={Theme.green}
+            />
+            <Polygon
+                points={[
+                    [3, 0],
+                    [3, f(3)],
+                    [3.5, f(3)],
+                    [3.5, 0]
+                ]}
+                color={Theme.green}
+            />
+
+            {/* Rectangles from 0 to 3 increment 0.5 */}
+            {Array.from({ length: 6 }).map((_, i) => (
+                <Polygon
+                    key={i}
+                    points={[
+                        [i / 2, 0],
+                        [i / 2, f(i / 2)],
+                        [(i + 1) / 2, f(i / 2)],
+                        [(i + 1) / 2, 0]
+                    ]}
+                    fill={Theme.green}
+                    fillOpacity={0.5}
+                />
+            ))}
+        </Mafs>
+    )
+})()}
+
+$$
+d\text{Area} = dv = a(t) \, dt \implies \frac{dv}{dt} = a(t)
+$$
+
+And therefore,
+
+$$
+\int_{t_i}^{t} a(t) \, dt = v(t) + C
+$$
+
+When $t = t_i$, the area from $t_i$ to $t$ is 0, so $C = -v(t_i)$.
+Hence,
+
+$$
+\int_{t_i}^{t} a(t) \, dt = v(t) - v(t_i)
+$$
+
+This is the fundamental theorem of calculus.
