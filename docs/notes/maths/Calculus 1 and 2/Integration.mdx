@@ -1,0 +1,605 @@
+---
+sidebar_position: 5
+---
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+import range from "lodash/range";
+import { lineLabel } from "@site/src/utilities/lines";
+
+# Integration
+
+Integration is the process of finding the integral of a function. It is the reverse process of differentiation, and is used to find the area under a curve, the volume of a solid, and many other quantities.
+
+## Area Under a Curve through Accumulation of Infinitesimal Areas
+
+Imagine a curve like this one:
+
+<Mafs
+    viewBox={{
+        x: [-1, 6],
+        y: [-1, 6]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={(x) => x * (5 - x)}
+    />
+</Mafs>
+
+This is a curve defined by the function $v(x) = x(5 - x)$.
+Let this be the velocity of a vehicle at time $t$ (imagine it as a reading on the speedometer).
+
+From differentiation we know that the derivative of the displacement function $s(t)$ is the velocity function $v(t)$.
+In other words, $\frac{ds}{dt}(t) = v(t)$.
+
+If we want to find the displacement of the vehicle at time $t$, we need to find a function $s(t)$ whose derivative is $v(t)$.
+This is known as the antiderivative of $v(t)$.
+
+A visual representation of this is the area under the curve of $v(t)$ from $0$ to $t$.
+Since you can't just find the area (for now), you can approximate it by finding the area of rectangles.
+
+A visualization is shown below:
+
+{(() => {
+    const ub = useMovablePoint([3, 0], {
+        constrain: ([x, y]) => [Math.min(Math.max(x, 0), 5), 0]
+    });
+    const [n, setN] = useState(10);
+    return (
+        <div className="card">
+            <div className="card__header">
+                <h2>Area Under a Curve</h2>
+            </div>
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [-1, 6],
+                        y: [-1, 6]
+                    }}
+                >
+                    <Coordinates.Cartesian />
+                    {ub.element}
+                    <RiemannApproximation
+                        f={(x) => x * (5 - x)}
+                        lb={0}
+                        ub={ub.point[0]}
+                        n={n}
+                    />
+                </Mafs>
+                {/* Slider */}
+                <input
+                    type="range"
+                    min={1}
+                    max={100}
+                    value={n}
+                    onChange={(e) => setN(parseInt(e.target.value))}
+                    style={{ width: "100%" }}
+                />
+                <p>Number of rectangles: {n}</p>
+            </div>
+        </div>
+    )
+})()}
+
+For each rectangle at time $t_i$, the width is $\Delta t$ and the height is $v(t_i)$. Hence, the area of the rectangle is $v(t_i) \Delta t$.
+The total area is the sum of the areas of all the rectangles:
+
+$$
+\text{Area} = \sum_{i} v(t_i) \Delta t
+$$
+
+Because $\Delta t \to 0$, the sum becomes a "continuous sum". This is what we call an integral:
+
+$$
+\text{Area} = \int_{0}^{T_1} v(t) dt
+$$
+
+### Accumulation of Areas and the Fundamental Theorem of Calculus
+
+Now, let's consider how to actually compute the area. Recall that the area of the velocity curve is equivalent to the displacement of the vehicle.
+
+In other words:
+
+$$
+s(T_1) = \int_{0}^{T_1} v(t) dt
+$$
+
+Additionally, recall that to find the slope of a function, we took an infinitesimal change in $x$ and found the change in $y$.
+We can apply the same principle here: if we increment $t$, then we can calculate the change in the area.
+
+{(() => {
+    const T = 3;
+    const dT = 0.3;
+    const f = (x) => x * (5 - x);
+    const boundedFunction = (x) => x > 3 ? 0 : f(x);
+    return (
+        <Mafs
+            viewBox={{
+                x: [-1, 6],
+                y: [-1, 6]
+            }}
+        >
+            <Coordinates.Cartesian/>
+            <Plot.OfX
+                y={f}
+            />
+            <Plot.Inequality
+                y={{
+                    "<=": boundedFunction,
+                    ">": (x) => 0
+                }}
+            />
+            <Polygon
+                points={[
+                    [T, 0],
+                    [T, f(T)],
+                    [T + dT, f(T)],
+                    [T + dT, 0]
+                ]}
+                color={Theme.green}
+                fillOpacity={0.5}
+            />
+        </Mafs>
+    )
+})()}
+
+At time $T_1$, if we increment $t$ by $\Delta t$, then the area will be added by another rectangle, as shown above in green.
+The width of the rectangle is $\Delta t$ and the height is $v(T_1)$.
+Therefore:
+
+$$
+\Delta s = v(T_1) \Delta t
+$$
+
+And if we rearrange:
+
+$$
+\frac{\Delta s}{\Delta t} = v(t)
+$$
+
+And as $\Delta t \to 0$:
+
+$$
+\frac{ds}{dt} = v(t)
+$$
+
+We have derived something known as the fundamental theorem of calculus:
+
+<Boxed>
+$$
+\begin{aligned}
+    \frac{ds}{dt} &= v(t) \\
+    s(T_1) &= \int_{0}^{T_1} v(t) dt
+\end{aligned}
+$$
+</Boxed>
+
+## The Antiderivative
+
+As shown above, the fundamental theorem of calculus states that the antiderivative of a function is the area under the curve of the function.
+
+To find the antiderivative of a function, we take what we know about differentiation and work backwards.
+
+For example, consider the antiderivative of $x^n$.
+Recall that the derivative of $x^a$ is $ax^{a - 1}$.
+To get rid of the coefficient, simply divide by $a$; so the derivative of $x^a/a$ is $x^{a - 1}$.
+
+If we posit $x^n = x^{a - 1}$, then $a - 1 = n$ and $a = n + 1$.
+
+Therefore, the antiderivative of $x^n$ is $x^{n + 1}/(n + 1)$.
+
+### Antiderivative Notation
+
+The antiderivative of a function $f(x)$ is denoted as $\int f(x) dx$. When we took the antiderivative of $x^n$, we can write it as:
+
+$$
+\int x^n dx = \frac{x^{n + 1}}{n + 1}
+$$
+
+**HOWEVER**, we are missing something. Let's say $n = 4$. Then the antiderivative of $x^4$ is $x^5/5$.
+
+Recall that the antiderivative is the function whose derivative is the original function.
+
+Since the derivative of $x^5/5$ is $5x^4$, it is the antiderivative of $x^4$.
+However, the derivative of $x^5/5 + 1$ is $5x^4$ as well, as well as the derivative of $x^5/5 + 2$, and so on, since the derivative of a constant is $0$.
+
+Visually, this looks like moving the antiderivative up and down the $y$-axis:
+
+{(() => {
+    const f = (x) => x ** 4;
+    const F = (x) => x ** 5 / 5;
+    const offset = useMovablePoint([0, 0], {
+        constrain: ([x, y]) => [0, y]
+    });
+    return (
+        <Mafs
+            viewBox={{
+                x: [-1, 6],
+                y: [-1, 6]
+            }}
+        >
+            <Coordinates.Cartesian/>
+            <Plot.OfX
+                y={(x) => F(x) + offset.point[1]}
+            />
+            {offset.element}
+        </Mafs>
+    )
+})()}
+
+We can denote this constant as $C$. Therefore, we can revise our antiderivative as:
+
+$$
+\int x^n dx = \frac{x^{n + 1}}{n + 1} + C
+$$
+
+We have now found the antiderivative of $x^n$, known as the power rule of integration.
+
+## Definite Integrals
+
+Now let's connect the antiderivative to the area under the curve. Using what we know so far:
+
+$$
+\int_{0}^{T_1} v(t) dt = s(T_1) + C
+$$
+
+However, what do we set $C$ as? It can't be any constant, since the area under the curve is a specific value.
+To solve this conundrum, we introduce the concept of a definite integral. Let's say we want to find the area under the curve of $v(t)$ from $0$ to $0$.
+This is obviously $0$, so:
+
+$$
+\int_{0}^{0} v(t) dt = 0 = s(0) + C
+$$
+
+Therefore, $C = -s(0)$. This is the basis of the definite integral:
+
+$$
+\int_{0}^{T_1} v(t) dt = s(T_1) - s(0)
+$$
+
+We can also replace $0$ with any arbitrary constant. For example, if we want to find the area under the curve of $v(t)$ from $T_0$ to $T_1$:
+
+$$
+\int_{T_0}^{T_1} v(t) dt = s(T_1) - s(T_0)
+$$
+
+Notice that the area under the curve is derived solely from the endpoints $T_0$ and $T_1$, and nothing in between.
+
+## Average Value of a Function
+
+Usually, when we talk about the average of a set of numbers, we think of a discrete set of values, like the average of $1, 2, 3, 4, 5$.
+Calculus is all about extending discrete concepts to continuous ones, so we can also find the average value of a continuous function.
+
+Let's once again consider the velocity function $v(t)$, and split it into $n$ intervals of width $\Delta t$.
+
+{(() => {
+    const n = 5;
+    const f = (x) => x * (5 - x);
+    return (
+        <Mafs
+            viewBox={{
+                x: [-1, 6],
+                y: [-1, 6]
+            }}
+        >
+            <Coordinates.Cartesian />
+            <RiemannApproximation
+                f={(x) => x * (5 - x)}
+                lb={0}
+                ub={3}
+                n={n}
+            />
+        </Mafs>
+    )
+})()}
+
+The average value of a set of numbers is the sum of the numbers divided by the count:
+
+$$
+\text{Average} = \frac{\sum_{i} v(t_i)}{n}
+$$
+
+Let's consider what $n$ is in a discrete context. It is the number of intervals ($\Delta t$) we split the function into.
+Therefore, it can be represented as the length of the interval divided by $\Delta t$:
+
+$$
+\begin{equation}
+n = \frac{T_1 - T_0}{\Delta t}
+\end{equation}
+$$
+
+Therefore, the average value of a function is:
+
+$$
+\text{Average} = \frac{\sum_{i} v(t_i)}{\frac{T_1 - T_0}{\Delta t}} = \frac{\sum_{i} v(t_i) \Delta t}{T_1 - T_0}
+$$
+
+The numerator should look familiar: it is the area under the curve of $v(t)$ from $T_0$ to $T_1$.
+
+Therefore, the average value of a function is:
+
+$$
+\text{Average} = \frac{\int_{T_0}^{T_1} v(t) dt}{T_1 - T_0} = \frac{s(T_1) - s(T_0)}{T_1 - T_0}
+$$
+
+## Riemann Sums
+
+When we approximated the area under the curve of $v(t)$, we used rectangles. Now we will go into more detail about this process.
+
+What we did is known as a Riemann sum. Let's once again consider the velocity function $v(t)$:
+
+{(() => {
+    const n = 5;
+    const f = (x) => x * (5 - x);
+    const lb = 0, ub = 3, dt = (ub - lb) / n;
+    /** @type {"left" | "right" | "middle" | "trapezoidal"} */
+    const [type, setType] = useState("left");
+    return (
+        <>
+            <Mafs
+                viewBox={{
+                    x: [-1, 6],
+                    y: [-1, 6]
+                }}
+            >
+                <Coordinates.Cartesian />
+                <RiemannApproximation
+                    f={(x) => x * (5 - x)}
+                    lb={lb}
+                    ub={ub}
+                    n={n}
+                    type={type}
+                />
+                {range(lb, ub, dt).map((t, i) => (
+                    <>
+                        <Vector
+                            tail={[t, 0]}
+                            tip={[t + dt, 0]}
+                            color={Theme.green}
+                        />
+                        <LaTeX
+                            at={[t + dt, -0.5]}
+                            tex={`t_${i + 1}`}
+                        />
+                    </>
+                ))}
+            </Mafs>
+            <select
+                value={type}
+                onChange={(e) => setType(e.target.value)}
+            >
+                <option value="left">Left</option>
+                <option value="right">Right</option>
+                <option value="middle">Middle</option>
+                <option value="trapezoidal">Trapezoidal</option>
+            </select>
+        </>
+    )
+})()}
+
+Riemann sums can be categorized into different types:
+
+- The **left Riemann sum** uses the left endpoint of each interval as the height of the rectangle.
+- The **right Riemann sum** uses the right endpoint of each interval as the height of the rectangle.
+- The **midpoint Riemann sum** uses the midpoint of each interval as the height of the rectangle.
+- The **trapezoidal Riemann sum** uses a trapezoid instead of a rectangle.
+
+The general procedure for a Riemann sum is as follows:
+
+1. **Identify $\Delta t$**. As we know, the area of each rectangle is $v(t_i) \Delta t$. In the interval $[T_0, T_1]$, since there are $n$ rectangles, the width of each rectangle is $\Delta t = \frac{T_1 - T_0}{n}$.
+2. **Identify $t_i$**. As shown in the graph, $t_i$ can be represented as $T_0$ plus all the arrows pointing to the right. Therefore, $t_i = T_0 + i \Delta t$.
+3. **Using the above values, identify the area of each $i$th rectangle**. The area of each rectangle can be represented as $v(T_0 + i \Delta t) \Delta t$.
+4. **Identify $i$ and sum all the areas**. The total area is the sum of all the areas of the rectangles:
+
+    $$
+    \text{Area} = \sum_{i} v(T_0 + i \Delta t) \Delta t = \Delta t \sum_{i} v(T_0 + i \Delta t)
+    $$
+
+    Identifying the bounds of the sum depends on the type of Riemann sum used:
+    - For a left Riemann sum, start at $i = 0$ and end at $i = n - 1$.
+    - For a right Riemann sum, start at $i = 1$ and end at $i = n$.
+    - For a midpoint Riemann sum, start at $i = 0.5$ and end at $i = n - 0.5$.
+
+    For example, the left Riemann sum can be represented as:
+
+    $$
+    \text{Area} = \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) \Delta t = \Delta t \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t)
+    $$
+
+### Trapezoidal Rule
+
+The trapezoidal Riemann sum is a more accurate approximation of the area under the curve than the rectangular Riemann sums.
+
+Recall that the area of a trapezoid is $\frac{1}{2} h (b_1 + b_2)$, where $h$ is the height and $b_1$ and $b_2$ are the bases.
+
+In this case, if we split the area into trapezoids, $h$ is $\Delta t$ and $b_1$ and $b_2$ are $v(t_i)$ and $v(t_{i + 1})$ respectively.
+Therefore, the area of each trapezoid is $\frac{1}{2} \Delta t (v(t_i) + v(t_{i + 1}))$.
+
+The total area is the sum of all the areas of the trapezoids:
+
+$$
+\text{Area} = \sum_{i = 0}^{n - 1} \frac{1}{2} \Delta t (v(T_0 + i \Delta t) + v(T_0 + (i + 1) \Delta t)) = \frac{\Delta t}{2} \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) + v(T_0 + (i + 1) \Delta t)
+$$
+
+If we let $n \to \infty$, then we don't need to use the trapezoidal rule, as the Riemann sum will converge to the actual area under the curve no matter what is used.
+
+### Integral as a Limit of Riemann Sums
+
+If we let $n \to \infty$, then the Riemann sum will converge to the actual area under the curve.
+
+Therefore, we can generalize the area under the curve as:
+
+$$
+\int_{T_0}^{T_1} v(t) dt = \lim_{n \to \infty} \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) \Delta t
+$$
+
+:::info Proof using Epsilon-Delta
+
+Firstly, the above can be formalized into a theorem:
+
+> Let $f: \mathbb{R} \to \mathbb{R}$ be a function continuous on $[a, b]$. The limit of the Riemann sum of $f$ over $[a, b]$ as the mesh of the partition approaches $0$ is equivalent to the integral of $f$ over $[a, b]$.
+
+The proof of this theorem is quite complex, but it can be done using the $\varepsilon$-$\delta$ definition of a limit.
+
+1. **Definitions**
+    - **Partition**: A partition $P$ of $[a, b]$ is a finite set of points $x_0, x_1, \cdots, x_n$ such that $a = x_0 < x_1 < \cdots < x_n = b$.
+    - **Mesh**: The mesh of a partition $P$ is the maximum length of the subintervals $[x_{i - 1}, x_i]$, denoted as $\|P\| = \max_{i} (x_i - x_{i - 1}) \text{ for } i = 1, 2, \cdots, n$.
+    - **Riemann Sum**: For a given partition $P$ and a set of points $t_i \in [x_{i - 1}, x_i]$, the Riemann sum of $f$ over $P$ is:
+
+            $$
+            R(f, P, \{t_i\}) = \sum f(t_i) (x_i - x_{i - 1})
+            $$
+
+    These definitions are a formalization of the Riemann sum we have been discussing. What it's saying is that you can choose any intervals inside $[a, b]$, then choose any point as the height of the rectangle, and the sum of all the areas of the rectangles will be the Riemann sum.
+    This definition helps because it is independent of the type of the Riemann sum.
+2. **Continuity**
+    - Since $f$ is continuous on $[a, b]$, it is **uniformly continuous** on $[a, b]$. Hence, for any $\varepsilon > 0$, there exists a $\delta > 0$ such that for any $x, y \in [a, b]$ where $|x - y| < \delta$, $|f(x) - f(y)| < \varepsilon$.
+3. **Convergence**
+    - Let $\varepsilon > 0$ be given. Since $f$ is uniformly continuous on $[a, b]$, choose $\delta > 0$ such that for any $x, y \in [a, b]$ where $|x - y| < \delta$, $|f(x) - f(y)| < \frac{\varepsilon}{b - a}$.
+    - Next, let $P$ be a partition of $[a, b]$ with mesh $\|P\| < \delta$. This is possible because the mesh of the partition can be made arbitrarily small.
+    - For each subinterval $[x_{i - 1}, x_i]$ of the partition, choose a point $t_i \in [x_{i - 1}, x_i]$.
+    - The difference between the Riemann sum and the definite integral can be evaluated as follows:
+
+            $$
+            \begin{align*}
+            \left|R(f, P, t) - \int_{a}^{b} f(x)dx \right| &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \int_{a}^{b} f(x)dx \right| \\
+            &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \sum f(x) (x_i - x_{i - 1}) \right| \tag{MVT} \\
+            &= \left|\sum (f(t_i) - f(x)) (x_i - x_{i - 1}) \right| \\
+            &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \tag{Triangle Inequality} \\
+            \end{align*}
+            $$
+
+    The proof uses the Mean Value Theorem (MVT). For a continuous function $f$ on $[a, b]$, there exists a point $x \in [x_{i - 1}, x_i]$ such that $\int_{x_{i - 1}}^{x_i} f(x)dx = f(x) (x_i - x_{i - 1})$.
+    Next, since the width of each interval $x_i - x_{i - 1}$ is less than $\delta$, $c_i - x < \delta$, and by uniform continuity, $|f(c_i) - f(x)| < \frac{\varepsilon}{b - a}$. Therefore:
+
+            $$
+            \begin{align*}
+            \left|R(f, P, t) - \int_{a}^{b} f(x)dx \right| &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \\
+            &\leq \sum \frac{\varepsilon}{b - a} (x_i - x_{i - 1}) \\
+            &= \frac{\varepsilon}{b - a} \sum (x_i - x_{i - 1}) \\
+            &= \varepsilon
+            \end{align*}
+            $$
+
+    As such, in conclusion, for any $\varepsilon > 0$, there exists a $\delta > 0$ such that for any partition $P$ with mesh $\|P\| < \delta$, $|R(f, P, t) - \int_{a}^{b} f(x)dx| < \varepsilon$. This is the definition of a limit, and hence the Riemann sum converges to the integral.
+
+    Hence:
+
+    $$
+    \int_{a}^{b} f(x)dx = \lim_{\|P\| \to 0} R(f, P, t)
+    $$
+
+:::
+
+For example, consider this integral:
+
+$$
+\int_{0}^{3} x(5 - x) dx
+$$
+
+Let's go through our steps:
+
+1. **Identify $\Delta t$**. Since the interval is $[0, 3]$, $\Delta t = \frac{3 - 0}{n} = \frac{3}{n}$.
+2. **Identify $t_i$**. $t_i = 0 + i \Delta t = \frac{3i}{n}$.
+3. **Identify the area of each $i$th rectangle**. The area of each rectangle is $v(t_i) \Delta t = \frac{3i}{n} \left(5 - \frac{3i}{n}\right) \frac{3}{n} = \frac{9}{n^3} i(5n - 3i) $.
+
+Therefore, the Riemann sum is:
+
+$$
+\begin{align*}
+\text{Area} &= \sum_{i = 0}^{n - 1} \frac{9}{n^3} i(5n - 3i) \\
+&= \frac{9}{n^3} \sum_{i = 0}^{n - 1} i(5n - 3i)
+\end{align*}
+$$
+
+And the area under the curve is:
+
+$$
+\int_{0}^{3} x(5 - x) dx = \lim_{n \to \infty} \frac{9}{n^3} \sum_{i = 0}^{n - 1} i(5n - 3i)
+$$
+
+## Accumulation Functions: Functions Defined by Integrals
+
+A function can be defined by an integral. For example, consider the following function:
+
+$$
+f(x) = \int_{-4}^{x} t^2 dt
+$$
+
+This is known as an accumulation function. The reason it's called an accumulation function is because of what we've discussed above; treating integrals as an accumulation of areas.
+
+The derivative of an accumulation function can be derived using the fundamental theorem of calculus:
+
+$$
+\begin{align*}
+\frac{df}{dx}(x) &= \frac{d}{dx} \int_{-4}^{x} t^2 dt \\
+&= x^2
+\end{align*}
+$$
+
+Sometimes the upper bound of the integral isn't just $x$, but a function of $x$. For example:
+
+$$
+f(x) = \int_{-4}^{\sin(x)} t^2 dt
+$$
+
+The derivative of this function can be found using the chain rule. Set another function $u(x)$ as:
+
+$$
+\begin{align*}
+u(x) &= \int_{-4}^{x} t^2 dt \\
+\frac{du}{dx}(x) &= x^2
+\end{align*}
+$$
+
+And set $v(x) = \sin(x)$:
+
+$$
+\begin{align*}
+v(x) &= \sin(x) \\
+\frac{dv}{dx}(x) &= \cos(x)
+\end{align*}
+$$
+
+Therefore, the derivative of $f(x)$ is:
+
+$$
+\begin{align*}
+\frac{df}{dx}(x) &= \frac{d}{dx} u(v(x)) \\
+&= \frac{du}{dv} \frac{dv}{dx} \\
+&= v^2 \cos(x) \\
+&= \sin^2(x) \cos(x)
+\end{align*}
+$$
+
+### Behavior of Accumulation Functions
+
+The behavior of accumulation functions can be quite complex. For example, consider the following function:
+
+$$
+f(x) = -x(x - 6)
+$$
+
+<Mafs
+    viewBox={{
+        x: [-1, 9],
+        y: [-1, 9]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={(x) => -x * (x - 6)}
+    />
+</Mafs>
+
+And let $g(x)$ be the accumulation function of $f(x)$:
+
+$$
+g(x) = \int_{0}^{x} f(t) dt
+$$
+
+Because of the fundamental theorem of calculus, the derivative of $g(x)$ is $f(x)$. Using this, we can use $f$ to derive the behavior of $g$.
+
+For example, at $x = 0, x = 6$, $f(x) = 0$, so those are the critical points of $g(x)$.
+At $x \in (0, 6)$, $f(x) > 0$, so $g(x)$ is increasing.

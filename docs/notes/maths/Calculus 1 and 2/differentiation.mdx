@@ -1,3 +1,6 @@
+---
+sidebar_position: 3
+---
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
 import MathEquation from "@site/src/components/Math";
 import { useState } from "react";
@@ -514,6 +517,38 @@ $$
 \frac{dy}{dx} = \frac{dy}{dg} \cdot \frac{dg}{dx}
 $$
 
+### Proof
+
+To prove the chain rule, let's say we have a function $y = f(u)$ and $u = g(x)$,
+assuming that $f$ and $g$ are differentiable at some point $x$.
+
+The derivative of $y$ with respect to $x$ is:
+
+$$
+\frac{dy}{dx} = \lim_{\Delta x \to 0} \frac{f(g(x + \Delta x)) - f(g(x))}{\Delta x}
+$$
+
+We can rewrite this as:
+
+$$
+\begin{align*}
+\frac{dy}{dx} &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \frac{\Delta u}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x}
+\end{align*}
+$$
+
+Since $f$ is differentiable at $u$, as $\Delta x \to 0$, $\Delta u \to 0$. Thus:
+
+$$
+\begin{align*}
+\frac{dy}{dx} &= \lim_{{\color{red} \cancel{\Delta x \to 0}} \Delta u \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x} \\
+&= \frac{dy}{du} \cdot \frac{du}{dx} \\
+&= f'(u) \cdot g'(x) \\
+&= f'(g(x)) \cdot g'(x)
+\end{align*}
+$$
+
 ## Powers
 
 The derivative of a power function is:
@@ -592,7 +627,7 @@ A few things to note:
 
 :::
 
-## Trigonometric Functions
+## Derivative of Trigonometric Functions
 
 The derivatives of the trigonometric functions are as follows:
 
@@ -610,6 +645,10 @@ $$
 We'll just look at the first one, $\frac{d}{dx} \sin{x} = \cos{x}$, to show how it's derived.
 
 (TODO)
+
+The derivative of $\cos{x}$ can be derived in a similar way.
+
+The derivatives of $\tan{x}$, $\cot{x}$, $\sec{x}$, and $\csc{x}$ can be derived using the quotient rule.
 
 ## Differentiability and Continuity
 
@@ -700,3 +739,214 @@ e^y dy &= dx \\
 \frac{dy}{dx} &= \frac{1}{e^y} = \frac{1}{x}
 \end{align*}
 $$
+
+## Quotient Rule
+
+The quotient rule is a way to differentiate functions that are the ratio of two functions.
+It can be derived using information from the above sections.
+
+Given $f(x) = \frac{g(x)}{h(x)}$, the derivative of $f(x)$ is:
+
+$$
+\begin{align*}
+\frac{d}{dx} \left( \frac{g(x)}{h(x)} \right) &= \frac{d}{dx} \left( g(x) \frac{1}{h(x)} \right) \\
+&= g'(x) \frac{1}{h(x)} + g(x) \frac{d}{dx} \left( \frac{1}{h(x)} \right) \tag{product rule} \\
+&= g'(x) \frac{1}{h(x)} - g(x) \frac{1}{h(x)^2} h'(x) \tag{chain rule} \\
+&= \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
+\end{align*}
+$$
+
+Therefore, the derivative of $\frac{g(x)}{h(x)}$ is:
+
+$$
+\frac{d}{dx} \left( \frac{g(x)}{h(x)} \right) = \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
+$$
+
+## Derivatives of Exponential Functions
+
+$e^x$ is a special function because its derivative is itself.
+
+This can be shown via implicit differentiation:
+
+$$
+\begin{align*}
+y &= e^x \\
+\ln{y} &= x \\
+\frac{d}{dx} \ln{y} &= \frac{d}{dx} x \\
+\frac{1}{y} \frac{dy}{dx} &= 1 \\
+\frac{dy}{dx} &= y = e^x
+\end{align*}
+$$
+
+Alternatively, you can use the limit definition of the derivative:
+
+$$
+\begin{align*}
+\frac{d}{dx} e^x &= \lim_{\Delta x \to 0} \frac{e^{x + \Delta x} - e^x}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{e^x e^{\Delta x} - e^x}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{e^x (e^{\Delta x} - 1)}{\Delta x} \\
+&= e^x \lim_{\Delta x \to 0} \frac{e^{\Delta x} - 1}{\Delta x} \\
+&= e^x 1 \\
+&= e^x
+\end{align*}
+$$
+
+To find the derivative of $a^x$, where $a$ is some constant, you can use the chain rule:
+
+$$
+\begin{align*}
+\frac{d}{dx} a^x &= \frac{d}{dx} e^{x \ln{a}} \\
+&= e^{x \ln{a}} \ln{a} \\
+&= a^x \ln{a}
+\end{align*}
+$$
+
+### Example: Derivative of $x^x$
+
+To find the derivative of $x^x$, you can rewrite it as $e^{x \ln{x}}$ and then differentiate it:
+
+$$
+\begin{align*}
+\frac{d}{dx} x^x &= \frac{d}{dx} e^{x \ln{x}} \\
+&= e^{x \ln{x}} \ln{x} + e^{x \ln{x}} \frac{1}{x} \\
+&= x^x \ln{x} + \frac{x^x}{x} \\
+&= x^x (\ln{x} + 1)
+\end{align*}
+$$
+
+## Derivatives of Logarithmic Functions
+
+The derivative of $\ln{x}$ is $\frac{1}{x}$, as shown previously.
+
+To find the derivative of $\log_a{x}$, you can use the change of base formula.
+
+Start with $\log_a{x} = y$, then rewrite it as $a^y = x$.
+
+$$
+\begin{align*}
+\log_a{x} &= y \\
+a^y &= x \\
+\ln{a^y} &= \ln{x} \\
+y \ln{a} &= \ln{x} \\
+y &= \frac{\ln{x}}{\ln{a}} \\
+\log_a{x} &= \frac{\ln{x}}{\ln{a}}
+\end{align*}
+$$
+
+Crucially, $\ln$ can be of any base.
+
+Using this, you can find the derivative of $\log_a{x}$:
+
+$$
+\begin{align*}
+\frac{d}{dx} \log_a{x} &= \frac{d}{dx} \frac{\ln{x}}{\ln{a}} \\
+&= \frac{1}{x \ln{a}}
+\end{align*}
+$$
+
+## Derivatives of Inverse Trigonometric Functions
+
+The derivatives of the inverse trigonometric functions are as follows:
+
+$$
+\begin{align*}
+\frac{d}{dx} \arcsin{x} &= \frac{1}{\sqrt{1 - x^2}} \\
+\frac{d}{dx} \arccos{x} &= -\frac{1}{\sqrt{1 - x^2}} \\
+\frac{d}{dx} \arctan{x} &= \frac{1}{1 + x^2} \\
+\frac{d}{dx} \arccot{x} &= -\frac{1}{1 + x^2} \\
+\frac{d}{dx} \arcsec{x} &= \frac{1}{|x| \sqrt{x^2 - 1}} \\
+\frac{d}{dx} \arccsc{x} &= -\frac{1}{|x| \sqrt{x^2 - 1}}
+\end{align*}
+$$
+
+To find the derivative of $\arcsin{x}$, you can use implicit differentiation.
+
+Start with $y = \arcsin{x}$, then rewrite it as $\sin{y} = x$.
+
+$$
+\begin{align*}
+y &= \arcsin{x} \\
+\sin{y} &= x \\
+\frac{d}{dx} \sin{y} &= \frac{d}{dx} x \\
+\cos{y} \frac{dy}{dx} &= 1 \\
+\frac{dy}{dx} &= \frac{1}{\cos{y}} \\
+\end{align*}
+$$
+
+To find $\cos{y}$, you can use the Pythagorean identity $\sin^2{y} + \cos^2{y} = 1$.
+
+$$
+\begin{align*}
+\sin^2{y} + \cos^2{y} &= 1 \\
+\cos^2{y} &= 1 - \sin^2{y} \\
+\cos{y} &= \sqrt{1 - \sin^2{y}} \\
+\cos{y} &= \sqrt{1 - x^2}
+\end{align*}
+$$
+
+Thus:
+
+$$
+\frac{dy}{dx} = \frac{1}{\sqrt{1 - x^2}}
+$$
+
+The derivative of $\arcsec{x}$ can be found similarly.
+
+The derivatives of the other inverse trigonometric functions can be found similarly.
+
+## Derivatives of Hyperbolic Functions
+
+Hyperbolic functions are analogs of the trigonometric functions, defined in terms of exponentials.
+
+For example, $\sinh{x} = \frac{e^x - e^{-x}}{2}$ and $\cosh{x} = \frac{e^x + e^{-x}}{2}$.
+
+Instead of tracing a unit circle, hyperbolic functions trace a unit hyperbola, which is why they're called "hyperbolic".
+
+A circle is defined by $x^2 + y^2 = 1$, while a hyperbola is defined by $x^2 - y^2 = 1$.
+
+Both the hyperbolic and trigonometric functions have similar properties, including derivatives.
+
+The unit hyperbola and unit circle are shown below:
+
+<Mafs
+    scale={1.5}
+    height={200}
+    origin={[0, 0]}
+    viewBox={{
+        x: [-2, 2],
+        y: [-2, 2],
+    }}
+>
+    <Coordinates.Cartesian />
+    <Plot.Parametric
+        xy={(t) => [Math.cosh(t), Math.sinh(t)]}
+        t={[0, 15]}
+    />
+
+    <Plot.Parametric
+        xy={(t) => [Math.cos(t), Math.sin(t)]}
+        t={[0, 2 * Math.PI]}
+    />
+</Mafs>
+
+The derivatives of the hyperbolic functions are as follows:
+
+$$
+\begin{align*}
+\frac{d}{dx} \sinh{x} &= \cosh{x} \\
+\frac{d}{dx} \cosh{x} &= \sinh{x} \\
+\frac{d}{dx} \tanh{x} &= \text{sech}^2{x} \\
+\frac{d}{dx} \coth{x} &= -\text{csch}^2{x} \\
+\frac{d}{dx} \text{sech}{x} &= -\text{sech}{x} \tanh{x} \\
+\frac{d}{dx} \text{csch}{x} &= -\text{csch}{x} \coth{x}
+\end{align*}
+$$
+
+## Summary
+
+-   The derivative of a function $f(x)$ at a point $x$ is the slope of the tangent line at that point.
+-   The derivative of a function $f(x)$ is denoted as $f'(x)$ or $\frac{df(x)}{dx}$. Formally it is defined as the limit of the difference quotient.
+-   A function is differentiable at a point if the limit of the difference quotient exists at that point.
+-   Differentiability implies continuity, but continuity does not necessarily imply differentiability.
+-   The product rule, chain rule, and quotient rule are ways to differentiate functions.
+-   Implicit differentiation is a way to differentiate functions that are not explicitly defined.

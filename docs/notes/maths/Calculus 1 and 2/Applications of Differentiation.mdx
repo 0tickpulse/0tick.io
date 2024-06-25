@@ -1,0 +1,935 @@
+---
+sidebar_position: 4
+---
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+
+# Applications of Differentiation
+
+Differentiation is a powerful tool in mathematics, and it has many applications in real life.
+
+## Linear Approximation
+
+Linear approximation is a method of approximating a function near a certain point by using the tangent line at that point.
+Essentially, get a function, find the slope at some point $a$, and pretend the function is a straight tangent line.
+
+Given a function $f(x)$, the slope at that line is $\frac{df}{dx}$.
+Thus, the slope of the tangent line at $x = a$ is $\frac{df}{dx}(a)$.
+
+To find the equation of the tangent line, we use the point-slope form.
+
+The point-slope form is a way to find the equation of a line given a point $(x_1, y_1)$ and a slope $m$:
+
+:::info Derivation of the Point-Slope Form
+
+Given a point $(x_1, y_1)$ and a slope $m$, the equation of the line is:
+
+$$
+y = mx + b
+$$
+
+We need to find the $y$-intercept $b$. Since the line passes through $(x_1, y_1)$:
+
+$$
+y_1 = mx_1 + b
+$$
+
+Therefore:
+
+$$
+b = y_1 - mx_1
+$$
+
+Thus, the equation of the line is:
+
+$$
+y = mx + y_1 - mx_1
+$$
+
+And rearranging gives:
+
+$$
+y - y_1 = m(x - x_1)
+$$
+
+:::
+
+Using the point-slope form, our slope $m$ is $\frac{df}{dx}$ and the point $(x_1, y_1)$ is $(a, f(a))$.
+Thus, the equation of the tangent line is:
+
+$$
+y - f(a) = \frac{df(a)}{dx}(x - a)
+$$
+
+Known as linear approximation of the function $f(x)$ near $x = a$.
+
+This is useful for approximating functions that are difficult to work with, as the tangent line is much simpler to work with.
+
+For instance, consider the function $f(x) = \sqrt{1 + x}$.
+
+Trying to do calculations with this function can be difficult, but we can approximate it near $x = 0$ using the tangent line.
+
+The derivative of $f(x)$ can be found using the chain rule:
+
+$$
+\frac{df}{dx} = \frac{df}{du} \cdot \frac{du}{dx} = \frac{1}{2\sqrt{1 + x}} \cdot 1 = \frac{1}{2\sqrt{1 + x}}
+$$
+
+And at $x = 0$:
+
+$$
+f(0) = \sqrt{1} = 1
+$$
+
+Thus, the equation of the tangent line is:
+
+$$
+y - 1 = \frac{1}{2}(x - 0) \implies y = \frac{1}{2}x + 1
+$$
+
+This equation can be used to approximate the function $f(x)$ near $x = 0$. A visualization is shown below:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => Math.sqrt(1 + x)}
+        color={Theme.blue}
+    />
+    <Plot.OfX
+        y={(x) => 0.5 * x + 1}
+        color={Theme.green}
+    />
+</Mafs>
+
+### Example Application: Trigonometric Functions
+
+Consider the function $f(x) = \sin(x)$.
+
+The derivative of $f(x)$ is $\cos(x)$, and at $x = 0$, $f(0) = 0$.
+
+Thus, the equation of the tangent line is:
+
+$$
+y - 0 = \cos(0)(x - 0) \implies y = x
+$$
+
+As such, near $x = 0$, $\sin(x)$ can be approximated by $x$.
+
+This is useful especially in physics, where differential equations can be difficult to solve.
+
+The small-angle approximation can also be derived from the Taylor series of $\sin(x)$:
+
+$$
+\sin(x) = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \ldots
+$$
+
+For small values of $x$, the higher-order terms can be ignored, and the function can be approximated by $x$.
+
+## Modeling Motion
+
+One of the most common applications of differentiation is in modeling motion. To take a very simple example, consider a ball moving along some trajectory.
+
+The height of the ball at time $t$ can be modeled by $s(t)$.
+
+With differentiation, we can find the velocity of the ball at any time $t$ by taking the derivative of $s(t)$ with respect to $t$.
+
+Similarly, we can find the acceleration of the ball at any time $t$ by taking the derivative of the velocity function with respect to $t$.
+
+$$
+\begin{align*}
+s(t) &= 5t^2 + 3t + 2 \tag{For example} \\
+v(t) &= \frac{ds}{dt} = 10t + 3 \\
+a(t) &= \frac{dv}{dt} = 10
+\end{align*}
+$$
+
+Integration can be used to do this in reverse, although it isn't covered yet.
+
+$$
+\begin{align*}
+v(t) - v(0) &= \int_{t' = 0}^{t' = t} a(t') dt' \\
+s(t) - s(0) &= \int_{t' = 0}^{t' = t} v(t') dt' \\
+a(t) = -g &\implies v(t) = -gt + v(0) \\
+\therefore s(t) &= -\frac{1}{2}gt^2 + v(0)t + s(0)
+\end{align*}
+$$
+
+Note the usage of the $'$ symbol to denote a different variable.
+
+## Finding Limits
+
+Another application of differentiation is in finding limits.
+
+Often, when we try to find the limit of a function at a certain point, plugging in the value results in an indeterminate form (e.g. $\frac{0}{0}$).
+
+One way to solve this is by using L'Hôpital's rule, which involves differentiating the numerator and denominator separately.
+
+To demonstrate this visually, consider the function $f(x) = \frac{\cos(\pi x / 2)}{x - 1}$, and let's find the limit as $x$ approaches $1$.
+
+export function LhopitalsRule({ showDx = false }) {
+    const numerator = (x) => Math.cos(Math.PI * x / 2);
+    const denominator = (x) => x - 1;
+
+    const dx = 0.4;
+    const limit = 1;
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [0, 0.5],
+                y: [-0.5, 0.5]
+            }}
+        >
+            <Coordinates.Cartesian />
+            <Plot.OfX y={numerator} color={Theme.blue} />
+            <Plot.OfX y={denominator} color={Theme.green} />
+
+            {showDx && (
+                <>
+                    <Vector
+                        tail={[limit + dx, 0]}
+                        tip={[limit + dx, numerator(limit + dx)]}
+                        color={Theme.blue}
+                    />
+                    <Vector
+                        tail={[limit + dx, 0]}
+                        tip={[limit + dx, denominator(limit + dx)]}
+                        color={Theme.green}
+                    />
+                    <Vector
+                        tail={[limit, 0]}
+                        tip={[limit + dx, 0]}
+                        color={Theme.yellow}
+                    />
+                    <LaTeX
+                        tex="dx"
+                        at={lineLabel([limit, 0], [limit + dx, 0], "right", { sideOffset: 0.1 })}
+                    />
+                    <LaTeX
+                        tex="d(\cos(\pi x / 2))"
+                        at={lineLabel([limit + dx, 0], [limit + dx, numerator(limit + dx)], "left", { sideOffset: 0.3 })}
+                    />
+                    <LaTeX
+                        tex="d(x - 1)"
+                        at={lineLabel([limit + dx, 0], [limit + dx, denominator(limit + dx)], "right", { sideOffset: 0.15 })}
+                    />
+                </>
+            )}
+        </Mafs>
+    );
+}
+
+<LhopitalsRule />
+
+The graph shows the numerator and denominator of the function $f(x)$ as individual functions.
+
+As $x$ approaches $1$, the numerator approaches $1$ and the denominator approaches $1$. Therefore, the fraction is indeterminate.
+
+In differentiation, we calculate the slope at a point by using a small interval of $dx$.
+Likewise, here we can think of a point that's just a little bit ($dx$) away from $1$:
+
+<LhopitalsRule showDx />
+
+As shown in the graph, we have an interval of $dx$ around $1$.
+Since this is non-zero, there _is_ a value here, which are marked by the blue and green vectors.
+As we decrease the interval, the value of the function approaches a certain value, and that is the limit of the function at $1$.
+
+The value of the numerator and denominator are calculated below:
+
+$$
+\begin{align*}
+d(\cos(\pi x / 2)) &= -\frac{\pi}{2} \sin\left(\frac{\pi x}{2}\right) dx \\
+d(x - 1) &= dx
+\end{align*}
+$$
+
+And when we plug in $x = 1$:
+
+$$
+\begin{align*}
+d(\cos(\pi / 2)) &= -\frac{\pi}{2} \sin\left(\frac{\pi}{2}\right) dx = -\frac{\pi}{2} dx \\
+d(x - 1) &= dx
+\end{align*}
+$$
+
+Remember that the value of our limit is the limit of this ratio as $dx$ approaches $0$.
+
+Thus, the limit is:
+
+$$
+\begin{align*}
+\lim_{x \to 1} \frac{\cos(\pi x / 2)}{x - 1} &= \lim_{dx \to 0} \frac{-(\pi / 2) \cancel{dx}}{\cancel{dx}} \\
+&= \lim_{dx \to 0} -\frac{\pi}{2} = -\frac{\pi}{2}
+\end{align*}
+$$
+
+To generalize this, instead of using these functions, let's calculate the limit of $\frac{f(x)}{g(x)}$ as $x$ approaches $a$.
+If the limit is indeterminate, that is, $\frac{0}{0}$, we can use the same approach as above.
+
+The numerator and denominators are calculated as:
+
+$$
+\begin{align*}
+\text{Numerator} &= \frac{d(f(a))}{dx} dx \\
+\text{Denominator} &= \frac{d(g(a))}{dx} dx
+\end{align*}
+$$
+
+As such, the limit is the ratio of the two derivatives:
+
+$$
+\lim_{x \to a} \frac{f(x)}{g(x)} = \frac{\dfrac{d(f(a))}{dx}}{\dfrac{d(g(a))}{dx}}
+$$
+
+This is known as L'Hôpital's rule, although the rule was mostly derived by Bernoulli.
+
+### Example Problem
+
+> Find the limit of $\frac{\sin(x)}{x}$ as $x$ approaches $0$.
+
+Last time we found the limit of this function by utilizing the Squeeze theorem.
+This time, we can use L'Hôpital's rule.
+
+Firstly, ensure that the limit is indeterminate:
+
+$$
+\frac{\sin(x)}{x} = \frac{0}{0}
+$$
+
+Thus, the rule is applicable. Differentiating the numerator and denominator:
+
+$$
+\begin{align*}
+\frac{d(\sin(x))}{dx} &= \cos(x) \\
+\frac{d(x)}{dx} &= 1
+\end{align*}
+$$
+
+And plugging in $x = 0$:
+
+$$
+\lim_{x \to 0} \frac{\sin(x)}{x} = \frac{\cos(0)}{1} = 1
+$$
+
+Thus, the limit is $1$.
+
+## Mean Value Theorem
+
+Imagine a function $f(x)$ that is continuous over the closed interval $[a, b]$, but is differentiable over the _open_ interval $(a, b)$.
+So, at exactly $a$ and $b$, no derivative exists but there is still a point there.
+
+What the mean value theorem tells us is that at some point between $a$ and $b$, the slope at that point is equal to the average slope over the whole interval.
+
+Formally it is written like this:
+
+$$
+\exists c \in (a, b) \, \text{such that} \, \frac{df}{dx}(c) = \frac{f(b) - f(a)}{b - a}
+$$
+
+Where $c$ is some point between $a$ and $b$.
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => (x >= 0 && x <= 5 ? Math.sin(2 * x) : undefined)} />
+    <Line.Segment point1={[0, 0]} point2={[5, Math.sin(2 * 5)]} color={Theme.green} />
+</Mafs>
+
+Note: when the mean-value theorem does not apply, it doesn't mean that it's necessarily false.
+It just means that it's uncertain.
+
+### Proof
+
+Taking the expression above (which is the average slope of the function), we get the slope of a line that intersects $(a, f(a))$ and $(b, f(b))$.
+
+Let's define a new function $g(x) = f(x) - mx$, where $m$ is a constant.
+Given that $f$ is continuous and differentiable, $g$ is also continuous and differentiable.
+
+$$
+g(a) = g(b) \iff f(a) - ma = f(b) - mb
+$$
+
+Solving for $m$ gives:
+
+$$
+\begin{align*}
+f(a) - ma &= f(b) - mb \\
+m &= \frac{f(b) - f(a)}{b - a}
+\end{align*}
+$$
+
+According to Rolle's theorem, there must be a point on the graph where it is flat (horizontal), that is, $(\exists c \in (a, b)) \, \frac{dg}{dx}(c) = 0$.
+
+Based on the definition of $g(x)$:
+
+$$
+\begin{align*}
+\frac{dg}{dx}(c) &= \frac{df}{dx}(c) - m = 0 \\
+\frac{df}{dx}(c) &= m \\
+\frac{df}{dx}(c) &= \frac{f(b) - f(a)}{b - a}
+\end{align*}
+$$
+
+### Example Problem
+
+> Consider $g(x) = x^3 - 16x$.
+> Let $c$ be the value that satisfies the MVT for $g$ over the interval $[-4, 2]$.
+> What is the value of $c$?
+
+To solve this, we first need to find the average slope of $g$ over the interval $[-4, 2]$:
+
+$$
+\frac{g(2) - g(-4)}{2 - (-4)} = \frac{-24 - 0}{6} = -4
+$$
+
+According to the MVT, there must be a point $c$ in the interval $(-4, 2)$ where the slope of $g$ is equal to the average slope.
+Therefore, $\frac{dg}{dx}(c) = -4$. We can find $\frac{dg}{dx}(x)$ by differentiating $g(x)$:
+
+$$
+\frac{dg}{dx}(x) = 3x^2 - 16
+$$
+
+Setting $\frac{dg}{dx}(c) = -4$:
+
+$$
+3c^2 - 16 = -4 \implies 3c^2 = 12 \implies c^2 = 4 \implies c = \pm 2
+$$
+
+Therefore, $c = 2$.
+
+### Example Application: Speed Limits
+
+Consider a car that travels from point $A$ to point $B$ in an hour, where the distance is $75 \text{ km}$.
+
+Imagine the speed limit is $60 \text{ km/h}$.
+You would think that the car's velocity must be measured throughout the journey to ensure that it doesn't exceed the speed limit.
+Instead, you can just use the _average velocity_ to determine if the car has exceeded the speed limit.
+
+To do this, you can use the mean value theorem. The average velocity is:
+
+$$
+v_{\text{avg}} = \frac{\vec{r}(b) - \vec{r}(a)}{b - a} = \frac{75}{1} = 75 \text{ km/h}
+$$
+
+We don't need to know the exact position/velocity/etc of the car at all times, because using the MVT, we can determine that the car must have exceeded the speed limit at _some point_.
+
+Thus, the car must have exceeded the speed limit at some point between $A$ and $B$, and the driver can receive a ticket.
+
+## Extreme Value Theorem
+
+Just like the mean value theorem, the extreme value theorem is another important theorem helping us understand the behavior of functions.
+While these theorems can sound like common sense, it's important to be able to rigorously prove them such that we are absolutely certain they are true.
+Imagine receiving a speed ticket because of a theorem that isn't actually true!
+
+The extreme value theorem states that if a function $f(x)$ is continuous over a closed interval $[a, b]$, then there must be a maximum and minimum value of $f(x)$ over that interval.
+
+This means that if you have a continuous function over a closed interval, you can be certain that there is a point where the function reaches its maximum and minimum values.
+
+Formally, the theorem states:
+
+$$
+\exists c, d \in [a, b] \, \text{such that} \, f(c) \geq f(x) \geq f(d) \, \forall x \in [a, b]
+$$
+
+### Continuity
+
+The key to the extreme value theorem is that the function must be continuous over the interval.
+
+For a function that isn't continuous, the theorem doesn't apply.
+
+#### Functions Discontinuous at Midpoints
+
+Consider a function like this:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {/* From 0 to pi/4 */}
+    <Plot.OfX y={(x) =>
+        (x < 0 || x > Math.PI / 4 - 0.1) ? undefined : Math.sin(2 * x)
+    }/>
+    {/* From pi/4 to 3pi/4 */}
+    <Plot.OfX y={(x) =>
+        (x < Math.PI / 4 + 0.1 || x > 3 * Math.PI / 4 - 0.1) ? undefined : Math.sin(2 * x)
+    }/>
+    {/* From 3pi/4 to pi */}
+    <Plot.OfX y={(x) =>
+        (x < 3 * Math.PI / 4 + 0.1 || x > Math.PI) ? undefined : Math.sin(2 * x)
+    }/>
+    {/* Discontinuity circles */}
+    <Circle center={[Math.PI / 4, Math.sin(2 * Math.PI / 4)]} radius={0.15} fillOpacity={0} />
+    <Circle center={[3 * Math.PI / 4, Math.sin(2 * 3 * Math.PI / 4)]} radius={0.15} fillOpacity={0} />
+</Mafs>
+
+Because of the discontinuities at $\frac{\pi}{4}$ and $\frac{3\pi}{4}$, the function is defined to be not continuous over the interval $[0, \pi]$.
+
+While $\lim_{x \to \frac{\pi}{4}} f(x)$ approaches $1$, the maximum value cannot be $1$ because there's no point where the function _is_ $1$.
+
+Similarly, the minimum value cannot be $-1$ because there's no point where the function _is_ $-1$.
+
+Therefore, this function does not have a maximum or minimum value over the interval $[0, \pi]$.
+
+#### Functions Discontinuous at Endpoints
+
+Now consider a function that is continuous over the interval, but not at the endpoints:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => (x < 0 + 0.1 || x > 4 - 0.1) ? undefined : x / 2} />
+    <Circle center={[0, 0]} radius={0.15} fillOpacity={0} />
+    <Circle center={[4, 2]} radius={0.15} fillOpacity={0} />
+</Mafs>
+
+The function is continuous over the interval $(0, 4)$, but crucially, not over $[0, 4]$.
+
+The maximum would be $2$ and the minimum would be $0$, but applying the same logic as above, the function does not have a maximum or minimum value over the interval $[0, 4]$.
+
+As such, as shown by the two contradictory examples, to apply the extreme value theorem, the function must be continuous over the _closed_ interval $[a, b]$.
+
+## Concavity and Inflection Points
+
+Concavity is a property of a function that describes how the function is curving.
+
+If the function is curving upwards, it is concave up. If the function is curving downwards, it is concave down.
+
+The easiest example of this is a parabola. A parabola like $y = x^2$ is concave up at $x = 0$, while a parabola like $y = -x^2$ is concave down at $x = 0$.
+
+To find the concavity of a function, we can use the second derivative;
+
+- If $\frac{d^2f}{dx^2} > 0$, the function is concave up.
+- If $\frac{d^2f}{dx^2} < 0$, the function is concave down.
+
+## Critical Points
+
+Critical points are points on a function where the derivative is either $0$ or undefined.
+
+These points are important because they can help us determine the maximum and minimum values of a function.
+
+Imagine the maximum point of a function. To get there, the function must increase until it's at that point, and then decrease.
+At the maximum point, the derivative is $0$ because the function is not increasing or decreasing. This can be visually seen as the curve being "flat" at that point.
+
+For example, take this parabola:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => x ** 2 / 2}
+    />
+</Mafs>
+
+Notice how at the minimum point, the curve is flat, and the derivative is $0$.
+
+In other words, at the maximum and minimum points, the derivative is $0$. However, this is not necessarily true the other way around.
+For instance, the function $f(x) = x^3$ has a critical point at $x = 0$, but it is not a maximum or minimum point:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => x ** 3}
+    />
+</Mafs>
+
+### Local and Global Extrema
+
+It's important to recognize the distinction between local and global extrema.
+
+Global extrema apply to the entire function, while local extrema apply to a specific region of the function.
+
+For example, consider the function $f(x) = x^3 - 3x^2 + 2$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => x ** 3 - 3 * x ** 2 + 2}
+    />
+</Mafs>
+
+First identify the global extrema. In this case, notice that the function goes down infinitely to the left, and up infinitely to the right.
+Thus, there is no global minimum or maximum, because for every point, there is always a point further down or up.
+
+However, if we constrain the function to a specific region, we can find local extrema.
+
+For example, consider the region $[-0.5, 2.5]$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.Parametric
+        xy={(t) => [t, t ** 3 - 3 * t ** 2 + 2]}
+        t={[-0.5, 2.5]}
+    />
+</Mafs>
+
+Now there's clearly a minimum and maximum point within this region at $x = 1$ and $x = 2$ respectively.
+
+### Identifying Critical Points
+
+To find the critical points of a function, we need to find where the derivative is $0$ or undefined.
+
+For a function $f(x)$, the critical points are the solutions to $\frac{df}{dx} = 0$.
+
+Consider the same function $f(x) = x^3 - 3x^2 + 2$.
+
+The derivative of $f(x)$ is:
+
+$$
+\frac{df}{dx}(x) = \frac{d}{dx}(x^3 - 3x^2 + 2) = 3x^2 - 6x
+$$
+
+Setting this equal to $0$, we get:
+
+$$
+3x^2 - 6x = 0 \implies x(3x - 6) = 0 \implies x = 0, 2
+$$
+
+Thus, the critical points of the function are $x = 0$ and $x = 2$.
+
+To determine if these are maximum or minimum points, we can use the second derivative.
+
+Recall that the second derivative tells us the concavity of the function, i.e. how the function is curving.
+
+If the second derivative is positive, the function is concave up, and the point is a minimum. Likewise, if the second derivative is negative, the function is concave down, and the point is a maximum.
+
+If, however, the second derivative is $0$, the test is inconclusive.
+
+For the function $f(x) = x^3 - 3x^2 + 2$, the second derivative is:
+
+$$
+\frac{d^2f}{dx^2}(x) = \frac{d}{dx}(3x^2 - 6x) = 6x - 6
+$$
+
+- At $x = 0$, the second derivative is $-6$, so the function is concave down, and $x = 0$ is a maximum point.
+- At $x = 2$, the second derivative is $6$, so the function is concave up, and $x = 2$ is a minimum point.
+
+Thus, the function has a maximum point at $x = 0$ and a minimum point at $x = 2$.
+
+## Identifying Increasing and Decreasing Intervals
+
+The derivative of a function tells us the slope of the function at any point.
+
+If the derivative is positive, the function is increasing. If the derivative is negative, the function is decreasing.
+
+As such, if the derivative is positive over an interval, the function is increasing over that interval, and vice versa.
+
+For example, consider the function $f(x) = x^5 - 3x^4$:
+
+<Mafs
+    viewBox={{
+        x: [-4, 4],
+        y: [-20, 10]
+    }}
+    preserveAspectRatio={false}
+>
+    <Coordinates.Cartesian
+        yAxis={{
+            labels: (n) => n % 5 === 0 ? n : ""
+        }}
+    />
+    <Plot.OfX
+        y={(x) => x ** 5 - 3 * x ** 4}
+    />
+</Mafs>
+
+
+To find the increasing and decreasing intervals of the function, we need to find where the derivative is positive and negative.
+
+The derivative of $f(x)$ is:
+
+$$
+\frac{df}{dx}(x) = \frac{d}{dx}(x^5 - 3x^4) = 5x^4 - 12x^3
+$$
+
+In an increasing interval, the derivative is positive:
+
+$$
+\begin{align*}
+5x^4 - 12x^3 &> 0 \\
+x^3(5x - 12) &> 0
+\end{align*}
+$$
+
+To solve an inequality like this, take the advantage of the fact that the equality has one side being $0$.
+This can be interpreted as the fact that $x^3(5x - 12)$ is **positive**.
+
+Since the left side is a product of two terms, the product is positive when both terms are positive or both terms are negative.
+
+As such, either $x^3 > 0$ and $5x - 12 > 0$, or $x^3 < 0$ and $5x - 12 < 0$.
+
+- The first case, $x^3 > 0$ and $5x - 12 > 0$, gives us $x > 0$ and $x > \frac{12}{5}$. Values of $x$ that satisfy $x > \frac{12}{5}$ is a subset of $x > 0$, meaning that $x > 0$ implies $x > \frac{12}{5}$ but not the other way around. Therefore, the increasing interval is $x > \frac{12}{5}$.
+- The second case, $x^3 < 0$ and $5x - 12 < 0$, gives us $x < 0$ and $x < \frac{12}{5}$. Values of $x$ that satisfy $x < 0$ is a subset of $x < \frac{12}{5}$, meaning that the decreasing interval is $x < 0$.
+
+Thus, the increasing intervals are $x > \frac{12}{5}$ and $x < 0$.
+
+In a decreasing interval, the derivative is negative:
+
+$$
+\begin{align*}
+5x^4 - 12x^3 &< 0 \\
+x^3(5x - 12) &< 0
+\end{align*}
+$$
+
+This inequality can be interpreted as the product of two terms being **negative**, meaning that one term is positive and the other is negative.
+
+So, either $x^3 > 0$ and $5x - 12 < 0$, or $x^3 < 0$ and $5x - 12 > 0$.
+
+- The first case, $x^3 > 0$ and $5x - 12 < 0$, gives us $x > 0$ and $x < \frac{12}{5}$. Thus, the decreasing interval is $0 < x < \frac{12}{5}$.
+- The second case, $x^3 < 0$ and $5x - 12 > 0$, gives us $x < 0$ and $x > \frac{12}{5}$. The two sets of values are disjoint, so there is no decreasing interval in this case.
+
+Thus, the decreasing interval is $0 < x < \frac{12}{5}$.
+
+In conclusion, the increasing intervals are $x > \frac{12}{5}$ and $x < 0$, while the decreasing interval is $0 < x < \frac{12}{5}$.
+
+### Using Critical Points
+
+Critical points can also be used to determine increasing and decreasing intervals.
+
+Recall that critical points are points where the derivative is $0$ or undefined.
+
+If a point is a maximum, the function is decreasing before and after the point, and vice versa for a minimum.
+We can use this to determine increasing and decreasing intervals.
+
+Let's consider the same function $f(x) = x^5 - 3x^4$.
+
+Solving the derivative $5x^4 - 12x^3 = 0$ gives us $x = 0$ and $x = \frac{12}{5}$. These are the critical points of the function.
+
+To find the minimum and maximum points, we can use the second derivative.
+
+The second derivative of $f(x)$ is:
+
+$$
+\frac{d^2f}{dx^2}(x) = \frac{d}{dx}(5x^4 - 12x^3) = 20x^3 - 36x^2
+$$
+
+At $x = 0$, the second derivative is $0$, so the test is inconclusive.
+
+At $x = \frac{12}{5}$, the second derivative is $20 \left(\frac{12}{5}\right)^3 - 36 \left(\frac{12}{5}\right)^2 = 69.12$. Since the second derivative is positive, the function is concave up, and $x = \frac{12}{5}$ is a minimum point.
+
+This means that the function is decreasing before $x = \frac{12}{5}$ and increasing after $x = \frac{12}{5}$.
+
+At inconclusive points, the curve "flips" from increasing to decreasing or vice versa.
+So if the function is increasing at $[0, \frac{12}{5}]$, it must be decreasing at $[-\infty, 0]$.
+
+## Finding Global Extrema using Candidate Tests
+
+Global extrema are the maximum and minimum points of a function over a closed interval. It's not very different from finding local extrema, but it requires a bit more work.
+
+We can take advantage of the extreme value theorem. If a function is continuous over a closed interval, it must have a maximum and minimum point.
+
+For example, consider the function $f(x) = 8\ln(x) - x^2$:
+
+<Mafs
+    viewBox={{
+        x: [0.1, 10],
+        y: [-10, 10]
+    }}
+    preserveAspectRatio={false}
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => 8 * Math.log(x) - x ** 2}
+    />
+</Mafs>
+
+Recall that $\ln(x)$ is only defined for $x > 0$, so the domain of the function is $x > 0$.
+For the purposes of this example, we'll consider the interval $x \in [1, 4]$.
+
+To find the global extrema of the function, we need to find the critical points of the function.
+
+The derivative of $f(x)$ is:
+
+$$
+\frac{df}{dx}(x) = \frac{d}{dx}(8\ln(x) - x^2) = \frac{8}{x} - 2x
+$$
+
+Setting this equal to $0$ gives us the critical points of the function:
+
+$$
+\frac{8}{x} - 2x = 0 \implies 8 - 2x^2 = 0 \implies x = \pm 2
+$$
+
+Thus, the critical points of the function are $x = 2$ and $x = -2$.
+
+To determine if these are maximum or minimum points, we can use the second derivative.
+
+The second derivative of $f(x)$ is:
+
+$$
+\frac{d^2f}{dx^2}(x) = \frac{d}{dx}\left(\frac{8}{x} - 2x\right) = \frac{-8}{x^2} - 2
+$$
+
+$x = -2$ is not in the interval $[1, 4]$, so we can ignore it.
+
+At $x = 2$, the second derivative is $\frac{-8}{2^2} - 2 = -6$. Since the second derivative is negative, the function is concave down, and $x = 2$ is a maximum point.
+
+To find the global maximum and minimum points, we can make use of the extreme value theorem.
+
+The function is continuous over the interval $[1, 4]$, so it must have a maximum and minimum point. The maximum point is at $x = 2$, and the minimum point is at the endpoints of the interval.
+
+Thus, the global maximum point is at $x = 2$, and the global minimum points are at $x = 1$ and $x = 4$.
+
+What we've done here is known as the candidate test. We find the critical points of the function, and then test these points to determine if they are maximum or minimum points.
+
+### Absolute Extrema of the Entire Domain
+
+If the function is continuous over the entire domain, we can find the absolute maximum and minimum points of the function.
+
+For example, consider the function $f(x) = x^2 \ln(x)$:
+
+<Mafs
+    viewBox={{
+        x: [0.1, 5],
+        y: [-1, 15]
+    }}
+    preserveAspectRatio={false}
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => x ** 2 * Math.log(x)}
+    />
+</Mafs>
+
+The function is continuous over the entire domain $x > 0$, so we can find the absolute maximum and minimum points.
+
+As always, we start by finding the critical points of the function, which are the solutions to $\frac{df}{dx} = 0$.
+
+$$
+\begin{align*}
+\frac{df}{dx}(x) &= \frac{d}{dx}(x^2 \ln(x)) = 2x \ln(x) + x \tag{Product Rule} \\
+&= x(2 \ln(x) + 1) = 0 \\
+\therefore x &= 0, e^{-1/2}
+\end{align*}
+$$
+
+The function is not defined at $x = 0$, so we can ignore this value. The critical point of the function is then $x = e^{-1/2}$.
+
+Next, we can use the second derivative to determine if this is a maximum or minimum point.
+
+$$
+\begin{align*}
+\frac{d^2f}{dx^2}(x) &= \frac{d}{dx}(2x \ln(x) + x) = 2 \ln(x) + 2 \\
+\frac{d^2f}{dx^2}(e^{-1/2}) &= 2 \ln(e^{-1/2}) + 2 = 2\left(\frac{-1}{2}\right) + 2 = 1
+\end{align*}
+$$
+
+Since the second derivative is positive, the function is concave up, and $x = e^{-1/2}$ is a minimum point.
+
+Remember that this is a critical point, so to the left of this point, the function is increasing, and to the right, the function is increasing.
+
+Since there's no other critical point, the function is increasing over the entire domain. As such, the absolute minimum point is at $x = e^{-1/2}$.
+
+## Optimization
+
+Optimization refers to finding the maximum or minimum value of a function. This is a common problem in mathematics, and it has many real-world applications.
+
+For example, consider a company that wants to maximize its profit. The company can use optimization to determine the best price to sell its products.
+
+To solve an optimization problem, we need to follow these steps:
+
+1. Define the function to be optimized.
+2. Identify the constraints of the problem.
+3. Find the critical points of the function.
+4. Use the candidate test to determine the maximum or minimum points.
+
+In other words, it combines everything we've learned so far.
+
+### Example Problem - Maximizing Profit
+
+> A company wants to maximize its profit. The company's revenue is given by $R(x) = 100x - x^2$, and its cost is given by $C(x) = 50 + 10x$, where $x$ is the number of units sold.
+> Find the number of units the company should sell to maximize its profit.
+
+To solve this problem, we need to find the profit function, which is the difference between the revenue and cost functions.
+
+$$
+\begin{align*}
+P(x) &= R(x) - C(x) \\
+&= (100x - x^2) - (50 + 10x) \\
+&= 90x - x^2 - 50 \\
+&= -x^2 + 90x - 50
+\end{align*}
+$$
+
+Next, we need to find the critical points of the profit function.
+
+The derivative of $P(x)$ is:
+$$
+\begin{align*}
+\frac{dP}{dx}(x) &= \frac{d}{dx}(-x^2 + 90x - 50) \\
+&= -2x + 90
+\end{align*}
+$$
+
+Setting this equal to $0$ gives us the critical point(s) of the function:
+
+$$
+-2x + 90 = 0 \implies x = 45
+$$
+
+Thus, the critical point of the function is $x = 45$.
+
+To determine if this is a maximum or minimum point, we can use the second derivative test.
+
+The second derivative of $P(x)$ is:
+
+$$
+\begin{align*}
+\frac{d^2P}{dx^2}(x) &= \frac{d}{dx}(-2x + 90) \\
+&= -2
+\end{align*}
+$$
+
+Since the second derivative is negative, the function is concave down, and $x = 45$ is a maximum point.
+
+Thus, the company should sell $45$ units to maximize its profit.
+
+:::info Using Properties of Parabolas
+
+We've used calculus to solve this problem, but we can also use the properties of parabolas to solve it.
+
+The critical point of a parabola is at its vertex. Since the parabola is concave down, the vertex is the maximum point of the parabola.
+
+The vertex of a parabola $y = ax^2 + bx + c$ is at $x = -\frac{b}{2a}$, which can be derived in two ways:
+
+- By completing the square:
+    $$y = a\left(x + \frac{b}{2a}\right)^2 - \frac{b^2}{4a} + c$$
+    The vertex is at $\left(-\frac{b}{2a}, -\frac{b^2}{4a} + c\right)$, simply because of how function transformations work.
+- By using the derivative of the function, which is what we did above.
+
+:::
+
+### Example Problem - Area of a Rectangle
+
+> A rectangle has a perimeter of $100 \text{ m}$. Find the dimensions of the rectangle that maximize its area.
+
+To solve this problem, we need to find the area of the rectangle as a function of its dimensions.
+
+Let $l$ be the length of the rectangle and $w$ be the width of the rectangle. The perimeter of the rectangle is $100 \text{ m}$, so:
+
+$$
+2l + 2w = 100 \implies l + w = 50 \implies l = 50 - w
+$$
+
+The area of the rectangle is:
+
+$$
+A(w) = l \cdot w = (50 - w)w = 50w - w^2
+$$
+
+Next, we need to find the critical points of the area function, and then identify if it's a maximum or minimum point.
+
+$$
+\begin{align*}
+\frac{dA}{dw}(w) &= \frac{d}{dw}(50w - w^2) = 50 - 2w \\
+50 - 2w &= 0 \implies w = 25 \\
+\frac{d^2A}{dw^2}(w) &= \frac{d}{dw}(50 - 2w) = -2
+\end{align*}
+$$
+
+Since the second derivative is negative, the function is concave down, and $w = 25$ is a maximum point.
+Hence, the width of the rectangle that maximizes its area is $25 \text{ m}$, and the length is $50 - 25 = 25 \text{ m}$.
+
+## Summary
+
+Differentiation is a powerful tool that allows us to find the slope of a function at any point.
+This is extremely useful when analyzing the behavior of functions, as well as applying them to real-world problems.
+
+-
