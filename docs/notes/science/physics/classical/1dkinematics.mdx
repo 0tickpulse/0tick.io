@@ -21,8 +21,8 @@ On the other hand, dynamics studies the causes of motion, the forces that cause 
 
 Position is the location of an object in space. It is a vector quantity, meaning it has both magnitude and direction.
 
-Usually, position is denoted as a function of time $\mathbf{r}(t)$, where $t$ is time.
-In one-dimensional kinematics, the position can be written as $x(t)\hat{\mathbf{i}}$. Here, $\hat{\mathbf{i}}$ is the unit vector in the direction of motion.
+Usually, position is denoted as a function of time $\vec{r}(t)$, where $t$ is time.
+In one-dimensional kinematics, the position can be written as $x(t)\hat{\vec{i}}$. Here, $\hat{\vec{i}}$ is the unit vector in the direction of motion.
 
 {(() => {
     const x = useMovablePoint([2, 0], { constrain: ([x, y]) => [x, 0] });
@@ -34,7 +34,7 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\mathbf{
             color={Theme.green}
         />
         <LaTeX
-            tex={`\\mathbf{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\mathbf{i}}`}
+            tex={`\\vec{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\vec{i}}`}
             at={[x.point[0] / 2, 0.3]}
         />
 
@@ -44,7 +44,7 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\mathbf{
             color={Theme.red}
         />
         <LaTeX
-            tex={`\\hat{\\mathbf{i}}`}
+            tex={`\\hat{\\vec{i}}`}
             at={[0.5, -0.3]}
         />
         {x.element}
@@ -53,17 +53,17 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\mathbf{
 
 ## Displacement
 
-Displacement is the change in position of an object, or $\Delta \mathbf{r}$. It is also a vector quantity.
+Displacement is the change in position of an object, or $\Delta \vec{r}$. It is also a vector quantity.
 Displacement can be expressed as follows:
 
 $$
-\Delta \mathbf{r} = \mathbf{r}(t_2) - \mathbf{r}(t_1)
+\Delta \vec{r} = \vec{r}(t_2) - \vec{r}(t_1)
 $$
 
 In one-dimensional kinematics, the displacement can be written as:
 
 $$
-\Delta \mathbf{r} = x(t_2)\hat{\mathbf{i}} - x(t_1)\hat{\mathbf{i}} \equiv \Delta x\hat{\mathbf{i}}
+\Delta \vec{r} = x(t_2)\hat{\vec{i}} - x(t_1)\hat{\vec{i}} \equiv \Delta x\hat{\vec{i}}
 $$
 
 ## Velocity
@@ -74,7 +74,7 @@ The SI unit of velocity is meters per second ($\text{ms}^{-1}$).
 The average velocity, which is the average rate of change of position, is given by:
 
 $$
-\mathbf{v}_{\text{avg}} = \frac{\Delta \mathbf{r}}{\Delta t}
+\vec{v}_{\text{avg}} = \frac{\Delta \vec{r}}{\Delta t}
 $$
 
 In one-dimensional kinematics, the average velocity can be written as:
@@ -94,13 +94,13 @@ $$
 The vector form of velocity is:
 
 $$
-\mathbf{v} = \frac{d\mathbf{r}}{dt}
+\vec{v} = \frac{d\vec{r}}{dt}
 $$
 
 And in one-dimensional kinematics:
 
 $$
-\mathbf{v} = \frac{d}{dt}(x\hat{\mathbf{i}}) = \frac{dx}{dt}\hat{\mathbf{i}}
+\vec{v} = \frac{d}{dt}(x\hat{\vec{i}}) = \frac{dx}{dt}\hat{\vec{i}}
 $$
 
 ## Acceleration
@@ -111,7 +111,7 @@ The SI unit of acceleration is meters per second squared ($\text{ms}^{-2}$).
 The average acceleration, which is the average rate of change of velocity, is given by:
 
 $$
-\mathbf{a}_{\text{avg}} = \frac{\Delta \mathbf{v}}{\Delta t}
+\vec{a}_{\text{avg}} = \frac{\Delta \vec{v}}{\Delta t}
 $$
 
 In one-dimensional kinematics, the average acceleration can be written as:
@@ -129,13 +129,13 @@ $$
 The vector form of acceleration is:
 
 $$
-\mathbf{a} = \frac{d\mathbf{v}}{dt}
+\vec{a} = \frac{d\vec{v}}{dt}
 $$
 
 And in one-dimensional kinematics:
 
 $$
-\mathbf{a} = \frac{d}{dt}(v\hat{\mathbf{i}}) = \frac{dv}{dt}\hat{\mathbf{i}}
+\vec{a} = \frac{d}{dt}(v\hat{\vec{i}}) = \frac{dv}{dt}\hat{\vec{i}}
 $$
 
 ## Constant Acceleration
@@ -208,7 +208,7 @@ $$
 In vector form in one-dimensional kinematics, the displacement can be written as:
 
 $$
-\mathbf{x}(t) = \mathbf{x}_0 + \mathbf{v}_0 t + \frac{1}{2} \mathbf{a} t^2
+\vec{x}(t) = \vec{x}_0 + \vec{v}_0 t + \frac{1}{2} \vec{a} t^2
 $$
 
 ## Example: Vehicles
@@ -360,3 +360,143 @@ $$
 $$
 
 This is the fundamental theorem of calculus.
+
+## Example: Bicycle and Car
+
+> A car travels at a constant velocity of $v_{\text{c}, 0} = 20 \text{ms}^{-1}$.
+>
+> At $t = t_1 = 1 \text{s}$, the car starts braking, and at $t = t_2$, the car stops.
+>
+> The acceleration of the car can be expressed in this piecewise function:
+>
+> $$
+> a_{\text{c}}(t) = \begin{cases}
+> 0 & 0 < t \leq t_1 \\
+> k(t - t_1) & t_1 \leq t < t_2 \\
+> \end{cases}
+> $$
+>
+> Where $k = -5 \text{ms}^{-3}$.
+>
+> Find the position function of the car.
+>
+> A bicycle starts 15 meters behind the car and travels at a constant velocity of $v_{\text{b}} = v_{\text{b}, 0}$. When the car stops, the bicycle passes the car.
+> Find the velocity of the bicycle.
+>
+> (Adapted from MIT OCW 8.01)
+
+To find the position function of the car, we need to integrate the acceleration function.
+
+For $0 < t \leq t_1$:
+
+$$
+\begin{align*}
+    v_{\text{c}}(t) &= \int 0 \, dt = v_{\text{c}, 0} = 20 \text{ms}^{-1} \\
+    x_{\text{c}}(t) &= \int v_{\text{c}}(t) \, dt = v_{\text{c}, 0} t = 20t
+\end{align*}
+$$
+
+For $t_1 \leq t < t_2$, it's a bit more complicated.
+
+Beforehand, notice that $v_{\text{c}}(t_1) = v_{\text{c}, 0}$ because the car only _starts_ braking at $t = t_1$, so at that instant it doesn't change velocity yet.
+Firstly, the velocity can be found by constructing an equation through the fundamental theorem of calculus (Note the $t'$ in the integral is a dummy variable):
+
+$$
+\begin{align*}
+    v_{\text{c}}(t) - v_{\text{c}}(t_1) &= \int_{t_1}^{t} a_{\text{c}}(t') \, dt' \\
+    &= \int_{t_1}^{t} k(t' - t_1) \, dt' = \left[ \frac{1}{2} k(t' - t_1)^2 \right]_{t_1}^{t} \\
+    &= \frac{1}{2} k(t - t_1)^2 \cancel{- \frac{1}{2} k(t_1 - t_1)^2} = \frac{1}{2} k(t - t_1)^2 \\
+    \implies v_{\text{c}}(t) &= v_{\text{c}, 0} + \frac{1}{2} k(t - t_1)^2 \\
+\end{align*}
+$$
+
+Then, the position function can be found by integrating the velocity function:
+
+$$
+\begin{align*}
+    x_{\text{c}}(t) - x_{\text{c}}(t_1) &= \int_{t_1}^{t} v_{\text{c}}(t') \, dt' \\
+    &= \int_{t_1}^{t} \left( v_{\text{c}, 0} + \frac{1}{2} k(t' - t_1)^2 \right) \, dt'
+\end{align*}
+$$
+
+Let $u = t' - t_1$, then $du = dt'$:
+
+$$
+\begin{align*}
+    x_{\text{c}}(t) - x_{\text{c}}(t_1) &= \int_{0}^{t - t_1} \left( v_{\text{c}, 0} + \frac{1}{2} ku^2 \right) \, du \\
+    &= \left[ v_{\text{c}, 0}u + \frac{1}{6} ku^3 \right]_{0}^{t - t_1} \\
+    &= \left( v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3 \right) \\
+    \implies x_{\text{c}}(t) &= x_{\text{c}}(t_1) + v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3 \\
+    &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3
+\end{align*}
+$$
+
+Therefore, the position function of the car is:
+
+$$
+x_{\text{c}}(t) = \begin{cases}
+v_{\text{c}, 0}t & 0 < t \leq t_1 \\
+v_{\text{c}, 0}t_1 + v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3 & t_1 \leq t < t_2
+\end{cases}
+$$
+
+To find the velocity of the bicycle, we need to find the time at which the car stops.
+
+At $t = 0$, $x_{\text{b}} = -15 \text{m}$. At $t = t_2$, $x_{\text{c}} = x_{\text{b}}$, and $v_{\text{c}}(t_2) = 0$.
+
+Using the previous velocity function:
+
+$$
+\begin{align*}
+    v_{\text{c}}(t_2) &= v_{\text{c}, 0} + \frac{1}{2} k(t_2 - t_1)^2 = 0 \\
+    \implies t_2 &= t_1 + \sqrt{\frac{-2v_{\text{c}, 0}}{k}} \\
+    &= 1 \text{s} + \sqrt{\frac{-2 \times 20 \text{ms}^{-1}}{-5 \text{ms}^{-3}}} \\
+    &= 3.828 \text{s}
+\end{align*}
+$$
+
+Note that this implies:
+
+$$
+t_2 - t_1 = \sqrt{\frac{-2v_{\text{c}, 0}}{k}}
+$$
+
+Therefore, the position at which the car stops is:
+
+$$
+\begin{align*}
+    x_{\text{c}}(t_2) &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}(t_2 - t_1) + \frac{1}{6} k(t_2 - t_1)^3 \\
+    &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}\sqrt{\frac{-2v_{\text{c}, 0}}{k}} + \frac{1}{6} k\left(\frac{-2v_{\text{c}, 0}}{k}\right)^{3/2} \\
+    &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}{\color{red} \sqrt{\frac{2v_{\text{c}, 0}}{-k}}} - \frac{1}{6} \cancel{k}{\color{red} \sqrt{\frac{2v_{\text{c}, 0}}{-k}}}\frac{2}{\cancel{k}} \\
+    &= v_{\text{c}, 0}t_1 + \frac{\sqrt{2}(v_{\text{c}, 0})^{3/2}}{\sqrt{-k}}\left(1 - \frac{1}{3}\right) \\
+    &= v_{\text{c}, 0}t_1 + \frac{4\sqrt{2}}{3}\frac{(v_{\text{c}, 0})^{3/2}}{\sqrt{-k}} \\
+    &= (20 \text{ms}^{-1}) (1 \text{s}) + \frac{4\sqrt{2}}{3}\frac{(20 \text{ms}^{-1})^{3/2}}{\sqrt{5 \text{ms}^{-3}}} \\
+    &= 95.424 \text{m}
+\end{align*}
+$$
+
+Since $x_{\text{b}} = -15 \text{m}$, we can construct an equation for the bicycle's position:
+
+$$
+\begin{align*}
+    x_{\text{b}}(t) &= -15 \text{m} + v_{\text{b}}t \\
+    x_{\text{b}}(t_2) &= x_{\text{c}}(t_2) \\
+    -15 \text{m} + v_{\text{b}}t_2 &= 95.424 \text{m} \\
+    v_{\text{b}} &= \frac{95.424 \text{m} + 15 \text{m}}{t_2} \\
+    &= \frac{110.424 \text{m}}{3.828 \text{s}} \\
+    &= 28.85 \text{ms}^{-1}
+\end{align*}
+$$
+
+The velocity of the bicycle is $28.85 \text{ms}^{-1}$.
+
+## Summary
+
+- Position is the location of an object in space.
+- Displacement is the change in position of an object.
+- Velocity is the rate of change of position with respect to time.
+- Acceleration is the rate of change of velocity with respect to time.
+- For constant acceleration, the velocity-time graph is a straight line, and the position function is $x(t) = x_0 + v_0 t + \frac{1}{2} a t^2$.
+- For non-constant acceleration, the velocity-time graph is not a straight line.
+- In differential order: position $\to$ velocity $\to$ acceleration; $x \to v \to a$.
+- In integral order: acceleration $\to$ velocity $\to$ position; $a \to v \to x$.

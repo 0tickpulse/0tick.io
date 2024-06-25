@@ -1,0 +1,93 @@
+---
+sidebar_position: 3
+---
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+
+# Two-Dimensional Kinematics
+
+In two dimensions, the position can no longer be wholly described by a scalar.
+
+Instead, we use a vector to describe the position of an object in two dimensions.
+
+$$
+\vec{r} = x\ihat + y\jhat
+$$
+
+Where $\ihat$ and $\jhat$ are the unit vectors in the x and y directions respectively.
+
+Therefore, the velocity and acceleration can be derived from the position vector:
+
+$$
+\begin{align*}
+    \vec{v} &= \frac{d\vec{r}}{dt} = \frac{d}{dt}(x\ihat + y\jhat) = \frac{dx}{dt}\ihat + \frac{dy}{dt}\jhat = v_x\ihat + v_y\jhat \\
+    \vec{a} &= \frac{d\vec{v}}{dt} = \frac{d}{dt}(v_x\ihat + v_y\jhat) = \frac{dv_x}{dt}\ihat + \frac{dv_y}{dt}\jhat = a_x\ihat + a_y\jhat
+\end{align*}
+$$
+
+Where $v_x$ and $v_y$ are the x and y components of the velocity, and $a_x$ and $a_y$ are the $x$ and $y$ components of the acceleration.
+
+## Projectile Motion
+
+Projectile motion is the motion of an object that is thrown or projected into the air.
+
+{(() => {
+    return (
+        <Mafs
+            viewBox={{
+                x: [-1, 7],
+                y: [-1, 7]
+            }}
+        >
+            <Coordinates.Cartesian />
+            {/* Parabolic orbit */}
+            <Plot.Parametric
+                xy={(t) => {
+                    const x = 6 * t;
+                    const y = 6 * t - 0.5 * 9.8 * t ** 2;
+                    return [x, y];
+                }}
+                t={[0, 1]}
+            />
+            {/* Actual orbit */}
+            <Plot.Parametric
+                xy={(t) => {
+                    const x = 5 * t;
+                    const y = 5 * t - 0.5 * 9.8 * t ** 2;
+                    return [x, y];
+                }}
+                t={[0, 1]}
+            />
+
+            {/* Initial velocity vector */}
+            <Vector
+                tail={[0, 0]}
+                tip={[1, 1]}
+                color={Theme.green}
+            />
+            <LaTeX
+                tex="v_0"
+                at={lineLabel([0, 0], [1, 1], "right")}
+            />
+        </Mafs>
+    )
+})()}
+
+The graph above shows the trajectory of a projectile in two dimensions.
+Two paths are shown: the predicted parabolic path and the actual path.
+
+Factors affecting the actual orbit include:
+
+- Air resistance, where $F_{\text{air}} = -bv^2\unitvec{v}$, where $b$ is the drag coefficient, $v$ is the velocity, and $\unitvec{v}$ is the unit vector in the direction of the velocity.
+- The Coriolis effect, where the Earth's rotation causes the path of the projectile to curve.
+- The Magnus effect, where the spin of the projectile causes it to curve.
+
+Usually in projectile motion, we ignore every factor except for gravity.
+
+## Basic Equations
+
+{(() => {
+    
+})()}
