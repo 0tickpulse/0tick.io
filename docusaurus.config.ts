@@ -1,9 +1,10 @@
-import { themes } from "prism-react-renderer";
-import type { Config } from "@docusaurus/types";
 import type * as Preset from "@docusaurus/preset-classic";
+import type { Config } from "@docusaurus/types";
+import { themes } from "prism-react-renderer";
 
+import rehypeKatex, { Options } from "rehype-katex";
 import remarkMath from "remark-math";
-import rehypeKatex from "rehype-katex";
+import { KATEX_MACROS } from "./katexMacros.js";
 
 const lightCodeTheme = themes.vsLight;
 const darkCodeTheme = themes.vsDark;
@@ -37,7 +38,7 @@ const config = {
     },
 
     markdown: {
-        mermaid: true
+        mermaid: true,
     },
 
     stylesheets: [
@@ -63,7 +64,7 @@ const config = {
                     editUrl: "https://github.com/0tickpulse/0tick.io/tree/main/",
                     routeBasePath: "/",
                     remarkPlugins: [remarkMath],
-                    rehypePlugins: [rehypeKatex],
+                    rehypePlugins: [(options: Options) => rehypeKatex({ ...options, macros: KATEX_MACROS })],
                 },
                 blog: {
                     showReadingTime: true,
