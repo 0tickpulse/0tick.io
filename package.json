@@ -23,6 +23,7 @@
         "docusaurus-plugin-sass": "^0.2.5",
         "gl-matrix": "^3.4.3",
         "katex": "^0.16.9",
+        "lodash": "^4.17.21",
         "mafs": "^0.18.1",
         "mathjs": "^12.4.2",
         "numeric": "^1.2.6",
@@ -40,6 +41,7 @@
         "@docusaurus/types": "^3.3.2",
         "@tsconfig/docusaurus": "^2.0.2",
         "@types/katex": "^0.16.7",
+        "@types/lodash": "^4.17.5",
         "@types/numeric": "^1.2.6",
         "@types/react": "^18.2.47",
         "typescript": "^5.3.3"
