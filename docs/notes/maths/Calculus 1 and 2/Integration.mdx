@@ -86,13 +86,17 @@ For each rectangle at time $t_i$, the width is $\Delta t$ and the height is $v(t
 The total area is the sum of the areas of all the rectangles:
 
 $$
+\begin{equation}
 \text{Area} = \sum_{i} v(t_i) \Delta t
+\end{equation}
 $$
 
 Because $\Delta t \to 0$, the sum becomes a "continuous sum". This is what we call an integral:
 
 $$
+\begin{equation}
 \text{Area} = \int_{0}^{T_1} v(t) dt
+\end{equation}
 $$
 
 ### Accumulation of Areas and the Fundamental Theorem of Calculus
@@ -102,7 +106,9 @@ Now, let's consider how to actually compute the area. Recall that the area of th
 In other words:
 
 $$
+\begin{equation}
 s(T_1) = \int_{0}^{T_1} v(t) dt
+\end{equation}
 $$
 
 Additionally, recall that to find the slope of a function, we took an infinitesimal change in $x$ and found the change in $y$.
@@ -149,29 +155,35 @@ The width of the rectangle is $\Delta t$ and the height is $v(T_1)$.
 Therefore:
 
 $$
+\begin{equation}
 \Delta s = v(T_1) \Delta t
+\end{equation}
 $$
 
 And if we rearrange:
 
 $$
+\begin{equation}
 \frac{\Delta s}{\Delta t} = v(t)
+\end{equation}
 $$
 
 And as $\Delta t \to 0$:
 
 $$
+\begin{equation}
 \frac{ds}{dt} = v(t)
+\end{equation}
 $$
 
 We have derived something known as the fundamental theorem of calculus:
 
 <Boxed>
 $$
-\begin{aligned}
+\begin{align}
     \frac{ds}{dt} &= v(t) \\
     s(T_1) &= \int_{0}^{T_1} v(t) dt
-\end{aligned}
+\end{align}
 $$
 </Boxed>
 
@@ -194,7 +206,9 @@ Therefore, the antiderivative of $x^n$ is $x^{n + 1}/(n + 1)$.
 The antiderivative of a function $f(x)$ is denoted as $\int f(x) dx$. When we took the antiderivative of $x^n$, we can write it as:
 
 $$
+\begin{equation}
 \int x^n dx = \frac{x^{n + 1}}{n + 1}
+\end{equation}
 $$
 
 **HOWEVER**, we are missing something. Let's say $n = 4$. Then the antiderivative of $x^4$ is $x^5/5$.
@@ -231,7 +245,9 @@ Visually, this looks like moving the antiderivative up and down the $y$-axis:
 We can denote this constant as $C$. Therefore, we can revise our antiderivative as:
 
 $$
+\begin{equation}
 \int x^n dx = \frac{x^{n + 1}}{n + 1} + C
+\end{equation}
 $$
 
 We have now found the antiderivative of $x^n$, known as the power rule of integration.
@@ -241,21 +257,27 @@ We have now found the antiderivative of $x^n$, known as the power rule of integr
 Now let's connect the antiderivative to the area under the curve. Using what we know so far:
 
 $$
-\int_{0}^{T_1} v(t) dt = s(T_1) + C
+\begin{equation}
+\int_{0}^{T_1} v(t) dt = s(T_1) + C \label{eq:antiderivative}
+\end{equation}
 $$
 
 However, what do we set $C$ as? It can't be any constant, since the area under the curve is a specific value.
 To solve this conundrum, we introduce the concept of a definite integral. Let's say we want to find the area under the curve of $v(t)$ from $0$ to $0$.
-This is obviously $0$, so:
+This is obviously $0$, so, plugging this into Equation $\ref{eq:antiderivative}$:
 
 $$
+\begin{equation}
 \int_{0}^{0} v(t) dt = 0 = s(0) + C
+\end{equation}
 $$
 
 Therefore, $C = -s(0)$. This is the basis of the definite integral:
 
 $$
+\begin{equation}
 \int_{0}^{T_1} v(t) dt = s(T_1) - s(0)
+\end{equation}
 $$
 
 We can also replace $0$ with any arbitrary constant. For example, if we want to find the area under the curve of $v(t)$ from $T_0$ to $T_1$:
@@ -265,6 +287,169 @@ $$
 $$
 
 Notice that the area under the curve is derived solely from the endpoints $T_0$ and $T_1$, and nothing in between.
+
+## Proof of the Fundamental Theorem of Calculus
+
+The fundamental theorem of calculus states two things:
+
+1. $\displaystyle \frac{d}{dx} \int_{0}^{x} f(t) dt = f(x)$
+2. $\displaystyle \int_{a}^{b} f(x) dx = F(b) - F(a)$
+
+While we have shown it intuitively, we can also prove it rigorously.
+Both are equally important, as the intuitive visualization helps people understand the concept and helps the concept stick in their minds, while the rigorous proof ensures the validity and correctness of the concept.
+
+### Proof of the First Part
+
+First, let $f: \mathbb{R} \to \mathbb{R}$ be a function continuous on $[a, b]$.
+
+Let $F(x) = \int_{a}^{x} f(t) dt$ be the accumulation function of $f(x)$ where $a \leq x \leq b$.
+
+export function FTOCProof1({ showDx = false, showMVT = false }) {
+    const f = (x) => Math.sin(x / 2) + 4;
+    const F = (x) => -2 * Math.cos(x / 2) + 4 * x;
+    const a = 2, b = 8;
+    const x = useMovablePoint([a + 2, 0], {
+        constrain: ([x, y]) => [Math.min(Math.max(x, a), b), 0],
+        color: Theme.green
+    });
+    const dx = 1.5;
+    const x2 = x.point[0] + dx;
+    const mvtHeight = (F(x2) - F(x.point[0])) / dx;
+    return (
+        <Mafs
+            viewBox={{
+                x: [-1, 11],
+                y: [-1, 6]
+            }}
+        >
+            <Coordinates.Cartesian
+                xAxis={{
+                    lines: false,
+                    labels: () => ""
+                }}
+                yAxis={{
+                    lines: false,
+                    labels: () => ""
+                }}
+            />
+            <Plot.OfX
+                y={f}
+            />
+            {/* a */}
+            <Line.Segment
+                point1={[a, 0]}
+                point2={[a, f(a)]}
+            />
+            <LaTeX
+                at={[a, -0.5]}
+                tex="a"
+            />
+            {/* b */}
+            <Line.Segment
+                point1={[b, 0]}
+                point2={[b, f(b)]}
+            />
+            <LaTeX
+                at={[b, -0.5]}
+                tex="b"
+            />
+            {/* x */}
+            {x.element}
+            <Line.Segment
+                point1={x.point}
+                point2={[x.point[0], f(x.point[0])]}
+                color={Theme.green}
+            />
+            <LaTeX
+                at={[x.point[0], -0.5]}
+                tex="x"
+            />
+            {/* dx */}
+            {showDx && (
+                <>
+                    <Line.Segment
+                        point1={[x2, 0]}
+                        point2={[x2, f(x2)]}
+                        color={Theme.green}
+                    />
+                    <LaTeX
+                        at={[x2, -0.5]}
+                        tex="x + \Delta x"
+                    />
+                    <Plot.Inequality
+                        y={{
+                            "<=": (value) => (value >= x.point[0] && value <= x2) ? f(value) : 0,
+                            ">": (x) => 0
+                        }}
+                        fill={Theme.green}
+                        fillOpacity={0.5}
+                        xDomain={[x.point[0], x2]}
+                    />
+                    {showMVT && (
+                        <>
+                            <Polygon
+                                points={[
+                                    [x.point[0], 0],
+                                    [x.point[0], mvtHeight],
+                                    [x2, mvtHeight],
+                                    [x2, 0]
+                                ]}
+                                color={Theme.green}
+                                fillOpacity={0.5}
+                            />
+                        </>
+                    )}
+                </>
+            )}
+        </Mafs>
+    )
+}
+
+<FTOCProof1 />
+
+Using the definition of the derivative, the derivative of $F(x)$ is:
+
+$$
+\begin{align}
+\frac{d}{dx} F(x) &= \lim_{\Delta x \to 0} \frac{F(x + \Delta x) - F(x)}{h} \\
+&= \lim_{\Delta x \to 0} \frac{\int_{a}^{x + \Delta x} f(t) dt - \int_{a}^{x} f(t) dt}{\Delta x}
+\end{align}
+$$
+
+<FTOCProof1 showDx={true} />
+
+As shown in the graph, the numerator can be represented as the area under the curve of $f(t)$ from $x$ to $x + \Delta x$. Therefore:
+
+$$
+\begin{align}
+\frac{d}{dx} F(x) &= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) dt \\
+\end{align}
+$$
+
+The Mean-Value Theorem states:
+
+$$
+\exists c \in [x, x + \Delta x] \text{ such that } f(c)\Delta x = \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) dt
+$$
+
+Which is a fancy way of saying that there is some rectangle whose area is exactly the area under the segment of the curve.
+It's called the Mean-Value Theorem because the right-hand side is the average value of the function over the interval $[x, x + \Delta x]$.
+
+<FTOCProof1 showDx={true} showMVT={true} />
+
+Therefore:
+
+$$
+\frac{d}{dx} F(x) = \lim_{\Delta x \to 0} f(c)
+$$
+
+Since $x \leq c \leq x + \Delta x$, as $\Delta x \to 0 \Rightarrow c \to x$.
+
+Therefore:
+
+$$
+\frac{d}{dx} F(x) = f(x)
+$$
 
 ## Average Value of a Function
 
@@ -462,24 +647,24 @@ The proof of this theorem is quite complex, but it can be done using the $\varep
     - The difference between the Riemann sum and the definite integral can be evaluated as follows:
 
             $$
-            \begin{align*}
+            \begin{align}
             \left|R(f, P, t) - \int_{a}^{b} f(x)dx \right| &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \int_{a}^{b} f(x)dx \right| \\
-            &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \sum f(x) (x_i - x_{i - 1}) \right| \tag{MVT} \\
+            &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \sum f(x) (x_i - x_{i - 1}) \right| \\
             &= \left|\sum (f(t_i) - f(x)) (x_i - x_{i - 1}) \right| \\
-            &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \tag{Triangle Inequality} \\
-            \end{align*}
+            &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \\
+            \end{align}
             $$
 
     The proof uses the Mean Value Theorem (MVT). For a continuous function $f$ on $[a, b]$, there exists a point $x \in [x_{i - 1}, x_i]$ such that $\int_{x_{i - 1}}^{x_i} f(x)dx = f(x) (x_i - x_{i - 1})$.
     Next, since the width of each interval $x_i - x_{i - 1}$ is less than $\delta$, $c_i - x < \delta$, and by uniform continuity, $|f(c_i) - f(x)| < \frac{\varepsilon}{b - a}$. Therefore:
 
             $$
-            \begin{align*}
+            \begin{align}
             \left|R(f, P, t) - \int_{a}^{b} f(x)dx \right| &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \\
             &\leq \sum \frac{\varepsilon}{b - a} (x_i - x_{i - 1}) \\
             &= \frac{\varepsilon}{b - a} \sum (x_i - x_{i - 1}) \\
             &= \varepsilon
-            \end{align*}
+            \end{align}
             $$
 
     As such, in conclusion, for any $\varepsilon > 0$, there exists a $\delta > 0$ such that for any partition $P$ with mesh $\|P\| < \delta$, $|R(f, P, t) - \int_{a}^{b} f(x)dx| < \varepsilon$. This is the definition of a limit, and hence the Riemann sum converges to the integral.
@@ -507,10 +692,10 @@ Let's go through our steps:
 Therefore, the Riemann sum is:
 
 $$
-\begin{align*}
+\begin{align}
 \text{Area} &= \sum_{i = 0}^{n - 1} \frac{9}{n^3} i(5n - 3i) \\
 &= \frac{9}{n^3} \sum_{i = 0}^{n - 1} i(5n - 3i)
-\end{align*}
+\end{align}
 $$
 
 And the area under the curve is:
@@ -532,10 +717,10 @@ This is known as an accumulation function. The reason it's called an accumulatio
 The derivative of an accumulation function can be derived using the fundamental theorem of calculus:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{df}{dx}(x) &= \frac{d}{dx} \int_{-4}^{x} t^2 dt \\
 &= x^2
-\end{align*}
+\end{align}
 $$
 
 Sometimes the upper bound of the integral isn't just $x$, but a function of $x$. For example:
@@ -547,31 +732,55 @@ $$
 The derivative of this function can be found using the chain rule. Set another function $u(x)$ as:
 
 $$
-\begin{align*}
+\begin{align}
 u(x) &= \int_{-4}^{x} t^2 dt \\
 \frac{du}{dx}(x) &= x^2
-\end{align*}
+\end{align}
 $$
 
 And set $v(x) = \sin(x)$:
 
 $$
-\begin{align*}
+\begin{align}
 v(x) &= \sin(x) \\
 \frac{dv}{dx}(x) &= \cos(x)
-\end{align*}
+\end{align}
 $$
 
 Therefore, the derivative of $f(x)$ is:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{df}{dx}(x) &= \frac{d}{dx} u(v(x)) \\
 &= \frac{du}{dv} \frac{dv}{dx} \\
 &= v^2 \cos(x) \\
 &= \sin^2(x) \cos(x)
-\end{align*}
+\end{align}
 $$
+
+Generalizing this, the derivative of an accumulation function with a variable upper bound is:
+
+$$
+\frac{d}{dx} \int_{a}^{g(x)} f(t) dt = \frac{dg}{dx}(x) f(g(x))
+$$
+
+Many functions are defined using integrals because they are easier to work with, and some cannot be expressed in terms of elementary functions.
+
+A common example is the error function:
+
+$$
+\text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_{0}^{x} e^{-t^2} dt
+$$
+
+The error function is used in statistics and probability theory, and is used to calculate the probability of a random variable falling within a certain range.
+
+Another common example is the gamma function:
+
+$$
+\Gamma(x) = \int_{0}^{\infty} t^{x - 1} e^{-t} dt
+$$
+
+The gamma function is a generalization of the factorial function, and is used in many areas of mathematics.
 
 ### Behavior of Accumulation Functions
 
@@ -603,3 +812,526 @@ Because of the fundamental theorem of calculus, the derivative of $g(x)$ is $f(x
 
 For example, at $x = 0, x = 6$, $f(x) = 0$, so those are the critical points of $g(x)$.
 At $x \in (0, 6)$, $f(x) > 0$, so $g(x)$ is increasing.
+
+At $x \in (6, \infty)$, $f(x) < 0$, so $g(x)$ is decreasing.
+
+## Properties of Definite Integrals
+
+Since integrals are the accumulation of areas; the continuous analog of the sum, they have many properties that are similar to sums.
+
+### Signs
+
+When the area is above the $x$-axis, it is positive. When the area is below the $x$-axis, it is negative.
+
+If the upper bound is less than the lower bound, you sort of "go backwards" and the entire integral is negated.
+
+As such,
+
+$$
+\int_{a}^{b} f(x) dx = -\int_{b}^{a} f(x) dx
+$$
+
+This can also be shown through the Riemann sum. Consider the Riemann sum for each integral:
+
+$$
+\begin{align}
+\int_{a}^{b} f(x) dx &= \lim_{n \to \infty} \sum_{i = 0}^{n - 1} f(a + i \Delta x) \Delta x \\
+\int_{b}^{a} f(x) dx &= \lim_{n \to \infty} \sum_{i = 0}^{n - 1} f(b + i \Delta x) \Delta x
+\end{align}
+$$
+
+Let's think about what $\Delta x$ is. Recall that $\Delta x = \frac{\text{Upper Bound} - \text{Lower Bound}}{n}$.
+
+Hence, for the first integral, $\Delta x = \frac{b - a}{n}$, and for the second integral, $\Delta x = \frac{a - b}{n}$.
+
+Since $a - b = -(b - a)$, the Riemann sum for the second integral is the negation of the Riemann sum for the first integral.
+
+Another way to show this is through the fundamental theorem of calculus. Recall that for a function $F(x)$ with derivative $f(x)$, the integral of $f(x)$ from $a$ to $b$ is $F(b) - F(a)$.
+
+If we flip it:
+
+$$
+\int_{b}^{a} f(x) dx = F(a) - F(b) = -(F(b) - F(a)) = -\int_{a}^{b} f(x) dx
+$$
+
+One application of this is to evaluate accumulation functions where the function parameter is on the lower bound. For example:
+
+$$
+f(x) = \int_{x}^{3} t(5 - t) dt
+$$
+
+This can be rewritten as:
+
+$$
+f(x) = -\int_{3}^{x} t(5 - t) dt
+$$
+
+### Linearity
+
+Let's think about the integral of a sum of functions:
+
+$$
+\int_{a}^{b} (f(x) + g(x)) dx
+$$
+
+Where $f(x) = x(5 - x)$ and $g(x) = x + sin(x)$.
+
+The graph for $f(x)$ and $f(x) + g(x)$ is shown below:
+
+<Mafs
+    viewBox={{
+        x: [-1, 10],
+        y: [-1, 10]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={(x) => x * (5 - x)}
+    />
+    <Plot.OfX
+        y={(x) => x * (5 - x) + Math.sin(x) + x}
+    />
+</Mafs>
+
+If we once again consider the Riemann sum, we can split the integral into separate rectangles:
+
+<Mafs
+    viewBox={{
+        x: [-1, 10],
+        y: [-1, 10]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <RiemannApproximation
+        f={(x) => x * (5 - x) + Math.sin(x) + x}
+        lb={0}
+        ub={3}
+        n={5}
+    />
+    <RiemannApproximation
+        f={(x) => x * (5 - x)}
+        lb={0}
+        ub={3}
+        n={5}
+    />
+</Mafs>
+
+Notice how the rectangle for $f(x) + g(x)$ is the sum of the rectangles for $f(x)$ and $g(x)$. Therefore we can intuitively say that:
+
+$$
+\int_{a}^{b} (f(x) + g(x)) dx = \int_{a}^{b} f(x) dx + \int_{a}^{b} g(x) dx
+$$
+
+This is known as the linearity of integrals.
+
+### Singular Points
+
+The integral of a function at a singular point is $0$.
+
+For example, consider the function $f(x) = \frac{1}{x}$:
+
+<Mafs
+    viewBox={{
+        x: [-1, 10],
+        y: [-1, 10]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={(x) => 1 / x}
+    />
+    <Line.Segment
+        point1={[2, 0]}
+        point2={[2, 1 / 2]}
+        color={Theme.red}
+    />
+</Mafs>
+
+The integral of $f(x)$ from $2$ to $2$ is $0$ because there's no width at all.
+
+### Scaling
+
+If you scale a function by a constant, then the integral is scaled by that constant.
+
+Consider the function $f(x) = \sin(x)$, and $g(x) = \frac{5}{2}\sin(x)$:
+
+<Mafs
+    viewBox={{
+        x: [-3, 3],
+        y: [-3, 3]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={(x) => Math.sin(x)}
+    />
+    <Plot.OfX
+        y={(x) => 2.5 * Math.sin(x)}
+        color={Theme.blue}
+    />
+</Mafs>
+
+Now let's consider the integral of $f(x)$ and $g(x)$ from $0$ to $\pi$:
+
+<Mafs
+    viewBox={{
+        x: [-3, 3],
+        y: [-3, 3]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <RiemannApproximation
+        f={(x) => Math.sin(x)}
+        lb={0}
+        ub={Math.PI}
+        n={5}
+    />
+    <RiemannApproximation
+        f={(x) => 2.5 * Math.sin(x)}
+        lb={0}
+        ub={Math.PI}
+        n={5}
+        color={Theme.blue}
+    />
+</Mafs>
+
+Notice how, once again, the rectangle for $g(x)$ is scaled by $2.5$ compared to the rectangle for $f(x)$.
+
+Therefore, we can say that:
+
+$$
+\int_{a}^{b} k f(x) dx = k \int_{a}^{b} f(x) dx
+$$
+
+### Adjacency
+
+Consider a function $f(x) = \sqrt{x}$:
+
+<Mafs
+    viewBox={{
+        x: [-1, 3],
+        y: [-1, 3]
+    }}
+>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={(x) => Math.sqrt(x)}
+    />
+    <Plot.Inequality
+        y={{
+            "<=": (x) => (x > 0 && x < 1) ? Math.sqrt(x) : -50,
+            ">": (x) => 0
+        }}
+        color={Theme.red}
+    />
+    <Plot.Inequality
+        y={{
+            "<=": (x) => (x > 1 && x < 4) ? Math.sqrt(x) : -50,
+            ">": (x) => 0
+        }}
+        color={Theme.blue}
+    />
+</Mafs>
+
+Notice how if you add the areas for $f(x)$ from $0$ to $1$ and $1$ to $4$, you get the area for $f(x)$ from $0$ to $4$.
+
+Therefore, we can say that:
+
+$$
+\int_{a}^{b} f(x) dx = \int_{a}^{c} f(x) dx + \int_{c}^{b} f(x) dx
+$$
+
+Note that $c$ does not have to be in the interval $[a, b]$. A way to show this is through the fundamental theorem of calculus. Let $F(x)$ be the antiderivative of $f(x)$:
+
+$$
+\begin{align}
+\int_{a}^{b} f(x) dx &= F(b) - F(a) \\
+&= F(c) - F(a) + F(b) - F(c) \\
+&= \int_{a}^{c} f(x) dx + \int_{c}^{b} f(x) dx
+\end{align}
+$$
+
+Notice how this does not depend on the value of $c$.
+
+### Example Problem: Input on Both Bounds
+
+> Consider the following accumulation function:
+>
+> $$
+> f(x) = \int_{x}^{x^2} t^2 \cos(t) dt
+> $$
+>
+> Identify the derivative of $f(x)$.
+
+Let's first rewrite the accumulation function using Adjacency.
+
+$$
+f(x) = \int_{x}^{x^2} t^2 \cos(t) dt = \int_{x}^{c} t^2 \cos(t) dt + \int_{c}^{x^2} t^2 \cos(t) dt
+$$
+
+Next, consider the first integral. $x$ is on the bottom, so we can flip the integral to move it to the top:
+
+$$
+\int_{x}^{c} t^2 \cos(t) dt = -\int_{c}^{x} t^2 \cos(t) dt
+$$
+
+Thus, the accumulation function can be rewritten as:
+
+$$
+f(x) = -\int_{c}^{x} t^2 \cos(t) dt + \int_{c}^{x^2} t^2 \cos(t) dt
+$$
+
+The derivative of $f(x)$ can be found using the fundamental theorem of calculus and the chain rule:
+
+$$
+\begin{align}
+\frac{df}{dx}(x) &= -\frac{d}{dx} \int_{c}^{x} t^2 \cos(t) dt + \frac{d}{dx} \int_{c}^{x^2} t^2 \cos(t) dt \\
+&= -x^2 \cos(x) + 2x(x^2 \cos(x^2)) \\
+&= -x^2 \cos(x) + 2x^3 \cos(x^2)
+\end{align}
+$$
+
+### Cheat Sheet of Properties
+
+Here is a cheat sheet of the properties of definite integrals:
+
+| Property | Formula |
+|----------|---------|
+| Signs | $\int_{a}^{b} f(x) dx = -\int_{b}^{a} f(x) dx$ |
+| Linearity | $\int_{a}^{b} (f(x) + g(x)) dx = \int_{a}^{b} f(x) dx + \int_{a}^{b} g(x) dx$ |
+| Singular Points | $\int_{a}^{a} f(x) dx = 0$ |
+| Scaling | $\int_{a}^{b} k f(x) dx = k \int_{a}^{b} f(x) dx$ |
+| Adjacency | $\int_{a}^{b} f(x) dx = \int_{a}^{c} f(x) dx + \int_{c}^{b} f(x) dx$ |
+
+## Common Antiderivatives
+
+Since the derivative of an antiderivative is the original function, we can use this to compute antiderivatives.
+
+We've already gone over the intuition for many derivatives. Here are some common antiderivatives:
+
+| Function | Antiderivative |
+|----------|----------------|
+| $x^n$ | $\frac{x^{n + 1}}{n + 1} + C$ |
+| $\sin(x)$ | $-\cos(x) + C$ |
+| $\cos(x)$ | $\sin(x) + C$ |
+| $e^x$ | $e^x + C$ |
+| $\frac{1}{x}$ | $\ln|x| + C$ |
+
+## Reversing the Chain Rule
+
+Sometimes, the antiderivative of a function is not immediately obvious. In such cases, substitution can be used.
+
+The first type of substitution is the $u$-substitution, which is basically the chain rule in reverse. Consider the following integral:
+
+$$
+\int 2x \cos(x^2 + 3) dx
+$$
+
+Now, there's two ways to do this. The first way is to use the chain rule in reverse, and the second way is to use $u$-substitution.
+$u$-substitution tends to be easier, but reverse chain rule lets you do it a lot faster.
+
+### Reverse Chain Rule
+
+Recall the chain rule:
+
+$$
+\frac{d}{dx} f(g(x)) = \frac{df}{dg} \frac{dg}{dx}
+$$
+
+We have a composite function $\cos(x^2 + 3)$, and the derivative of $x^2 + 3$ is $2x$. As such we have all the components of the chain rule:
+
+$$
+\overbrace{2x}^{dg/dx} \mathrlap{\underbrace{\phantom{\cos(x^2 + 3)}}_{df/dg}} \cos(\overbrace{x^2 + 3}^{g(x)}) = \frac{dg}{dx} \frac{df}{dg}
+$$
+
+In this case $\frac{df}{dg}$ is $\cos(g)$, so $f(g)$ is $\sin(g)$. By reversing the chain rule, the antiderivative is:
+
+$$
+\int 2x \cos(x^2 + 3) dx = f(g(x)) + C = \sin(x^2 + 3) + C
+$$
+
+### $u$-Substitution
+
+We have a composite function $\cos(x^2 + 3)$, and the derivative of $x^2 + 3$ is $2x$. As such, we can let $u = x^2 + 3$:
+
+$$
+\begin{align}
+u &= x^2 + 3 \\
+\frac{du}{dx} &= 2x \\
+du &= 2x dx \\
+\end{align}
+$$
+
+Hence, the integral can be rewritten as:
+
+$$
+\int 2x \cos(x^2 + 3) dx = \int \cos(u) du = \sin(u) + C = \sin(x^2 + 3) + C
+$$
+
+### $u$-Substitution in Definite Integrals
+
+$u$-substitution can also be used in definite integrals. Consider the following integral:
+
+$$
+\int_{0}^{\pi} \frac{4x}{\ln(x^2 + 5)} dx
+$$
+
+This can be solved by letting $u = x^2 + 5$ and $du = 2x dx$:
+
+$$
+\int_{0}^{\pi} \frac{4x}{x^2 + 5} dx = \int_{0}^{\pi} \frac{2}{\ln(u)} du
+$$
+
+**BUT WAIT!** We changed the function from $x$ to $u$, so we need to change the bounds as well.
+The bounds are $x = 0$ and $x = \pi$, so when $x = 0$, $u = 5$, and when $x = \pi$, $u = \pi^2 + 5$.
+
+Therefore the new bounds should be $5$ and $\pi^2 + 5$:
+
+$$
+\int_{0}^{\pi} \frac{4x}{x^2 + 5} dx = \int_{5}^{\pi^2 + 5} \frac{2}{\ln(u)} du
+$$
+
+## Integration by Long Division
+
+Long division, a technique you may have learned in elementary school, can also be used in algebra.
+The difference is that instead of dividing numbers, you are dividing polynomials.
+
+For example, consider the following integral:
+
+$$
+\int \frac{x^2 + 3x + 2}{x + 1} dx
+$$
+
+The first step is to divide $x^2 + 3x + 2$ by $x + 1$.
+Recall from elementary school that you find the largest multiple of the quotient in the highest place value.
+Here, instead of the highest place value, you are looking at the highest degree term, $x^2$.
+
+The largest multiple of $x$ in $x^2$ is $x$, so you multiply $x + 1$ by $x$ to get $x^2 + x$.
+$$
+\begin{array}{rl}
+& x \\
+x + 1 & \mathrlap{\mkern{-0.5em})} \overline{x^2 + 3x + 2} \\
+& x^2 + x \\
+& \overline{\phantom{x^2 + }2x + 2} \\
+\end{array}
+$$
+
+You get a remainder of $2x + 2$. Repeat the process; find the largest multiple of $x$ in $2x$ - it's $2$.
+
+$$
+\begin{array}{rl}
+& x + 2 \\
+x + 1 & \mathrlap{\mkern{-0.5em})} \overline{x^2 + 3x + 2} \\
+& x^2 + x \\
+& \overline{\phantom{x^2 + }2x + 2} \\
+& \phantom{x^2 + }2x + 2 \\
+& \overline{\phantom{x^2 + 3x + }0} \\
+\end{array}
+$$
+
+As such, the integral can be rewritten as:
+
+$$
+\int \frac{x^2 + 3x + 2}{x + 1} dx = \int (x + 2) dx = \frac{x^2}{2} + 2x + C
+$$
+
+### Example Problem: Integration by Long Division
+
+> Evaluate the following integral:
+>
+> $$
+> \int \frac{x - 5}{-2x + 2} dx
+> $$
+
+Once again, we can use long division to divide $x - 5$ by $-2x + 2$.
+
+The highest-degree term in $x - 5$ is $x$. Hence to get $x$, multiply $-2x + 2$ by $-\frac{1}{2}$:
+
+$$
+\begin{array}{rl}
+& \mkern{-0.8em}-\frac{1}{2} \\
+-2x + 2 & \mathrlap{\mkern{-0.5em})} \overline{x - 5} \\
+& x - 1 \\
+& \overline{\phantom{x } - 4} \\
+\end{array}
+$$
+
+This time we have a remainder of $-4$. Once again, recall from elementary school that you can express $\frac{number}{divisor}$ as $\text{quotient} + \frac{\text{remainder}}{\text{divisor}}$.
+For example $7 = 3 + \frac{1}{2}$. Hence, the integral can be rewritten as:
+
+$$
+\begin{align}
+\int \frac{x - 5}{-2x + 2} dx &= \int \left(-\frac{1}{2} + \frac{-4}{-2x + 2}\right) dx \\
+&= \int \left(-\frac{1}{2} + \frac{2}{x - 1}\right) dx \\
+\end{align}
+$$
+
+The integral of $-\frac{1}{2}$ is $-\frac{x}{2}$, and the integral of $\frac{2}{x - 1}$ can be found using $u$-substitution:
+
+$$
+\begin{align}
+u &= x - 1 \\
+du &= dx \\
+\int \frac{2}{x - 1} dx &= 2 \int \frac{1}{u} du = 2 \ln|u| + C = 2 \ln|x - 1| + C
+\end{align}
+$$
+
+Therefore, the integral is:
+
+$$
+\int \frac{x - 5}{-2x + 2} dx = -\frac{x}{2} + 2 \ln|x - 1| + C
+$$
+
+## Integration by Completing the Square
+
+Completing the square is a technique used to solve quadratic equations. It can also be used in integration.
+
+For example, consider the following integral:
+
+$$
+\int \frac{1}{2x^2 + 8x + 12} dx
+$$
+
+The first step is to complete the square in the denominator. Recall that to complete the square, you need to find the value that makes the square a perfect square trinomial.
+
+We will first need to remove the coefficient of $x^2$ by factoring out $\frac{1}{2}$:
+
+$$
+\int \frac{1}{2x^2 + 8x + 12} dx = \frac{1}{2} \int \frac{1}{x^2 + 4x + 6} dx
+$$
+
+Next, complete the square in the denominator.
+
+$$
+\frac{1}{2} \int \frac{1}{x^2 + 4x + 6} dx = \frac{1}{2} \int \frac{1}{x^2 + 4x + 4 + 2} dx = \frac{1}{2} \int \frac{1}{(x + 2)^2 + 2} dx
+$$
+
+Now, let's factor out the $2$ in the denominator:
+
+$$
+\frac{1}{2} \int \frac{1}{(x + 2)^2 + 2} dx = \frac{1}{4} \int \frac{1}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx
+$$
+
+Now, let $u = \frac{x + 2}{\sqrt{2}}$:
+
+$$
+\begin{align}
+u &= \frac{x + 2}{\sqrt{2}} \\
+du &= \frac{1}{\sqrt{2}} dx \\
+\sqrt{2} du &= dx
+\end{align}
+$$
+
+We need to get the $\sqrt{2}dx$ to match $du$. Therefore, multiply the numerator by $\sqrt{2}$ and divide the fraction outside by $\sqrt{2}$:
+
+$$
+\frac{1}{4} \int \frac{1}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} du
+$$
+
+The integral of $\frac{1}{u^2 + 1}$ is $\arctan(u) + C$. Therefore, the integral is:
+
+$$
+\begin{align}
+\frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} du = \frac{1}{4 \sqrt{2}} \arctan(u) + C = \frac{1}{4 \sqrt{2}} \arctan\left(\frac{x + 2}{\sqrt{2}}\right) + C
+\end{align}
+$$

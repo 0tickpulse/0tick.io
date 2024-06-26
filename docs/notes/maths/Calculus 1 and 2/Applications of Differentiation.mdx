@@ -27,31 +27,41 @@ The point-slope form is a way to find the equation of a line given a point $(x_1
 Given a point $(x_1, y_1)$ and a slope $m$, the equation of the line is:
 
 $$
+\begin{equation}
 y = mx + b
+\end{equation}
 $$
 
 We need to find the $y$-intercept $b$. Since the line passes through $(x_1, y_1)$:
 
 $$
+\begin{equation}
 y_1 = mx_1 + b
+\end{equation}
 $$
 
 Therefore:
 
 $$
+\begin{equation}
 b = y_1 - mx_1
+\end{equation}
 $$
 
 Thus, the equation of the line is:
 
 $$
+\begin{equation}
 y = mx + y_1 - mx_1
+\end{equation}
 $$
 
 And rearranging gives:
 
 $$
+\begin{equation}
 y - y_1 = m(x - x_1)
+\end{equation}
 $$
 
 :::
@@ -80,13 +90,17 @@ $$
 And at $x = 0$:
 
 $$
+\begin{equation}
 f(0) = \sqrt{1} = 1
+\end{equation}
 $$
 
 Thus, the equation of the tangent line is:
 
 $$
+\begin{equation}
 y - 1 = \frac{1}{2}(x - 0) \implies y = \frac{1}{2}x + 1
+\end{equation}
 $$
 
 This equation can be used to approximate the function $f(x)$ near $x = 0$. A visualization is shown below:
@@ -112,7 +126,9 @@ The derivative of $f(x)$ is $\cos(x)$, and at $x = 0$, $f(0) = 0$.
 Thus, the equation of the tangent line is:
 
 $$
+\begin{equation}
 y - 0 = \cos(0)(x - 0) \implies y = x
+\end{equation}
 $$
 
 As such, near $x = 0$, $\sin(x)$ can be approximated by $x$.
@@ -122,7 +138,9 @@ This is useful especially in physics, where differential equations can be diffic
 The small-angle approximation can also be derived from the Taylor series of $\sin(x)$:
 
 $$
+\begin{equation}
 \sin(x) = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \ldots
+\end{equation}
 $$
 
 For small values of $x$, the higher-order terms can be ignored, and the function can be approximated by $x$.
@@ -138,22 +156,22 @@ With differentiation, we can find the velocity of the ball at any time $t$ by ta
 Similarly, we can find the acceleration of the ball at any time $t$ by taking the derivative of the velocity function with respect to $t$.
 
 $$
-\begin{align*}
-s(t) &= 5t^2 + 3t + 2 \tag{For example} \\
+\begin{align}
+s(t) &= 5t^2 + 3t + 2 \\
 v(t) &= \frac{ds}{dt} = 10t + 3 \\
 a(t) &= \frac{dv}{dt} = 10
-\end{align*}
+\end{align}
 $$
 
 Integration can be used to do this in reverse, although it isn't covered yet.
 
 $$
-\begin{align*}
+\begin{align}
 v(t) - v(0) &= \int_{t' = 0}^{t' = t} a(t') dt' \\
 s(t) - s(0) &= \int_{t' = 0}^{t' = t} v(t') dt' \\
 a(t) = -g &\implies v(t) = -gt + v(0) \\
 \therefore s(t) &= -\frac{1}{2}gt^2 + v(0)t + s(0)
-\end{align*}
+\end{align}
 $$
 
 Note the usage of the $'$ symbol to denote a different variable.
@@ -239,19 +257,19 @@ As we decrease the interval, the value of the function approaches a certain valu
 The value of the numerator and denominator are calculated below:
 
 $$
-\begin{align*}
+\begin{align}
 d(\cos(\pi x / 2)) &= -\frac{\pi}{2} \sin\left(\frac{\pi x}{2}\right) dx \\
 d(x - 1) &= dx
-\end{align*}
+\end{align}
 $$
 
 And when we plug in $x = 1$:
 
 $$
-\begin{align*}
+\begin{align}
 d(\cos(\pi / 2)) &= -\frac{\pi}{2} \sin\left(\frac{\pi}{2}\right) dx = -\frac{\pi}{2} dx \\
 d(x - 1) &= dx
-\end{align*}
+\end{align}
 $$
 
 Remember that the value of our limit is the limit of this ratio as $dx$ approaches $0$.
@@ -259,10 +277,10 @@ Remember that the value of our limit is the limit of this ratio as $dx$ approach
 Thus, the limit is:
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to 1} \frac{\cos(\pi x / 2)}{x - 1} &= \lim_{dx \to 0} \frac{-(\pi / 2) \cancel{dx}}{\cancel{dx}} \\
 &= \lim_{dx \to 0} -\frac{\pi}{2} = -\frac{\pi}{2}
-\end{align*}
+\end{align}
 $$
 
 To generalize this, instead of using these functions, let's calculate the limit of $\frac{f(x)}{g(x)}$ as $x$ approaches $a$.
@@ -271,16 +289,18 @@ If the limit is indeterminate, that is, $\frac{0}{0}$, we can use the same appro
 The numerator and denominators are calculated as:
 
 $$
-\begin{align*}
+\begin{align}
 \text{Numerator} &= \frac{d(f(a))}{dx} dx \\
 \text{Denominator} &= \frac{d(g(a))}{dx} dx
-\end{align*}
+\end{align}
 $$
 
 As such, the limit is the ratio of the two derivatives:
 
 $$
+\begin{equation}
 \lim_{x \to a} \frac{f(x)}{g(x)} = \frac{\dfrac{d(f(a))}{dx}}{\dfrac{d(g(a))}{dx}}
+\end{equation}
 $$
 
 This is known as L'Hôpital's rule, although the rule was mostly derived by Bernoulli.
@@ -295,22 +315,26 @@ This time, we can use L'Hôpital's rule.
 Firstly, ensure that the limit is indeterminate:
 
 $$
+\begin{equation}
 \frac{\sin(x)}{x} = \frac{0}{0}
+\end{equation}
 $$
 
 Thus, the rule is applicable. Differentiating the numerator and denominator:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d(\sin(x))}{dx} &= \cos(x) \\
 \frac{d(x)}{dx} &= 1
-\end{align*}
+\end{align}
 $$
 
 And plugging in $x = 0$:
 
 $$
+\begin{equation}
 \lim_{x \to 0} \frac{\sin(x)}{x} = \frac{\cos(0)}{1} = 1
+\end{equation}
 $$
 
 Thus, the limit is $1$.
@@ -325,7 +349,9 @@ What the mean value theorem tells us is that at some point between $a$ and $b$, 
 Formally it is written like this:
 
 $$
+\begin{equation}
 \exists c \in (a, b) \, \text{such that} \, \frac{df}{dx}(c) = \frac{f(b) - f(a)}{b - a}
+\end{equation}
 $$
 
 Where $c$ is some point between $a$ and $b$.
@@ -347,16 +373,18 @@ Let's define a new function $g(x) = f(x) - mx$, where $m$ is a constant.
 Given that $f$ is continuous and differentiable, $g$ is also continuous and differentiable.
 
 $$
+\begin{equation}
 g(a) = g(b) \iff f(a) - ma = f(b) - mb
+\end{equation}
 $$
 
 Solving for $m$ gives:
 
 $$
-\begin{align*}
+\begin{align}
 f(a) - ma &= f(b) - mb \\
 m &= \frac{f(b) - f(a)}{b - a}
-\end{align*}
+\end{align}
 $$
 
 According to Rolle's theorem, there must be a point on the graph where it is flat (horizontal), that is, $(\exists c \in (a, b)) \, \frac{dg}{dx}(c) = 0$.
@@ -364,11 +392,11 @@ According to Rolle's theorem, there must be a point on the graph where it is fla
 Based on the definition of $g(x)$:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{dg}{dx}(c) &= \frac{df}{dx}(c) - m = 0 \\
 \frac{df}{dx}(c) &= m \\
 \frac{df}{dx}(c) &= \frac{f(b) - f(a)}{b - a}
-\end{align*}
+\end{align}
 $$
 
 ### Example Problem
@@ -380,20 +408,26 @@ $$
 To solve this, we first need to find the average slope of $g$ over the interval $[-4, 2]$:
 
 $$
+\begin{equation}
 \frac{g(2) - g(-4)}{2 - (-4)} = \frac{-24 - 0}{6} = -4
+\end{equation}
 $$
 
 According to the MVT, there must be a point $c$ in the interval $(-4, 2)$ where the slope of $g$ is equal to the average slope.
 Therefore, $\frac{dg}{dx}(c) = -4$. We can find $\frac{dg}{dx}(x)$ by differentiating $g(x)$:
 
 $$
+\begin{equation}
 \frac{dg}{dx}(x) = 3x^2 - 16
+\end{equation}
 $$
 
 Setting $\frac{dg}{dx}(c) = -4$:
 
 $$
+\begin{equation}
 3c^2 - 16 = -4 \implies 3c^2 = 12 \implies c^2 = 4 \implies c = \pm 2
+\end{equation}
 $$
 
 Therefore, $c = 2$.
@@ -409,7 +443,9 @@ Instead, you can just use the _average velocity_ to determine if the car has exc
 To do this, you can use the mean value theorem. The average velocity is:
 
 $$
+\begin{equation}
 v_{\text{avg}} = \frac{\vec{r}(b) - \vec{r}(a)}{b - a} = \frac{75}{1} = 75 \text{ km/h}
+\end{equation}
 $$
 
 We don't need to know the exact position/velocity/etc of the car at all times, because using the MVT, we can determine that the car must have exceeded the speed limit at _some point_.
@@ -429,7 +465,9 @@ This means that if you have a continuous function over a closed interval, you ca
 Formally, the theorem states:
 
 $$
+\begin{equation}
 \exists c, d \in [a, b] \, \text{such that} \, f(c) \geq f(x) \geq f(d) \, \forall x \in [a, b]
+\end{equation}
 $$
 
 ### Continuity
@@ -572,13 +610,17 @@ Consider the same function $f(x) = x^3 - 3x^2 + 2$.
 The derivative of $f(x)$ is:
 
 $$
+\begin{equation}
 \frac{df}{dx}(x) = \frac{d}{dx}(x^3 - 3x^2 + 2) = 3x^2 - 6x
+\end{equation}
 $$
 
 Setting this equal to $0$, we get:
 
 $$
+\begin{equation}
 3x^2 - 6x = 0 \implies x(3x - 6) = 0 \implies x = 0, 2
+\end{equation}
 $$
 
 Thus, the critical points of the function are $x = 0$ and $x = 2$.
@@ -594,7 +636,9 @@ If, however, the second derivative is $0$, the test is inconclusive.
 For the function $f(x) = x^3 - 3x^2 + 2$, the second derivative is:
 
 $$
+\begin{equation}
 \frac{d^2f}{dx^2}(x) = \frac{d}{dx}(3x^2 - 6x) = 6x - 6
+\end{equation}
 $$
 
 - At $x = 0$, the second derivative is $-6$, so the function is concave down, and $x = 0$ is a maximum point.
@@ -635,16 +679,18 @@ To find the increasing and decreasing intervals of the function, we need to find
 The derivative of $f(x)$ is:
 
 $$
+\begin{equation}
 \frac{df}{dx}(x) = \frac{d}{dx}(x^5 - 3x^4) = 5x^4 - 12x^3
+\end{equation}
 $$
 
 In an increasing interval, the derivative is positive:
 
 $$
-\begin{align*}
+\begin{align}
 5x^4 - 12x^3 &> 0 \\
 x^3(5x - 12) &> 0
-\end{align*}
+\end{align}
 $$
 
 To solve an inequality like this, take the advantage of the fact that the equality has one side being $0$.
@@ -662,10 +708,10 @@ Thus, the increasing intervals are $x > \frac{12}{5}$ and $x < 0$.
 In a decreasing interval, the derivative is negative:
 
 $$
-\begin{align*}
+\begin{align}
 5x^4 - 12x^3 &< 0 \\
 x^3(5x - 12) &< 0
-\end{align*}
+\end{align}
 $$
 
 This inequality can be interpreted as the product of two terms being **negative**, meaning that one term is positive and the other is negative.
@@ -697,7 +743,9 @@ To find the minimum and maximum points, we can use the second derivative.
 The second derivative of $f(x)$ is:
 
 $$
+\begin{equation}
 \frac{d^2f}{dx^2}(x) = \frac{d}{dx}(5x^4 - 12x^3) = 20x^3 - 36x^2
+\end{equation}
 $$
 
 At $x = 0$, the second derivative is $0$, so the test is inconclusive.
@@ -738,13 +786,17 @@ To find the global extrema of the function, we need to find the critical points 
 The derivative of $f(x)$ is:
 
 $$
+\begin{equation}
 \frac{df}{dx}(x) = \frac{d}{dx}(8\ln(x) - x^2) = \frac{8}{x} - 2x
+\end{equation}
 $$
 
 Setting this equal to $0$ gives us the critical points of the function:
 
 $$
+\begin{equation}
 \frac{8}{x} - 2x = 0 \implies 8 - 2x^2 = 0 \implies x = \pm 2
+\end{equation}
 $$
 
 Thus, the critical points of the function are $x = 2$ and $x = -2$.
@@ -754,7 +806,9 @@ To determine if these are maximum or minimum points, we can use the second deriv
 The second derivative of $f(x)$ is:
 
 $$
+\begin{equation}
 \frac{d^2f}{dx^2}(x) = \frac{d}{dx}\left(\frac{8}{x} - 2x\right) = \frac{-8}{x^2} - 2
+\end{equation}
 $$
 
 $x = -2$ is not in the interval $[1, 4]$, so we can ignore it.
@@ -793,11 +847,11 @@ The function is continuous over the entire domain $x > 0$, so we can find the ab
 As always, we start by finding the critical points of the function, which are the solutions to $\frac{df}{dx} = 0$.
 
 $$
-\begin{align*}
-\frac{df}{dx}(x) &= \frac{d}{dx}(x^2 \ln(x)) = 2x \ln(x) + x \tag{Product Rule} \\
+\begin{align}
+\frac{df}{dx}(x) &= \frac{d}{dx}(x^2 \ln(x)) = 2x \ln(x) + x \\
 &= x(2 \ln(x) + 1) = 0 \\
 \therefore x &= 0, e^{-1/2}
-\end{align*}
+\end{align}
 $$
 
 The function is not defined at $x = 0$, so we can ignore this value. The critical point of the function is then $x = e^{-1/2}$.
@@ -805,10 +859,10 @@ The function is not defined at $x = 0$, so we can ignore this value. The critica
 Next, we can use the second derivative to determine if this is a maximum or minimum point.
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d^2f}{dx^2}(x) &= \frac{d}{dx}(2x \ln(x) + x) = 2 \ln(x) + 2 \\
 \frac{d^2f}{dx^2}(e^{-1/2}) &= 2 \ln(e^{-1/2}) + 2 = 2\left(\frac{-1}{2}\right) + 2 = 1
-\end{align*}
+\end{align}
 $$
 
 Since the second derivative is positive, the function is concave up, and $x = e^{-1/2}$ is a minimum point.
@@ -840,28 +894,30 @@ In other words, it combines everything we've learned so far.
 To solve this problem, we need to find the profit function, which is the difference between the revenue and cost functions.
 
 $$
-\begin{align*}
+\begin{align}
 P(x) &= R(x) - C(x) \\
 &= (100x - x^2) - (50 + 10x) \\
 &= 90x - x^2 - 50 \\
 &= -x^2 + 90x - 50
-\end{align*}
+\end{align}
 $$
 
 Next, we need to find the critical points of the profit function.
 
 The derivative of $P(x)$ is:
 $$
-\begin{align*}
+\begin{align}
 \frac{dP}{dx}(x) &= \frac{d}{dx}(-x^2 + 90x - 50) \\
 &= -2x + 90
-\end{align*}
+\end{align}
 $$
 
 Setting this equal to $0$ gives us the critical point(s) of the function:
 
 $$
+\begin{equation}
 -2x + 90 = 0 \implies x = 45
+\end{equation}
 $$
 
 Thus, the critical point of the function is $x = 45$.
@@ -871,10 +927,10 @@ To determine if this is a maximum or minimum point, we can use the second deriva
 The second derivative of $P(x)$ is:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d^2P}{dx^2}(x) &= \frac{d}{dx}(-2x + 90) \\
 &= -2
-\end{align*}
+\end{align}
 $$
 
 Since the second derivative is negative, the function is concave down, and $x = 45$ is a maximum point.
@@ -890,7 +946,11 @@ The critical point of a parabola is at its vertex. Since the parabola is concave
 The vertex of a parabola $y = ax^2 + bx + c$ is at $x = -\frac{b}{2a}$, which can be derived in two ways:
 
 - By completing the square:
-    $$y = a\left(x + \frac{b}{2a}\right)^2 - \frac{b^2}{4a} + c$$
+    $$
+    \begin{equation}
+    y = a\left(x + \frac{b}{2a}\right)^2 - \frac{b^2}{4a} + c
+    \end{equation}
+    $$
     The vertex is at $\left(-\frac{b}{2a}, -\frac{b^2}{4a} + c\right)$, simply because of how function transformations work.
 - By using the derivative of the function, which is what we did above.
 
@@ -905,23 +965,27 @@ To solve this problem, we need to find the area of the rectangle as a function o
 Let $l$ be the length of the rectangle and $w$ be the width of the rectangle. The perimeter of the rectangle is $100 \text{ m}$, so:
 
 $$
+\begin{equation}
 2l + 2w = 100 \implies l + w = 50 \implies l = 50 - w
+\end{equation}
 $$
 
 The area of the rectangle is:
 
 $$
+\begin{equation}
 A(w) = l \cdot w = (50 - w)w = 50w - w^2
+\end{equation}
 $$
 
 Next, we need to find the critical points of the area function, and then identify if it's a maximum or minimum point.
 
 $$
-\begin{align*}
+\begin{align}
 \frac{dA}{dw}(w) &= \frac{d}{dw}(50w - w^2) = 50 - 2w \\
 50 - 2w &= 0 \implies w = 25 \\
 \frac{d^2A}{dw^2}(w) &= \frac{d}{dw}(50 - 2w) = -2
-\end{align*}
+\end{align}
 $$
 
 Since the second derivative is negative, the function is concave down, and $w = 25$ is a maximum point.

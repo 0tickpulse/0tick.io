@@ -16,7 +16,9 @@ In essence, a limit asks the question: "What value does a function approach as i
 The limit of a function $f(x)$ as $x$ approaches $a$ is denoted by:
 
 $$
+\begin{equation}
 \lim_{x \to a} f(x)
+\end{equation}
 $$
 
 This is read as "the limit of $f(x)$ as $x$ approaches $a$." It asks, "what value does $f(x)$ approach as $x$ gets closer and closer to $a$?"
@@ -46,7 +48,9 @@ Notice how while it is impossible to actually reach 0, the function gets larger 
 Written mathematically:
 
 $$
+\begin{equation}
 \lim_{x \to 0} \left| \frac{1}{x} \right| = \infty
+\end{equation}
 $$
 
 ## One-Sided Limits
@@ -117,22 +121,26 @@ This is why we have the concept of one-sided limits.
 The limit of $f(x)$ as $x$ approaches $a$ from the left is denoted by:
 
 $$
+\begin{equation}
 \lim_{x \to a^-} f(x)
+\end{equation}
 $$
 
 And similarly, the limit of $f(x)$ as $x$ approaches $a$ from the right is denoted by:
 
 $$
+\begin{equation}
 \lim_{x \to a^+} f(x)
+\end{equation}
 $$
 
 In this case, using the graph alone, we can see that:
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to -2^-} f(x) &= -1 \\
 \lim_{x \to -2^+} f(x) &= \infty
-\end{align*}
+\end{align}
 $$
 
 ## Estimating Limits
@@ -146,13 +154,17 @@ Graphing the function and seeing what value it approaches as $x$ gets closer and
 #### Example 1
 
 $$
+\begin{equation}
 \lim_{x \to 0} \left(\frac{\sin(x)}{x}\right)
+\end{equation}
 $$
 
 Before anything, we can try to evaluate the limit by naively plugging in $x = 0$:
 
 $$
+\begin{align}
 \frac{\sin(0)}{0} = \frac{0}{0}
+\end{align}
 $$
 
 Oh no! We can't divide by 0! This is a problem. However, we can still try to estimate the limit by graphing the function:
@@ -178,7 +190,9 @@ Oh no! We can't divide by 0! This is a problem. However, we can still try to est
 Notice that while there's a gap at $x = 0$, the function seems to approach 1 as $x$ gets closer and closer to 0. This is why:
 
 $$
+\begin{equation}
 \lim_{x \to 0} \left(\frac{\sin(x)}{x}\right) = 1
+\end{equation}
 $$
 
 :::note
@@ -221,10 +235,10 @@ However, if we look at the values of $g(x)$ as $x$ gets closer and closer to 1 f
 Likewise, if we look at the values of $g(x)$ as $x$ gets closer and closer to 1 from the right, we see that the values of $g(x)$ are getting closer and closer to 7.
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to 1^-} g(x) &= 10 \\
 \lim_{x \to 1^+} g(x) &= 7
-\end{align*}
+\end{align}
 $$
 
 ## General Procedure
@@ -232,7 +246,9 @@ $$
 For this limit:
 
 $$
+\begin{equation}
 \lim_{x \to a} f(x)
+\end{equation}
 $$
 
 You can apply this general procedure:
@@ -248,7 +264,9 @@ You can apply this general procedure:
 > The function $f(x)$ is defined as follows:
 >
 > $$
+> \begin{equation}
 > f(x) = \frac{\cos(2x)}{\cos(x) + \sin(x)}
+> \end{equation}
 > $$
 >
 > Find the limit of $f(x)$ as $x$ approaches $-\frac{\pi}{4}$.
@@ -256,31 +274,33 @@ You can apply this general procedure:
 Let's first try to substitute in $x = -\frac{\pi}{4}$:
 
 $$
-\begin{align*}
+\begin{align}
 f\left(-\frac{\pi}{4}\right) &= \frac{\cos\left(2 \cdot -\frac{\pi}{4}\right)}{\cos\left(-\frac{\pi}{4}\right) + \sin\left(-\frac{\pi}{4}\right)} \\
 &= \frac{\cos\left(-\frac{\pi}{2}\right)}{\frac{1}{\sqrt{2}} - \frac{1}{\sqrt{2}}} \\
 &= \frac{0}{0}
-\end{align*}
+\end{align}
 $$
 
 We got an indeterminate form. This means we should rewrite the limit.
 In this case, the numerator, $\cos(2x)$, can be rewritten using the double angle identity:
 
 $$
+\begin{equation}
 \cos(2x) = \cos^2(x) - \sin^2(x)
+\end{equation}
 $$
 
 So the limit becomes:
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to -\frac{\pi}{4}} f(x) &= \lim_{x \to -\frac{\pi}{4}} \frac{\cos^2(x) - \sin^2(x)}{\cos(x) + \sin(x)} \\
-&= \lim_{x \to -\frac{\pi}{4}} \frac{(\cos(x) - \sin(x)) {\color{Red}(\cos(x) + \sin(x))}}{{\color{Red}\cos(x) + \sin(x)}} \tag{factoring} \\
-&= \lim_{x \to -\frac{\pi}{4}} (\cos(x) - \sin(x)) \tag{canceling} \\
+&= \lim_{x \to -\frac{\pi}{4}} \frac{(\cos(x) - \sin(x)) {\color{Red}(\cos(x) + \sin(x))}}{{\color{Red}\cos(x) + \sin(x)}} \\
+&= \lim_{x \to -\frac{\pi}{4}} (\cos(x) - \sin(x)) \\
 &= \cos\left(-\frac{\pi}{4}\right) - \sin\left(-\frac{\pi}{4}\right) \\
 &= \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} \\
 &= \sqrt{2}
-\end{align*}
+\end{align}
 $$
 
 ### Factoring Example
@@ -296,26 +316,28 @@ $$
 As always, let's first try to substitute in $x = 2$:
 
 $$
-\begin{align*}
+\begin{align}
 g(2) &= \frac{2^2 + 2 - 6}{2 - 2} \\
 &= \frac{0}{0}
-\end{align*}
+\end{align}
 $$
 
 Once again, we got an indeterminate form. This means we should rewrite the limit.
 In this case, the numerator, $x^2 + x - 6$, can be factored:
 
 $$
+\begin{equation}
 x^2 + x - 6 = (x - 2)(x + 3)
+\end{equation}
 $$
 
 So the limit becomes:
 
 $$
-\begin{align*}
+\begin{align}
 g(x) &= \frac{(x - 2)(x + 3)}{x - 2} \\
 &= (x + 3) && \text{if } x \neq 2 \\
-\end{align*}
+\end{align}
 $$
 
 Note that **this new function works for $x \neq 2$** because if $x = 2$, then we are dividing by $0$.
@@ -323,11 +345,11 @@ Note that **this new function works for $x \neq 2$** because if $x = 2$, then we
 However, it allows us to understand what happens for values close to $2$, and as such, we can calculate the limit.
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to 2} g(x) &= \lim_{x \to 2} (x + 3) \\
 &= 2 + 3 \\
 &= 5
-\end{align*}
+\end{align}
 $$
 
 :::
@@ -337,7 +359,9 @@ The more formal way to say this is:
 Let $f(x) = x + 3$ for all $x \in \mathbb{R}$. Then:
 
 $$
+\begin{equation}
 \lim_{x \to 2} g(x) = \lim_{x \to 2} f(x) = f(2) = 5
+\end{equation}
 $$
 
 :::
@@ -347,7 +371,9 @@ $$
 > The function $h(x)$ is defined as follows:
 >
 > $$
+> \begin{equation}
 > h(x) = \frac{\sqrt{x+2} - 2}{x-2}
+> \end{equation}
 > $$
 >
 > Find the limit of $h(x)$ as $x$ approaches 2.
@@ -356,24 +382,24 @@ This also gives us an indeterminate form when we try to substitute in $x = 2$.
 We can rewrite the limit by rationalizing the numerator through multiplying by the conjugate:
 
 $$
-\begin{align*}
+\begin{align}
 h(x) &= \frac{\sqrt{x+2} - 2}{x-2} \\
 &= \frac{\sqrt{x+2} - 2}{x-2} \cdot \frac{\sqrt{x+2} + 2}{\sqrt{x+2} + 2} \\
 &= \frac{(x+2) - 4}{(x-2)(\sqrt{x+2} + 2)} \\
 &= \frac{x-2}{(x-2)(\sqrt{x+2} + 2)} \\
 &= \frac{1}{\sqrt{x+2} + 2} && \text{if } x \neq 2 \\
-\end{align*}
+\end{align}
 $$
 
 While this new function works for $x \neq 2$, it allows us to understand what happens for values close to $2$, and as such, we can calculate the limit.
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to 2} h(x) &= \lim_{x \to 2} \frac{1}{\sqrt{x+2} + 2} \\
 &= \frac{1}{\sqrt{2+2} + 2} \\
 &= \frac{1}{2 + 2} \\
 &= \frac{1}{4}
-\end{align*}
+\end{align}
 $$
 
 ## Combining Functions
@@ -385,7 +411,9 @@ If you have a limit of a function that's a combination of other functions, you c
 > The limit of sum is the sum of limits.
 
 $$
+\begin{equation}
 \lim_{x \to a} \left(f(x) + g(x)\right) = \lim_{x \to a} f(x) + \lim_{x \to a} g(x)
+\end{equation}
 $$
 
 ### Products
@@ -393,7 +421,9 @@ $$
 > The limit of a product is the product of limits.
 
 $$
+\begin{equation}
 \lim_{x \to a} \left(f(x) \cdot g(x)\right) = \lim_{x \to a} f(x) \cdot \lim_{x \to a} g(x)
+\end{equation}
 $$
 
 ### Composition
@@ -408,7 +438,9 @@ For this to work, two conditions must be met:
 If these conditions are met, then:
 
 $$
+\begin{equation}
 \lim_{x \to a} f(g(x)) = f\left(\lim_{x \to a} g(x)\right) = f(L)
+\end{equation}
 $$
 
 ## Squeeze Theorem
@@ -539,11 +571,11 @@ export function UnitCircle({
             </Mafs>
             <p>
                 <MathEquation displayMode={true}>{String.raw`
-                    \begin{align*}
+                    \begin{align}
                         \theta &= ${(angle / Math.PI).toFixed(2)}\pi \\
                         ${showTan ? String.raw`\tan{\theta} &= ${Math.tan(angle).toFixed(2)} \\` : ""}
                         ${showSector ? String.raw`\text{Area of sector} &= ${(angle / 2).toFixed(2)} \\` : ""}
-                    \end{align*}
+                    \end{align}
                 `}</MathEquation>
             </p>
         </span>
@@ -569,10 +601,10 @@ Now we are going to adjust our blue triangle to touch the unit circle on the rig
 With this in mind, simply looking at the unit circle, we can see that the red triangle is bigger than the blue triangle.
 
 $$
-\begin{align*}
+\begin{align}
 \text{Area of blue triangle} &\leq \text{Area of red triangle} \\
 \frac{1}{2} \left|\sin(\theta)\right| &\leq \frac{1}{2} \left|\tan(\theta)\right| \\
-\end{align*}
+\end{align}
 $$
 
 Finally, let's consider the area of the unit circle sector.
@@ -582,25 +614,29 @@ Finally, let's consider the area of the unit circle sector.
 The area of the sector can be expressed as a fraction of the area of the whole circle:
 
 $$
+\begin{equation}
 \text{Area of sector} = \frac{\theta}{2\pi} \cdot \pi = \frac{\theta}{2}
+\end{equation}
 $$
 
 And looking at the unit circle, we can see that the area of the sector is bigger than our original blue triangle.
 
 $$
+\begin{equation}
 \frac{\theta}{2} \leq \frac{1}{2} \left|\tan(\theta)\right|
+\end{equation}
 $$
 
 Combining the two inequalities and performing some algebraic manipulation, we get:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{1}{2} \left|\sin(\theta)\right| &\leq \frac{1}{2} \left|\theta\right| &&\leq \frac{1}{2} \left|\tan(\theta)\right| \\
-\left|\sin(\theta)\right| &\leq \left|\theta\right| &&\leq \left|\tan(\theta)\right| \tag{Multiplying by 2} \\
-\left|\sin(\theta)\right| &\leq \left|\theta\right| &&\leq \frac{\left|\sin(\theta)\right|}{\left|\cos(\theta)\right|} \tag{Since $\tan(\theta) = \frac{\sin(\theta)}{\cos(\theta)}$} \\
-1 &\leq \frac{\left|\theta\right|}{\left|\sin(\theta)\right|} &&\leq \frac{1}{\left|\cos(\theta)\right|} \tag{Dividing by $\left|\sin(\theta)\right|$} \\
-1 &\geq \frac{\left|\sin(\theta)\right|}{\left|\theta\right|} &&\geq \left|\cos(\theta)\right| \tag{Reciprocal}
-\end{align*}
+\left|\sin(\theta)\right| &\leq \left|\theta\right| &&\leq \left|\tan(\theta)\right| \\
+\left|\sin(\theta)\right| &\leq \left|\theta\right| &&\leq \frac{\left|\sin(\theta)\right|}{\left|\cos(\theta)\right|} \\
+1 &\leq \frac{\left|\theta\right|}{\left|\sin(\theta)\right|} &&\leq \frac{1}{\left|\cos(\theta)\right|} \\
+1 &\geq \frac{\left|\sin(\theta)\right|}{\left|\theta\right|} &&\geq \left|\cos(\theta)\right|
+\end{align}
 $$
 
 Now let's consider our limit again. Since we just want to find out when the angle approaches $0$, we only need to consider the first and fourth quadrants:
@@ -612,7 +648,9 @@ Now let's consider our limit again. Since we just want to find out when the angl
 As such, we can drop the absolute value signs:
 
 $$
+\begin{equation}
 1 \geq \frac{\sin(\theta)}{\theta} \geq \cos(\theta)
+\end{equation}
 $$
 
 
@@ -635,16 +673,18 @@ And more crucially, that they all seem to approach the same value as $x$ approac
 To confirm, let's take the limit of all three sides as $\theta$ approaches $0$:
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{\theta \to 0} 1 &\geq \lim_{\theta \to 0} \frac{\sin(\theta)}{\theta} &&\geq \lim_{\theta \to 0} \cos(\theta) \\
 1 &\geq \lim_{\theta \to 0} \frac{\sin(\theta)}{\theta} &&\geq 1
-\end{align*}
+\end{align}
 $$
 
 And since the limit of $\cos(\theta)$ as $\theta$ approaches $0$ is 1, we can conclude that:
 
 $$
+\begin{equation}
 \lim_{\theta \to 0} \frac{\sin(\theta)}{\theta} = 1
+\end{equation}
 $$
 
 That's it. We've proven that the limit of $\frac{\sin(x)}{x}$ as $x$ approaches 0 is 1.
@@ -736,7 +776,9 @@ The key point being that the size of the range of $f(x)$ values can decrease how
 How do $\varepsilon$ and $\delta$ fit into this? Take this example:
 
 $$
+\begin{equation}
 \lim_{x \to a} f(x) = L
+\end{equation}
 $$
 
 Think of any distance from $L$, and call it $\varepsilon$.
@@ -748,7 +790,9 @@ And this is true for any $\varepsilon$ you choose, no matter how small.
 The formal way to write this is:
 
 $$
+\begin{equation}
 (\forall \varepsilon > 0)(\exists \delta > 0)(\forall x \in \mathbb{R})(0 < |x - a| < \delta \implies |f(x) - L| < \varepsilon)
+\end{equation}
 $$
 
 Meaning:
@@ -772,32 +816,36 @@ Formally, a function $f(x)$ is continuous at $x = a$ if:
 For example:
 
 $$
+\begin{equation}
 f(x) = \frac{10x}{x^2 + 5x}
+\end{equation}
 $$
 
 Provided that this function is continuous for all $x \in \mathbb{R}$,
 
 $$
-\begin{align*}
+\begin{align}
 f(0) &= \lim_{x \to 0} \left(\frac{10x}{x^2 + 5x}\right) \\
 &= \lim_{x \to 0} \left(\frac{10}{x + 5}\right) \\
 &= \frac{10}{5} \\
 &= 2
-\end{align*}
+\end{align}
 $$
 
 Counterexample:
 
 $$
+\begin{equation}
 g(x) = \ln{x}
+\end{equation}
 $$
 
 Provided that this function is *not* continuous at $x = 0$,
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to 0} \ln{x} &\neq \ln{0} \\
-\end{align*}
+\end{align}
 $$
 
 Hence, knowing whether a function is continuous at a point is important for understanding the behavior of the function.
@@ -811,7 +859,9 @@ Limits at infinity are used to describe the behavior of a function as $x$ gets l
 The limit of $f(x)$ as $x$ approaches $\infty$ is denoted by:
 
 $$
+\begin{equation}
 \lim_{x \to \infty} f(x)
+\end{equation}
 $$
 
 AKA, "what value does $f(x)$ approach as $x$ gets larger and larger?"
@@ -819,7 +869,9 @@ AKA, "what value does $f(x)$ approach as $x$ gets larger and larger?"
 ### Simple Example
 
 $$
+\begin{equation}
 \lim_{x \to \infty} \frac{1}{x} = 0
+\end{equation}
 $$
 
 This is because as $x$ gets larger and larger, $\frac{1}{x}$ gets smaller and smaller.
@@ -833,7 +885,9 @@ In a fraction, it's useful to look for the highest power of $x$ in the numerator
 For instance, consider the function:
 
 $$
+\begin{equation}
 f(x) = \frac{3x^3 + 4}{x - 2}
+\end{equation}
 $$
 
 As $x$ gets larger and larger, the $3x^3$ grows the fastest. The $4$, $x$, and $-2$ matter less and less.
@@ -841,13 +895,17 @@ So while both the numerator and the denominator grow as $x$ gets larger, the num
 Hence:
 
 $$
+\begin{equation}
 \lim_{x \to \infty} \frac{3x^3 + 4}{x - 2} = \infty
+\end{equation}
 $$
 
 If the highest power of $x$ in the numerator and the denominator are the same:
 
 $$
+\begin{equation}
 f(x) = \frac{3x^3 + 4x}{2x^3 - 5}
+\end{equation}
 $$
 
 If you think about it, as $x$ gets larger and larger, $3x^3$ and $2x^3$ increase, causing $4x$ and $-5$ to matter less.
@@ -857,7 +915,9 @@ While the numerator and denominator grows, they grow at the same rate; $3x^3$ wi
 Therefore:
 
 $$
+\begin{equation}
 \lim_{x \to \infty} \frac{3x^3 + 4x}{2x^3 - 5} = \frac{3}{2}
+\end{equation}
 $$
 
 In general, you look for the coefficients of the highest powers.
@@ -869,7 +929,9 @@ Another way to think of it is,
 (This is purely conceptual and not mathematically precise, but is nevertheless a helpful intuition)
 
 $$
+\begin{equation}
 \lim_{x \to \infty} \frac{3x^3 + 4}{x - 2} = \lim_{x \to \infty} \frac{3x^3 + 4}{0x^3 + x - 2}
+\end{equation}
 $$
 
 So, the ratio of coefficients is $\frac{3}{0}$, which is $\infty$.
