@@ -77,12 +77,12 @@ export function DerivativeFromLimits({ yvar = "y", xvar = "x" }: Partial<Record<
                 />
             </Mafs>
             <MathEquation displayMode={true}>{String.raw`
-                \begin{align*}
+                \begin{align}
                     \text{Slope} &= \frac{\Delta ${yvar}}{\Delta ${xvar}} \\
                     &= \frac{${x2.point[1].toFixed(2)} - ${x1.point[1].toFixed(2)}}{${x2.point[0].toFixed(2)} - ${x1.point[0].toFixed(2)}} \\
                     &= \frac{${(x2.point[1] - x1.point[1]).toFixed(2)}}{${(x2.point[0] - x1.point[0]).toFixed(2)}} \\
                     &= ${((x2.point[1] - x1.point[1]) / (x2.point[0] - x1.point[0])).toFixed(2)}
-                \end{align*}
+                \end{align}
             `}</MathEquation>
         </>
     );

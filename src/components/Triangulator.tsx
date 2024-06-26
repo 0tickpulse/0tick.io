@@ -162,7 +162,7 @@ export default function Triangulator() {
                     <p>
                         <MathEquation
                             displayMode={true}
-                        >{String.raw`\begin{align*}t_1 &= ${result.t1} \\ t_2 &= ${result.t2}\end{align*}`}</MathEquation>
+                        >{String.raw`\begin{align}t_1 &= ${result.t1} \\ t_2 &= ${result.t2}\end{align}`}</MathEquation>
                     </p>
                     <p>
                         Intersection point:{" "}

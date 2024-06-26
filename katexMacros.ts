@@ -11,4 +11,8 @@ export const KATEX_MACROS: Record<string, string> = {
     "\\arcsec": "\\operatorname{arcsec}",
     "\\arccsc": "\\operatorname{arccsc}",
     "\\arccot": "\\operatorname{arccot}",
+
+    "\\eqref": "\\href{###1}{(\\text{#1})}",
+    "\\ref": "\\href{###1}{\\text{#1}}",
+    "\\label": "\\htmlId{#1}{}"
 };

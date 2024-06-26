@@ -1,4 +1,4 @@
-import { Plot, Polygon } from "mafs";
+import { Plot, Polygon, Theme } from "mafs";
 import range from "lodash/range";
 import { matches } from "lodash";
 
@@ -8,6 +8,7 @@ export type RiemannApproximationProps = {
     ub?: number;
     n?: number;
     type?: "left" | "right" | "middle" | "trapezoidal";
+    color?: string;
 };
 
 type Rectangle = {
@@ -21,6 +22,7 @@ export function RiemannApproximation({
     ub = 5,
     n = 5,
     type = "left",
+    color,
 }: RiemannApproximationProps) {
     const dx = (ub - lb) / n;
     const rectangles: Rectangle[] = range(
@@ -67,9 +69,9 @@ export function RiemannApproximation({
     });
 
     return <>
-        <Plot.OfX y={f} />
+        <Plot.OfX y={f} color={color} />
         {rectangles.map(({ polygon }, i) => (
-            <Polygon key={i} points={polygon} />
+            <Polygon key={i} points={polygon} color={color} />
         ))}
     </>;
 }

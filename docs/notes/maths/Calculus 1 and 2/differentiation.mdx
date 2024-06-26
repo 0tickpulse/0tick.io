@@ -68,12 +68,12 @@ export function SimpleSlope() {
                 />
             </Mafs>
             <MathEquation displayMode={true}>{String.raw`
-                \begin{align*}
+                \begin{align}
                     \text{Slope} &= \frac{\Delta y}{\Delta x} = \frac{y_2 - y_1}{x_2 - x_1} \\
                     &= \frac{${x2.point[1].toFixed(2)} - ${x1.point[1].toFixed(2)}}{${x2.point[0].toFixed(2)} - ${x1.point[0].toFixed(2)}} \\
                     &= \frac{${(x2.point[1] - x1.point[1]).toFixed(2)}}{${(x2.point[0] - x1.point[0]).toFixed(2)}} \\
                     &= \frac{1}{2}
-                \end{align*}
+                \end{align}
             `}</MathEquation>
         </>
     );
@@ -112,7 +112,9 @@ Let's say we take $x = 3$ and $x = 3 + \Delta x$:
 From the above, we can see that the slope of the tangent line at $x = 3$ can be expressed as follows:
 
 $$
+\begin{equation}
 \text{Slope} = \frac{\Delta y}{\Delta x} = \frac{f(3 + \Delta x) - f(3)}{\Delta x}
+\end{equation}
 $$
 
 As $\Delta x$ approaches $0$, the slope of the tangent line approaches a certain value.
@@ -121,7 +123,9 @@ As $\Delta x$ approaches $0$, the slope of the tangent line approaches a certain
 As such, the derivative of a function $f(x)$ at a point $x$ is defined as:
 
 $$
+\begin{equation}
 f'(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+\end{equation}
 $$
 
 :::info Symbols
@@ -140,13 +144,17 @@ As the change approaches $0$, another symbol is used to represent this infinites
 When using $d$, the concept of it approaching $0$ is "built-in" to the symbol, so we can write the derivative as:
 
 $$
+\begin{equation}
 f'(x) = \frac{dy}{dx}
+\end{equation}
 $$
 
 If we want to differentiate, let's say, $x^2$, we can write it as:
 
 $$
+\begin{equation}
 \frac{d}{dx} x^2 \text{ or } \frac{d(x^2)}{dx}
+\end{equation}
 $$
 
 The fraction on the left is the _differential operator_.
@@ -293,7 +301,9 @@ The key idea is that this green $dy$ can be "split" into two parts: one from the
 Therefore:
 
 $$
+\begin{equation}
 \frac{d}{dx} \left( \frac{1}{5} x^2 + \frac{1}{3} x \right) = \frac{d}{dx} \left( \frac{1}{5} x^2 \right) + \frac{d}{dx} \left( \frac{1}{3} x \right)
+\end{equation}
 $$
 
 Or more generally,
@@ -311,7 +321,9 @@ The derivative of a product of functions is a bit more complicated.
 However there's still a neat visual way to understand it. Let's say we have two functions $f(x)$ and $g(x)$:
 
 $$
+\begin{equation}
 f(x) = \frac{1}{5} x^2 \quad \text{and} \quad g(x) = \ln{x}
+\end{equation}
 $$
 
 Generally, to visualize products, we can think of the area of a rectangle.
@@ -477,24 +489,28 @@ We can split the change in area into three parts:
 Therefore, the change in the product can be expressed as:
 
 $$
-\begin{align*}
+\begin{align}
 d(f(x) \cdot g(x)) &= \textcolor{red}{(f(x) \cdot d(g(x)))} \\
 &+ \textcolor{yellow}{(g(x) \cdot d(f(x)))} \\
 &+ \textcolor{blue}{(d(f(x)) \cdot d(g(x)))} \\
-\end{align*}
+\end{align}
 $$
 
 The last term, $d(f(x)) \cdot d(g(x))$, will approach $0$ because it is the product of two infinitesimally small changes.
 Therefore, the derivative of the product of two functions is:
 
 $$
+\begin{equation}
 \frac{d}{dx} \left( f(x) \cdot g(x) \right) = f(x) \cdot \frac{d}{dx} g(x) + g(x) \cdot \frac{d}{dx} f(x)
+\end{equation}
 $$
 
 Another way to write this is:
 
 $$
+\begin{equation}
 \frac{d}{dx} \left( f(x) \cdot g(x) \right) = f(x) \cdot g'(x) + g(x) \cdot f'(x)
+\end{equation}
 $$
 
 ## Chain Rule
@@ -514,7 +530,9 @@ To measure how much $f(g(x))$ changes when you turn the first knob, you can meas
 Another way to think of it is through algebraic manipulation, assuming $y = f(g(x))$:
 
 $$
+\begin{align}
 \frac{dy}{dx} = \frac{dy}{dg} \cdot \frac{dg}{dx}
+\end{align}
 $$
 
 ### Proof
@@ -525,28 +543,30 @@ assuming that $f$ and $g$ are differentiable at some point $x$.
 The derivative of $y$ with respect to $x$ is:
 
 $$
+\begin{align}
 \frac{dy}{dx} = \lim_{\Delta x \to 0} \frac{f(g(x + \Delta x)) - f(g(x))}{\Delta x}
+\end{align}
 $$
 
 We can rewrite this as:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{dy}{dx} &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \frac{\Delta u}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x}
-\end{align*}
+\end{align}
 $$
 
 Since $f$ is differentiable at $u$, as $\Delta x \to 0$, $\Delta u \to 0$. Thus:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{dy}{dx} &= \lim_{{\color{red} \cancel{\Delta x \to 0}} \Delta u \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x} \\
 &= \frac{dy}{du} \cdot \frac{du}{dx} \\
 &= f'(u) \cdot g'(x) \\
 &= f'(g(x)) \cdot g'(x)
-\end{align*}
+\end{align}
 $$
 
 ## Powers
@@ -554,13 +574,17 @@ $$
 The derivative of a power function is:
 
 $$
+\begin{equation}
 \frac{d}{dx} x^n = n \cdot x^{n - 1}
+\end{equation}
 $$
 
 To show this, let's make a general power function $f(x) = x^n$ and apply the limit to it:
 
 $$
-f'(x) = \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x}
+\begin{equation}
+\frac{df}{dx}(x) = \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x}
+\end{equation}
 $$
 
 The $(x + \Delta x)^n$ term is a binomial. In an expanded binomial, you're essentially choosing every possible combination of terms from the two binomials.
@@ -574,7 +598,9 @@ For example, $(x + a)^3$ expands to $x^3 + 3x^2a + 3xa^2 + a^3$ because:
 The formalization of this is the _binomial theorem_:
 
 $$
+\begin{equation}
 (x + a)^n = \sum_{k = 0}^{n} \binom{n}{k} x^{n - k} a^k
+\end{equation}
 $$
 
 Where $\binom{n}{k}$ is the _binomial coefficient_, which is what you get when you choose $k$ items from $n$ items.
@@ -582,11 +608,11 @@ Where $\binom{n}{k}$ is the _binomial coefficient_, which is what you get when y
 Applying this to the limit:
 
 $$
-\begin{align*}
+\begin{align}
 f'(x) &= \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\sum_{k = 0}^{n} \binom{n}{k} x^{n - k} (\Delta x)^k - x^n}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \left( \cancel{x^n} + \binom{n}{1} x^{n - 1} (\Delta x)^1 + \ldots + \binom{n}{n} x^0 (\Delta x)^n - \cancel{x^n} \right) \\
-\end{align*}
+\end{align}
 $$
 
 The key part is that after canceling out the $x^n$ terms, the only term that remains is the one where $k = 1$.
@@ -595,29 +621,33 @@ This is because the other terms have a $\Delta x$ in them, which will go to $0$ 
 Therefore, the derivative of $x^n$ is:
 
 $$
+\begin{equation}
 \frac{d}{dx} x^n = n \cdot x^{n - 1}
+\end{equation}
 $$
 
 :::info What about non-integers?
 
-The above formula works for all real powers, not just integers. Here's a proof.
+The power rule works for all real powers, not just integers. Here's a proof.
 
 Let's say we have a power function:
 
 $$
+\begin{equation}
 f(x) = x^r = \exp(r \ln{x}) \quad \text{where } r \in \mathbb{R}
+\end{equation}
 $$
 
 To find the derivative, we can use the chain rule:
 
 $$
-\begin{align*}
+\begin{align}
 f'(x) &= \frac{d}{dx} \exp(r \ln{x}) \\
 &= \exp(r \ln{x}) \cdot \frac{d}{dx} (r \ln{x}) \\
 &= x^r \cdot \frac{d}{dx} (r \ln{x}) \\
 &= x^r \cdot r \cdot \frac{1}{x} \\
 &= r \cdot x^{r - 1}
-\end{align*}
+\end{align}
 $$
 
 A few things to note:
@@ -632,14 +662,14 @@ A few things to note:
 The derivatives of the trigonometric functions are as follows:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} \sin{x} &= \cos{x} \\
 \frac{d}{dx} \cos{x} &= -\sin{x} \\
 \frac{d}{dx} \tan{x} &= \sec^2{x} \\
 \frac{d}{dx} \cot{x} &= -\csc^2{x} \\
 \frac{d}{dx} \sec{x} &= \sec{x} \tan{x} \\
 \frac{d}{dx} \csc{x} &= -\csc{x} \cot{x}
-\end{align*}
+\end{align}
 $$
 
 We'll just look at the first one, $\frac{d}{dx} \sin{x} = \cos{x}$, to show how it's derived.
@@ -648,7 +678,18 @@ We'll just look at the first one, $\frac{d}{dx} \sin{x} = \cos{x}$, to show how 
 
 The derivative of $\cos{x}$ can be derived in a similar way.
 
-The derivatives of $\tan{x}$, $\cot{x}$, $\sec{x}$, and $\csc{x}$ can be derived using the quotient rule.
+The derivatives of $\tan{x}$, $\cot{x}$, $\sec{x}$, and $\csc{x}$ can be derived using the quotient rule. For example, to find the derivative of $\tan{x}$:
+
+$$
+\begin{align}
+\frac{d}{dx} \tan{x} &= \frac{d}{dx} \frac{\sin{x}}{\cos{x}} \\
+\frac{d}{dx} \frac{u}{v} &= \frac{v \frac{du}{dx} - u \frac{dv}{dx}}{v^2} \\
+\therefore \frac{d}{dx} \tan{x} &= \frac{\cos{x} \cos{x} - (\sin{x})(-\sin{x})}{\cos^2{x}} \\
+&= \frac{\cos^2{x} + \sin^2{x}}{\cos^2{x}} \\
+&= \frac{1}{\cos^2{x}} \\
+&= \sec^2{x}
+\end{align}
+$$
 
 ## Differentiability and Continuity
 
@@ -661,32 +702,38 @@ However, the converse is not necessarily true: a function can be continuous at a
 As previously mentioned, a function is continuous at a point if:
 
 $$
+\begin{equation}
 \lim_{x \to a} f(x) = f(a)
+\end{equation}
 $$
 
 A function is differentiable at a point if:
 
 $$
-f'(a) = \lim_{\Delta x \to 0} \frac{f(a + \Delta x) - f(a)}{\Delta x}
+\begin{equation}
+\frac{df}{dx}(a) = \lim_{\Delta x \to 0} \frac{f(a + \Delta x) - f(a)}{\Delta x}
+\end{equation}
 $$
 
 To prove that differentiability implies continuity, we'll use a slightly different form of the limit definition of the derivative:
 
 $$
-f'(a) = \lim_{x \to a} \frac{f(x) - f(a)}{x - a}
+\begin{equation}
+\frac{df}{dx}(a) = \lim_{x \to a} \frac{f(x) - f(a)}{x - a}
+\end{equation}
 $$
 
 Let's suppose we want to find this limit below, assuming $f(x)$ is differentiable at $x = a$:
 
 $$
-\begin{align*}
+\begin{align}
 \lim_{x \to a} f(x) - f(a) &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot (x - a) \\
 &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot \lim_{x \to a} (x - a) \\
-&= f'(a) \cdot 0 \\
+&= \frac{df}{dx}(a) \cdot 0 \\
 &= 0 \\
 \lim_{x \to a} f(x) - f(a) &= 0 \\
 \therefore \lim_{x \to a} f(x) &= f(a)
-\end{align*}
+\end{align}
 $$
 
 Hence, if $f(x)$ is differentiable at $x = a$, then it is continuous at $x = a$.
@@ -708,24 +755,28 @@ Implicit differentiation is a way to differentiate functions that are not explic
 For example, consider the equation of a circle:
 
 $$
+\begin{equation}
 x^2 + y^2 = r^2
+\end{equation}
 $$
 
 To differentiate this, we can treat $r$ as some constant and $x^2 + y^2$ as some function $P(x, y)$.
 Just like how we took small changes in $x$ to find the derivative of $x^2$, we can take small changes in $x$ and $y$ to find the derivative of $P(x, y)$.
 
 $$
+\begin{align}
 dP = 2x \cdot dx + 2y \cdot dy
+\end{align}
 $$
 
 Remember that $P$ should be constant, so $dP = 0$.
 
 $$
-\begin{align*}
+\begin{align}
 2x \cdot dx + 2y \cdot dy &= 0 \\
 2x \cdot dx &= -2y \cdot dy \\
 \frac{dy}{dx} &= -\frac{x}{y}
-\end{align*}
+\end{align}
 $$
 
 We can also use implicit differentiation to find the derivative of the natural logarithm.
@@ -733,11 +784,11 @@ We can also use implicit differentiation to find the derivative of the natural l
 Given $y = \ln{x}$, we can rewrite this as $e^y = x$. Then, we can once again think of moving along both the $x$ and $y$ axes and find the derivative of $e^y$ with respect to $x$.
 
 $$
-\begin{align*}
+\begin{align}
 e^y &= x \\
 e^y dy &= dx \\
 \frac{dy}{dx} &= \frac{1}{e^y} = \frac{1}{x}
-\end{align*}
+\end{align}
 $$
 
 ## Quotient Rule
@@ -748,18 +799,20 @@ It can be derived using information from the above sections.
 Given $f(x) = \frac{g(x)}{h(x)}$, the derivative of $f(x)$ is:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} \left( \frac{g(x)}{h(x)} \right) &= \frac{d}{dx} \left( g(x) \frac{1}{h(x)} \right) \\
-&= g'(x) \frac{1}{h(x)} + g(x) \frac{d}{dx} \left( \frac{1}{h(x)} \right) \tag{product rule} \\
-&= g'(x) \frac{1}{h(x)} - g(x) \frac{1}{h(x)^2} h'(x) \tag{chain rule} \\
+&= g'(x) \frac{1}{h(x)} + g(x) \frac{d}{dx} \left( \frac{1}{h(x)} \right) \\
+&= g'(x) \frac{1}{h(x)} - g(x) \frac{1}{h(x)^2} h'(x) \\
 &= \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
-\end{align*}
+\end{align}
 $$
 
 Therefore, the derivative of $\frac{g(x)}{h(x)}$ is:
 
 $$
+\begin{equation}
 \frac{d}{dx} \left( \frac{g(x)}{h(x)} \right) = \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
+\end{equation}
 $$
 
 ## Derivatives of Exponential Functions
@@ -769,36 +822,36 @@ $e^x$ is a special function because its derivative is itself.
 This can be shown via implicit differentiation:
 
 $$
-\begin{align*}
+\begin{align}
 y &= e^x \\
 \ln{y} &= x \\
 \frac{d}{dx} \ln{y} &= \frac{d}{dx} x \\
 \frac{1}{y} \frac{dy}{dx} &= 1 \\
 \frac{dy}{dx} &= y = e^x
-\end{align*}
+\end{align}
 $$
 
 Alternatively, you can use the limit definition of the derivative:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} e^x &= \lim_{\Delta x \to 0} \frac{e^{x + \Delta x} - e^x}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{e^x e^{\Delta x} - e^x}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{e^x (e^{\Delta x} - 1)}{\Delta x} \\
 &= e^x \lim_{\Delta x \to 0} \frac{e^{\Delta x} - 1}{\Delta x} \\
 &= e^x 1 \\
 &= e^x
-\end{align*}
+\end{align}
 $$
 
 To find the derivative of $a^x$, where $a$ is some constant, you can use the chain rule:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} a^x &= \frac{d}{dx} e^{x \ln{a}} \\
 &= e^{x \ln{a}} \ln{a} \\
 &= a^x \ln{a}
-\end{align*}
+\end{align}
 $$
 
 ### Example: Derivative of $x^x$
@@ -806,12 +859,12 @@ $$
 To find the derivative of $x^x$, you can rewrite it as $e^{x \ln{x}}$ and then differentiate it:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} x^x &= \frac{d}{dx} e^{x \ln{x}} \\
 &= e^{x \ln{x}} \ln{x} + e^{x \ln{x}} \frac{1}{x} \\
 &= x^x \ln{x} + \frac{x^x}{x} \\
 &= x^x (\ln{x} + 1)
-\end{align*}
+\end{align}
 $$
 
 ## Derivatives of Logarithmic Functions
@@ -823,14 +876,14 @@ To find the derivative of $\log_a{x}$, you can use the change of base formula.
 Start with $\log_a{x} = y$, then rewrite it as $a^y = x$.
 
 $$
-\begin{align*}
+\begin{align}
 \log_a{x} &= y \\
 a^y &= x \\
 \ln{a^y} &= \ln{x} \\
 y \ln{a} &= \ln{x} \\
 y &= \frac{\ln{x}}{\ln{a}} \\
 \log_a{x} &= \frac{\ln{x}}{\ln{a}}
-\end{align*}
+\end{align}
 $$
 
 Crucially, $\ln$ can be of any base.
@@ -838,10 +891,10 @@ Crucially, $\ln$ can be of any base.
 Using this, you can find the derivative of $\log_a{x}$:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} \log_a{x} &= \frac{d}{dx} \frac{\ln{x}}{\ln{a}} \\
 &= \frac{1}{x \ln{a}}
-\end{align*}
+\end{align}
 $$
 
 ## Derivatives of Inverse Trigonometric Functions
@@ -849,14 +902,14 @@ $$
 The derivatives of the inverse trigonometric functions are as follows:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} \arcsin{x} &= \frac{1}{\sqrt{1 - x^2}} \\
 \frac{d}{dx} \arccos{x} &= -\frac{1}{\sqrt{1 - x^2}} \\
 \frac{d}{dx} \arctan{x} &= \frac{1}{1 + x^2} \\
 \frac{d}{dx} \arccot{x} &= -\frac{1}{1 + x^2} \\
 \frac{d}{dx} \arcsec{x} &= \frac{1}{|x| \sqrt{x^2 - 1}} \\
 \frac{d}{dx} \arccsc{x} &= -\frac{1}{|x| \sqrt{x^2 - 1}}
-\end{align*}
+\end{align}
 $$
 
 To find the derivative of $\arcsin{x}$, you can use implicit differentiation.
@@ -864,33 +917,59 @@ To find the derivative of $\arcsin{x}$, you can use implicit differentiation.
 Start with $y = \arcsin{x}$, then rewrite it as $\sin{y} = x$.
 
 $$
-\begin{align*}
+\begin{align}
 y &= \arcsin{x} \\
 \sin{y} &= x \\
 \frac{d}{dx} \sin{y} &= \frac{d}{dx} x \\
 \cos{y} \frac{dy}{dx} &= 1 \\
 \frac{dy}{dx} &= \frac{1}{\cos{y}} \\
-\end{align*}
+\end{align}
 $$
 
 To find $\cos{y}$, you can use the Pythagorean identity $\sin^2{y} + \cos^2{y} = 1$.
 
 $$
-\begin{align*}
+\begin{align}
 \sin^2{y} + \cos^2{y} &= 1 \\
 \cos^2{y} &= 1 - \sin^2{y} \\
 \cos{y} &= \sqrt{1 - \sin^2{y}} \\
 \cos{y} &= \sqrt{1 - x^2}
-\end{align*}
+\end{align}
 $$
 
 Thus:
 
 $$
+\begin{equation}
 \frac{dy}{dx} = \frac{1}{\sqrt{1 - x^2}}
+\end{equation}
 $$
 
 The derivative of $\arcsec{x}$ can be found similarly.
+
+Another example; to find the derivative of $y = \arctan{x}$, you can rewrite it as $\tan{y} = x$.
+
+$$
+\begin{align}
+y &= \arctan{x} \\
+\tan{y} &= x \\
+\frac{d}{dx} \tan{y} &= \frac{d}{dx} x \\
+\sec^2{y} \frac{dy}{dx} &= 1 \\
+(1 + \tan^2{y}) \frac{dy}{dx} &= 1 \\
+(1 + x^2) \frac{dy}{dx} &= 1 \\
+\frac{dy}{dx} &= \frac{1}{1 + x^2}
+\end{align}
+$$
+
+We used a trigonometric identity, that is $\sec^2{y} = 1 + \tan^2{y}$. Here's how it's derived:
+
+$$
+\begin{align}
+\sin^2{y} + \cos^2{y} &= 1 \\
+\frac{\sin^2{y}}{\cos^2{y}} + \frac{\cos^2{y}}{\cos^2{y}} &= \frac{1}{\cos^2{y}} \\
+\tan^2{y} + 1 &= \sec^2{y}
+\end{align}
+$$
 
 The derivatives of the other inverse trigonometric functions can be found similarly.
 
@@ -932,14 +1011,14 @@ The unit hyperbola and unit circle are shown below:
 The derivatives of the hyperbolic functions are as follows:
 
 $$
-\begin{align*}
+\begin{align}
 \frac{d}{dx} \sinh{x} &= \cosh{x} \\
 \frac{d}{dx} \cosh{x} &= \sinh{x} \\
 \frac{d}{dx} \tanh{x} &= \text{sech}^2{x} \\
 \frac{d}{dx} \coth{x} &= -\text{csch}^2{x} \\
 \frac{d}{dx} \text{sech}{x} &= -\text{sech}{x} \tanh{x} \\
 \frac{d}{dx} \text{csch}{x} &= -\text{csch}{x} \coth{x}
-\end{align*}
+\end{align}
 $$
 
 ## Summary
@@ -950,3 +1029,29 @@ $$
 -   Differentiability implies continuity, but continuity does not necessarily imply differentiability.
 -   The product rule, chain rule, and quotient rule are ways to differentiate functions.
 -   Implicit differentiation is a way to differentiate functions that are not explicitly defined.
+
+### Derivative Cheat Sheet
+
+I use Lagrange's notation here, where the derivative of $f(x)$ is denoted as $f'(x)$, simply for brevity.
+
+| Function | Derivative |
+|----------|------------|
+| $c$ | $0$ |
+| $c \cdot f(x)$ | $c \cdot f'(x)$ |
+| $f(x) + g(x)$ | $f'(x) + g'(x)$ |
+| $f(x) \cdot g(x)$ | $f(x) \cdot g'(x) + g(x) \cdot f'(x)$ |
+| $\dfrac{f(x)}{g(x)}$ | $\dfrac{f(x) \cdot g'(x) - g(x) \cdot f'(x)}{g(x)^2}$ |
+| $x^n$ | $n \cdot x^{n - 1}$ |
+| $e^x$ | $e^x$ |
+| $a^x$ | $a^x \ln{a}$ |
+| $\ln{x}$ | $\dfrac{1}{x}$ |
+| $\log_a{x}$ | $\dfrac{1}{x \ln{a}}$ |
+| $\sin{x}$ | $\cos{x}$ |
+| $\cos{x}$ | $-\sin{x}$ |
+| $\tan{x}$ | $\sec^2{x}$ |
+| $\arcsin{x}$ | $\dfrac{1}{\sqrt{1 - x^2}}$ |
+| $\arccos{x}$ | $-\dfrac{1}{\sqrt{1 - x^2}}$ |
+| $\arctan{x}$ | $\dfrac{1}{1 + x^2}$ |
+| $\sinh{x}$ | $\cosh{x}$ |
+| $\cosh{x}$ | $\sinh{x}$ |
+| $\tanh{x}$ | $\text{sech}^2{x}$ |

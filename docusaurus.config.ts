@@ -2,12 +2,15 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes } from "prism-react-renderer";
 
-import rehypeKatex, { Options } from "rehype-katex";
+import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
+import rehypeMathjax, { Options } from "rehype-mathjax";
 import { KATEX_MACROS } from "./katexMacros.js";
 
 const lightCodeTheme = themes.vsLight;
 const darkCodeTheme = themes.vsDark;
+
+export let MATHJAX_OPTIONS: Options = {};
 
 const config = {
     title: "0tick.io",
@@ -64,7 +67,24 @@ const config = {
                     editUrl: "https://github.com/0tickpulse/0tick.io/tree/main/",
                     routeBasePath: "/",
                     remarkPlugins: [remarkMath],
-                    rehypePlugins: [(options: Options) => rehypeKatex({ ...options, macros: KATEX_MACROS })],
+                    // rehypePlugins: [(options: Options) => rehypeKatex({
+                    //     ...options,
+                    //     trust: (context) => ['\\htmlId', '\\href'].includes(context.command),
+                    //     strict: false,
+                    //     macros: KATEX_MACROS
+                    // })],
+                    rehypePlugins: [
+                        (options: Options) => {
+                            MATHJAX_OPTIONS = {
+                                ...options,
+                                tex: {
+                                    tags: "ams",
+                                    
+                                },
+                            };
+                            return rehypeMathjax(MATHJAX_OPTIONS);
+                        },
+                    ],
                 },
                 blog: {
                     showReadingTime: true,
