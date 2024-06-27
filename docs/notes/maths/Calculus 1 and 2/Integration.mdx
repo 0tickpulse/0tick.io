@@ -3,14 +3,20 @@ sidebar_position: 5
 ---
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
 import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
 import { useState } from "react";
 import range from "lodash/range";
-import { lineLabel } from "@site/src/utilities/lines";
 import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
 
 # Integration
 
 Integration is the process of finding the integral of a function. It is the reverse process of differentiation, and is used to find the area under a curve, the volume of a solid, and many other quantities.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
 
 ## Area Under a Curve through Accumulation of Infinitesimal Areas
 
@@ -134,7 +140,7 @@ We can apply the same principle here: if we increment $t$, then we can calculate
             <Plot.Inequality
                 y={{
                     "<=": boundedFunction,
-                    ">": (x) => 0
+                    ">=": (x) => 0
                 }}
             />
             <Polygon
@@ -144,7 +150,7 @@ We can apply the same principle here: if we increment $t$, then we can calculate
                     [T + dT, f(T)],
                     [T + dT, 0]
                 ]}
-                color={Theme.green}
+                color={color("green")}
                 fillOpacity={0.5}
             />
         </Mafs>
@@ -313,7 +319,7 @@ export function FTOCProof1({ showDx = false, showMVT = false }) {
     const a = 2, b = 8;
     const x = useMovablePoint([a + 2, 0], {
         constrain: ([x, y]) => [Math.min(Math.max(x, a), b), 0],
-        color: Theme.green
+        color: color("green")
     });
     const dx = 1.5;
     const x2 = x.point[0] + dx;
@@ -361,7 +367,7 @@ export function FTOCProof1({ showDx = false, showMVT = false }) {
             <Line.Segment
                 point1={x.point}
                 point2={[x.point[0], f(x.point[0])]}
-                color={Theme.green}
+                color={color("green")}
             />
             <LaTeX
                 at={[x.point[0], -0.5]}
@@ -373,7 +379,7 @@ export function FTOCProof1({ showDx = false, showMVT = false }) {
                     <Line.Segment
                         point1={[x2, 0]}
                         point2={[x2, f(x2)]}
-                        color={Theme.green}
+                        color={color("green")}
                     />
                     <LaTeX
                         at={[x2, -0.5]}
@@ -382,9 +388,9 @@ export function FTOCProof1({ showDx = false, showMVT = false }) {
                     <Plot.Inequality
                         y={{
                             "<=": (value) => (value >= x.point[0] && value <= x2) ? f(value) : 0,
-                            ">": (x) => 0
+                            ">=": (x) => 0
                         }}
-                        fill={Theme.green}
+                        fill={color("green")}
                         fillOpacity={0.5}
                         xDomain={[x.point[0], x2]}
                     />
@@ -397,7 +403,7 @@ export function FTOCProof1({ showDx = false, showMVT = false }) {
                                     [x2, mvtHeight],
                                     [x2, 0]
                                 ]}
-                                color={Theme.green}
+                                color={color("green")}
                                 fillOpacity={0.5}
                             />
                         </>
@@ -556,7 +562,7 @@ What we did is known as a Riemann sum. Let's once again consider the velocity fu
                         <Vector
                             tail={[t, 0]}
                             tip={[t + dt, 0]}
-                            color={Theme.green}
+                            color={color("green")}
                         />
                         <LaTeX
                             at={[t + dt, -0.5]}
@@ -987,7 +993,7 @@ For example, consider the function $f(x) = \frac{1}{x}$:
     <Line.Segment
         point1={[2, 0]}
         point2={[2, 1 / 2]}
-        color={Theme.red}
+        color={color("red")}
     />
 </Mafs>
 
@@ -1011,7 +1017,7 @@ Consider the function $f(x) = \sin(x)$, and $g(x) = \frac{5}{2}\sin(x)$:
     />
     <Plot.OfX
         y={(x) => 2.5 * Math.sin(x)}
-        color={Theme.blue}
+        color={color("blue")}
     />
 </Mafs>
 
@@ -1035,7 +1041,7 @@ Now let's consider the integral of $f(x)$ and $g(x)$ from $0$ to $\pi$:
         lb={0}
         ub={Math.PI}
         n={5}
-        color={Theme.blue}
+        color={color("blue")}
     />
 </Mafs>
 
@@ -1064,16 +1070,16 @@ Consider a function $f(x) = \sqrt{x}$:
     <Plot.Inequality
         y={{
             "<=": (x) => (x > 0 && x < 1) ? Math.sqrt(x) : -50,
-            ">": (x) => 0
+            ">=": (x) => 0
         }}
-        color={Theme.red}
+        color={color("red")}
     />
     <Plot.Inequality
         y={{
             "<=": (x) => (x > 1 && x < 4) ? Math.sqrt(x) : -50,
-            ">": (x) => 0
+            ">=": (x) => 0
         }}
-        color={Theme.blue}
+        color={color("blue")}
     />
 </Mafs>
 
@@ -1153,13 +1159,37 @@ Since the derivative of an antiderivative is the original function, we can use t
 
 We've already gone over the intuition for many derivatives. Here are some common antiderivatives:
 
-| Function | Antiderivative |
+{/* | Function | Antiderivative |
 |----------|----------------|
 | $x^n$ | $\frac{x^{n + 1}}{n + 1} + C$ |
 | $\sin(x)$ | $-\cos(x) + C$ |
 | $\cos(x)$ | $\sin(x) + C$ |
 | $e^x$ | $e^x + C$ |
-| $\frac{1}{x}$ | $\ln|x| + C$ |
+| $\frac{1}{x}$ | $\ln|x| + C$ | */}
+{/* use a html table instead*/}
+
+<table>
+    <tr>
+        <th>Function</th>
+        <th>Antiderivative</th>
+    </tr>
+    {[
+        ["x^n", "\\frac{x^{n + 1}}{n + 1} + C"],
+        ["\\sin(x)", "-\\cos(x) + C"],
+        ["\\cos(x)", "\\sin(x) + C"],
+        ["e^x", "e^x + C"],
+        ["\\frac{1}{x}", "\\ln|x| + C"]
+    ].map(([func, antiderivative]) => (
+        <tr>
+            <td>
+                <MathEquation>{func}</MathEquation>
+            </td>
+            <td>
+                <MathEquation>{antiderivative}</MathEquation>
+            </td>
+        </tr>
+    ))}
+</table>
 
 ## Reversing the Chain Rule
 
@@ -1172,7 +1202,7 @@ $$
 $$
 
 Now, there's two ways to do this. The first way is to use the chain rule in reverse, and the second way is to use $u$-substitution.
-$u$-substitution tends to be easier, but reverse chain rule lets you do it a lot faster.
+$u$-substitution tends to be _much_ easier, but reverse chain rule lets you do it a lot faster.
 
 ### Reverse Chain Rule
 
@@ -1233,6 +1263,12 @@ Therefore the new bounds should be $5$ and $\pi^2 + 5$:
 
 $$
 \int_{0}^{\pi} \frac{4x}{x^2 + 5} dx = \int_{5}^{\pi^2 + 5} \frac{2}{\ln(u)} du
+$$
+
+It's clearer if we label the variables in the bounds as well:
+
+$$
+\int\limits_{x = 0}^{x = \pi} \frac{4x}{x^2 + 5} dx = \int\limits_{x = 0}^{x = \pi} \frac{2}{\ln(u)} du = \int\limits_{u = 5}^{u = \pi^2 + 5} \frac{2}{\ln(u)} du
 $$
 
 ## Integration by Long Division
@@ -1501,3 +1537,514 @@ $$
 &= e^x(x^2 - 2x + 2) + C \\
 \end{align}
 $$
+
+## Integration through Trigonometric Substitution
+
+Trigonometric Substitution is another way to substitute variables to make integration easier.
+
+### Trigonometric Substitution with Sine
+
+Consider this integral:
+
+$$
+\begin{equation}
+\int \frac{1}{\sqrt{a^2 - x^2}}dx \label{eq:trigonometric_substitution_with_sine-first}
+\end{equation}
+$$
+
+Using our current understanding, it would be very difficult to solve this integral. However, looking at the radical in the denominator, it looks very similar to the Pythagorean Theorem.
+Therefore, we can construct a right triangle to visualize this:
+
+{(() => {
+    const p1 = [-2, -2], p2 = [3, -2], p3 = [3, 2];
+    return (
+        <Mafs>
+            <Line.Segment
+                point1={p1}
+                point2={p2}
+                color={color("red")}
+            />
+
+            <Line.Segment
+                point1={p2}
+                point2={p3}
+                color={color("yellow")}
+            />
+            <LaTeX
+                tex={"x"}
+                at={lineLabel(p2, p3, "right")}
+                color={color("yellow")}
+            />
+
+            <Line.Segment
+                point1={p3}
+                point2={p1}
+                color={color("green")}
+            />
+            <LaTeX
+                tex={"a"}
+                at={lineLabel(p1, p3, "left")}
+                color={color("green")}
+            />
+
+            <Angle
+                at={p2}
+                fromRad={Math.PI / 2}
+                toRad={Math.PI}
+            />
+            <Angle
+                at={p1}
+                fromRad={0}
+                toRad={Math.atan((p3[1] - p2[1]) / (p2[0] - p1[0]))}
+                label="\theta"
+            />
+        </Mafs>
+    );
+})()}
+
+Through the Pythagorean Theorem, the red line is $\sqrt{a^2 - x^2}$, which is the denominator of the expression in Equation $\ref{eq:trigonometric_substitution_with_sine-first}$.
+
+Set angle $\theta$ to be the opposite of $\class{yellow}{x}$. As such,
+
+$$
+\begin{align}
+\sin(\theta) &= \frac{\text{opp}}{\text{hyp}} = \frac{\class{yellow}{x}}{\class{green}{a}} \\
+\class{yellow}{x} &= \class{green}a \sin(\theta) \label{eq:trigonometric_substitution_with_sine-first-x-def} \\
+\cos(\theta) &= \frac{\text{adj}}{\text{hyp}} = \frac{\class{red}{\sqrt{a^2 - x^2}}}{\class{green}{a}} \\
+\class{red}{\sqrt{a^2 - x^2}} &= \class{green}a \cos(\theta) \label{eq:trigonometric_substitution_with_sine-first-radical-def}
+\end{align}
+$$
+
+We have derived the fact that $\class{yellow}{x} = \class{green}{a} \sin(\theta)$. Differentiating both sides w.r.t $\theta$ (just like we did with $u$-substitution),
+
+$$
+\begin{equation}
+d\class{yellow}{x} = \class{green}{a} \cos(\theta) d\theta \label{eq:trigonometric_substitution_with_sine-first-dx-def}
+\end{equation}
+$$
+
+Take the original integral $\ref{eq:trigonometric_substitution_with_sine-first}$ and substitute Equation $\ref{eq:trigonometric_substitution_with_sine-first-dx-def}$ into it:
+
+$$
+\begin{equation}
+\int \frac{1}{\sqrt{a^2 - x^2}}\class{blue}{dx} = \int \frac{\class{blue}{a \cos(\theta)}}{\sqrt{a^2 - x^2}}\class{blue}{d\theta}
+\end{equation}
+$$
+
+Then, substitute $\ref{eq:trigonometric_substitution_with_sine-first-radical-def}$ into it:
+
+$$
+\begin{align}
+\int \frac{a \cos(\theta)}{\class{red}{\sqrt{a^2 - x^2}}}d\theta &= \int \frac{\cancel{a \cos(\theta)}}{\class{red}{\cancel{a \cos(\theta)}}}d\theta \\
+&= \int d\theta = \theta + C
+\end{align}
+$$
+
+We can solve Equation $\ref{eq:trigonometric_substitution_with_sine-first-x-def}$ for $\theta$ in terms of $\class{yellow}{x}$:
+
+$$
+\begin{align}
+\sin(\theta) &= \frac{\class{yellow}{x}}{\class{green}{a}} \\
+\theta &= \arcsin\left(\frac{\class{yellow}{x}}{\class{green}{a}} \right)
+\end{align}
+$$
+
+Therefore:
+
+$$
+\begin{equation}
+\int \frac{1}{\sqrt{a^2 - x^2}} dx = \arcsin\left(\frac{x}{a}\right) + C
+\end{equation}
+$$
+
+Another way to derive Equation $\ref{eq:trigonometric_substitution_with_sine-first-radical-def}$ through the Pythagorean Identity:
+
+$$
+\begin{align}
+\sqrt{\class{green}{a}^2 - \class{yellow}{x}^2} &= \sqrt{\class{green}{a}^2 - \class{yellow}{a^2 \sin^2(\theta)}} \\
+&= \sqrt{\class{green}{a}^2(1 - \sin^2(\theta))} \\
+&= \sqrt{\class{green}{a}^2\cos^2(\theta)} \\
+&= \class{green}{a}\cos(\theta)
+\end{align}
+$$
+
+The advantage of this is that we do not have to construct a right triangle to derive it.
+
+We can also make a general procedure for trigonometric substitution: For an integral that contains $a^2 - x^2$, make the substitution $x = a\sin(\theta)$.
+
+### Trigonometric Substitution with Tangent
+
+When we performed trigonometric substitution with $\sin$, we had the pattern of $a^2 - x^2$.
+If we put this into a right triangle, then $a$ is the hypotenuse.
+
+Now we look at an integral like this:
+
+$$
+\begin{equation}
+\int \frac{1}{a^2 + x^2} dx \label{eq:trigonometric_substitution_with_tangent-first}
+\end{equation}
+$$
+
+In an integral in this form, $a$ and $x$ are the sides of the right triangle.
+As such, we can once again construct a triangle and use $\theta$ as our substitutent variable:
+
+{(() => {
+    const p1 = [-2, -2], p2 = [3, -2], p3 = [3, 2];
+    return (
+        <Mafs>
+            <Line.Segment
+                point1={p1}
+                point2={p2}
+                color={color("red")}
+            />
+            <LaTeX
+                tex={"a"}
+                at={lineLabel(p1, p2, "right")}
+                color={color("red")}
+            />
+
+            <Line.Segment
+                point1={p2}
+                point2={p3}
+                color={color("yellow")}
+            />
+            <LaTeX
+                tex={"x"}
+                at={lineLabel(p2, p3, "right")}
+                color={color("yellow")}
+            />
+
+            <Line.Segment
+                point1={p3}
+                point2={p1}
+                color={color("green")}
+            />
+
+            <Angle
+                at={p2}
+                fromRad={Math.PI / 2}
+                toRad={Math.PI}
+            />
+            <Angle
+                at={p1}
+                fromRad={0}
+                toRad={Math.atan((p3[1] - p2[1]) / (p2[0] - p1[0]))}
+                label="\theta"
+            />
+        </Mafs>
+    );
+})()}
+
+Using this triangle:
+
+$$
+\begin{align}
+\tan(\theta) &= \frac{\class{yellow}{x}}{\class{red}{a}} \\
+\class{yellow}{x} &= \class{red}{a} \tan(\theta) \label{eq:trigonometric_substitution_with_tangent-first-x-def} \\
+\theta &= \arctan\left(\frac{\class{yellow}{x}}{\class{red}{a}}\right) \label{eq:trigonometric_substitution_with_tangent-first-theta-def} \\
+d\class{yellow}{x} &= \class{red}{a} \sec^2(\theta) d\theta \label{eq:trigonometric_substitution_with_tangent-first-dx-def}
+\end{align}
+$$
+
+Using the Pythagorean Theorem, the length of the green line/hypotenuse is $\sqrt{\class{red}{a}^2 + \class{yellow}{x}^2}$. Hence:
+
+$$
+\begin{align}
+\sec(\theta) &= \frac{\text{hyp}}{\text{adj}} = \frac{\class{green}{\sqrt{a^2 + x^2}}}{\class{red}{a}} \\
+\class{green}{\sqrt{a^2 + x^2}} &= \class{red}{a} \sec(\theta) \\
+\class{red}{a}^2 + \class{yellow}{x}^2 &= \class{red}{a}^2 \sec^2(\theta)
+\end{align}
+$$
+
+We can substitute this back into $\ref{eq:trigonometric_substitution_with_tangent-first}$:
+
+$$
+\begin{equation}
+\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} dx = \int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} dx
+\end{equation}
+$$
+
+Now substitute $\ref{eq:trigonometric_substitution_with_tangent-first-dx-def}$ into it:
+
+$$
+\begin{equation}
+\int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} \class{blue}{dx} = \int \frac{\class{blue}{a \cancel{\sec^2(\theta)}}}{\class{red}{a}^2 \cancel{\sec^2(\theta)}} \class{blue}{d\theta} = \frac{1}{\class{red}{a}} \theta + C
+\end{equation}
+$$
+
+Finally, substitute $\ref{eq:trigonometric_substitution_with_tangent-first-theta-def}$:
+
+$$
+\begin{equation}
+\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} dx = \frac{1}{\class{red}{a}}\arctan\left(\frac{\class{yellow}{x}}{\class{red}{a}}\right) + C
+\end{equation}
+$$
+
+### Example Problem: Trigonometric Substitution - $1/\sqrt{3 - 2x^2}$
+
+> Evaluate the following integral:
+>
+> $$
+> \begin{equation}
+> \int \frac{1}{\sqrt{3 - 2x^2}} dx \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)}
+> \end{equation}
+> $$
+
+To solve this, we first need to get rid of the coefficient of $x$;
+
+$$
+\begin{equation}
+\int \frac{1}{\sqrt{3 - 2x^2}} dx = \int \frac{1}{\sqrt{2(3/2 - x^2)}} dx = \int \frac{1}{\sqrt{2(\sqrt{3/2}^2 - x^2)}} dx
+\end{equation}
+$$
+
+This becomes an integral of the form $1/\sqrt{a^2 - x^2}$ where $a = \sqrt{3/2}$. As such we can make the substitution $x = \sqrt{3/2}\sin(\theta)$.
+Differentiating both sides w.r.t $\theta$, and solving for $\theta$ in terms of $x$:
+
+$$
+\begin{align}
+x &= \sqrt{\frac{3}{2}}\sin(\theta) \\
+dx &= \sqrt{\frac{3}{2}}\cos(\theta) d\theta \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def} \\
+\theta &= \arcsin\left(\sqrt{\frac{2}{3}}x\right) \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}
+\end{align}
+$$
+
+Calculate the denominator:
+
+$$
+\begin{align}
+2\left(\sqrt{\frac{3}{2}}^2 - x^2\right) &= 2\left(\frac{3}{2} - \frac{3}{2}\sin^2(\theta)\right) \\
+&= 3(1 - \sin^2(\theta))
+\end{align}
+$$
+
+Recall the Pythagorean identity $\sin^2(\theta) + \cos^2(\theta) = 1$ (which can be derived using the unit circle). Therefore:
+
+$$
+\begin{equation}
+3 - 2x^2 = \dots = 3(1 - \sin^2(\theta)) = 3\cos^2(\theta)
+\end{equation}
+$$
+
+Substituting this, along with Equation $\ref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def}$ back into $\ref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)}$:
+
+$$
+\begin{align}
+\int \frac{1}{\sqrt{3 - 2x^2}} dx &= \int \frac{1}{\sqrt{3\cos^2(\theta)}} \class{yellow}{dx} \\
+&= \int \frac{\class{yellow}{\sqrt{3}/\sqrt{2} \cos(\theta)}}{\sqrt{3} \cos(\theta)} \class{yellow}{d\theta} \\
+&= \int \frac{1}{\sqrt{2}} d\theta = \frac{1}{\sqrt{2}} \theta + C
+\end{align}
+$$
+
+Substituting $\ref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}$:
+
+$$
+\begin{equation}
+\int \frac{1}{\sqrt{3 - 2x^2}} dx = \frac{1}{\sqrt{2}} \theta + C = \frac{1}{\sqrt{2}} \arcsin\left(\sqrt{\frac{2}{3}}x\right) + C
+\end{equation}
+$$
+
+## Improper Integrals
+
+Integrals can contain bounds that are infinity.
+Alternatively, the integrand might have a vertical asymptote in its interval.
+These violate the typical assumptions for integrals, and are hence called _improper_ integrals.
+Some improper integrals can be calculated using limits.
+
+### Convergent Improper Integrals
+
+Consider the following improper integral:
+
+$$
+\begin{equation}
+\int_1^{\infty} \frac{1}{x^2} dx
+\end{equation}
+$$
+
+An integral from $1$ to $\infty$ means the area under the curve that begins at $x = 1$ and never ends:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => 1 / (x ** 2)} />
+
+    <Plot.Inequality
+        y={{
+            "<=": (x) => x > 1 ? 1 / (x ** 2) : 0,
+            ">=": (x) => 0
+        }}
+    />
+</Mafs>
+
+Since you can't add infinite things, you consider what the area approaches as the upper bound approaches infinity - a limit:
+
+$$
+\begin{align}
+\int_1^{\infty} \frac{1}{x^2} dx = \lim_{n \to \infty} \int_1^n \frac{1}{x^2} dx &= \lim_{n \to \infty} \frac{x^{-1}}{-1} dx \\
+&= \lim_{n \to \infty}\left(-\frac{1}{n} - \left(-\frac{1}{1}\right)\right) \\
+&= \lim_{n \to \infty}\left(-\frac{1}{n} + 1\right) = 1
+\end{align}
+$$
+
+Having a finite area, this integral is **convergent**.
+
+### Divergent Improper Integrals
+
+Unlike a convergent integral, a divergent integral goes to infinity.
+
+For instance:
+
+$$
+\begin{align}
+\int_1^{\infty} \frac{1}{x} dx = \lim_{n \to \infty} \int_1^n \frac{1}{x} dx &= \lim_{n \to \infty} (\ln|n| - \ln|1|) \\
+\end{align}
+$$
+
+Since $n, 1 > 0$, we can drop the absolute values.
+
+$$
+\begin{align}
+\lim_{n \to \infty} (\ln|n| - \ln|1|) &= \lim_{n \to \infty} \ln(n) \\
+&= \infty
+\end{align}
+$$
+
+As such, this integral is **divergent**.
+
+## Worked Examples
+
+### Example Problem: Combining $u$ and Trigonometric Substitution
+
+> Evaluate the following integral:
+>
+> $$
+> \begin{equation}
+> \int x^3 \sqrt{9 - x^2} dx \label{eq:example_problem_combining_u_and_trigonometric_substitution-main}
+> \end{equation}
+> $$
+
+Since we have $\sqrt{3^2 - x^2}$, we can substitute $x = 3\sin(\theta)$. As always:
+
+$$
+\begin{align}
+x &= 3\sin(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-x-def} \\
+dx &= 3\cos(\theta) d\theta \\
+\theta &= \arcsin\left(\frac{x}{3}\right) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-theta-def} \\
+\sqrt{9 - x^2} &= \sqrt{9 - 9\sin^2(\theta)} \\
+&= \sqrt{9(1 - \sin^2(\theta))} = 3\cos(\theta)
+\end{align}
+$$
+
+Therefore, the integral at $\ref{eq:example_problem_combining_u_and_trigonometric_substitution-main}$ can be rewritten as:
+
+$$
+\begin{align}
+\int \class{red}{x^3} \class{blue}{\sqrt{9 - x^2}} \class{green}{dx} &= \int \class{red}{27\sin^3(\theta)} \class{blue}{3\cos(\theta)} \class{green}{3\cos(\theta) d\theta} \\
+&= \int 243 \sin^3(\theta) \cos^2(\theta) d\theta
+\end{align}
+$$
+
+With odd powers of trigonometric functions, it is often helpful to separate them.
+
+$$
+\begin{equation}
+\int 243 \sin^3(\theta) \cos^2(\theta) d\theta = 243 \int \sin^2(\theta) \cos^2(\theta) \sin(\theta) d\theta
+\end{equation}
+$$
+
+Here, if we let $-\sin(\theta) d\theta$ be $du$, then we need to make $u = \cos(\theta)$. To do so, we can make use of the Pythagorean identity once again:
+
+$$
+\begin{equation}
+243 \int \class{red}{\sin^2(\theta)} \cos^2(\theta) \sin(\theta) d\theta = 243 \int \class{red}{(1 - \cos^2(\theta))} \cos^2(\theta) \sin(\theta) d\theta
+\end{equation}
+$$
+
+This should be relatively obvious - we have a function of something ($\cos(\theta)$), as well as the derivative of that thing ($\sin(\theta)$).
+Therefore we can apply $u$-substitution:
+
+$$
+\begin{align}
+u &= \cos(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-u-def} \\
+du &= -\sin(\theta) d\theta \\
+243 \int (1 - \cos^2(\theta)) \cos^2(\theta) \sin(\theta) d\theta &= -243 \int \class{red}{(1 - \cos^2(\theta)) \cos^2(\theta)} \class{blue}{(-\sin(\theta)) d\theta} \\
+&= -243 \int \class{red}{(1 - u^2)u^2} \class{blue}{du} \\
+&= -243 \int (u^2 - u^4) du \\
+&= -243 \left(\frac{u^3}{3} - \frac{u^5}{5}\right) + C \label{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}
+\end{align}
+$$
+
+We can manipulate $\ref{eq:example_problem_combining_u_and_trigonometric_substitution-main-x-def}$ to derive an expression for $u$:
+
+$$
+\begin{align}
+x &= 3\sin(\theta) \\
+\frac{x}{3} &= \sin(\theta) \\
+u = \cos(\theta) &= \sqrt{1 - \sin^2(\theta)} = \sqrt{1 - \frac{x^2}{9}}
+\end{align}
+$$
+
+Finally, substituting this back into $\ref{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}$, and performing some algebra, we get the result:
+
+$$
+\begin{align}
+\int x^3 \sqrt{9 - x^2} dx = \dots &= -243 \left(\frac{u^3}{3} - \frac{u^5}{5}\right) + C \\
+&= -243 \left(\frac{\left(1 - \frac{x^2}{9}\right)^\frac{3}{2}}{3} - \frac{\left(1 - \frac{x^2}{9}\right)^\frac{5}{2}}{5}\right) + C \\
+&= -243 \left(\frac{\frac{1}{9^{3/2}} \left(9 - x^2\right)^\frac{3}{2}}{3} - \frac{\frac{1}{9^{5/2}} \left(9 - x^2\right)^\frac{5}{2}}{5}\right) + C \\
+&= -243 \left(\frac{\left(9 - x^2\right)^\frac{3}{2}}{3 \cdot 3^3} - \frac{\left(9 - x^2\right)^\frac{5}{2}}{5 \cdot 3^5} \right) + C \\
+&= -3(9 - x^2)^\frac{3}{2} + \frac{1}{5} (9 - x^2)^\frac{5}{2} + C
+\end{align}
+$$
+
+(More examples to come.)
+
+## Summary
+
+Integration is the process of finding the antiderivative of a function.
+
+Indefinite integrals are integrals without bounds, while definite integrals have bounds, and describe the area under the curve.
+
+Accumulation functions are used to find the total accumulation of a quantity over a given interval, and are defined via definite integrals.
+
+The integral is formally defined as the limit of Riemann sums:
+
+$$
+\int_a^b f(x) dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i) \Delta x
+$$
+
+where $\Delta x = \frac{b - a}{n}$ and $x_i = a + i \Delta x$.
+
+The fundamental theorem of calculus states that the integral of a function is the antiderivative of that function:
+
+$$
+\begin{align}
+\frac{d}{dx} F(x) &= f(x) \\
+\int_a^b f(x) dx &= F(b) - F(a)
+\end{align}
+$$
+
+There are several techniques to solve integrals:
+
+- **$u$-substitution** is used to simplify the integrand by substituting a variable $u$:
+    $$
+    \begin{equation}
+    \int f(g(x))g'(x) dx = \int f(u) du
+    \end{equation}
+    $$
+- **Algebraic manipulation**, such as long division or completing the square, can simplify the integrand.
+- **Integration by parts** is used to integrate the product of two functions:
+    $$
+    \begin{equation}
+    \int f(x)g'(x) dx = f(x)g(x) - \int f'(x)g(x) dx
+    \end{equation}
+    $$
+- **Trigonometric substitution** is used to substitute trigonometric functions to simplify the integrand:
+    $$
+    \begin{align}
+    \int \frac{1}{\sqrt{a^2 - x^2}} dx &= \arcsin\left(\frac{x}{a}\right) + C \\
+    \int \frac{1}{a^2 + x^2} dx &= \frac{1}{a}\arctan\left(\frac{x}{a}\right) + C
+    \end{align}
+    $$
+
+    Generally, for $\sqrt{a^2 - x^2}$, substitute $x = a\sin(\theta)$, and for $a^2 + x^2$, substitute $x = a\tan(\theta)$.
+
+Improper integrals are integrals with infinite bounds or vertical asymptotes. They can be convergent or divergent.

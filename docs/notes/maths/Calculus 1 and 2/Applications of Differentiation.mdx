@@ -5,10 +5,16 @@ import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopw
 import MathEquation from "@site/src/components/Math";
 import { useState } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
 
 # Applications of Differentiation
 
 Differentiation is a powerful tool in mathematics, and it has many applications in real life.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
 
 ## Linear Approximation
 
@@ -109,11 +115,11 @@ This equation can be used to approximate the function $f(x)$ near $x = 0$. A vis
     <Coordinates.Cartesian />
     <Plot.OfX
         y={(x) => Math.sqrt(1 + x)}
-        color={Theme.blue}
+        color={color("blue")}
     />
     <Plot.OfX
         y={(x) => 0.5 * x + 1}
-        color={Theme.green}
+        color={color("green")}
     />
 </Mafs>
 
@@ -201,25 +207,25 @@ export function LhopitalsRule({ showDx = false }) {
             }}
         >
             <Coordinates.Cartesian />
-            <Plot.OfX y={numerator} color={Theme.blue} />
-            <Plot.OfX y={denominator} color={Theme.green} />
+            <Plot.OfX y={numerator} color={color("blue")} />
+            <Plot.OfX y={denominator} color={color("green")} />
 
             {showDx && (
                 <>
                     <Vector
                         tail={[limit + dx, 0]}
                         tip={[limit + dx, numerator(limit + dx)]}
-                        color={Theme.blue}
+                        color={color("blue")}
                     />
                     <Vector
                         tail={[limit + dx, 0]}
                         tip={[limit + dx, denominator(limit + dx)]}
-                        color={Theme.green}
+                        color={color("green")}
                     />
                     <Vector
                         tail={[limit, 0]}
                         tip={[limit + dx, 0]}
-                        color={Theme.yellow}
+                        color={color("yellow")}
                     />
                     <LaTeX
                         tex="dx"
@@ -359,7 +365,7 @@ Where $c$ is some point between $a$ and $b$.
 <Mafs>
     <Coordinates.Cartesian />
     <Plot.OfX y={(x) => (x >= 0 && x <= 5 ? Math.sin(2 * x) : undefined)} />
-    <Line.Segment point1={[0, 0]} point2={[5, Math.sin(2 * 5)]} color={Theme.green} />
+    <Line.Segment point1={[0, 0]} point2={[5, Math.sin(2 * 5)]} color={color("green")} />
 </Mafs>
 
 Note: when the mean-value theorem does not apply, it doesn't mean that it's necessarily false.
