@@ -4,18 +4,20 @@ import { themes } from "prism-react-renderer";
 
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
-import rehypeMathjax, { Options } from "rehype-mathjax";
+import rehypeMathjax, { Options } from "rehype-mathjax/svg";
 import { KATEX_MACROS } from "./katexMacros.js";
 
 const lightCodeTheme = themes.vsLight;
 const darkCodeTheme = themes.vsDark;
 
-export let MATHJAX_OPTIONS: Options = {};
-
 const config = {
     title: "0tick.io",
     tagline: "My personal website",
     favicon: "img/favicon.ico",
+
+    customFields: {
+        mathJaxOptions: {} as Options,
+    },
 
     // Set the production url of your site here
     url: "https://0tick.io",
@@ -75,14 +77,14 @@ const config = {
                     // })],
                     rehypePlugins: [
                         (options: Options) => {
-                            MATHJAX_OPTIONS = {
+                            config.customFields.mathJaxOptions = {
                                 ...options,
                                 tex: {
                                     tags: "ams",
-                                    
+                                    extensions: ["HTML.js"],
                                 },
                             };
-                            return rehypeMathjax(MATHJAX_OPTIONS);
+                            return rehypeMathjax(config.customFields.mathJaxOptions);
                         },
                     ],
                 },

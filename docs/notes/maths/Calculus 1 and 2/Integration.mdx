@@ -6,6 +6,7 @@ import MathEquation from "@site/src/components/Math";
 import { useState } from "react";
 import range from "lodash/range";
 import { lineLabel } from "@site/src/utilities/lines";
+import { gamma } from "mathjs";
 
 # Integration
 
@@ -258,13 +259,13 @@ Now let's connect the antiderivative to the area under the curve. Using what we 
 
 $$
 \begin{equation}
-\int_{0}^{T_1} v(t) dt = s(T_1) + C \label{eq:antiderivative}
+\int_{0}^{T_1} v(t) dt = s(T_1) + C \label{eq:definite_integrals-antiderivative}
 \end{equation}
 $$
 
 However, what do we set $C$ as? It can't be any constant, since the area under the curve is a specific value.
 To solve this conundrum, we introduce the concept of a definite integral. Let's say we want to find the area under the curve of $v(t)$ from $0$ to $0$.
-This is obviously $0$, so, plugging this into Equation $\ref{eq:antiderivative}$:
+This is obviously $0$, so, plugging this into Equation $\ref{eq:definite_integrals-antiderivative}$:
 
 $$
 \begin{equation}
@@ -283,7 +284,9 @@ $$
 We can also replace $0$ with any arbitrary constant. For example, if we want to find the area under the curve of $v(t)$ from $T_0$ to $T_1$:
 
 $$
+\begin{equation}
 \int_{T_0}^{T_1} v(t) dt = s(T_1) - s(T_0)
+\end{equation}
 $$
 
 Notice that the area under the curve is derived solely from the endpoints $T_0$ and $T_1$, and nothing in between.
@@ -429,7 +432,9 @@ $$
 The Mean-Value Theorem states:
 
 $$
+\begin{equation}
 \exists c \in [x, x + \Delta x] \text{ such that } f(c)\Delta x = \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) dt
+\end{equation}
 $$
 
 Which is a fancy way of saying that there is some rectangle whose area is exactly the area under the segment of the curve.
@@ -440,7 +445,9 @@ It's called the Mean-Value Theorem because the right-hand side is the average va
 Therefore:
 
 $$
+\begin{equation}
 \frac{d}{dx} F(x) = \lim_{\Delta x \to 0} f(c)
+\end{equation}
 $$
 
 Since $x \leq c \leq x + \Delta x$, as $\Delta x \to 0 \Rightarrow c \to x$.
@@ -448,7 +455,9 @@ Since $x \leq c \leq x + \Delta x$, as $\Delta x \to 0 \Rightarrow c \to x$.
 Therefore:
 
 $$
+\begin{equation}
 \frac{d}{dx} F(x) = f(x)
+\end{equation}
 $$
 
 ## Average Value of a Function
@@ -482,7 +491,9 @@ Let's once again consider the velocity function $v(t)$, and split it into $n$ in
 The average value of a set of numbers is the sum of the numbers divided by the count:
 
 $$
+\begin{equation}
 \text{Average} = \frac{\sum_{i} v(t_i)}{n}
+\end{equation}
 $$
 
 Let's consider what $n$ is in a discrete context. It is the number of intervals ($\Delta t$) we split the function into.
@@ -497,7 +508,9 @@ $$
 Therefore, the average value of a function is:
 
 $$
+\begin{equation}
 \text{Average} = \frac{\sum_{i} v(t_i)}{\frac{T_1 - T_0}{\Delta t}} = \frac{\sum_{i} v(t_i) \Delta t}{T_1 - T_0}
+\end{equation}
 $$
 
 The numerator should look familiar: it is the area under the curve of $v(t)$ from $T_0$ to $T_1$.
@@ -505,7 +518,9 @@ The numerator should look familiar: it is the area under the curve of $v(t)$ fro
 Therefore, the average value of a function is:
 
 $$
+\begin{equation}
 \text{Average} = \frac{\int_{T_0}^{T_1} v(t) dt}{T_1 - T_0} = \frac{s(T_1) - s(T_0)}{T_1 - T_0}
+\end{equation}
 $$
 
 ## Riemann Sums
@@ -578,7 +593,9 @@ The general procedure for a Riemann sum is as follows:
 4. **Identify $i$ and sum all the areas**. The total area is the sum of all the areas of the rectangles:
 
     $$
-    \text{Area} = \sum_{i} v(T_0 + i \Delta t) \Delta t = \Delta t \sum_{i} v(T_0 + i \Delta t)
+    \begin{equation}
+    \text{Area} = \sum_{i} v(T_0 + i \Delta t) \Delta t = \Delta t \sum_{i} v(T_0 + i \Delta t) \label{eq:riemann_sums-total-area}
+    \end{equation}
     $$
 
     Identifying the bounds of the sum depends on the type of Riemann sum used:
@@ -589,7 +606,9 @@ The general procedure for a Riemann sum is as follows:
     For example, the left Riemann sum can be represented as:
 
     $$
+    \begin{equation}
     \text{Area} = \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) \Delta t = \Delta t \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t)
+    \end{equation}
     $$
 
 ### Trapezoidal Rule
@@ -604,7 +623,9 @@ Therefore, the area of each trapezoid is $\frac{1}{2} \Delta t (v(t_i) + v(t_{i 
 The total area is the sum of all the areas of the trapezoids:
 
 $$
+\begin{equation}
 \text{Area} = \sum_{i = 0}^{n - 1} \frac{1}{2} \Delta t (v(T_0 + i \Delta t) + v(T_0 + (i + 1) \Delta t)) = \frac{\Delta t}{2} \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) + v(T_0 + (i + 1) \Delta t)
+\end{equation}
 $$
 
 If we let $n \to \infty$, then we don't need to use the trapezoidal rule, as the Riemann sum will converge to the actual area under the curve no matter what is used.
@@ -613,7 +634,7 @@ If we let $n \to \infty$, then we don't need to use the trapezoidal rule, as the
 
 If we let $n \to \infty$, then the Riemann sum will converge to the actual area under the curve.
 
-Therefore, we can generalize the area under the curve as:
+Therefore, we can generalize the area under the curve as the limit of $\ref{eq:riemann_sums-total-area}$ as $n \to \infty$:
 
 $$
 \int_{T_0}^{T_1} v(t) dt = \lim_{n \to \infty} \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) \Delta t
@@ -672,7 +693,9 @@ The proof of this theorem is quite complex, but it can be done using the $\varep
     Hence:
 
     $$
+    \begin{equation}
     \int_{a}^{b} f(x)dx = \lim_{\|P\| \to 0} R(f, P, t)
+    \end{equation}
     $$
 
 :::
@@ -680,7 +703,9 @@ The proof of this theorem is quite complex, but it can be done using the $\varep
 For example, consider this integral:
 
 $$
+\begin{equation}
 \int_{0}^{3} x(5 - x) dx
+\end{equation}
 $$
 
 Let's go through our steps:
@@ -701,7 +726,9 @@ $$
 And the area under the curve is:
 
 $$
+\begin{equation}
 \int_{0}^{3} x(5 - x) dx = \lim_{n \to \infty} \frac{9}{n^3} \sum_{i = 0}^{n - 1} i(5n - 3i)
+\end{equation}
 $$
 
 ## Accumulation Functions: Functions Defined by Integrals
@@ -709,7 +736,9 @@ $$
 A function can be defined by an integral. For example, consider the following function:
 
 $$
+\begin{equation}
 f(x) = \int_{-4}^{x} t^2 dt
+\end{equation}
 $$
 
 This is known as an accumulation function. The reason it's called an accumulation function is because of what we've discussed above; treating integrals as an accumulation of areas.
@@ -726,7 +755,9 @@ $$
 Sometimes the upper bound of the integral isn't just $x$, but a function of $x$. For example:
 
 $$
+\begin{equation}
 f(x) = \int_{-4}^{\sin(x)} t^2 dt
+\end{equation}
 $$
 
 The derivative of this function can be found using the chain rule. Set another function $u(x)$ as:
@@ -761,7 +792,9 @@ $$
 Generalizing this, the derivative of an accumulation function with a variable upper bound is:
 
 $$
+\begin{equation}
 \frac{d}{dx} \int_{a}^{g(x)} f(t) dt = \frac{dg}{dx}(x) f(g(x))
+\end{equation}
 $$
 
 Many functions are defined using integrals because they are easier to work with, and some cannot be expressed in terms of elementary functions.
@@ -769,7 +802,9 @@ Many functions are defined using integrals because they are easier to work with,
 A common example is the error function:
 
 $$
+\begin{equation}
 \text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_{0}^{x} e^{-t^2} dt
+\end{equation}
 $$
 
 The error function is used in statistics and probability theory, and is used to calculate the probability of a random variable falling within a certain range.
@@ -777,8 +812,17 @@ The error function is used in statistics and probability theory, and is used to 
 Another common example is the gamma function:
 
 $$
+\begin{equation}
 \Gamma(x) = \int_{0}^{\infty} t^{x - 1} e^{-t} dt
+\end{equation}
 $$
+
+<Mafs>
+    <Coordinates.Cartesian/>
+    <Plot.OfX
+        y={gamma}
+    />
+</Mafs>
 
 The gamma function is a generalization of the factorial function, and is used in many areas of mathematics.
 
@@ -1333,5 +1377,127 @@ The integral of $\frac{1}{u^2 + 1}$ is $\arctan(u) + C$. Therefore, the integral
 $$
 \begin{align}
 \frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} du = \frac{1}{4 \sqrt{2}} \arctan(u) + C = \frac{1}{4 \sqrt{2}} \arctan\left(\frac{x + 2}{\sqrt{2}}\right) + C
+\end{align}
+$$
+
+## Integration by Parts
+
+Integration by parts is a technique used to integrate the product of two functions.
+
+Let's say we have $f(x)$ and $g(x)$ whose derivatives are $f'(x)$ and $g'(x)$ respectively. The product rule states that:
+
+$$
+\begin{equation}
+\frac{d}{dx} f(x)g(x) = f'(x)g(x) + f(x)g'(x)
+\end{equation}
+$$
+
+Integrating both sides with respect to $x$:
+
+$$
+\begin{equation}
+f(x)g(x) = \int f'(x)g(x) dx + \int f(x)g'(x) dx
+\end{equation}
+$$
+
+Rearranging the equation, we get:
+
+$$
+\begin{equation}
+\int f(x)g'(x) dx = f(x)g(x) - \int f'(x)g(x) dx \label{eq:integration_by_parts}
+\end{equation}
+$$
+
+This is the formula for integration by parts. The idea is to choose $f(x)$ and $g'(x)$ such that the integral on the right-hand side is easier to solve than the integral on the left-hand side.
+
+### Example Problem: Integration by Parts - $x \cos(x)$
+
+> Evaluate the following integral:
+>
+> $$
+> \begin{equation}
+> \int x \cos(x) dx \label{eq:example_problem_integration_by_parts_xcosx}
+> \end{equation}
+> $$
+
+We have a product of $x$ and $\cos(x)$. Determining which is $f(x)$ and which is $g'(x)$ comes down to the right hand side, specifically $\int f'(x)g(x)dx$.
+
+Therefore, we assign $f(x)$ such that $f'(x)$ is easy, and asssign $g'(x)$ such that $g(x)$ is easy.
+
+Choose $f(x) = x$ because $f'(x) = 1$, and choose $g'(x) = \cos(x)$ because $g(x) = \sin(x)$.
+
+Plugging into $\ref{eq:example_problem_integration_by_parts_xcosx}$ and using $\ref{eq:integration_by_parts}$:
+
+$$
+\begin{align}
+\int \class{red}{\overbrace{x}^{f(x)}} \class{blue}{\underbrace{\cos(x)}_{g'(x)}} dx &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} dx \\
+&= \class{red}{x}\class{blue}{\sin(x)} - \int \class{blue}{\sin(x)} dx \\
+&= \class{red}{x}\class{blue}{\sin(x)} + \class{blue}{\cos(x)} + C
+\end{align}
+$$
+
+### Example Problem: Integration by Parts - $\ln(x)$
+
+> Evaluate the following integral:
+>
+> $$
+> \begin{equation}
+> \int \ln(x) dx \label{eq:example_problem_integration_by_parts_lnx}
+> \end{equation}
+> $$
+
+Integration by Parts works for products of two functions, but this is a singular function!
+
+However, you can add another term simply by multiplying by $1$:
+
+$$
+\begin{equation}
+\int \ln(x) dx = \int (\ln(x))\cdot 1 dx \label{eq:example_problem_integration_by_parts_lnx-mul1}
+\end{equation}
+$$
+
+We assign $f(x)$ such that $f'(x)$ is easy, and asssign $g'(x)$ such that $g(x)$ is easy.
+
+Choose $f(x) = \ln(x)$ because $f'(x) = 1/x$, and choose $g'(x) = 1$ because $g(x) = x$.
+
+Plugging into $\ref{eq:example_problem_integration_by_parts_lnx-mul1}$ and using $\ref{eq:integration_by_parts}$:
+
+$$
+\begin{align}
+\int \class{red}{\overbrace{\ln(x)}^{f(x)}} \class{blue}{\underbrace{(1)}_{g'(x)}} dx &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} dx \\
+&= \class{red}{\ln(x)}\class{blue}{x} - \int \class{red}{\frac{1}{x}}\class{blue}{x} dx \\
+&= \class{red}{\ln(x)}\class{blue}{x} - x + C \\
+&= x(\ln(x) - 1) + C
+\end{align}
+$$
+
+### Example Problem: Integration by Parts - $x^2 e^x$
+
+> Evaluate the following integral:
+>
+> $$
+> \begin{equation}
+> \int x^2 e^x dx \label{eq:example_problem_integration_by_parts_x2ex}
+> \end{equation}
+> $$
+
+We shall first use Integration by Parts like before:
+
+$$
+\begin{align}
+\int \class{red}{\overbrace{x^2}^{f(x)}} \class{blue}{\underbrace{e^x}_{g'(x)}} dx &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} dx \\
+&= \class{red}{x^2}\class{blue}{e^x} - \int \class{red}{2x}\class{blue}{e^x} dx \\
+\end{align}
+$$
+
+The integral on the right can be solved using Integration by Parts again:
+
+$$
+\begin{align}
+\int x^2 e^x dx &= \class{red}{x^2}\class{blue}{e^x} - 2\int \class{green}{\overbrace{x}^{u(x)}} \class{yellow}{\underbrace{e^x}_{v'(x)}} dx \\
+&= \class{red}{x^2}\class{blue}{e^x} - 2\left(\class{green}{u(x)}\class{yellow}{v(x)} - \int \class{green}{u'(x)}\class{yellow}{v(x)} dx\right) \\
+&= \class{red}{x^2}\class{blue}{e^x} - 2\left(\class{green}{x}\class{yellow}{e^x} - \int \class{green}{1}\class{yellow}{e^x} dx \right) \\
+&= \class{red}{x^2}\class{blue}{e^x} - \class{green}{2x}\class{yellow}{e^x} + \class{yellow}{2e^x} + C \\
+&= e^x(x^2 - 2x + 2) + C \\
 \end{align}
 $$
