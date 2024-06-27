@@ -81,7 +81,6 @@ const config = {
                                 ...options,
                                 tex: {
                                     tags: "ams",
-                                    extensions: ["HTML.js"],
                                 },
                             };
                             return rehypeMathjax(config.customFields.mathJaxOptions);
