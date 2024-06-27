@@ -1,0 +1,439 @@
+---
+sidebar_position: 6
+---
+import { Mafs, Point, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState, useEffect } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Introduction to Differential Equations
+
+Differential equations are equations that involve an unknown function and its derivatives. They are used to model a wide variety of phenomena in the natural and social sciences. We will introduce the basic concepts of differential equations and explore some simple examples.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What is a Differential Equation?
+
+Firstly, let's consider a normal algebraic equation:
+
+$$
+
+\begin{equation}
+x^2 + 2x + 1 = 0
+\end{equation}
+$$
+
+Here, you want to solve for the value of $x$ that satisfies the equation.
+
+This is a differential equation:
+
+$$
+
+\begin{equation}
+\frac{df}{dx}(x) = \alpha f(x)
+\end{equation}
+$$
+
+Instead of solving for some variable, you solve for the function $f(x)$ that satisfies the equation.
+
+### Example Problem: Radioactive Decay
+
+> Radioactive Decay is a process in which unstable atomic nuclei lose energy by emitting radiation.
+>
+> Let $N(t)$ be the number of radioactive atoms at time $t$. The rate at which the number of atoms decays is proportional to the number of atoms present.
+>
+> Write a differential equation that models the decay of radioactive atoms.
+
+It's beneficial to first write a word equation that describes the problem:
+
+$$
+\begin{equation}
+\text{Rate of Change of Atoms} = k \times \text{Number of Atoms}
+\end{equation}
+$$
+
+We set $k$ as the proportionality constant. Now let's consider what each term should be:
+
+- The rate of change of atoms is the derivative of the number of atoms with respect to time: $\frac{dN}{dt}(t)$.
+- The number of atoms is $N(t)$.
+
+Therefore, the differential equation is:
+
+$$
+\begin{equation}
+\frac{dN}{dt}(t) = -kN(t)
+\end{equation}
+$$
+
+A visualization of the decay of radioactive atoms is shown below:
+
+{(() => {
+    const { time, start, stop } = useStopwatch();
+
+    const [hasStarted, setHasStarted] = useState(false);
+
+    function startStop() {
+        hasStarted ? stop() : start();
+        setHasStarted(!hasStarted);
+    }
+
+    // N(t) = N(0) * e^(-kt)
+    const k = 0.5;
+    const decay = (t) => 5 * Math.exp(-k * t);
+    const dNdt = (t) => -k * decay(t);
+
+    const point = [time, decay(time)];
+    const vTip = [point[0], point[1] + dNdt(time)];
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [0, (time / 2) + 10],
+                        y: [0, decay(Math.max(0, time - 1) / 2)],
+                    }}
+                    preserveAspectRatio={false}
+                >
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={decay} />
+                    <Point x={time} y={decay(time)} color={color("red")} />
+                    <Vector
+                        tail={point}
+                        tip={vTip}
+                        color={color("red")}
+                    />
+                    <LaTeX
+                        tex={`\\frac{dN}{dt}(t)`}
+                        at={lineLabel(point, vTip, "left", { sideOffset: 0.5 })}
+                    />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <button
+                    className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`}
+                    onClick={startStop}
+                >
+                    {hasStarted ? "Stop" : "Start"}
+                </button>
+            </div>
+        </div>
+    )
+})()}
+
+The arrow represents the rate of change of the number of radioactive atoms at time $t$.
+
+As time passes, the number of radioactive atoms decrease, and the rate at which they decay decreases as well.
+
+## Verifying Solutions to Differential Equations
+
+To verify that a function satisfies a differential equation, just like verifying a solution to an algebraic equation, you substitute the function into the equation and check if it holds.
+
+For example, consider the same differential equation from the previous example:
+
+$$
+\begin{equation}
+\frac{dN}{dt}(t) = -kN(t)
+\end{equation}
+$$
+
+Let's verify that the function $N(t) = 5e^{-0.5t}$ satisfies the equation:
+
+$$
+\begin{equation}
+\frac{dN}{dt}(t) = \frac{d}{dt}(5e^{-0.5t}) = -2.5e^{-0.5t} = -0.5 \times 5e^{-0.5t} = -kN(t)
+\end{equation}
+$$
+
+The function satisfies the differential equation.
+
+### Example Problem: Verifying a Solution
+
+> Verify that the function $f(x) = 3x$ satisfies the following differential equation:
+> $$
+> \frac{df}{dx}(x) = \frac{3f(x)}{x}
+> $$
+
+Substitute $f(x) = 3x$ into the equation:
+
+$$
+\begin{align}
+\frac{df}{dx}(x) &= \frac{3f(x)}{x} \\
+4 &= \frac{3 \times 3x}{x} \\
+4 &= 9
+\end{align}
+$$
+
+The function does not satisfy the differential equation.
+
+## The Simple Pendulum
+
+The simple pendulum is a mass (bob) attached to a string of length $L$ that swings back and forth. The angle $\theta$ that the string makes with the vertical is a function of time.
+
+{(() => {
+    const { time, start, stop } = useStopwatch();
+
+    const [hasStarted, setHasStarted] = useState(false);
+
+    function startStop() {
+        hasStarted ? stop() : start();
+        setHasStarted(!hasStarted);
+    }
+
+    // theta 0 = pi/4
+
+    const theta0 = Math.PI / 6;
+
+    const L = 4;
+    const g = 9.8;
+
+    // Using small angle approximation
+    const theta = (t) => theta0 * Math.cos(Math.sqrt(g / L) * t);
+    const thetat = theta(time)
+
+    const bobCoords = [L * Math.sin(thetat), 2 - L * Math.cos(thetat)];
+    const angularAccelCoords = [
+        -1 * Math.cos(thetat) * Math.sin(thetat),
+        -1 + (Math.cos(thetat) ** 2)
+    ];
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [-3, 8],
+                        y: [-3, 3],
+                    }}
+                >
+                    <Line.Segment
+                        point1={[-3, 2]}
+                        point2={[3, 2]}
+                    />
+                    <Line.Segment
+                        point1={[0, 2]}
+                        point2={[0, -2]}
+                    />
+
+                    {/* Angle */}
+                    <Angle
+                        at={[0, 2]}
+                        fromRad={- Math.PI / 2 + thetat}
+                        toRad={- Math.PI / 2}
+                        label="\theta"
+                        radius={0.5}
+                    />
+
+                    {/* Arc */}
+                    <Angle
+                        at={[0, 2]}
+                        fromRad={- Math.PI / 2 + thetat}
+                        toRad={- Math.PI / 2}
+                        radius={L}
+                        color={color("blue")}
+                        label="x"
+                        labelOffsetMultiplier={0.9}
+                    />
+
+                    {/* String */}
+                    <Line.Segment
+                        point1={[0, 2]}
+                        point2={[L * Math.sin(thetat), 2 - L * Math.cos(thetat)]}
+                    />
+
+                    {/* Bob */}
+                    <Point
+                        x={bobCoords[0]} y={bobCoords[1]}
+                        color={color("blue")}
+                    />
+
+                    {/* From bob FOR */}
+                    <Transform translate={bobCoords}>
+                        {/* Gravity vector */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={[0, -1]}
+                            color={color("red")}
+                        />
+
+                        {/* Angular acceleration */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={angularAccelCoords}
+                            color={color("green")}
+                        />
+
+                        {/* Connect the two */}
+                        <Line.Segment
+                            point1={[0, -1]}
+                            point2={angularAccelCoords}
+                            style="dashed"
+                        />
+                    </Transform>
+
+                    {/* Zoomed in */}
+                    <Transform translate={[6, 2]}>
+                        {/* Bob */}
+                        <Point
+                            x={0} y={0} color={color("blue")}
+                        />
+                        {/* Gravity vector */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={[0, -3]}
+                            color={color("red")}
+                        />
+                        <LaTeX
+                            at={lineLabel([0, 0], [0, -3], "left")}
+                            color={color("red")}
+                            tex="g"
+                        />
+
+                        {/* Angular acceleration */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={vec.scale(angularAccelCoords, 3)}
+                            color={color("green")}
+                        />
+                        <LaTeX
+                            at={lineLabel(
+                                [0, 0],
+                                angularAccelCoords,
+                                thetat > 0 ? "right" : "left"
+                            )}
+                            color={color("green")}
+                            tex="-g \sin(\theta)"
+                        />
+
+                        {/* Connect the two */}
+                        <Line.Segment
+                            point1={[0, -3]}
+                            point2={vec.scale(angularAccelCoords, 3)}
+                            style="dashed"
+                        />
+                        <LaTeX
+                            at={lineLabel(
+                                [0, -3],
+                                vec.scale(angularAccelCoords, 3),
+                                thetat > 0 ? "left" : "right",
+                                { sideOffset: 0.5 }
+                            )}
+                            tex="g \cos(\theta)"
+                        />
+
+                        {/* Theta angle */}
+                        <Angle
+                            at={[0, -3]}
+                            fromRad={Math.PI / 2}
+                            toRad={Math.PI / 2 + thetat}
+                            label="\theta"
+                        />
+
+                        {/* Right angle */}
+                        <Angle
+                            at={vec.scale(angularAccelCoords, 3)}
+                            fromRad={-Math.PI / 2 + thetat}
+                            toRad={thetat > 0 ? thetat : (thetat + Math.PI)}
+                            forceStraightAngle
+                        />
+
+                        {/* Text */}
+                        <LaTeX
+                            at={[0, -4.25]}
+                            tex="\text{Zoomed in}"
+                        />
+                        {/* Circle around whole thing to make it look like a magnifying lens*/}
+                        <Circle radius={2.5} center={[0, -1.25]} fillOpacity={0} />
+
+                    </Transform>
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <button
+                    className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`}
+                    onClick={startStop}
+                >
+                    {hasStarted ? "Stop" : "Start"}
+                </button>
+            </div>
+        </div>
+    )
+})()}
+
+Since we are dealing with the pure mathematical model of the simple pendulum, we can assume the mass of the bob is $1$ and the string is massless.
+
+We shall not consider the forces acting on the bob. For a more physical approach to this problem, see the Classical Mechanics section.
+
+All we need to know is that the bob is subject to gravity, which acts downwards. The force of gravity can be broken down into two components: one parallel to the direction of motion and one perpendicular to it.
+
+The component perpendicular to the direction of motion does not affect the motion of the bob. The component parallel to the direction of motion, which equals $\class{green}{g\sin(\theta)}$ is the one that causes the bob to accelerate.
+
+:::info Dot Products
+
+You can use something called the dot product here.
+
+The dot product "projects" one vector onto another. If you have two vectors $\vec{a}$ and $\vec{b}$, the dot product is $\vec{a} \cdot \vec{b} = |\vec{a}| |\vec{b}| \cos(\theta)$, where $\theta$ is the angle between the two vectors.
+
+More info on this is in the Linear Algebra section.
+
+Essentially, we are projecting the gravity vector onto the direction of the bob's motion. Hence we can notate it as:
+
+$$
+\begin{equation}
+\text{Acceleration} = \frac{d\vec{x}}{dt} \cdot \vec{g} = -g \sin(\theta)
+\end{equation}
+$$
+
+:::
+
+The acceleration can be written as:
+
+$$
+\begin{equation}
+\frac{d^2x}{dt^2} = -g \sin(\theta)
+\end{equation}
+$$
+
+Since $x = L \theta$, we can write the equation in terms of $\theta$:
+
+$$
+\begin{align}
+\frac{d^2(L \theta)}{dt^2} &= -g \sin(\theta) \\
+L \frac{d^2\theta}{dt^2} &= -g \sin(\theta) \\
+\frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta)
+\end{align}
+$$
+
+:::info Air Drag
+
+Air drag is a force that opposes the motion of the bob. It is proportional to the velocity of the bob and acts in the opposite direction.
+
+We can set the air drag force as $-b \frac{dx}{dt}$, where $b$ is the proportionality constant.
+
+The equation of motion becomes:
+
+$$
+\begin{align}
+\frac{d^2x}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \frac{dx}{dt} \\
+\frac{d^2(L \theta)}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \frac{d(L \theta)}{dt} \\
+L \frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b L \frac{d\theta}{dt} \\
+\frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \frac{d\theta}{dt}
+\end{align}
+$$
+
+This DE, while more realistic, does not have an analytical solution.
+
+:::
+
+Notice how this DE has a second derivative.
+Just like how the "order" of an algebraic equation is the highest power of the variable, the order of a differential equation is the highest derivative present.
+
+## Slope Fields
+
+One cool way to visualize a differential equation is by plotting the slope field. A slope field is a grid of small line segments that represent the slope of the function at each point.
