@@ -5,10 +5,18 @@ import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopw
 import MathEquation from "@site/src/components/Math";
 import { useState } from "react";
 import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentiation";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
 
 # Differentiation
 
 Differentiation is the process of finding the _derivative_ of a function.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Conceptual Introduction
 
 Imagine a car moving along a road. The car's position at time $t$ is given by a function $s(t)$.
 Let's say we graph the car's position as a function of time:
@@ -86,7 +94,7 @@ The slope of the line is $\frac{1}{2}$, so the car's velocity at any given time 
 
 However, in most cases the function will not be a straight line, so we need a more general way to find the slope, which is where the derivative comes in.
 
-## Derivative from Limits
+### Derivative from Limits
 
 Instead of thinking about the slope of a function as a whole, a derivative deals with the slope at a singular point.
 Let's say we have a function $f(x)$:
@@ -250,12 +258,12 @@ export function DifferentiationSum({ split = false }) {
                     <Vector
                         tail={[4, f1(3)]}
                         tip={[4, f1(4)]}
-                        color={Theme.green}
+                        color={color("green")}
                     />
                     <Vector
                         tail={[4, f1(4) - f1(3) + f(3)]}
                         tip={[4, f(4)]}
-                        color={Theme.green}
+                        color={color("green")}
                     />
                     <LaTeX
                         tex={String.raw`d(\frac{1}{5} x^2)`}
@@ -280,7 +288,7 @@ export function DifferentiationSum({ split = false }) {
                     <Vector
                         tail={[4, f(3)]}
                         tip={[4, f(4)]}
-                        color={Theme.green}
+                        color={color("green")}
                     />
                     <LaTeX
                         tex={String.raw`d(\frac{1}{5} x^2 + \frac{1}{3} x)`}
@@ -351,7 +359,7 @@ export function SimpleProducts() {
                     [f(x), g(x)],
                     [f(x), 0],
                 ]}
-                color={area > 0 ? Theme.green : Theme.red}
+                color={area > 0 ? color("green") : color("red")}
             />
             <LaTeX
                 tex={String.raw`f(x)`}
@@ -405,7 +413,7 @@ export function DifferenceInArea({ split = false }) {
                     [f(originalX), g(originalX)],
                     [f(originalX), 0],
                 ]}
-                color={area > 0 ? Theme.green : Theme.red}
+                color={area > 0 ? color("green") : color("red")}
             />
             <LaTeX
                 tex={String.raw`f(x)`}
@@ -424,7 +432,7 @@ export function DifferenceInArea({ split = false }) {
                         [f(originalX), g(x)],
                         [f(originalX), g(originalX)],
                     ]}
-                    color={Theme.red}
+                    color={color("red")}
                 />
                 <Polygon
                     points={[
@@ -433,7 +441,7 @@ export function DifferenceInArea({ split = false }) {
                         [f(x), g(x)],
                         [f(x), g(originalX)],
                     ]}
-                    color={Theme.blue}
+                    color={color("blue")}
                 />
                 <Polygon
                     points={[
@@ -442,7 +450,7 @@ export function DifferenceInArea({ split = false }) {
                         [f(x), g(originalX)],
                         [f(x), 0],
                     ]}
-                    color={Theme.yellow}
+                    color={color("yellow")}
                 />
 
                 <LaTeX
@@ -490,9 +498,9 @@ Therefore, the change in the product can be expressed as:
 
 $$
 \begin{align}
-d(f(x) \cdot g(x)) &= \textcolor{red}{(f(x) \cdot d(g(x)))} \\
-&+ \textcolor{yellow}{(g(x) \cdot d(f(x)))} \\
-&+ \textcolor{blue}{(d(f(x)) \cdot d(g(x)))} \\
+d(f(x) \cdot g(x)) &= \class{red}{(f(x) \cdot d(g(x)))} \\
+&+ \class{yellow}{(g(x) \cdot d(f(x)))} \\
+&+ \class{blue}{(d(f(x)) \cdot d(g(x)))} \\
 \end{align}
 $$
 
@@ -678,6 +686,10 @@ We'll just look at the first one, $\frac{d}{dx} \sin{x} = \cos{x}$, to show how 
 
 The derivative of $\cos{x}$ can be derived in a similar way.
 
+:::info Derivatives using Quotient Rule
+
+The quotient rule is discussed later [here](#quotient-rule).
+
 The derivatives of $\tan{x}$, $\cot{x}$, $\sec{x}$, and $\csc{x}$ can be derived using the quotient rule. For example, to find the derivative of $\tan{x}$:
 
 $$
@@ -690,6 +702,8 @@ $$
 &= \sec^2{x}
 \end{align}
 $$
+
+:::
 
 ## Differentiability and Continuity
 
