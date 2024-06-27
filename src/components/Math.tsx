@@ -16,8 +16,8 @@ export default function MathEquation({ children, ...options }: { children: React
         packages: AllPackages,
         ...options.tex,
     });
-    // const output = new SVG(newOptions.svg || undefined);
-    const output = new CHTML(newOptions.chtml || undefined);
+    const output = new SVG(newOptions.svg || undefined);
+    // const output = new CHTML(newOptions.chtml || undefined);
     const doc = mathjax.document("", { InputJax: input, OutputJax: output });
     const domNode: HTMLElement = doc.convert(children.toString(), newOptions);
     return <div dangerouslySetInnerHTML={{ __html: domNode.outerHTML }} />;
