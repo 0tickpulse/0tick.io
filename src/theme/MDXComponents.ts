@@ -6,9 +6,11 @@ import MDXComponents from "@theme-original/MDXComponents";
 import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentiation";
 import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannApproximation";
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
+import { Angle } from "../components/mdxGlobal/Angle";
 
 export default {
     ...MDXComponents,
+    Angle,
     Boxed,
     Citation,
     Cite,
