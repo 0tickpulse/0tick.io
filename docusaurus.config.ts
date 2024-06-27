@@ -5,7 +5,7 @@ import { themes } from "prism-react-renderer";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import rehypeMathjax, { Options } from "rehype-mathjax/svg";
-import { MATH_MACROS } from "./katexMacros";
+import { MATH_MACROS } from "./mathMacros";
 
 const lightCodeTheme = themes.vsLight;
 const darkCodeTheme = themes.vsDark;
@@ -85,7 +85,7 @@ const config = {
                                     macros: MATH_MACROS,
                                 },
                                 svg: {
-                                    
+                                    scale: 1.2,
                                 }
                             };
                             return rehypeMathjax(config.customFields.mathJaxOptions);
