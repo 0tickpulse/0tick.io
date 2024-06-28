@@ -40,11 +40,12 @@ export function Angle({
         if (toRad - fromRad > Math.PI) {
             [fromRad, toRad] = [toRad, fromRad];
         }
+        const squareLength = radius / Math.sqrt(2);
         return (
             <>
                 <Transform rotate={fromRad} translate={at}>
-                    <Line.Segment point1={[radius, 0]} point2={[radius, radius]} />
-                    <Line.Segment point1={[0, radius]} point2={[radius, radius]} />
+                    <Line.Segment point1={[squareLength, 0]} point2={[squareLength, squareLength]} />
+                    <Line.Segment point1={[0, squareLength]} point2={[squareLength, squareLength]} />
                 </Transform>
             </>
         );
