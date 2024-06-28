@@ -1,6 +1,7 @@
 ---
 sidebar_position: 6
 ---
+
 import { Mafs, Point, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
 import MathEquation from "@site/src/components/Math";
 import { lineLabel } from "@site/src/utilities/lines";
@@ -434,6 +435,413 @@ This DE, while more realistic, does not have an analytical solution.
 Notice how this DE has a second derivative.
 Just like how the "order" of an algebraic equation is the highest power of the variable, the order of a differential equation is the highest derivative present.
 
+## Solving Differential Equations
+
+It's important to note this absolute fact:
+
+<Boxed>
+    <div style={{"text-align": "center"}}>
+    **Differential equations are very, very, very hard to solve.**
+    </div>
+</Boxed>
+
+In school, most courses focus on developing analytical solutions to DEs.
+This is, presumably, because by developing a solution, then you can get an intuition for the problem, as well as perform computations.
+
+However, in the real world, most DEs either do not have an analytical solution or the solution is too complex to be useful
+
+If you do not have a solution, this does not mean that you can't get an intuition or perform computations.
+
+One way to perform computations is to numerically approximate the DE.
+Essentially, you get the initial state of the system, then use the DE to predict the change in the system over a small time interval.
+This contrasts the infinitesimal approach of calculus, where you find the exact change in the system at a point, which is why this is an approximation.
+
+There are many ways to develop intuitions for DEs without solving them, which will be discussed later.
+
 ## Slope Fields
 
-One cool way to visualize a differential equation is by plotting the slope field. A slope field is a grid of small line segments that represent the slope of the function at each point.
+One way to develop an intuition for DEs is to use slope fields.
+They are a visual representation of a DE that shows the slope of the solution at any point.
+Consider this DE:
+
+$$
+\begin{equation}
+\frac{dy}{dx} = -\frac{x}{y}
+\end{equation}
+$$
+
+Now we construct a graph. For each point $(x_i, y_i)$, find the slope using the DE, then draw a small line segment with that slope at that point.
+
+We can first construct a table like this:
+
+| $x$ | $y$ | $\frac{dy}{dx}$ |
+| --- | --- | --------------- |
+| $0$ | $1$ | $0$             |
+| $1$ | $1$ | $-1$            |
+| $1$ | $0$ | $?$             |
+| $-1$| $-1$| $-1$            |
+| $1$ | $-1$| $1$             |
+
+For $(1, 0)$, the slope is $-\frac{1}{0}$, which is undefined. This likely means that it's a vertical line. We'll ignore this point for now.
+Doing this for all points from $-3$ to $3$ gives us the following:
+
+{(() => {
+    const slope = (x, y) => -x / y;
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [-3, 3],
+                y: [-3, 3],
+            }}
+        >
+            <Coordinates.Cartesian />
+            {range(-3, 4).map((x) => (
+                range(-3, 4).map((y) => {
+                    if (y === 0) {
+                        return null;
+                    }
+                    const s = slope(x, y);
+                    const angle = Math.atan(s);
+                    return (
+                        <Transform rotate={angle} translate={[x, y]}>
+                            <Line.Segment
+                                point1={[-0.25, 0]}
+                                point2={[0.25, 0]}
+                            />
+                        </Transform>
+                    );
+                })
+            ))}
+        </Mafs>
+    )
+})()}
+
+Using slope fields, we can get a general idea of what the solution to a DE looks like without actually solving it.
+
+For instance, if we start at $(1, 0)$, we can see that the solution will move as follows:
+
+{(() => {
+    const slope = (x, y) => -x / y;
+
+    const c1 = 1;
+    const curve = (x) => Math.sqrt(- (x ** 2) + c1);
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [-3, 3],
+                y: [-3, 3],
+            }}
+            zoom={true}
+        >
+            <Coordinates.Cartesian />
+            {range(-3, 4).map((x) => (
+                range(-3, 4).map((y) => {
+                    if (y === 0) {
+                        return null;
+                    }
+                    const s = slope(x, y);
+                    const angle = Math.atan(s);
+                    return (
+                        <>
+                            <Transform rotate={angle} translate={[x, y]}>
+                                <Line.Segment
+                                    point1={[-0.25, 0]}
+                                    point2={[0.25, 0]}
+                                />
+                            </Transform>
+                            {/* <Plot.OfX y={curve} /> */}
+                            <Plot.Parametric
+                                xy={(t) => [t, curve(t)]}
+                                t={[x - 0.5, x + 0.5]}
+                            />
+                        </>
+                    );
+                })
+            ))}
+        </Mafs>
+    )
+})()}
+
+The point you start at is called the initial condition. It is the starting point for the solution to the DE.
+
+For example, in the radioactive decay problem, the initial condition could be the number of atoms at time $t = 0$, $N(0)$, or $N_0$.
+
+### Example Problem: Equation from Slope Field
+
+export function ExampleProblemEquationFromSlopeField() {
+    const slope = (x, y) => x + y;
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [-10, 10],
+                y: [-10, 10],
+            }}
+        >
+            <Coordinates.Cartesian />
+            {range(-10, 11).map((x) => (
+                range(-10, 11).map((y) => {
+                    if (y === 0) {
+                        return null;
+                    }
+                    const s = slope(x, y);
+                    const angle = Math.atan(s);
+                    return (
+                        <Transform rotate={angle} translate={[x, y]}>
+                            <Line.Segment
+                                point1={[-0.25, 0]}
+                                point2={[0.25, 0]}
+                            />
+                        </Transform>
+                    );
+                })
+            ))}
+        </Mafs>
+    )
+}
+
+> A differential equation has the following slope field:
+>
+> <ExampleProblemEquationFromSlopeField />
+>
+> Choose the correct differential equation from the following:
+>
+> 1. $\frac{dy}{dx} = x - y$
+> 1. $\frac{dy}{dx} = -\frac{x}{y}$
+> 1. $\frac{dy}{dx} = y - x$
+> 1. $\frac{dy}{dx} = x + y$
+> 1. $\frac{dy}{dx} = \frac{x}{y}$
+
+We can go through each option and see which one matches the slope field.
+To do so, we can pick a point that is easy to calculate the slope for, such as $(1, 1)$.
+At this point, looking visually, the slope is positive and more than $1$.
+
+1. $\frac{dy}{dx} = x - y$:
+    - For $(1, 1)$, the slope is $1 - 1 = 0$, which is not correct.
+1. $\frac{dy}{dx} = -\frac{x}{y}$:
+    - For $(1, 1)$, the slope is $-\frac{1}{1} = -1$, which is not correct.
+1. $\frac{dy}{dx} = y - x$:
+    - For $(1, 1)$, the slope is $1 - 1 = 0$, which is not correct.
+1. $\frac{dy}{dx} = x + y$:
+    - For $(1, 1)$, the slope is $1 + 1 = 2$, which _could_ be correct.
+1. $\frac{dy}{dx} = \frac{x}{y}$:
+    - For $(1, 1)$, the slope is $\frac{1}{1} = 1$, which is not correct.
+
+Since $\frac{dy}{dx} = x + y$ is the only one that could be correct, it is, by elimination, the correct answer.
+
+Therefore, the correct answer is $\frac{dy}{dx} = x + y$.
+
+### Example Problem: Slope Field from Equation
+
+export function ExampleProblemSlopeFieldFromEquation() {
+    const slopeFields = [
+        (x, y) => - (x / y),
+        (x, y) => x / y,
+        (x, y) => y / x,
+        (x, y) => x - y,
+        (x, y) => x + y,
+    ]
+
+    function isOdd(n) {
+        return ((n % 2) + 2) % 2 === 0;
+    }
+
+    return (
+        <div
+            style={{
+                // Use flexbox to make the slope fields appear in a row
+                // but do not squish them, let them go to next line if needed
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "2rem",
+            }}
+        >
+            {slopeFields.map((sf, i) => {
+                return (
+                    <div className="card">
+                        <div className="card__header">
+                            {/* centered header*/}
+                            <h3 style={{
+                                textAlign: "center",
+                                paddingBottom: "1rem",
+                            }}>
+                                Slope Field {i + 1}
+                            </h3>
+                        </div>
+                        {/* <div className="card__body"> */}
+                            <Mafs
+                                key={sf}
+                                viewBox={{
+                                    x: [-10, 10],
+                                    y: [-10, 10],
+                                }}
+                                height={250}
+                                width={250}
+                            >
+                                <Coordinates.Cartesian
+                                    xAxis={{
+                                        labels: (n) => (isOdd(n) ? n : ""),
+                                        lines: 2
+                                    }}
+                                    yAxis={{
+                                        labels: (n) => (isOdd(n) ? n : ""),
+                                        lines: 2
+                                    }}
+                                />
+                                {range(-10, 11, 2).map((x) => (
+                                    range(-10, 11, 2).map((y) => {
+                                        if (y === 0) {
+                                            return null;
+                                        }
+                                        const s = sf(x, y);
+                                        const angle = Math.atan(s);
+                                        return (
+                                            <Transform rotate={angle} translate={[x, y]}>
+                                                <Line.Segment
+                                                    point1={[-0.5, 0]}
+                                                    point2={[0.5, 0]}
+                                                />
+                                            </Transform>
+                                        );
+                                    })
+                                ))}
+                            </Mafs>
+                        {/* </div> */}
+                    </div>
+                )
+            })}
+        </div>
+    )
+}
+
+> A differential equation is given by:
+>
+> $$
+> \begin{equation}
+> \frac{dy}{dx} = x - y
+> \end{equation}
+> $$
+>
+> Which of the following slope fields matches the differential equation?
+>
+> <ExampleProblemSlopeFieldFromEquation />
+
+Once again, we can pick a point, such as $(2, 2)$, and match the DE to the slope field.
+
+At $x = 2, y = 2$, the slope is $x - y = 2 - 2 = 0$. Therefore, the line should be flat at this point in the slope field.
+
+Looking at the slope fields, we can see that the only one that has a flat line at $(2, 2)$ is Slope Field 4.
+
+Therefore, the correct answer is Slope Field 4.
+
+## Qualitatively Analyzing Slope Fields to Approximate Solution Curves
+
+Slope fields can be used to approximate solution curves to DEs. Consider the DE:
+
+$$
+\begin{equation}
+\frac{dy}{dx} = \frac{y}{6}(4 - y)
+\end{equation}
+$$
+
+The slope field looks like this:
+
+export function QualitativelyAnalyzingSlopeFields({ startCoords, viewBox }) {
+    const slope = (x, y) => (y / 6) * (4 - y);
+
+    const { time, start, stop } = useStopwatch();
+
+    const [hasStarted, setHasStarted] = useState(false);
+
+    function startStop() {
+        hasStarted ? stop() : start();
+        setHasStarted(!hasStarted);
+    }
+
+    const startPoint = startCoords && useMovablePoint(startCoords);
+    const dt = 0.2;
+
+    const [A, setA] = useState(1);
+
+    function solved(x) {
+        const b = Math.exp(2 * x / 3);
+        return 4 * b / (A + b);
+    }
+
+    useEffect(() => {
+        const point = startPoint?.point;
+        if (point) {
+            setA(Math.exp(2 * point[0] / 3) * (4 / point[1] - 1))
+        }
+    }, [startPoint?.point]);
+
+    // t can be any continuous value
+    function getCoords(t) {
+        return [t, solved(t)];
+    }
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={viewBox || {
+                        x: [-8, 8],
+                        y: [-8, 8],
+                    }}
+                >
+                    <Coordinates.Cartesian />
+                    {range(-10, 11).map((x) => (
+                        range(-10, 11).map((y) => {
+                            if (y === 0) {
+                                return null;
+                            }
+                            const s = slope(x, y);
+                            const angle = Math.atan(s);
+                            return (
+                                <Transform rotate={angle} translate={[x, y]}>
+                                    <Line.Segment
+                                        point1={[-0.25, 0]}
+                                        point2={[0.25, 0]}
+                                    />
+                                </Transform>
+                            );
+                        })
+                    ))}
+                    {(startCoords?.length >= 1) && <Plot.Parametric
+                        xy={(t) => {
+                            const coords = getCoords(t);
+                            return coords;
+                        }}
+                        t={[startPoint?.point[0] ?? 0, (startPoint?.point[0] ?? 0) + time]}
+                        color={color("red")}
+                    />}
+                    {startCoords && startPoint.element}
+                </Mafs>
+            </div>
+            {startCoords && <div className="card__footer">
+                <button
+                    className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`}
+                    onClick={startStop}
+                >
+                    {hasStarted ? "Stop" : "Start"}
+                </button>
+            </div>}
+        </div>
+    )
+}
+
+<QualitativelyAnalyzingSlopeFields />
+
+We can trace a solution curve by starting at a point and following the slope field.
+
+For example, let's start at $(1, 6)$. The slope at that point is $\frac{6}{6}(4 - 6) = -1$.
+
+It will roughly evolve like this:
+
+<QualitativelyAnalyzingSlopeFields startCoords={[1, 6]} />
+
+The animation shows the solution curve evolving over time.
+
+This, once again, shows that you can get an intuition for the solution to a DE without solving it.
