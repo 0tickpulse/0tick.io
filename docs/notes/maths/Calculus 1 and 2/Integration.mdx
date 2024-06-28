@@ -1173,22 +1173,46 @@ We've already gone over the intuition for many derivatives. Here are some common
         <th>Function</th>
         <th>Antiderivative</th>
     </tr>
-    {[
-        ["x^n", "\\frac{x^{n + 1}}{n + 1} + C"],
-        ["\\sin(x)", "-\\cos(x) + C"],
-        ["\\cos(x)", "\\sin(x) + C"],
-        ["e^x", "e^x + C"],
-        ["\\frac{1}{x}", "\\ln|x| + C"]
-    ].map(([func, antiderivative]) => (
-        <tr>
-            <td>
-                <MathEquation>{func}</MathEquation>
-            </td>
-            <td>
-                <MathEquation>{antiderivative}</MathEquation>
-            </td>
-        </tr>
-    ))}
+    <tr>
+        <td>
+            <MathEquation>x^n</MathEquation>
+        </td>
+        <td>
+            <MathEquation>{"\\frac{x^{n + 1}}{n + 1} + C"}</MathEquation>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <MathEquation>\sin(x)</MathEquation>
+        </td>
+        <td>
+            <MathEquation>-\cos(x) + C</MathEquation>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <MathEquation>\cos(x)</MathEquation>
+        </td>
+        <td>
+            <MathEquation>\sin(x) + C</MathEquation>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <MathEquation>e^x</MathEquation>
+        </td>
+        <td>
+            <MathEquation>e^x + C</MathEquation>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <MathEquation>{"\\frac{1}{x}"}</MathEquation>
+        </td>
+        <td>
+            <MathEquation>{"\\ln|x| + C"}</MathEquation>
+        </td>
+    </tr>
 </table>
 
 ## Reversing the Chain Rule
