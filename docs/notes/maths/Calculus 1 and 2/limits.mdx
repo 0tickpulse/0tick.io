@@ -202,7 +202,7 @@ $$
 
 :::note
 
-This is not exactly why, but it's good enough for now. A better explanation like using the squeeze theorem will be given later.
+This is not exactly why, but remember that we are building qualitative intuition here. The actual proof is more rigorous and involves the squeeze theorem, which we will cover later.
 
 :::
 
@@ -575,7 +575,7 @@ export function UnitCircle({
                 <Plot.Parametric xy={(t) => rotatedPoint(t)} t={[0, angle]} />
             </Mafs>
             <p>
-                <MathEquation displayMode={true}>{String.raw`
+                <MathEquation>{String.raw`
                     \begin{align}
                         \theta &= ${(angle / Math.PI).toFixed(2)}\pi \\
                         ${showTan ? String.raw`\tan{\theta} &= ${Math.tan(angle).toFixed(2)} \\` : ""}
