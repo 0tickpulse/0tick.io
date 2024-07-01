@@ -558,7 +558,7 @@ What we did is known as a Riemann sum. Let's once again consider the velocity fu
                     type={type}
                 />
                 {range(lb, ub, dt).map((t, i) => (
-                    <>
+                    <span key={i}>
                         <Vector
                             tail={[t, 0]}
                             tip={[t + dt, 0]}
@@ -568,7 +568,7 @@ What we did is known as a Riemann sum. Let's once again consider the velocity fu
                             at={[t + dt, -0.5]}
                             tex={`t_${i + 1}`}
                         />
-                    </>
+                    </span>
                 ))}
             </Mafs>
             <select
@@ -1169,50 +1169,54 @@ We've already gone over the intuition for many derivatives. Here are some common
 {/* use a html table instead*/}
 
 <table>
-    <tr>
-        <th>Function</th>
-        <th>Antiderivative</th>
-    </tr>
-    <tr>
-        <td>
-            <MathEquation>x^n</MathEquation>
-        </td>
-        <td>
-            <MathEquation>{"\\frac{x^{n + 1}}{n + 1} + C"}</MathEquation>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <MathEquation>\sin(x)</MathEquation>
-        </td>
-        <td>
-            <MathEquation>-\cos(x) + C</MathEquation>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <MathEquation>\cos(x)</MathEquation>
-        </td>
-        <td>
-            <MathEquation>\sin(x) + C</MathEquation>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <MathEquation>e^x</MathEquation>
-        </td>
-        <td>
-            <MathEquation>e^x + C</MathEquation>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <MathEquation>{"\\frac{1}{x}"}</MathEquation>
-        </td>
-        <td>
-            <MathEquation>{"\\ln|x| + C"}</MathEquation>
-        </td>
-    </tr>
+    <thead>
+        <tr>
+            <th>Function</th>
+            <th>Antiderivative</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                <MathEquation>x^n</MathEquation>
+            </td>
+            <td>
+                <MathEquation>{"\\frac{x^{n + 1}}{n + 1} + C"}</MathEquation>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <MathEquation>\sin(x)</MathEquation>
+            </td>
+            <td>
+                <MathEquation>-\cos(x) + C</MathEquation>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <MathEquation>\cos(x)</MathEquation>
+            </td>
+            <td>
+                <MathEquation>\sin(x) + C</MathEquation>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <MathEquation>e^x</MathEquation>
+            </td>
+            <td>
+                <MathEquation>e^x + C</MathEquation>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <MathEquation>{"\\frac{1}{x}"}</MathEquation>
+            </td>
+            <td>
+                <MathEquation>{"\\ln|x| + C"}</MathEquation>
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ## Reversing the Chain Rule
@@ -1868,6 +1872,129 @@ $$
 \end{equation}
 $$
 
+## Integration by Partial Fractions
+
+Partial fractions is a technique used to integrate rational functions.
+
+Consider the following integral:
+
+$$
+\begin{equation}
+\int \frac{x - 5}{2x^2 - 5x + 3} dx \label{eq:integration_by_partial_fractions-original}
+\end{equation}
+$$
+
+Maybe the first thing you think of is to see if the nuemrator is the derivative of the denominator, and if it is, then you can use $u$-substitution.
+However, this is not the case here. Instead, we can use partial fractions.
+
+We can factor $2x^2 - 5x + 3$:
+
+$$
+\begin{align}
+2x^2 - 5x + 3 &= 2x^2 - 3x - 2x + 3 \\
+&= x(2x - 3) - 1(2x - 3) \\
+&= (x - 1)(2x - 3)
+\end{align}
+$$
+
+The key is that the denominator is a product, which means we can split it into two fractions:
+
+$$
+\begin{equation}
+\frac{x - 5}{(x - 1)(2x - 3)} = \frac{A}{x - 1} + \frac{B}{2x - 3} \label{eq:integration_by_partial_fractions-split}
+\end{equation}
+$$
+
+This can be thought of as the reverse of what you would usually do when adding fractions.
+
+Note the variables $A$ and $B$ - although we know that the fraction can be split into two, we don't know what the numerators are. We can solve for them by multiplying both sides by the denominator:
+
+$$
+\begin{align}
+\frac{A}{x - 1} + \frac{B}{2x - 3} &= \frac{A(2x - 3)}{(x - 1)(2x - 3)} + \frac{B(x - 1)}{(x - 1)(2x - 3)} \\
+&= \frac{A(2x - 3) + B(x - 1)}{(x - 1)(2x - 3)} \\
+&= \frac{\class{red}{2Ax} + \class{blue}{(-3A)} + \class{red}{Bx} + \class{blue}{(-B)}}{(x - 1)(2x - 3)} \\
+&= \frac{\class{red}{(2A + B)x} + \class{blue}{(-3A - B)}}{(x - 1)(2x - 3)} \label{eq:integration_by_partial_fractions-numerator}
+\end{align}
+$$
+
+We now have two terms in the numerator, one with $x$ and one without $x$. Since all we did is rewrite the original fraction, we can equate the fraction in $\ref{eq:integration_by_partial_fractions-original}$ and $\ref{eq:integration_by_partial_fractions-numerator}$:
+
+$$
+\begin{align}
+x - 5 &= (2A + B)x + (-3A - B) \\
+\class{red}{1}x + \class{blue}{(-5)} &= \class{red}{(2A + B)}x + \class{blue}{(-3A - B)}
+\end{align}
+$$
+
+We can equate the coefficients of $x$ and the constant terms, forming a system of equations:
+
+$$
+\begin{equation}
+\begin{cases}
+2A + B = 1 \\
+-3A - B = -5
+\end{cases}
+\end{equation}
+$$
+
+Solving this system of equations, we get $A = 4$ and $B = -7$.
+
+<details>
+<summary>Solving the System of Equations</summary>
+
+Since the first equation has $+B$ and the second has $-B$, we can add the two equations to eliminate $B$:
+
+$$
+\begin{align}
+2A + B &= 1 \notag \\
+-3A - B &= -5 \notag \\
+\hline
+-1A + 0 &= -4 \\
+A &= 4
+\end{align}
+$$
+
+Then, we can simply substitute $A = 4$ back into the first equation to get $B$:
+
+$$
+\begin{align}
+2(4) + B &= 1 \\
+8 + B &= 1 \\
+B &= -7
+\end{align}
+$$
+
+</details>
+
+Substitute $A = 4$ and $B = -7$ back into $\ref{eq:integration_by_partial_fractions-split}$:
+
+$$
+\begin{align}
+\int \frac{x - 5}{2x^2 - 5x + 3} dx &= \int \frac{4}{x - 1} - \frac{7}{2x - 3} dx \\
+&= 4 \int \frac{1}{x - 1} dx - \frac{7}{2} \int \frac{2}{2x - 3} dx \\
+\end{align}
+$$
+
+Now we can integrate the two terms by reversing the chain rule:
+
+$$
+\begin{align}
+\int \overbrace{\boxed{\frac{1}{\class{red}{\underbrace{x - 1}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace{dx}_{g'(x)}} &= f(g(x)) + C \\
+&= \ln|x - 1| + C \\
+\int \overbrace{\boxed{\frac{2}{\class{red}{\underbrace{2x - 3}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace{dx}_{g'(x)}} &= f(g(x)) + C \\
+&= \ln|2x - 3| + C
+\end{align}
+$$
+
+Therefore, the integral at $\ref{eq:integration_by_partial_fractions-original}$ can be rewritten as:
+
+$$
+\begin{equation}
+\int \frac{x - 5}{2x^2 - 5x + 3} dx = 4\ln|x - 1| - \frac{7}{2}\ln|2x - 3| + C
+\end{equation}
+$$
+
 ## Improper Integrals
 
 Integrals can contain bounds that are infinity.
@@ -2048,13 +2175,13 @@ $$
 
 There are several techniques to solve integrals:
 
-- **$u$-substitution** is used to simplify the integrand by substituting a variable $u$:
+- **$u$-substitution/reverse chain rule** is used to simplify the integrand by substituting a variable $u$:
     $$
     \begin{equation}
     \int f(g(x))g'(x) dx = \int f(u) du
     \end{equation}
     $$
-- **Algebraic manipulation**, such as long division or completing the square, can simplify the integrand.
+- **Algebraic manipulation**, such as long division, completing the square, or partial fractions, can simplify the integrand.
 - **Integration by parts** is used to integrate the product of two functions:
     $$
     \begin{equation}
