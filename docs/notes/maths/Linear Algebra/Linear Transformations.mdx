@@ -1,0 +1,209 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+
+# Linear Transformations
+
+A linear transformation is a function that maps vectors to vectors in a way that preserves the vector space structure.
+In other words, a linear transformation is a function $T: V \to W$ that satisfies the following two properties:
+
+1. **Additivity**: $T(\bvec{u} + \bvec{v}) = T(\bvec{u}) + T(\bvec{v})$ for all vectors $\bvec{u}, \bvec{v} \in V$.
+2. **Homogeneity**: $T(c\bvec{v}) = cT(\bvec{v})$ for all vectors $\bvec{v} \in V$ and all scalars $c$.
+
+In simpler terms, a linear transformation preserves vector addition and scalar multiplication.
+One way to conceptualize this is to think of a linear transformation as a function that stretches, compresses, rotates, or reflects vectors in a vector space.
+The transformation has to preserve the structure of the space, which means that it cannot "tear" or "break" vectors in the process.
+
+A result of this is that after applying a linear transformation, the gridlines in the vector space will remain parallel and evenly spaced.
+This property is crucial in many applications of linear algebra, such as computer graphics, physics, and engineering.
+
+## Conceptual Introduction
+
+To understand linear transformations better, let's consider a simple example.
+
+Consider a 2D vector space, $\mathbb{R}^2$, with the standard basis vectors $\ihat = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\jhat = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
+
+Let's define a linear transformation as follows:
+
+$$
+\begin{equation}
+T = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}
+\end{equation}
+$$
+
+The notation for a transformation is often written as a matrix, where each column represents the image of the corresponding basis vector.
+
+Essentially, what this means is that the transformation $T$ takes the standard basis vectors $\ihat$ and $\jhat$ and maps them to $\begin{bmatrix} 2 \\ 0 \end{bmatrix}$ and $\begin{bmatrix} 0 \\ 3 \end{bmatrix}$, respectively.
+
+Suppose we have a vector $\bvec{v} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$ in the space. The vector can be represented as a linear combination of the basis vectors:
+
+$$
+\begin{equation}
+\bvec{v} = 1 \begin{bmatrix} 1 \\ 0 \end{bmatrix} + 2 \begin{bmatrix} 0 \\ 1 \end{bmatrix} = 1\ihat + 2\jhat
+\end{equation}
+$$
+
+By applying the linear transformation, you're saying that $\ihat$ becomes $\begin{bmatrix} 2 \\ 0 \end{bmatrix}$ and $\jhat$ becomes $\begin{bmatrix} 0 \\ 3 \end{bmatrix}$.
+
+Therefore:
+
+$$
+\begin{equation}
+T(\bvec{v}) = 1 \begin{bmatrix} 2 \\ 0 \end{bmatrix} + 2 \begin{bmatrix} 0 \\ 3 \end{bmatrix} = \begin{bmatrix} 2 \\ 6 \end{bmatrix}
+\end{equation}
+$$
+
+This means that the vector $\bvec{v}$ is transformed to $\begin{bmatrix} 2 \\ 6 \end{bmatrix}$ under the transformation $T$.
+
+## Visualizing Linear Transformations
+
+Let's visualize this transformation in the vector space.
+
+We'll start by plotting the standard basis vectors $\ihat$ and $\jhat$ in the space.
+
+{(() => {
+    const ihat = useMovablePoint([1, 0]);
+    const jhat = useMovablePoint([0, 1]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <LinearTransformationVisualizer
+                ihat={ihat.point}
+                jhat={jhat.point}
+            />
+            {ihat.element}
+            {jhat.element}
+        </Mafs>
+    )
+})()}
+
+Dragging the points around will show you how the transformation affects the gridlines.
+
+## Matrix Representation
+
+Linear transformations, as previously mentioned, can be represented by matrices.
+
+To generalize this concept to all 2D vectors, we can represent the transformation $T$ as a matrix:
+
+$$
+\begin{equation}
+T = \begin{bmatrix} a & b \\ c & d \end{bmatrix}
+\end{equation}
+$$
+
+The matrix $T$ represents a linear transformation that maps the standard basis vectors $\ihat$ and $\jhat$ to the vectors $\begin{bmatrix} a \\ c \end{bmatrix}$ and $\begin{bmatrix} b \\ d \end{bmatrix}$, respectively.
+
+Let $\bvec{v} = \begin{bmatrix} x \\ y \end{bmatrix}$ be an arbitrary vector in $\mathbb{R}^2$.
+
+Then:
+
+$$
+\begin{equation}
+T(\bvec{v}) = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = a \begin{bmatrix} x \\ y \end{bmatrix} + b \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} ax + by \\ cx + dy \end{bmatrix}
+\end{equation}
+$$
+
+### Generalizing to Higher Dimensions
+
+The concept of linear transformations, like basically everything in Linear Algebra, can be extended to higher dimensions.
+
+For example, in $\mathbb{R}^3$, a linear transformation can be represented by a $3 \times 3$ matrix.
+
+Let $T: \mathbb{R}^m \to \mathbb{R}^n$ be a linear transformation between two vector spaces of dimensions $m$ and $n$.
+Then $T$ can be represented by an $n \times m$ matrix.
+
+Each column will represent the image of the corresponding basis vector in the domain space.
+This idea can be written as:
+
+$$
+\begin{equation}
+T(\bvec{v}) = \begin{bmatrix} {a_{1,1}} & {a_{1,2}} & \cdots & {a_{1,m}} \\ {a_{2,1}} & {a_{2,2}} & \cdots & {a_{2,m}} \\ \vdots & \vdots & \ddots & \vdots \\ {a_{n,1}} & {a_{n,2}} & \cdots & {a_{n,m}} \end{bmatrix} \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_m \end{bmatrix}
+\end{equation}
+$$
+
+Where the $a_{i,j}$ are the elements of the matrix representing the transformation, and $v_1, v_2, \ldots, v_m$ are the components of the vector $\bvec{v}$.
+The basis vectors can be represented as:
+
+$$
+\begin{equation}
+\ihat = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}, \jhat = \begin{bmatrix} 0 \\ 1 \\ \vdots \\ 0 \end{bmatrix}, \ldots, \khat = \begin{bmatrix} 0 \\ 0 \\ \vdots \\ 1 \end{bmatrix}
+\end{equation}
+$$
+
+## Common Linear Transformations
+
+There are several common linear transformations that are frequently encountered in linear algebra.
+
+### Scaling
+
+A scaling transformation stretches or compresses vectors along a particular direction.
+
+This is quite simple - you just multiply all the basis vectors by a scalar.
+
+For example, consider the transformation $T: \mathbb{R}^2 \to \mathbb{R}^2$ defined by:
+
+$$
+\begin{equation}
+T = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}
+\end{equation}
+$$
+
+$\ihat$ goes from $[1, 0]$ to $[2, 0]$, and $\jhat$ goes from $[0, 1]$ to $[0, 3]$.
+Hence, the transformation scales the space by a factor of 2 in the $x$-direction and 3 in the $y$-direction.
+
+### Rotation
+
+A rotation transformation rotates vectors in the vector space.
+
+This is a bit more complex than scaling, but it can still be represented by a matrix.
+
+Essentially, you rotate the basis vectors by a certain angle. To do so, we need to use some trigonometry.
+
+Consider the transformation $T: \mathbb{R}^2 \to \mathbb{R}^2$ that rotates vectors by an angle $\theta$ counterclockwise.
+It transforms $\ihat$ to $\ihat'$. To find $\ihat'$, we can observe it geometrically:
+
+<Mafs
+    viewBox={{
+        x: [0, 1],
+        y: [0,  0.5]
+    }}
+>
+    {/* ihat */}
+    <Vector
+        tail={[0, 0]}
+        tip={[1, 0]}
+        color={color("blue")}
+    />
+
+    {/* ihat prime */}
+    <Vector
+        tail={[0, 0]}
+        tip={[Math.cos(Math.PI / 5), Math.sin(Math.PI / 5)]}
+        color={color("red")}
+    />
+
+    {/*
+        Mafs uses KaTeX while the rest of the site uses MathJax.
+        So the macros we defined in the site config won't work here.
+    */}
+    <LaTeX
+        tex="\mathbf{\hat{i}}"
+        at={lineLabel([0, 0], [1, 0], "right", { sideOffset: 0.1 })}
+    />
+    <LaTeX
+        tex="\mathbf{\hat{i'}}"
+        at={lineLabel([0, 0], [Math.cos(Math.PI / 5), Math.sin(Math.PI / 5)], "left", { sideOffset: 0.1 })}
+    />
+
+    <Angle
+        at={[0, 0]}
+        fromRad={0}
+        toRad={Math.PI / 5}
+        label="\theta"
+        radius={0.2}
+    />
+</Mafs>

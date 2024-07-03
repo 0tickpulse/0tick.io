@@ -7,6 +7,7 @@ import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentia
 import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannApproximation";
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import { Angle } from "../components/mdxGlobal/Angle";
+import LinearTransformationVisualizer from "../components/mdxGlobal/LinearTransformationVisualizer";
 
 export default {
     ...MDXComponents,
@@ -15,6 +16,7 @@ export default {
     Citation,
     Cite,
     DerivativeFromLimits,
+    LinearTransformationVisualizer,
     HoverableBox,
     RiemannApproximation,
     ThreeDTest,

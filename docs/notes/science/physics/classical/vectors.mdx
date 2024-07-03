@@ -11,7 +11,7 @@ import { lineLabel } from "@site/src/utilities/lines";
 export function SingleVector() {
     const v = useMovablePoint([1, 2]);
 
-    const magnitudeText = `\\|\\vec{v}\\| = \\sqrt{(${v.point[0].toFixed(2)})^2 + (${v.point[1].toFixed(2)})^2}`;
+    const magnitudeText = `\\|\\bvec{v}\\| = \\sqrt{(${v.point[0].toFixed(2)})^2 + (${v.point[1].toFixed(2)})^2}`;
 
     return (
         <Mafs>
@@ -31,7 +31,7 @@ export function SingleVector() {
                 tip={[v.point[0], 0]}
             />
             <LaTeX
-                tex={String.raw`\vec{v}_x = ${v.point[0].toFixed(2)}`}
+                tex={String.raw`\bvec{v}_x = ${v.point[0].toFixed(2)}`}
                 at={[v.point[0] / 2, -0.3]}
             />
 
@@ -40,7 +40,7 @@ export function SingleVector() {
                 tip={v.point}
             />
             <LaTeX
-                tex={String.raw`\vec{v}_y = ${v.point[1].toFixed(2)}`}
+                tex={String.raw`\bvec{v}_y = ${v.point[1].toFixed(2)}`}
                 at={[v.point[0] + (v.point[0] > 0 ? 0.8 : -0.8), v.point[1] / 2]}
             />
 
@@ -63,15 +63,15 @@ The thing about vectors that makes them so useful is that they can be used in an
 
 ## Vector Notation
 
-Vectors are typically denoted by a lowercase boldface letter, like $\vec{v}$.
+Vectors are typically denoted by a lowercase boldface letter, like $\bvec{v}$.
 
 Alternatively, a vector can be denoted by a letter with an arrow on top, like $\arrowedvec{v}$.
 Both are valid notations.
 
 ## Magnitude
 
-The magnitude of a vector $\vec{v}$ is denoted by $\|\vec{v}\|$, and it is the length of the vector.
-Sometimes a single bar is used, like $|\vec{v}|$, but this can be confused with the absolute value of a scalar.
+The magnitude of a vector $\bvec{v}$ is denoted by $\|\bvec{v}\|$, and it is the length of the vector.
+Sometimes a single bar is used, like $|\bvec{v}|$, but this can be confused with the absolute value of a scalar.
 
 <SingleVector />
 
@@ -81,7 +81,7 @@ Firstly think of a vector as a displacement in space, like moving by some amount
 
 Adding two vectors is like moving by the first vector and then moving by the second vector.
 
-Addition is commutative, meaning $\vec{v} + \vec{w} = \vec{w} + \vec{v}$. This can be visually seen:
+Addition is commutative, meaning $\bvec{v} + \bvec{w} = \bvec{w} + \bvec{v}$. This can be visually seen:
 
 export function VectorAddition() {
     const v = useMovablePoint([1, 2]);
@@ -97,7 +97,7 @@ export function VectorAddition() {
                 color={Theme.red}
             />
             <LaTeX
-                tex={String.raw`\vec{v}`}
+                tex={String.raw`\bvec{v}`}
                 at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
             />
 
@@ -107,7 +107,7 @@ export function VectorAddition() {
                 color={Theme.blue}
             />
             <LaTeX
-                tex={String.raw`\vec{w}`}
+                tex={String.raw`\bvec{w}`}
                 at={lineLabel([0, 0], w.point, "right", { sideOffset: 0.3 })}
             />
 
@@ -117,7 +117,7 @@ export function VectorAddition() {
                 color={Theme.green}
             />
             <LaTeX
-                tex={String.raw`\vec{v} + \vec{w}`}
+                tex={String.raw`\bvec{v} + \bvec{w}`}
                 at={lineLabel([0, 0], [v.point[0] + w.point[0], v.point[1] + w.point[1]], "right", { sideOffset: 0.3 })}
             />
 
@@ -144,7 +144,7 @@ export function VectorAddition() {
 The red and blue vectors are the original vectors, and the green vector is the sum of the two.
 You can see that the green vector is the same no matter which order you add the red and blue vectors.
 
-The addition of vectors is also associative, meaning $(\vec{v} + \vec{w}) + \vec{u} = \vec{v} + (\vec{w} + \vec{u})$.
+The addition of vectors is also associative, meaning $(\bvec{v} + \bvec{w}) + \bvec{u} = \bvec{v} + (\bvec{w} + \bvec{u})$.
 
 export function VectorAdditionAssociative() {
     const v = useMovablePoint([1, 2]);
@@ -161,7 +161,7 @@ export function VectorAdditionAssociative() {
                 color={Theme.red}
             />
             <LaTeX
-                tex={String.raw`\vec{v}`}
+                tex={String.raw`\bvec{v}`}
                 at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
             />
 
@@ -171,7 +171,7 @@ export function VectorAdditionAssociative() {
                 color={Theme.blue}
             />
             <LaTeX
-                tex={String.raw`\vec{w}`}
+                tex={String.raw`\bvec{w}`}
                 at={lineLabel([0, 0], w.point, "right", { sideOffset: 0.3 })}
             />
 
@@ -181,7 +181,7 @@ export function VectorAdditionAssociative() {
                 color={Theme.green}
             />
             <LaTeX
-                tex={String.raw`\vec{u}`}
+                tex={String.raw`\bvec{u}`}
                 at={lineLabel([0, 0], u.point, "right", { sideOffset: 0.3 })}
             />
 
@@ -191,7 +191,7 @@ export function VectorAdditionAssociative() {
                 color={Theme.purple}
             />
             <LaTeX
-                tex={String.raw`\vec{v} + \vec{w} + \vec{u}`}
+                tex={String.raw`\bvec{v} + \bvec{w} + \bvec{u}`}
                 at={lineLabel([0, 0], [v.point[0] + w.point[0] + u.point[0], v.point[1] + w.point[1] + u.point[1]], "right", { sideOffset: 0.3 })}
             />
 
@@ -223,18 +223,18 @@ export function VectorAdditionAssociative() {
 
 ## Identity Element
 
-The identity element for vector addition is the zero vector, denoted by $\vec{0}$.
+The identity element for vector addition is the zero vector, denoted by $\bvec{0}$.
 The zero vector has a magnitude of 0 and is the only vector that has a magnitude of 0.
 
-Formally, $(\exists \vec{0} \in \mathbb{R}^n) \, \forall \vec{v} \in \mathbb{R}^n \, \vec{v} + \vec{0} = \vec{v}$.
+Formally, $(\exists \bvec{0} \in \mathbb{R}^n) \, \forall \bvec{v} \in \mathbb{R}^n \, \bvec{v} + \bvec{0} = \bvec{v}$.
 This means that adding the zero vector to any vector gives the original vector.
 
 ## Inverse Element
 
-There's also an inverse element for vector addition, denoted by $-\vec{v}$.
+There's also an inverse element for vector addition, denoted by $-\bvec{v}$.
 The inverse element is the vector that, when added to the original vector, gives the zero vector.
 
-Formally, $(\forall \vec{v} \in \mathbb{R}^n) \, \exists -\vec{v} \in \mathbb{R}^n \, \vec{v} + (-\vec{v}) = \vec{0}$.
+Formally, $(\forall \bvec{v} \in \mathbb{R}^n) \, \exists -\bvec{v} \in \mathbb{R}^n \, \bvec{v} + (-\bvec{v}) = \bvec{0}$.
 
 Conceptually, it's like going in some direction and then going back in the opposite direction.
 
@@ -242,7 +242,7 @@ Conceptually, it's like going in some direction and then going back in the oppos
 
 Scalar multiplication is multiplying a vector by a scalar (a number).
 Multiplying by the magnitude of a vector is the same as the magnitude of a vector multiplied by a scalar.
-Meaning, $c\|\vec{v}\| = \|c\vec{v}\|$.
+Meaning, $c\|\bvec{v}\| = \|c\bvec{v}\|$.
 
 export function ScalarMultiplication() {
     const v = useMovablePoint([1, 2]);
@@ -259,7 +259,7 @@ export function ScalarMultiplication() {
                 weight={4}
             />
             <LaTeX
-                tex={String.raw`2\vec{v}`}
+                tex={String.raw`2\bvec{v}`}
                 at={lineLabel(v.point, [v.point[0] * scalar[0], v.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
             />
 
@@ -269,7 +269,7 @@ export function ScalarMultiplication() {
                 color={Theme.red}
             />
             <LaTeX
-                tex={String.raw`\vec{v}`}
+                tex={String.raw`\bvec{v}`}
                 at={lineLabel([0, 0], v.point, "left", { sideOffset: 0.3 })}
             />
 
@@ -281,11 +281,11 @@ export function ScalarMultiplication() {
 
 <ScalarMultiplication />
 
-Scalar multiplication is associative, meaning $c(d\vec{v}) = (cd)\vec{v}$.
+Scalar multiplication is associative, meaning $c(d\bvec{v}) = (cd)\bvec{v}$.
 
 ## Distributive Law
 
-Scalar multiplication is distributive over vector addition, meaning $c(\vec{v} + \vec{w}) = c\vec{v} + c\vec{w}$.
+Scalar multiplication is distributive over vector addition, meaning $c(\bvec{v} + \bvec{w}) = c\bvec{v} + c\bvec{w}$.
 
 export function DistributiveLaw() {
     const v = useMovablePoint([1, 2]);
@@ -302,7 +302,7 @@ export function DistributiveLaw() {
                 color={Theme.green}
             />
             <LaTeX
-                tex={String.raw`\vec{v} + \vec{w}`}
+                tex={String.raw`\bvec{v} + \bvec{w}`}
                 at={lineLabel([0, 0], [v.point[0] + w.point[0], v.point[1] + w.point[1]], "right", { sideOffset: 0.3 })}
             />
 
@@ -312,7 +312,7 @@ export function DistributiveLaw() {
                 color={Theme.red}
             />
             <LaTeX
-                tex={String.raw`2\vec{v}`}
+                tex={String.raw`2\bvec{v}`}
                 at={lineLabel([0, 0], [v.point[0] * scalar[0], v.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
             />
 
@@ -322,7 +322,7 @@ export function DistributiveLaw() {
                 color={Theme.orange}
             />
             <LaTeX
-                tex={String.raw`2\vec{w}`}
+                tex={String.raw`2\bvec{w}`}
                 at={lineLabel([0, 0], [w.point[0] * scalar[0], w.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
             />
 
@@ -332,7 +332,7 @@ export function DistributiveLaw() {
                 color={Theme.purple}
             />
             <LaTeX
-                tex={String.raw`2\vec{v} + 2\vec{w}`}
+                tex={String.raw`2\bvec{v} + 2\bvec{w}`}
                 at={lineLabel([0, 0], [v.point[0] * scalar[0] + w.point[0] * scalar[0], v.point[1] * scalar[0] + w.point[1] * scalar[0]], "right", { sideOffset: 0.3 })}
             />
 
@@ -348,7 +348,7 @@ export function DistributiveLaw() {
 ## Identity Element for Scalar Multiplication
 
 The identity element for scalar multiplication is 1.
-This means that $1\vec{v} = \vec{v}$.
+This means that $1\bvec{v} = \bvec{v}$.
 
 ## Coordinate Systems
 
@@ -369,14 +369,14 @@ The components of the Cartesian coordinate system include:
 2. **Axes**: $x$, $y$, and $z$ axes.
 3. **Positive Direction**: We are free to choose the positive direction of each axis. In physics it's best to choose it such that it best fits a given problem. Many problems that are difficult to solve in the conventional choices can be solved much more easily by choosing different axes.
 
-For the basis vectors, let $\vec{P}$ be a point in space. For that point, the basis vectors are:
+For the basis vectors, let $\bvec{P}$ be a point in space. For that point, the basis vectors are:
 
--   $\hat{\vec{i}}_P$: The basis vector in the direction of the $x$-axis.
--   $\hat{\vec{j}}_P$: The basis vector in the direction of the $y$-axis.
--   $\hat{\vec{k}}_P$: The basis vector in the direction of the $z$-axis.
+-   $\hat{\bvec{i}}_P$: The basis vector in the direction of the $x$-axis.
+-   $\hat{\bvec{j}}_P$: The basis vector in the direction of the $y$-axis.
+-   $\hat{\bvec{k}}_P$: The basis vector in the direction of the $z$-axis.
 
-If another point $\vec{Q}$ is chosen, the basis vectors remain the same; $\hat{\vec{i}}_Q = \hat{\vec{i}}_P$, $\hat{\vec{j}}_Q = \hat{\vec{j}}_P$, and $\hat{\vec{k}}_Q = \hat{\vec{k}}_P$.
-Therefore, the references are dropped and the basis vectors are denoted as $\hat{\vec{i}}$, $\hat{\vec{j}}$, and $\hat{\vec{k}}$.
+If another point $\bvec{Q}$ is chosen, the basis vectors remain the same; $\hat{\bvec{i}}_Q = \hat{\bvec{i}}_P$, $\hat{\bvec{j}}_Q = \hat{\bvec{j}}_P$, and $\hat{\bvec{k}}_Q = \hat{\bvec{k}}_P$.
+Therefore, the references are dropped and the basis vectors are denoted as $\hat{\bvec{i}}$, $\hat{\bvec{j}}$, and $\hat{\bvec{k}}$.
 
 <Mafs>
     <Coordinates.Cartesian />
@@ -392,11 +392,11 @@ The components of the cylindrical coordinate system include:
 3. **Positive Direction**: The positive direction of the $r$ axis is outwards from the origin, the positive direction of the $\theta$ axis is counterclockwise from the $x$-axis, and the positive direction of the $z$ axis is the same as the $z$ axis in Cartesian coordinates.
 
 Unlike Cartesian coordinates, the basis vectors in cylindrical coordinates change based on the point.
-Hence, references are kept, and for point $\vec{P}$, the basis vectors are:
+Hence, references are kept, and for point $\bvec{P}$, the basis vectors are:
 
--   $\hat{\vec{r}}_P$: The basis vector in the direction of the $r$-axis.
--   $\hat{\vec{\theta}}_P$: The basis vector in the direction of the $\theta$-axis.
--   $\hat{\vec{k}}_P$: The basis vector in the direction of the $z$-axis.
+-   $\hat{\bvec{r}}_P$: The basis vector in the direction of the $r$-axis.
+-   $\hat{\bvec{\theta}}_P$: The basis vector in the direction of the $\theta$-axis.
+-   $\hat{\bvec{k}}_P$: The basis vector in the direction of the $z$-axis.
 
 (Diagram coming soon)
 
@@ -476,7 +476,7 @@ export function CylindricalCoordinates() {
                     color={Theme.blue}
                 />
                 <LaTeX
-                    tex={String.raw`\hat{\vec{i}}`}
+                    tex={String.raw`\hat{\bvec{i}}`}
                     at={[1.3, 0]}
                 />
 
@@ -487,7 +487,7 @@ export function CylindricalCoordinates() {
                     color={Theme.green}
                 />
                 <LaTeX
-                    tex={String.raw`\hat{\vec{j}}`}
+                    tex={String.raw`\hat{\bvec{j}}`}
                     at={[0, 1.3]}
                 />
 
@@ -498,7 +498,7 @@ export function CylindricalCoordinates() {
                     color={Theme.red}
                 />
                 <LaTeX
-                    tex={String.raw`\hat{\vec{r}}`}
+                    tex={String.raw`\hat{\bvec{r}}`}
                     at={basisRTip}
                 />
 
@@ -509,7 +509,7 @@ export function CylindricalCoordinates() {
                     color={Theme.purple}
                 />
                 <LaTeX
-                    tex={String.raw`\hat{\vec{\theta}}`}
+                    tex={String.raw`\hat{\bvec{\theta}}`}
                     at={basisThetaTip}
                 />
             </Transform>
@@ -548,4 +548,4 @@ $$
 
 ## Vector Product (Cross Product)
 
-The cross product of two vectors $\vec{v}$ and $\vec{w}$ is denoted by $\vec{v} \times \vec{w}$.
+The cross product of two vectors $\bvec{v}$ and $\bvec{w}$ is denoted by $\bvec{v} \times \bvec{w}$.

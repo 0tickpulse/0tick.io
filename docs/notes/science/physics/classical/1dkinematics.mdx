@@ -21,8 +21,8 @@ On the other hand, dynamics studies the causes of motion, the forces that cause 
 
 Position is the location of an object in space. It is a vector quantity, meaning it has both magnitude and direction.
 
-Usually, position is denoted as a function of time $\vec{r}(t)$, where $t$ is time.
-In one-dimensional kinematics, the position can be written as $x(t)\hat{\vec{i}}$. Here, $\hat{\vec{i}}$ is the unit vector in the direction of motion.
+Usually, position is denoted as a function of time $\bvec{r}(t)$, where $t$ is time.
+In one-dimensional kinematics, the position can be written as $x(t)\hat{\bvec{i}}$. Here, $\hat{\bvec{i}}$ is the unit vector in the direction of motion.
 
 {(() => {
     const x = useMovablePoint([2, 0], { constrain: ([x, y]) => [x, 0] });
@@ -34,7 +34,7 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\vec{i}}
             color={Theme.green}
         />
         <LaTeX
-            tex={`\\vec{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\vec{i}}`}
+            tex={`\\bvec{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\bvec{i}}`}
             at={[x.point[0] / 2, 0.3]}
         />
 
@@ -44,7 +44,7 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\vec{i}}
             color={Theme.red}
         />
         <LaTeX
-            tex={`\\hat{\\vec{i}}`}
+            tex={`\\hat{\\bvec{i}}`}
             at={[0.5, -0.3]}
         />
         {x.element}
@@ -53,17 +53,17 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\vec{i}}
 
 ## Displacement
 
-Displacement is the change in position of an object, or $\Delta \vec{r}$. It is also a vector quantity.
+Displacement is the change in position of an object, or $\Delta \bvec{r}$. It is also a vector quantity.
 Displacement can be expressed as follows:
 
 $$
-\Delta \vec{r} = \vec{r}(t_2) - \vec{r}(t_1)
+\Delta \bvec{r} = \bvec{r}(t_2) - \bvec{r}(t_1)
 $$
 
 In one-dimensional kinematics, the displacement can be written as:
 
 $$
-\Delta \vec{r} = x(t_2)\hat{\vec{i}} - x(t_1)\hat{\vec{i}} \equiv \Delta x\hat{\vec{i}}
+\Delta \bvec{r} = x(t_2)\hat{\bvec{i}} - x(t_1)\hat{\bvec{i}} \equiv \Delta x\hat{\bvec{i}}
 $$
 
 ## Velocity
@@ -74,7 +74,7 @@ The SI unit of velocity is meters per second ($\text{ms}^{-1}$).
 The average velocity, which is the average rate of change of position, is given by:
 
 $$
-\vec{v}_{\text{avg}} = \frac{\Delta \vec{r}}{\Delta t}
+\bvec{v}_{\text{avg}} = \frac{\Delta \bvec{r}}{\Delta t}
 $$
 
 In one-dimensional kinematics, the average velocity can be written as:
@@ -94,13 +94,13 @@ $$
 The vector form of velocity is:
 
 $$
-\vec{v} = \frac{d\vec{r}}{dt}
+\bvec{v} = \frac{d\bvec{r}}{dt}
 $$
 
 And in one-dimensional kinematics:
 
 $$
-\vec{v} = \frac{d}{dt}(x\hat{\vec{i}}) = \frac{dx}{dt}\hat{\vec{i}}
+\bvec{v} = \frac{d}{dt}(x\hat{\bvec{i}}) = \frac{dx}{dt}\hat{\bvec{i}}
 $$
 
 ## Acceleration
@@ -111,7 +111,7 @@ The SI unit of acceleration is meters per second squared ($\text{ms}^{-2}$).
 The average acceleration, which is the average rate of change of velocity, is given by:
 
 $$
-\vec{a}_{\text{avg}} = \frac{\Delta \vec{v}}{\Delta t}
+\bvec{a}_{\text{avg}} = \frac{\Delta \bvec{v}}{\Delta t}
 $$
 
 In one-dimensional kinematics, the average acceleration can be written as:
@@ -129,13 +129,13 @@ $$
 The vector form of acceleration is:
 
 $$
-\vec{a} = \frac{d\vec{v}}{dt}
+\bvec{a} = \frac{d\bvec{v}}{dt}
 $$
 
 And in one-dimensional kinematics:
 
 $$
-\vec{a} = \frac{d}{dt}(v\hat{\vec{i}}) = \frac{dv}{dt}\hat{\vec{i}}
+\bvec{a} = \frac{d}{dt}(v\hat{\bvec{i}}) = \frac{dv}{dt}\hat{\bvec{i}}
 $$
 
 ## Constant Acceleration
@@ -208,7 +208,7 @@ $$
 In vector form in one-dimensional kinematics, the displacement can be written as:
 
 $$
-\vec{x}(t) = \vec{x}_0 + \vec{v}_0 t + \frac{1}{2} \vec{a} t^2
+\bvec{x}(t) = \bvec{x}_0 + \bvec{v}_0 t + \frac{1}{2} \bvec{a} t^2
 $$
 
 ## Example: Vehicles
