@@ -440,7 +440,7 @@ Just like how the "order" of an algebraic equation is the highest power of the v
 It's important to note this absolute fact:
 
 <Boxed>
-    <div style={{"text-align": "center"}}>
+    <div style={{"textAlign": "center"}}>
     **Differential equations are very, very, very hard to solve.**
     </div>
 </Boxed>
@@ -589,7 +589,7 @@ export function ExampleProblemEquationFromSlopeField() {
                     const s = slope(x, y);
                     const angle = Math.atan(s);
                     return (
-                        <Transform rotate={angle} translate={[x, y]}>
+                        <Transform key={`${x},${y}`} rotate={angle} translate={[x, y]}>
                             <Line.Segment
                                 point1={[-0.25, 0]}
                                 point2={[0.25, 0]}
@@ -660,7 +660,7 @@ export function ExampleProblemSlopeFieldFromEquation() {
         >
             {slopeFields.map((sf, i) => {
                 return (
-                    <div className="card">
+                    <div className="card" key={i}>
                         <div className="card__header">
                             {/* centered header*/}
                             <h3 style={{
@@ -672,7 +672,7 @@ export function ExampleProblemSlopeFieldFromEquation() {
                         </div>
                         {/* <div className="card__body"> */}
                             <Mafs
-                                key={sf}
+                                key={i}
                                 viewBox={{
                                     x: [-10, 10],
                                     y: [-10, 10],
@@ -698,7 +698,7 @@ export function ExampleProblemSlopeFieldFromEquation() {
                                         const s = sf(x, y);
                                         const angle = Math.atan(s);
                                         return (
-                                            <Transform rotate={angle} translate={[x, y]}>
+                                            <Transform key={`${x},${y}`} rotate={angle} translate={[x, y]}>
                                                 <Line.Segment
                                                     point1={[-0.5, 0]}
                                                     point2={[0.5, 0]}
@@ -800,7 +800,7 @@ export function QualitativelyAnalyzingSlopeFields({ startCoords, viewBox }) {
                             const s = slope(x, y);
                             const angle = Math.atan(s);
                             return (
-                                <Transform rotate={angle} translate={[x, y]}>
+                                <Transform key={`${x},${y}`} rotate={angle} translate={[x, y]}>
                                     <Line.Segment
                                         point1={[-0.25, 0]}
                                         point2={[0.25, 0]}
@@ -845,3 +845,51 @@ It will roughly evolve like this:
 The animation shows the solution curve evolving over time.
 
 This, once again, shows that you can get an intuition for the solution to a DE without solving it.
+
+### Example Problem: Range of Solution Curve
+
+> Consider the DE from [above](#qualitatively-analyzing-slope-fields-to-approximate-solution-curves).
+>
+> Using the slope field, given the initial condition $(2, 5)$, what is the range of the solution curve?
+
+
+Place the point $(2, 5)$ on the slope field and follow the slope field to get an idea of the range of the solution curve.
+
+<QualitativelyAnalyzingSlopeFields startCoords={[2, 5]} viewBox={{
+    x: [-1, 5],
+    y: [-1, 7],
+}} />
+
+Notice that the $y$ value slowly approaches $y = 4$, but never quite reaches it. Therefore, $y > 4$.
+
+It never increases from the initial value of $5$, so the range is below $5$.
+
+Thus, we can reasonably say that the range of the solution curve is $4 < y \leq 5$.
+
+## Approximation Method: Euler's Method
+
+Euler's Method is a numerical method to approximate the solution to a DE.
+
+Consider the DE:
+
+$$
+\begin{equation}
+\frac{dy}{dx} = y, \quad y(0) = 1
+\end{equation}
+$$
+
+The exact solution to this DE is $y = e^x$, but let's pretend we don't know that.
+Instead, what we do is start at the initial condition, $(0, 1)$, and follow the slope field, but this time, quantitatively instead of sketching it.
+
+First, we need to choose a step size, $\Delta x$. This is how much we move along the $x$-axis each time.
+For this example, let's choose $\Delta x = 0.5$.
+
+So we start at $(0, 1)$, where the slope is $dy/dx = y = 1$. This means that for every infinitesimal change, the slope is $1$.
+We can use this to find the next point. Instead of an infinitesimal change, we make a finite change of $\Delta x = 0.5$.
+
+$$
+\begin{align}
+\frac{\Delta y}{\Delta x} &\approx \frac{dy}{dx} = 1 \\
+\Delta y &\approx 1 \times \Delta x = 1 \times 0.5 = 0.5
+\end{align}
+$$

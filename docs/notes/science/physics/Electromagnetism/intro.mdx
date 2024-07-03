@@ -196,6 +196,7 @@ export function Induction() {
                 {/* Neg charge in first rod */}
                 {Array.from({ length: 8 }, (_, i) => (
                     <Circle
+                        key={i}
                         center={[0.5 + rod1base + rod1electronOffset, 4.5 - 0.25 - i / 2]}
                         radius={0.1}
                         color={Theme.red}
@@ -229,6 +230,7 @@ export function Induction() {
                         }
                     }
                     return <Circle
+                        key={i}
                         center={[4.5 + xOffset, yOffset]}
                         radius={0.1}
                         color={isPositive ? Theme.green : Theme.red}
@@ -463,7 +465,7 @@ export function CombinedElectricFields({ added = false, smooth = false }) {
                 {point2.element}
 
                 {added && (() => {
-                    const vectorField = <Plot.VectorField xy={totalAcceleration} step={1} xyOpacity={() => smooth ? 0.5 : 1} color={Theme.blue} />;
+                    const vectorField = <Plot.VectorField key={"-1"} xy={totalAcceleration} step={1} xyOpacity={() => smooth ? 0.5 : 1} color={Theme.blue} />;
                     if (!smooth) {
                         return vectorField;
                     }
@@ -475,10 +477,10 @@ export function CombinedElectricFields({ added = false, smooth = false }) {
                         }
                     }
 
-                    return points.map((point) => {
+                    return points.map((point, i) => {
                         const [x, y] = point;
                         const newPoint = parametricTotalAcceleration(time, x, y);
-                        return <Circle center={newPoint} radius={0.05} fillOpacity={0.5} color={Theme.blue} />;
+                        return <Circle key={i} center={newPoint} radius={0.05} fillOpacity={0.5} color={Theme.blue} />;
                     }).concat(vectorField);
                 })()}
 

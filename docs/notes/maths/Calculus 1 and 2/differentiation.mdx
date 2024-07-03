@@ -75,7 +75,7 @@ export function SimpleSlope() {
                     point2={x2.point}
                 />
             </Mafs>
-            <MathEquation displayMode={true}>{String.raw`
+            <MathEquation>{String.raw`
                 \begin{align}
                     \text{Slope} &= \frac{\Delta y}{\Delta x} = \frac{y_2 - y_1}{x_2 - x_1} \\
                     &= \frac{${x2.point[1].toFixed(2)} - ${x1.point[1].toFixed(2)}}{${x2.point[0].toFixed(2)} - ${x1.point[0].toFixed(2)}} \\
