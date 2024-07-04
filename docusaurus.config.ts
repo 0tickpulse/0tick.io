@@ -21,7 +21,7 @@ const config = {
             tex: {
                 tags: "ams",
                 macros: MATH_MACROS,
-                packages: { "[+]": ["autoload", "ams", "cancel", "mathtools", "html", "configmacros", "physics"] },
+                packages: { "[+]": ["autoload", "gensymb", "ams", "cancel", "mathtools", "html", "configmacros", "physics"] },
             },
             svg: {
                 scale: 1.2,
