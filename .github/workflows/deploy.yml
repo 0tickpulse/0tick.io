@@ -16,9 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v2
+      # - uses: pnpm/action-setup@v2
+      #   with:
+      #     version: latest
+
+      # Below is a temporary workaround for the pnpm/action-setup@v2 action
+      - name: Setup node.js
+        uses: actions/setup-node@v2
         with:
-          version: latest
+          node-version: 16.x
+
+      - name: Install pnpm
+        run: npm install -g pnpm
       - uses: actions/setup-node@v3
         with:
           node-version: 18
