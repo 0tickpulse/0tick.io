@@ -376,8 +376,8 @@ $$
 \begin{align*}
 \langle (\Delta x)^2 \rangle &= \int_{-\infty}^{\infty} (x - \langle x \rangle)^2 \rho(x) dx \\
 &= \int_{-\infty}^{\infty} (x^2 - 2x\langle x \rangle + \langle x \rangle^2) \rho(x) dx \\
-&= \textcolor{red}{\int_{-\infty}^{\infty} x^2 \rho(x) dx} - 2\langle x \rangle \textcolor{blue}{\int_{-\infty}^{\infty} x \rho(x) dx} + \langle x \rangle^2 \textcolor{green}{\int_{-\infty}^{\infty} \rho(x) dx} \\
-&= \textcolor{red}{\langle x^2 \rangle} - 2\langle x \rangle \textcolor{blue}{\langle x \rangle} + \langle x \rangle^2 \textcolor{green}{1} \\
+&= \class{red}{\int_{-\infty}^{\infty} x^2 \rho(x) dx} - 2\langle x \rangle \class{blue}{\int_{-\infty}^{\infty} x \rho(x) dx} + \langle x \rangle^2 \class{green}{\int_{-\infty}^{\infty} \rho(x) dx} \\
+&= \class{red}{\langle x^2 \rangle} - 2\langle x \rangle \class{blue}{\langle x \rangle} + \langle x \rangle^2 \class{green}{1} \\
 &= \langle x^2 \rangle - \langle x \rangle^2
 \end{align*}
 $$
@@ -433,7 +433,7 @@ As you can see, all terms in the Schrödinger equation are linear. This means th
 However this is only true if $c$ is constant. This means that we might run into issues with time evolution. To prove that this is not the case, we establish:
 
 $$
-\frac{d}{dt} \int_{-\infty}^{\infty} |\Psi(x, t)|^2 dx = 0
+\dv{t} \int_{-\infty}^{\infty} |\Psi(x, t)|^2 dx = 0
 $$
 
 This is known as the conservation of probability. It means that the total probability of finding a particle at any position does not change with time.
@@ -441,20 +441,20 @@ This is known as the conservation of probability. It means that the total probab
 Since $\Psi^2 = \Psi^* \Psi$, we can write:
 
 $$
-\frac{d}{dt} \int_{-\infty}^{\infty} |\Psi(x, t)|^2 dx = \frac{d}{dt} \int_{-\infty}^{\infty} \Psi^* \Psi dx
+\dv{t} \int_{-\infty}^{\infty} |\Psi(x, t)|^2 dx = \dv{t} \int_{-\infty}^{\infty} \Psi^* \Psi dx
 $$
 
 Additionally, we can bring the time derivative inside the integral. Note that the total derivative becomes a partial derivative.
 
 $$
-\frac{d}{dt} \int_{-\infty}^{\infty} \Psi^* \Psi dx = \int_{-\infty}^{\infty} \frac{\partial}{\partial t} \Psi^* \Psi dx
+\dv{t} \int_{-\infty}^{\infty} \Psi^* \Psi dx = \int_{-\infty}^{\infty} \frac{\partial}{\partial t} \Psi^* \Psi dx
 $$
 
 Using the product rule:
 
 $$
 \begin{align*}
-\int_{-\infty}^{\infty} \frac{\partial}{\partial t} \Psi^* \Psi dx &= \int_{-\infty}^{\infty} \left( \frac{\partial \Psi^*}{\partial t} \Psi + \Psi^* \frac{\partial \Psi}{\partial t} \right) dx \\
+\int_{-\infty}^{\infty} \frac{\partial}{\partial t} \Psi^* \Psi dx &= \int_{-\infty}^{\infty} \qty( \frac{\partial \Psi^*}{\partial t} \Psi + \Psi^* \frac{\partial \Psi}{\partial t} ) dx \\
 \end{align*}
 $$
 
@@ -463,8 +463,8 @@ Now, we can use the Schrödinger equation to replace the time derivatives:
 $$
 \begin{align*}
 i \hbar \frac{\partial \Psi}{\partial t} &= -\frac{\hbar^2}{2m} \frac{\partial^2 \Psi}{\partial x^2} + V(x) \Psi \\
-\color{red} \frac{\partial \Psi}{\partial t} &= \frac{i \hbar}{2m} \frac{\partial^2 \Psi}{\partial x^2} - i\frac{V(x)}{\hbar} \Psi \\
-\color{blue} \frac{\partial \Psi^*}{\partial t} &= -\frac{i \hbar}{2m} \frac{\partial^2 \Psi^*}{\partial x^2} + i\frac{V(x)}{\hbar} \Psi^* \\
+\class{red}{\frac{\partial \Psi}{\partial t}} &= \frac{i \hbar}{2m} \frac{\partial^2 \Psi}{\partial x^2} - i\frac{V(x)}{\hbar} \Psi \\
+\class{blue}{\frac{\partial \Psi^*}{\partial t}} &= -\frac{i \hbar}{2m} \frac{\partial^2 \Psi^*}{\partial x^2} + i\frac{V(x)}{\hbar} \Psi^* \\
 \end{align*}
 $$
 
@@ -472,12 +472,12 @@ Hence:
 
 $$
 \begin{align*}
-\int_{-\infty}^{\infty} \left( {\color{blue} \frac{\partial \Psi^*}{\partial t}} \Psi + \Psi^* {\color{red} \frac{\partial \Psi}{\partial t}} \right) dx &= \int_{-\infty}^{\infty} \textcolor{blue}{\left( -\frac{i \hbar}{2m} \frac{\partial^2 \Psi^*}{\partial x^2} + i\frac{V(x)}{\hbar} \Psi^* \right)} \Psi + \Psi^* \textcolor{red}{\left( \frac{i \hbar}{2m} \frac{\partial^2 \Psi}{\partial x^2} - i\frac{V(x)}{\hbar} \Psi \right)} dx \\
-&= \int_{-\infty}^{\infty} \left( -\textcolor{red}{\frac{i \hbar}{2m}} \frac{\partial^2 \Psi^*}{\partial x^2} \Psi + \cancel{i\frac{V(x)}{\hbar} \Psi^* \Psi} + \textcolor{red}{\frac{i \hbar}{2m}} \frac{\partial^2 \Psi}{\partial x^2} \Psi^* - \cancel{i\frac{V(x)}{\hbar} \Psi^* \Psi} \right) dx \\
-&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \left( \frac{\partial^2 \Psi^*}{\partial x^2} \Psi - \frac{\partial^2 \Psi}{\partial x^2} \Psi^* \right) dx \\
-&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \frac{\partial}{\partial x} \left( \frac{\partial \Psi^*}{\partial x} \Psi \right) - \frac{\partial}{\partial x} \left( \frac{\partial \Psi}{\partial x} \Psi^* \right) dx \\
-&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \frac{\partial}{\partial x} \left( \frac{\partial \Psi^*}{\partial x} \Psi - \frac{\partial \Psi}{\partial x} \Psi^* \right) dx \tag{Completely time-independent} \\
-&= \frac{i \hbar}{2m} \left. \left( \frac{\partial \Psi^*}{\partial x} \Psi - \frac{\partial \Psi}{\partial x} \Psi^* \right) \right|_{-\infty}^{\infty} \tag{Fundamental theorem of calculus} \\
+\int_{-\infty}^{\infty} \qty( \class{blue}{\frac{\partial \Psi^*}{\partial t}} \Psi + \Psi^* \class{red}{\frac{\partial \Psi}{\partial t}} ) dx &= \int_{-\infty}^{\infty} \class{blue}{\qty( -\frac{i \hbar}{2m} \frac{\partial^2 \Psi^*}{\partial x^2} + i\frac{V(x)}{\hbar} \Psi^* )} \Psi + \Psi^* \class{red}{\qty( \frac{i \hbar}{2m} \frac{\partial^2 \Psi}{\partial x^2} - i\frac{V(x)}{\hbar} \Psi )} dx \\
+&= \int_{-\infty}^{\infty} \qty( -\class{red}{\frac{i \hbar}{2m}} \frac{\partial^2 \Psi^*}{\partial x^2} \Psi + \cancel{i\frac{V(x)}{\hbar} \Psi^* \Psi} + \class{red}{\frac{i \hbar}{2m}} \frac{\partial^2 \Psi}{\partial x^2} \Psi^* - \cancel{i\frac{V(x)}{\hbar} \Psi^* \Psi} ) dx \\
+&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \qty( \frac{\partial^2 \Psi^*}{\partial x^2} \Psi - \frac{\partial^2 \Psi}{\partial x^2} \Psi^* ) dx \\
+&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \frac{\partial}{\partial x} \qty( \frac{\partial \Psi^*}{\partial x} \Psi ) - \frac{\partial}{\partial x} \qty( \frac{\partial \Psi}{\partial x} \Psi^* ) dx \\
+&= \frac{i \hbar}{2m} \int_{-\infty}^{\infty} \frac{\partial}{\partial x} \qty( \frac{\partial \Psi^*}{\partial x} \Psi - \frac{\partial \Psi}{\partial x} \Psi^* ) dx \tag{Completely time-independent} \\
+&= \frac{i \hbar}{2m} \left. \qty( \frac{\partial \Psi^*}{\partial x} \Psi - \frac{\partial \Psi}{\partial x} \Psi^* ) \right|_{-\infty}^{\infty} \tag{Fundamental theorem of calculus} \\
 &= 0 \tag{$\Psi$ approaches zero at infinity}
 \end{align*}
 $$
@@ -510,14 +510,14 @@ Remember that $|\Psi|^2 = \Psi^* \Psi$. Hence:
 
 $$
 \begin{align*}
-\int_{-1}^{1} \textcolor{red}{\Psi^*} \textcolor{blue}{\Psi} dx &= 1 \\
-\int_{-1}^{1} \textcolor{red}{Ae^{-ix}(1 - x^2)} \textcolor{blue}{Ae^{ix}(1 - x^2)} dx &= 1 \\
+\int_{-1}^{1} \class{red}{\Psi^*} \class{blue}{\Psi} dx &= 1 \\
+\int_{-1}^{1} \class{red}{Ae^{-ix}(1 - x^2)} \class{blue}{Ae^{ix}(1 - x^2)} dx &= 1 \\
 A^2 \int_{-1}^{1} e^{-ix} e^{ix} (1 - x^2)^2 dx &= 1 \\\
 A^2 \int_{-1}^{1} (1 - x^2)^2 dx &= 1 \tag{$e^{-ix} e^{ix} = 1$} \\
 A^2 \int_{-1}^{1} (1 - 2x^2 + x^4) dx &= 1 \\
-A^2 \left. \left( x - \frac{2}{3}x^3 + \frac{1}{5}x^5 \right) \right|_{-1}^{1} &= 1 \\
-A^2 \left(2 - \frac{2}{3} 2 + \frac{1}{5} 2\right) &= 1 \\
-A^2 \left(\frac{16}{15}\right) &= 1 \\
+A^2 \left. \qty( x - \frac{2}{3}x^3 + \frac{1}{5}x^5 ) \right|_{-1}^{1} &= 1 \\
+A^2 \qty(2 - \frac{2}{3} 2 + \frac{1}{5} 2) &= 1 \\
+A^2 \qty(\frac{16}{15}) &= 1 \\
 A &= \sqrt{\frac{15}{16}}
 \end{align*}
 $$
@@ -548,19 +548,19 @@ We need an ensemble, which is a collection of identicallly-prepared systems. We 
 How can we predict its motion as a function of time? To do that, we consider the rate of change of the expected value of the position:
 
 $$
-\frac{d}{dt} \langle x \rangle
+\dv{t} \langle x \rangle
 $$
 
 It's a velocity, as a motion of an expectation. Like before, we put the time derivative inside the integral:
 
 $$
-\frac{d}{dt} \langle x \rangle = \int_{-\infty}^{\infty} x \textcolor{yellow}{\frac{\partial}{\partial t} \Psi^* \Psi} dx
+\dv{t} \langle x \rangle = \int_{-\infty}^{\infty} x \class{yellow}{\frac{\partial}{\partial t} \Psi^* \Psi} dx
 $$
 
 Remember when we tested the normalization of the wavefunction? We calculated what the yellow part, $\frac{\partial}{\partial t} \Psi^* \Psi$, was:
 
 $$
-\int_{-\infty}^{\infty} x \textcolor{yellow}{\frac{\partial}{\partial t} \Psi^* \Psi} dx = \textcolor{yellow}{\frac{i \hbar}{2m}} \int_{-\infty}^{\infty} x \textcolor{yellow}{\frac{\partial}{\partial x} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right)} dx
+\int_{-\infty}^{\infty} x \class{yellow}{\frac{\partial}{\partial t} \Psi^* \Psi} dx = \class{yellow}{\frac{i \hbar}{2m}} \int_{-\infty}^{\infty} x \class{yellow}{\frac{\partial}{\partial x} \qty(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi )} dx
 $$
 
 Using integration by parts:
@@ -568,7 +568,7 @@ Using integration by parts:
 $$
 \begin{align*}
 u &= x \\
-dv &= \frac{\partial}{\partial x} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) dx \\
+dv &= \frac{\partial}{\partial x} \qty(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi ) dx \\
 du &= dx \\
 v &= \Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi
 \end{align*}
@@ -578,8 +578,8 @@ Hence:
 
 $$
 \begin{align*}
-\frac{i \hbar}{2m} \int_{-\infty}^{\infty} x \frac{\partial}{\partial x} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) dx &= \frac{i \hbar}{2m} \left[\textcolor{red}{ \cancel{\left. x \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) \right|_{-\infty}^{\infty}}} - \int_{-\infty}^{\infty} \left(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi \right) dx \right] \\
-&= \frac{i \hbar}{2m} \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \textcolor{green}{\int_{-\infty}^{\infty} \frac{\partial \Psi^*}{\partial x} \Psi dx} \right] \\
+\frac{i \hbar}{2m} \int_{-\infty}^{\infty} x \frac{\partial}{\partial x} \qty(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi ) dx &= \frac{i \hbar}{2m} \left[\class{red}{ \cancel{\left. x \qty(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi ) \right|_{-\infty}^{\infty}}} - \int_{-\infty}^{\infty} \qty(\Psi^* \frac{\partial \Psi}{\partial x} - \frac{\partial \Psi^*}{\partial x} \Psi ) dx \right] \\
+&= \frac{i \hbar}{2m} \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \class{green}{\int_{-\infty}^{\infty} \frac{\partial \Psi^*}{\partial x} \Psi dx} \right] \\
 \end{align*}
 $$
 
@@ -598,7 +598,7 @@ Therefore:
 
 $$
 \begin{align*}
-\frac{i \hbar}{2m} \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \textcolor{green}{\int_{-\infty}^{\infty} \frac{\partial \Psi^*}{\partial x} \Psi dx} \right] &= \frac{i \hbar}{2m}\ \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \cancel{\left. \Psi^* \Psi \right|_{-\infty}^{\infty}} + \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx \right] \\
+\frac{i \hbar}{2m} \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \class{green}{\int_{-\infty}^{\infty} \frac{\partial \Psi^*}{\partial x} \Psi dx} \right] &= \frac{i \hbar}{2m}\ \left[ \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx - \cancel{\left. \Psi^* \Psi \right|_{-\infty}^{\infty}} + \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx \right] \\
 &= \frac{i \hbar}{m} \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx \\
 &= \langle \hat{v} \rangle
 \end{align*}
@@ -608,9 +608,9 @@ We found out the expected value of the velocity operator, $\langle \hat{v} \rang
 
 $$
 \begin{align*}
-\langle \hat{v} \rangle = -\frac{i \hbar}{m} \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx &= \int_{-\infty}^{\infty} \Psi^* \textcolor{yellow}{\left( -\frac{i \hbar}{m} \frac{\partial}{\partial x} \right)} &&\Psi dx \\
-\langle \hat{p} \rangle &= \int_{-\infty}^{\infty} \Psi^* \textcolor{yellow}{\left( -i \hbar \frac{\partial}{\partial x} \right)} &&\Psi dx \\
-\langle \hat{x} \rangle &= \int_{-\infty}^{\infty} \Psi^* \textcolor{yellow}{(x)} &&\Psi dx
+\langle \hat{v} \rangle = -\frac{i \hbar}{m} \int_{-\infty}^{\infty} \Psi^* \frac{\partial \Psi}{\partial x} dx &= \int_{-\infty}^{\infty} \Psi^* \class{yellow}{\qty( -\frac{i \hbar}{m} \frac{\partial}{\partial x} )} &&\Psi dx \\
+\langle \hat{p} \rangle &= \int_{-\infty}^{\infty} \Psi^* \class{yellow}{\qty( -i \hbar \frac{\partial}{\partial x} )} &&\Psi dx \\
+\langle \hat{x} \rangle &= \int_{-\infty}^{\infty} \Psi^* \class{yellow}{(x)} &&\Psi dx
 \end{align*}
 $$
 

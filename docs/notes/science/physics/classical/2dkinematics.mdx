@@ -13,17 +13,17 @@ In two dimensions, the position can no longer be wholly described by a scalar.
 Instead, we use a vector to describe the position of an object in two dimensions.
 
 $$
-\bvec{r} = x\ihat + y\jhat
+\va{r} = x\vu{i} + y\vu{j}
 $$
 
-Where $\ihat$ and $\jhat$ are the unit vectors in the x and y directions respectively.
+Where $\vu{i}$ and $\vu{j}$ are the unit vectors in the x and y directions respectively.
 
 Therefore, the velocity and acceleration can be derived from the position vector:
 
 $$
 \begin{align*}
-    \bvec{v} &= \frac{d\bvec{r}}{dt} = \frac{d}{dt}(x\ihat + y\jhat) = \frac{dx}{dt}\ihat + \frac{dy}{dt}\jhat = v_x\ihat + v_y\jhat \\
-    \bvec{a} &= \frac{d\bvec{v}}{dt} = \frac{d}{dt}(v_x\ihat + v_y\jhat) = \frac{dv_x}{dt}\ihat + \frac{dv_y}{dt}\jhat = a_x\ihat + a_y\jhat
+    \va{v} &= \frac{d\va{r}}\dd{t} = \dv{t}(x\vu{i} + y\vu{j}) = \dv{x}{t}\vu{i} + \dv{y}{t}\vu{j} = v_x\vu{i} + v_y\vu{j} \\
+    \va{a} &= \frac{d\va{v}}\dd{t} = \dv{t}(v_x\vu{i} + v_y\vu{j}) = \dv{v_x}{t}\vu{i} + \dv{v_y}{t}\vu{j} = a_x\vu{i} + a_y\vu{j}
 \end{align*}
 $$
 

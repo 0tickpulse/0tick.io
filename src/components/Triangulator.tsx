@@ -117,9 +117,9 @@ export default function Triangulator() {
     };
 
     const displayLine = (idx: number, p: Point, q: Point) => {
-        return String.raw`{r_${idx}}(t) = ${toLatex(p.slice(0, dimensions))} + t\left(${toLatex(
+        return String.raw`{r_${idx}}(t) = ${toLatex(p.slice(0, dimensions))} + t\qty(${toLatex(
             numeric.sub(q.slice(0, dimensions), p.slice(0, dimensions))
-        )}\right)`;
+        )})`;
     };
 
     const tableRowProps = {

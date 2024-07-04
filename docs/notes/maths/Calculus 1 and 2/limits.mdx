@@ -160,7 +160,7 @@ Graphing the function and seeing what value it approaches as $x$ gets closer and
 
 $$
 \begin{equation}
-\lim_{x \to 0} \left(\frac{\sin(x)}{x}\right)
+\lim_{x \to 0} \qty(\frac{\sin(x)}{x})
 \end{equation}
 $$
 
@@ -196,7 +196,7 @@ Notice that while there's a gap at $x = 0$, the function seems to approach 1 as 
 
 $$
 \begin{equation}
-\lim_{x \to 0} \left(\frac{\sin(x)}{x}\right) = 1
+\lim_{x \to 0} \qty(\frac{\sin(x)}{x}) = 1
 \end{equation}
 $$
 
@@ -280,8 +280,8 @@ Let's first try to substitute in $x = -\frac{\pi}{4}$:
 
 $$
 \begin{align}
-f\left(-\frac{\pi}{4}\right) &= \frac{\cos\left(2 \cdot -\frac{\pi}{4}\right)}{\cos\left(-\frac{\pi}{4}\right) + \sin\left(-\frac{\pi}{4}\right)} \\
-&= \frac{\cos\left(-\frac{\pi}{2}\right)}{\frac{1}{\sqrt{2}} - \frac{1}{\sqrt{2}}} \\
+f\qty(-\frac{\pi}{4}) &= \frac{\cos\qty(2 \cdot -\frac{\pi}{4})}{\cos\qty(-\frac{\pi}{4}) + \sin\qty(-\frac{\pi}{4})} \\
+&= \frac{\cos\qty(-\frac{\pi}{2})}{\frac{1}{\sqrt{2}} - \frac{1}{\sqrt{2}}} \\
 &= \frac{0}{0}
 \end{align}
 $$
@@ -300,9 +300,9 @@ So the limit becomes:
 $$
 \begin{align}
 \lim_{x \to -\frac{\pi}{4}} f(x) &= \lim_{x \to -\frac{\pi}{4}} \frac{\cos^2(x) - \sin^2(x)}{\cos(x) + \sin(x)} \\
-&= \lim_{x \to -\frac{\pi}{4}} \frac{(\cos(x) - \sin(x)) {\color{Red}(\cos(x) + \sin(x))}}{{\color{Red}\cos(x) + \sin(x)}} \\
+&= \lim_{x \to -\frac{\pi}{4}} \frac{(\cos(x) - \sin(x)) \class{red}{(\cos(x) + \sin(x))}{\color{Red}(\cos(x) + \sin(x))}} \\
 &= \lim_{x \to -\frac{\pi}{4}} (\cos(x) - \sin(x)) \\
-&= \cos\left(-\frac{\pi}{4}\right) - \sin\left(-\frac{\pi}{4}\right) \\
+&= \cos\qty(-\frac{\pi}{4}) - \sin\qty(-\frac{\pi}{4}) \\
 &= \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{2}} \\
 &= \sqrt{2}
 \end{align}
@@ -417,7 +417,7 @@ If you have a limit of a function that's a combination of other functions, you c
 
 $$
 \begin{equation}
-\lim_{x \to a} \left(f(x) + g(x)\right) = \lim_{x \to a} f(x) + \lim_{x \to a} g(x)
+\lim_{x \to a} \qty(f(x) + g(x)) = \lim_{x \to a} f(x) + \lim_{x \to a} g(x)
 \end{equation}
 $$
 
@@ -427,7 +427,7 @@ $$
 
 $$
 \begin{equation}
-\lim_{x \to a} \left(f(x) \cdot g(x)\right) = \lim_{x \to a} f(x) \cdot \lim_{x \to a} g(x)
+\lim_{x \to a} \qty(f(x) \cdot g(x)) = \lim_{x \to a} f(x) \cdot \lim_{x \to a} g(x)
 \end{equation}
 $$
 
@@ -444,7 +444,7 @@ If these conditions are met, then:
 
 $$
 \begin{equation}
-\lim_{x \to a} f(g(x)) = f\left(\lim_{x \to a} g(x)\right) = f(L)
+\lim_{x \to a} f(g(x)) = f\qty(\lim_{x \to a} g(x)) = f(L)
 \end{equation}
 $$
 
@@ -830,8 +830,8 @@ Provided that this function is continuous for all $x \in \mathbb{R}$,
 
 $$
 \begin{align}
-f(0) &= \lim_{x \to 0} \left(\frac{10x}{x^2 + 5x}\right) \\
-&= \lim_{x \to 0} \left(\frac{10}{x + 5}\right) \\
+f(0) &= \lim_{x \to 0} \qty(\frac{10x}{x^2 + 5x}) \\
+&= \lim_{x \to 0} \qty(\frac{10}{x + 5}) \\
 &= \frac{10}{5} \\
 &= 2
 \end{align}

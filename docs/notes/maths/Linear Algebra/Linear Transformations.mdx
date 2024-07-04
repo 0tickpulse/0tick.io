@@ -10,8 +10,8 @@ import TOCInline from '@theme/TOCInline';
 A linear transformation is a function that maps vectors to vectors in a way that preserves the vector space structure.
 In other words, a linear transformation is a function $T: V \to W$ that satisfies the following two properties:
 
-1. **Additivity**: $T(\bvec{u} + \bvec{v}) = T(\bvec{u}) + T(\bvec{v})$ for all vectors $\bvec{u}, \bvec{v} \in V$.
-2. **Homogeneity**: $T(c\bvec{v}) = cT(\bvec{v})$ for all vectors $\bvec{v} \in V$ and all scalars $c$.
+1. **Additivity**: $T(\va{u} + \va{v}) = T(\va{u}) + T(\va{v})$ for all vectors $\va{u}, \va{v} \in V$.
+2. **Homogeneity**: $T(c\va{v}) = cT(\va{v})$ for all vectors $\va{v} \in V$ and all scalars $c$.
 
 In simpler terms, a linear transformation preserves vector addition and scalar multiplication.
 One way to conceptualize this is to think of a linear transformation as a function that stretches, compresses, rotates, or reflects vectors in a vector space.
@@ -20,49 +20,53 @@ The transformation has to preserve the structure of the space, which means that 
 A result of this is that after applying a linear transformation, the gridlines in the vector space will remain parallel and evenly spaced.
 This property is crucial in many applications of linear algebra, such as computer graphics, physics, and engineering.
 
+## Table of Contents
+
+<TOCInline toc={toc} />
+
 ## Conceptual Introduction
 
 To understand linear transformations better, let's consider a simple example.
 
-Consider a 2D vector space, $\mathbb{R}^2$, with the standard basis vectors $\ihat = \begin{bmatrix} 1 \\ 0 \end{bmatrix}$ and $\jhat = \begin{bmatrix} 0 \\ 1 \end{bmatrix}$.
+Consider a 2D vector space, $\mathbb{R}^2$, with the standard basis vectors $\vu{i} = \mqty[ 1 \\ 0 ]$ and $\vu{j} = \mqty[ 0 \\ 1 ]$.
 
 Let's define a linear transformation as follows:
 
 $$
 \begin{equation}
-T = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}
+T = \mqty[ 2 & 0 \\ 0 & 3 ]
 \end{equation}
 $$
 
 The notation for a transformation is often written as a matrix, where each column represents the image of the corresponding basis vector.
 
-Essentially, what this means is that the transformation $T$ takes the standard basis vectors $\ihat$ and $\jhat$ and maps them to $\begin{bmatrix} 2 \\ 0 \end{bmatrix}$ and $\begin{bmatrix} 0 \\ 3 \end{bmatrix}$, respectively.
+Essentially, what this means is that the transformation $T$ takes the standard basis vectors $\vu{i}$ and $\vu{j}$ and maps them to $\mqty[ 2 \\ 0 ]$ and $\mqty[ 0 \\ 3 ]$, respectively.
 
-Suppose we have a vector $\bvec{v} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$ in the space. The vector can be represented as a linear combination of the basis vectors:
+Suppose we have a vector $\va{v} = \mqty[ 1 \\ 2 ]$ in the space. The vector can be represented as a linear combination of the basis vectors:
 
 $$
 \begin{equation}
-\bvec{v} = 1 \begin{bmatrix} 1 \\ 0 \end{bmatrix} + 2 \begin{bmatrix} 0 \\ 1 \end{bmatrix} = 1\ihat + 2\jhat
+\va{v} = 1 \mqty[ 1 \\ 0 ] + 2 \mqty[ 0 \\ 1 ] = 1\vu{i} + 2\vu{j}
 \end{equation}
 $$
 
-By applying the linear transformation, you're saying that $\ihat$ becomes $\begin{bmatrix} 2 \\ 0 \end{bmatrix}$ and $\jhat$ becomes $\begin{bmatrix} 0 \\ 3 \end{bmatrix}$.
+By applying the linear transformation, you're saying that $\vu{i}$ becomes $\mqty[ 2 \\ 0 ]$ and $\vu{j}$ becomes $\mqty[ 0 \\ 3 ]$.
 
 Therefore:
 
 $$
 \begin{equation}
-T(\bvec{v}) = 1 \begin{bmatrix} 2 \\ 0 \end{bmatrix} + 2 \begin{bmatrix} 0 \\ 3 \end{bmatrix} = \begin{bmatrix} 2 \\ 6 \end{bmatrix}
+T(\va{v}) = 1 \mqty[ 2 \\ 0 ] + 2 \mqty[ 0 \\ 3 ] = \mqty[ 2 \\ 6 ]
 \end{equation}
 $$
 
-This means that the vector $\bvec{v}$ is transformed to $\begin{bmatrix} 2 \\ 6 \end{bmatrix}$ under the transformation $T$.
+This means that the vector $\va{v}$ is transformed to $\mqty[ 2 \\ 6 ]$ under the transformation $T$.
 
 ## Visualizing Linear Transformations
 
 Let's visualize this transformation in the vector space.
 
-We'll start by plotting the standard basis vectors $\ihat$ and $\jhat$ in the space.
+We'll start by plotting the standard basis vectors $\vu{i}$ and $\vu{j}$ in the space.
 
 {(() => {
     const ihat = useMovablePoint([1, 0]);
@@ -91,19 +95,19 @@ To generalize this concept to all 2D vectors, we can represent the transformatio
 
 $$
 \begin{equation}
-T = \begin{bmatrix} a & b \\ c & d \end{bmatrix}
+T = \mqty[ a & b \\ c & d ]
 \end{equation}
 $$
 
-The matrix $T$ represents a linear transformation that maps the standard basis vectors $\ihat$ and $\jhat$ to the vectors $\begin{bmatrix} a \\ c \end{bmatrix}$ and $\begin{bmatrix} b \\ d \end{bmatrix}$, respectively.
+The matrix $T$ represents a linear transformation that maps the standard basis vectors $\vu{i}$ and $\vu{j}$ to the vectors $\mqty[ a \\ c ]$ and $\mqty[ b \\ d ]$, respectively.
 
-Let $\bvec{v} = \begin{bmatrix} x \\ y \end{bmatrix}$ be an arbitrary vector in $\mathbb{R}^2$.
+Let $\va{v} = \mqty[ x \\ y ]$ be an arbitrary vector in $\mathbb{R}^2$.
 
 Then:
 
 $$
 \begin{equation}
-T(\bvec{v}) = \begin{bmatrix} a & b \\ c & d \end{bmatrix} \begin{bmatrix} x \\ y \end{bmatrix} = a \begin{bmatrix} x \\ y \end{bmatrix} + b \begin{bmatrix} x \\ y \end{bmatrix} = \begin{bmatrix} ax + by \\ cx + dy \end{bmatrix}
+T(\va{v}) = \mqty[ a & b \\ c & d ] \mqty[ x \\ y ] = a \mqty[ x \\ y ] + b \mqty[ x \\ y ] = \mqty[ ax + by \\ cx + dy ]
 \end{equation}
 $$
 
@@ -121,16 +125,16 @@ This idea can be written as:
 
 $$
 \begin{equation}
-T(\bvec{v}) = \begin{bmatrix} {a_{1,1}} & {a_{1,2}} & \cdots & {a_{1,m}} \\ {a_{2,1}} & {a_{2,2}} & \cdots & {a_{2,m}} \\ \vdots & \vdots & \ddots & \vdots \\ {a_{n,1}} & {a_{n,2}} & \cdots & {a_{n,m}} \end{bmatrix} \begin{bmatrix} v_1 \\ v_2 \\ \vdots \\ v_m \end{bmatrix}
+T(\va{v}) = \mqty[ {a_{1,1}} & {a_{1,2}} & \cdots & {a_{1,m}} \\ {a_{2,1}} & {a_{2,2}} & \cdots & {a_{2,m}} \\ \vdots & \vdots & \ddots & \vdots \\ {a_{n,1}} & {a_{n,2}} & \cdots & {a_{n,m}} ] \mqty[ v_1 \\ v_2 \\ \vdots \\ v_m ]
 \end{equation}
 $$
 
-Where the $a_{i,j}$ are the elements of the matrix representing the transformation, and $v_1, v_2, \ldots, v_m$ are the components of the vector $\bvec{v}$.
+Where the $a_{i,j}$ are the elements of the matrix representing the transformation, and $v_1, v_2, \ldots, v_m$ are the components of the vector $\va{v}$.
 The basis vectors can be represented as:
 
 $$
 \begin{equation}
-\ihat = \begin{bmatrix} 1 \\ 0 \\ \vdots \\ 0 \end{bmatrix}, \jhat = \begin{bmatrix} 0 \\ 1 \\ \vdots \\ 0 \end{bmatrix}, \ldots, \khat = \begin{bmatrix} 0 \\ 0 \\ \vdots \\ 1 \end{bmatrix}
+\vu{i} = \mqty[ 1 \\ 0 \\ \vdots \\ 0 ], \vu{j} = \mqty[ 0 \\ 1 \\ \vdots \\ 0 ], \ldots, \khat = \mqty[ 0 \\ 0 \\ \vdots \\ 1 ]
 \end{equation}
 $$
 
@@ -148,11 +152,11 @@ For example, consider the transformation $T: \mathbb{R}^2 \to \mathbb{R}^2$ defi
 
 $$
 \begin{equation}
-T = \begin{bmatrix} 2 & 0 \\ 0 & 3 \end{bmatrix}
+T = \mqty[ 2 & 0 \\ 0 & 3 ]
 \end{equation}
 $$
 
-$\ihat$ goes from $[1, 0]$ to $[2, 0]$, and $\jhat$ goes from $[0, 1]$ to $[0, 3]$.
+$\vu{i}$ goes from $[1, 0]$ to $[2, 0]$, and $\vu{j}$ goes from $[0, 1]$ to $[0, 3]$.
 Hence, the transformation scales the space by a factor of 2 in the $x$-direction and 3 in the $y$-direction.
 
 ### Rotation
@@ -164,7 +168,7 @@ This is a bit more complex than scaling, but it can still be represented by a ma
 Essentially, you rotate the basis vectors by a certain angle. To do so, we need to use some trigonometry.
 
 Consider the transformation $T: \mathbb{R}^2 \to \mathbb{R}^2$ that rotates vectors by an angle $\theta$ counterclockwise.
-It transforms $\ihat$ to $\ihat'$. To find $\ihat'$, we can observe it geometrically:
+It transforms $\vu{i}$ to $\vu{i}'$. To find $\vu{i}'$, we can observe it geometrically:
 
 <Mafs
     viewBox={{
@@ -207,3 +211,29 @@ It transforms $\ihat$ to $\ihat'$. To find $\ihat'$, we can observe it geometric
         radius={0.2}
     />
 </Mafs>
+
+(More coming soon)
+
+## Proving the Properties of Linear Transformations
+
+To prove that a function is a linear transformation, you need to show that it satisfies the two properties mentioned earlier: additivity and homogeneity.
+
+Consider this matrix:
+
+$$
+\begin{equation}
+A = \mqty[ \va{v_1} \va{v_2} \cdots \va{v_n} ]
+\end{equation}
+$$
+
+Each vector $\va{v_i}$ is a column vector in the matrix $A$ and has $m$ components, so $A$ is an $m \times n$ matrix.
+
+Let $T: \mathbb{R}^n \to \mathbb{R}^m$ be a function defined by $T(\va{x}) = A\va{x}$.
+
+We can express $\va{x}$ as $[x_1, x_2, \ldots, x_n]^T$ and, hence, $A\va{x}$ as:
+
+$$
+\begin{equation}
+T(\va{x}) = \mqty[ \va{v_1} \va{v_2} \cdots \va{v_n} ] \mqty[ x_1 \\ x_2 \\ \vdots \\ x_n ] = x_1\va{v_1} + x_2\va{v_2} + \cdots + x_n\va{v_n}
+\end{equation}
+$$

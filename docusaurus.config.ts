@@ -16,7 +16,17 @@ const config = {
     favicon: "img/favicon.ico",
 
     customFields: {
-        mathJaxOptions: {} as Options,
+        mathJaxOptions: {
+            loader: { load: ["[tex]/mathtools", "[tex]/cancel"] },
+            tex: {
+                tags: "ams",
+                macros: MATH_MACROS,
+                packages: { "[+]": ["autoload", "ams", "cancel", "mathtools", "html", "configmacros", "physics"] },
+            },
+            svg: {
+                scale: 1.2,
+            },
+        } as Options,
     },
 
     // Set the production url of your site here
@@ -79,14 +89,7 @@ const config = {
                         (options: Options) => {
                             config.customFields.mathJaxOptions = {
                                 ...options,
-                                tex: {
-                                    tags: "ams",
-                                    // @ts-expect-error
-                                    macros: MATH_MACROS,
-                                },
-                                svg: {
-                                    scale: 1.2,
-                                }
+                                ...config.customFields.mathJaxOptions,
                             };
                             return rehypeMathjax(config.customFields.mathJaxOptions);
                         },

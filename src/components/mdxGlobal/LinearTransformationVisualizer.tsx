@@ -7,7 +7,7 @@ export type LinearTransformationVisualizerProps = {
 };
 
 export default function LinearTransformationVisualizer({ ihat = [1, 0], jhat = [0, 1] }: LinearTransformationVisualizerProps) {
-    const matrix = [ihat[0], jhat[0], ihat[1], jhat[1], 0, 0];
+    const matrix = [ihat[0], -ihat[1], jhat[0], -jhat[1], 0, 0];
 
     const transformedCartesian = (
         <Coordinates.Cartesian

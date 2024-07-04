@@ -140,20 +140,20 @@ $$
 
 -   Some textbooks use $h$ instead of $\Delta x$ for some reason.
 -   The derivative of a function $f(x)$ is often denoted as $f'(x)$, pronounced "f prime of x".
--   $\frac{dy}{dx}$ is known as _Leibniz notation_, while $f'(x)$ is known as _Lagrange notation_.
+-   $\dv{y}{x}$ is known as _Leibniz notation_, while $f'(x)$ is known as _Lagrange notation_.
 
 :::
 
 ### Delta and d
 
 In the above, we used $\Delta x$ to represent a small change in $x$, and likewise for $\Delta y$.
-As the change approaches $0$, another symbol is used to represent this infinitesimally small change: $dx$ and $dy$.
+As the change approaches $0$, another symbol is used to represent this infinitesimally small change: $\dd{x}$ and $\dd{y}$.
 
 When using $d$, the concept of it approaching $0$ is "built-in" to the symbol, so we can write the derivative as:
 
 $$
 \begin{equation}
-f'(x) = \frac{dy}{dx}
+f'(x) = \dv{y}{x}
 \end{equation}
 $$
 
@@ -161,15 +161,15 @@ If we want to differentiate, let's say, $x^2$, we can write it as:
 
 $$
 \begin{equation}
-\frac{d}{dx} x^2 \text{ or } \frac{d(x^2)}{dx}
+\dv{x} x^2 \text{ or } \dv{(x^2)}{x}
 \end{equation}
 $$
 
 The fraction on the left is the _differential operator_.
 
-While some textbooks suggest that $\frac{dy}{dx}$ shouldn't be thought of as a fraction, it's often much more intuitive to think of it as one.
+While some textbooks suggest that $\dv{y}{x}$ shouldn't be thought of as a fraction, it's often much more intuitive to think of it as one.
 Even though it's not a fraction in the strictest sense, it behaves like one in many ways, and it is indeed a slope after all.
-Furthermore, when $dy$ and $dx$ are seen by themselves, they are much easier to understand. This is important especially in implicit differentiation.
+Furthermore, when $\dd{y}$ and $\dd{x}$ are seen by themselves, they are much easier to understand. This is important especially in implicit differentiation.
 
 ## Differentiation of Sums of Functions
 
@@ -209,7 +209,7 @@ Once again, let's find the derivative at $x = 3$. Look at the figure below:
 The straight line is the $\frac{1}{3} x$ part, and the curve is the whole function.
 The two arrows represent that at that point, the total value of the function is the sum of the two terms, with each arrow representing one term.
 
-Recall that to take the slope, you imagine another point some distance $dx$ away and measure how much $y$ changes:
+Recall that to take the slope, you imagine another point some distance $\dd{x}$ away and measure how much $y$ changes:
 
 export function DifferentiationSum({ split = false }) {
     const f = (x) => 1 / 5 * Math.pow(x, 2) + 1 / 3 * x;
@@ -302,7 +302,7 @@ export function DifferentiationSum({ split = false }) {
 
 <DifferentiationSum />
 
-The key idea is that this green $dy$ can be "split" into two parts: one from the $\frac{1}{5} x^2$ term and one from the $\frac{1}{3} x$ term.
+The key idea is that this green $\dd{y}$ can be "split" into two parts: one from the $\frac{1}{5} x^2$ term and one from the $\frac{1}{3} x$ term.
 
 <DifferentiationSum split={true} />
 
@@ -310,7 +310,7 @@ Therefore:
 
 $$
 \begin{equation}
-\frac{d}{dx} \left( \frac{1}{5} x^2 + \frac{1}{3} x \right) = \frac{d}{dx} \left( \frac{1}{5} x^2 \right) + \frac{d}{dx} \left( \frac{1}{3} x \right)
+\dv{x} \qty( \frac{1}{5} x^2 + \frac{1}{3} x ) = \dv{x} \qty( \frac{1}{5} x^2 ) + \dv{x} \qty( \frac{1}{3} x )
 \end{equation}
 $$
 
@@ -318,7 +318,7 @@ Or more generally,
 
 $$
 \begin{equation}
-\frac{d}{dx} \left( f(x) + g(x) \right) = \frac{d}{dx} f(x) + \frac{d}{dx} g(x)
+\dv{x} \qty( f(x) + g(x) ) = \dv{x} f(x) + \dv{x} g(x)
 \end{equation}
 $$
 
@@ -387,7 +387,7 @@ export function SimpleProducts() {
 
 <SimpleProducts />
 
-Now imagine that $x$ increases by a small amount $dx$. The change in the product, $dy$, can be thought of as the change in the area of the rectangle.
+Now imagine that $x$ increases by a small amount $\dd{x}$. The change in the product, $\dd{y}$, can be thought of as the change in the area of the rectangle.
 
 export function DifferenceInArea({ split = false }) {
     const f = (x) => 1 / 5 * Math.pow(x, 2);
@@ -498,18 +498,18 @@ Therefore, the change in the product can be expressed as:
 
 $$
 \begin{align}
-d(f(x) \cdot g(x)) &= \class{red}{(f(x) \cdot d(g(x)))} \\
-&+ \class{yellow}{(g(x) \cdot d(f(x)))} \\
-&+ \class{blue}{(d(f(x)) \cdot d(g(x)))} \\
+\dd(f(x) \cdot g(x)) &= \class{red}{(f(x) \cdot \dd(g(x)))} \\
+&+ \class{yellow}{(g(x) \cdot \dd(f(x)))} \\
+&+ \class{blue}{(\dd(f(x)) \cdot \dd(g(x)))} \\
 \end{align}
 $$
 
-The last term, $d(f(x)) \cdot d(g(x))$, will approach $0$ because it is the product of two infinitesimally small changes.
+The last term, $\dd(f(x)) \cdot \dd(g(x))$, will approach $0$ because it is the product of two infinitesimally small changes.
 Therefore, the derivative of the product of two functions is:
 
 $$
 \begin{equation}
-\frac{d}{dx} \left( f(x) \cdot g(x) \right) = f(x) \cdot \frac{d}{dx} g(x) + g(x) \cdot \frac{d}{dx} f(x)
+\dv{x} \qty( f(x) \cdot g(x) ) = f(x) \cdot \dv{x} g(x) + g(x) \cdot \dv{x} f(x)
 \end{equation}
 $$
 
@@ -517,7 +517,7 @@ Another way to write this is:
 
 $$
 \begin{equation}
-\frac{d}{dx} \left( f(x) \cdot g(x) \right) = f(x) \cdot g'(x) + g(x) \cdot f'(x)
+\dv{x} \qty( f(x) \cdot g(x) ) = f(x) \cdot g'(x) + g(x) \cdot f'(x)
 \end{equation}
 $$
 
@@ -539,7 +539,7 @@ Another way to think of it is through algebraic manipulation, assuming $y = f(g(
 
 $$
 \begin{align}
-\frac{dy}{dx} = \frac{dy}{dg} \cdot \frac{dg}{dx}
+\dv{y}{x} = \dv{y}{g} \cdot \dv{g}{x}
 \end{align}
 $$
 
@@ -552,7 +552,7 @@ The derivative of $y$ with respect to $x$ is:
 
 $$
 \begin{align}
-\frac{dy}{dx} = \lim_{\Delta x \to 0} \frac{f(g(x + \Delta x)) - f(g(x))}{\Delta x}
+\dv{y}{x} = \lim_{\Delta x \to 0} \frac{f(g(x + \Delta x)) - f(g(x))}{\Delta x}
 \end{align}
 $$
 
@@ -560,7 +560,7 @@ We can rewrite this as:
 
 $$
 \begin{align}
-\frac{dy}{dx} &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} \\
+\dv{y}{x} &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \frac{\Delta u}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x}
 \end{align}
@@ -570,8 +570,8 @@ Since $f$ is differentiable at $u$, as $\Delta x \to 0$, $\Delta u \to 0$. Thus:
 
 $$
 \begin{align}
-\frac{dy}{dx} &= \lim_{{\color{red} \cancel{\Delta x \to 0}} \Delta u \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x} \\
-&= \frac{dy}{du} \cdot \frac{du}{dx} \\
+\dv{y}{x} &= \lim_{{\class{red}{\cancel{\Delta x \to 0}}} \Delta u \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x} \\
+&= \dv{y}{u} \cdot \dv{u}{x} \\
 &= f'(u) \cdot g'(x) \\
 &= f'(g(x)) \cdot g'(x)
 \end{align}
@@ -583,7 +583,7 @@ The derivative of a power function is:
 
 $$
 \begin{equation}
-\frac{d}{dx} x^n = n \cdot x^{n - 1}
+\dv{x} x^n = n \cdot x^{n - 1}
 \end{equation}
 $$
 
@@ -591,7 +591,7 @@ To show this, let's make a general power function $f(x) = x^n$ and apply the lim
 
 $$
 \begin{equation}
-\frac{df}{dx}(x) = \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x}
+\dv{f}{x}(x) = \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x}
 \end{equation}
 $$
 
@@ -619,7 +619,7 @@ $$
 \begin{align}
 f'(x) &= \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\sum_{k = 0}^{n} \binom{n}{k} x^{n - k} (\Delta x)^k - x^n}{\Delta x} \\
-&= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \left( \cancel{x^n} + \binom{n}{1} x^{n - 1} (\Delta x)^1 + \ldots + \binom{n}{n} x^0 (\Delta x)^n - \cancel{x^n} \right) \\
+&= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \qty( \cancel{x^n} + \binom{n}{1} x^{n - 1} (\Delta x)^1 + \ldots + \binom{n}{n} x^0 (\Delta x)^n - \cancel{x^n} ) \\
 \end{align}
 $$
 
@@ -630,7 +630,7 @@ Therefore, the derivative of $x^n$ is:
 
 $$
 \begin{equation}
-\frac{d}{dx} x^n = n \cdot x^{n - 1}
+\dv{x} x^n = n \cdot x^{n - 1}
 \end{equation}
 $$
 
@@ -650,9 +650,9 @@ To find the derivative, we can use the chain rule:
 
 $$
 \begin{align}
-f'(x) &= \frac{d}{dx} \exp(r \ln{x}) \\
-&= \exp(r \ln{x}) \cdot \frac{d}{dx} (r \ln{x}) \\
-&= x^r \cdot \frac{d}{dx} (r \ln{x}) \\
+f'(x) &= \dv{x} \exp(r \ln{x}) \\
+&= \exp(r \ln{x}) \cdot \dv{x} (r \ln{x}) \\
+&= x^r \cdot \dv{x} (r \ln{x}) \\
 &= x^r \cdot r \cdot \frac{1}{x} \\
 &= r \cdot x^{r - 1}
 \end{align}
@@ -671,16 +671,16 @@ The derivatives of the trigonometric functions are as follows:
 
 $$
 \begin{align}
-\frac{d}{dx} \sin{x} &= \cos{x} \\
-\frac{d}{dx} \cos{x} &= -\sin{x} \\
-\frac{d}{dx} \tan{x} &= \sec^2{x} \\
-\frac{d}{dx} \cot{x} &= -\csc^2{x} \\
-\frac{d}{dx} \sec{x} &= \sec{x} \tan{x} \\
-\frac{d}{dx} \csc{x} &= -\csc{x} \cot{x}
+\dv{x} \sin{x} &= \cos{x} \\
+\dv{x} \cos{x} &= -\sin{x} \\
+\dv{x} \tan{x} &= \sec^2{x} \\
+\dv{x} \cot{x} &= -\csc^2{x} \\
+\dv{x} \sec{x} &= \sec{x} \tan{x} \\
+\dv{x} \csc{x} &= -\csc{x} \cot{x}
 \end{align}
 $$
 
-We'll just look at the first one, $\frac{d}{dx} \sin{x} = \cos{x}$, to show how it's derived.
+We'll just look at the first one, $\dv{x} \sin{x} = \cos{x}$, to show how it's derived.
 
 (TODO)
 
@@ -694,9 +694,9 @@ The derivatives of $\tan{x}$, $\cot{x}$, $\sec{x}$, and $\csc{x}$ can be derived
 
 $$
 \begin{align}
-\frac{d}{dx} \tan{x} &= \frac{d}{dx} \frac{\sin{x}}{\cos{x}} \\
-\frac{d}{dx} \frac{u}{v} &= \frac{v \frac{du}{dx} - u \frac{dv}{dx}}{v^2} \\
-\therefore \frac{d}{dx} \tan{x} &= \frac{\cos{x} \cos{x} - (\sin{x})(-\sin{x})}{\cos^2{x}} \\
+\dv{x} \tan{x} &= \dv{x} \frac{\sin{x}}{\cos{x}} \\
+\dv{x} \frac{u}{v} &= \frac{v \dv{u}{x} - u \dv{v}{x}}{v^2} \\
+\therefore \dv{x} \tan{x} &= \frac{\cos{x} \cos{x} - (\sin{x})(-\sin{x})}{\cos^2{x}} \\
 &= \frac{\cos^2{x} + \sin^2{x}}{\cos^2{x}} \\
 &= \frac{1}{\cos^2{x}} \\
 &= \sec^2{x}
@@ -725,7 +725,7 @@ A function is differentiable at a point if:
 
 $$
 \begin{equation}
-\frac{df}{dx}(a) = \lim_{\Delta x \to 0} \frac{f(a + \Delta x) - f(a)}{\Delta x}
+\dv{f}{x}(a) = \lim_{\Delta x \to 0} \frac{f(a + \Delta x) - f(a)}{\Delta x}
 \end{equation}
 $$
 
@@ -733,7 +733,7 @@ To prove that differentiability implies continuity, we'll use a slightly differe
 
 $$
 \begin{equation}
-\frac{df}{dx}(a) = \lim_{x \to a} \frac{f(x) - f(a)}{x - a}
+\dv{f}{x}(a) = \lim_{x \to a} \frac{f(x) - f(a)}{x - a}
 \end{equation}
 $$
 
@@ -743,7 +743,7 @@ $$
 \begin{align}
 \lim_{x \to a} f(x) - f(a) &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot (x - a) \\
 &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot \lim_{x \to a} (x - a) \\
-&= \frac{df}{dx}(a) \cdot 0 \\
+&= \dv{f}{x}(a) \cdot 0 \\
 &= 0 \\
 \lim_{x \to a} f(x) - f(a) &= 0 \\
 \therefore \lim_{x \to a} f(x) &= f(a)
@@ -779,17 +779,17 @@ Just like how we took small changes in $x$ to find the derivative of $x^2$, we c
 
 $$
 \begin{align}
-dP = 2x \cdot dx + 2y \cdot dy
+\dd{P}= 2x \cdot\dd{x}+ 2y \cdot\dd{y}
 \end{align}
 $$
 
-Remember that $P$ should be constant, so $dP = 0$.
+Remember that $P$ should be constant, so $\dd{P}= 0$.
 
 $$
 \begin{align}
-2x \cdot dx + 2y \cdot dy &= 0 \\
-2x \cdot dx &= -2y \cdot dy \\
-\frac{dy}{dx} &= -\frac{x}{y}
+2x \cdot\dd{x}+ 2y \cdot\dd{y} &= 0 \\
+2x \cdot\dd{x}&= -2y \cdot\dd{y} \\
+\dv{y}{x} &= -\frac{x}{y}
 \end{align}
 $$
 
@@ -800,8 +800,8 @@ Given $y = \ln{x}$, we can rewrite this as $e^y = x$. Then, we can once again th
 $$
 \begin{align}
 e^y &= x \\
-e^y dy &= dx \\
-\frac{dy}{dx} &= \frac{1}{e^y} = \frac{1}{x}
+e^y\dd{y} &=\dd{x}\\
+\dv{y}{x} &= \frac{1}{e^y} = \frac{1}{x}
 \end{align}
 $$
 
@@ -814,8 +814,8 @@ Given $f(x) = \frac{g(x)}{h(x)}$, the derivative of $f(x)$ is:
 
 $$
 \begin{align}
-\frac{d}{dx} \left( \frac{g(x)}{h(x)} \right) &= \frac{d}{dx} \left( g(x) \frac{1}{h(x)} \right) \\
-&= g'(x) \frac{1}{h(x)} + g(x) \frac{d}{dx} \left( \frac{1}{h(x)} \right) \\
+\dv{x} \qty( \frac{g(x)}{h(x)} ) &= \dv{x} \qty( g(x) \frac{1}{h(x)} ) \\
+&= g'(x) \frac{1}{h(x)} + g(x) \dv{x} \qty( \frac{1}{h(x)} ) \\
 &= g'(x) \frac{1}{h(x)} - g(x) \frac{1}{h(x)^2} h'(x) \\
 &= \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
 \end{align}
@@ -825,7 +825,7 @@ Therefore, the derivative of $\frac{g(x)}{h(x)}$ is:
 
 $$
 \begin{equation}
-\frac{d}{dx} \left( \frac{g(x)}{h(x)} \right) = \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
+\dv{x} \qty( \frac{g(x)}{h(x)} ) = \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
 \end{equation}
 $$
 
@@ -839,9 +839,9 @@ $$
 \begin{align}
 y &= e^x \\
 \ln{y} &= x \\
-\frac{d}{dx} \ln{y} &= \frac{d}{dx} x \\
-\frac{1}{y} \frac{dy}{dx} &= 1 \\
-\frac{dy}{dx} &= y = e^x
+\dv{x} \ln{y} &= \dv{x} x \\
+\frac{1}{y} \dv{y}{x} &= 1 \\
+\dv{y}{x} &= y = e^x
 \end{align}
 $$
 
@@ -849,7 +849,7 @@ Alternatively, you can use the limit definition of the derivative:
 
 $$
 \begin{align}
-\frac{d}{dx} e^x &= \lim_{\Delta x \to 0} \frac{e^{x + \Delta x} - e^x}{\Delta x} \\
+\dv{x} e^x &= \lim_{\Delta x \to 0} \frac{e^{x + \Delta x} - e^x}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{e^x e^{\Delta x} - e^x}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{e^x (e^{\Delta x} - 1)}{\Delta x} \\
 &= e^x \lim_{\Delta x \to 0} \frac{e^{\Delta x} - 1}{\Delta x} \\
@@ -862,7 +862,7 @@ To find the derivative of $a^x$, where $a$ is some constant, you can use the cha
 
 $$
 \begin{align}
-\frac{d}{dx} a^x &= \frac{d}{dx} e^{x \ln{a}} \\
+\dv{x} a^x &= \dv{x} e^{x \ln{a}} \\
 &= e^{x \ln{a}} \ln{a} \\
 &= a^x \ln{a}
 \end{align}
@@ -874,7 +874,7 @@ To find the derivative of $x^x$, you can rewrite it as $e^{x \ln{x}}$ and then d
 
 $$
 \begin{align}
-\frac{d}{dx} x^x &= \frac{d}{dx} e^{x \ln{x}} \\
+\dv{x} x^x &= \dv{x} e^{x \ln{x}} \\
 &= e^{x \ln{x}} \ln{x} + e^{x \ln{x}} \frac{1}{x} \\
 &= x^x \ln{x} + \frac{x^x}{x} \\
 &= x^x (\ln{x} + 1)
@@ -906,7 +906,7 @@ Using this, you can find the derivative of $\log_a{x}$:
 
 $$
 \begin{align}
-\frac{d}{dx} \log_a{x} &= \frac{d}{dx} \frac{\ln{x}}{\ln{a}} \\
+\dv{x} \log_a{x} &= \dv{x} \frac{\ln{x}}{\ln{a}} \\
 &= \frac{1}{x \ln{a}}
 \end{align}
 $$
@@ -917,12 +917,12 @@ The derivatives of the inverse trigonometric functions are as follows:
 
 $$
 \begin{align}
-\frac{d}{dx} \arcsin{x} &= \frac{1}{\sqrt{1 - x^2}} \\
-\frac{d}{dx} \arccos{x} &= -\frac{1}{\sqrt{1 - x^2}} \\
-\frac{d}{dx} \arctan{x} &= \frac{1}{1 + x^2} \\
-\frac{d}{dx} \arccot{x} &= -\frac{1}{1 + x^2} \\
-\frac{d}{dx} \arcsec{x} &= \frac{1}{|x| \sqrt{x^2 - 1}} \\
-\frac{d}{dx} \arccsc{x} &= -\frac{1}{|x| \sqrt{x^2 - 1}}
+\dv{x} \arcsin{x} &= \frac{1}{\sqrt{1 - x^2}} \\
+\dv{x} \arccos{x} &= -\frac{1}{\sqrt{1 - x^2}} \\
+\dv{x} \arctan{x} &= \frac{1}{1 + x^2} \\
+\dv{x} \arccot{x} &= -\frac{1}{1 + x^2} \\
+\dv{x} \arcsec{x} &= \frac{1}{|x| \sqrt{x^2 - 1}} \\
+\dv{x} \arccsc{x} &= -\frac{1}{|x| \sqrt{x^2 - 1}}
 \end{align}
 $$
 
@@ -934,9 +934,9 @@ $$
 \begin{align}
 y &= \arcsin{x} \\
 \sin{y} &= x \\
-\frac{d}{dx} \sin{y} &= \frac{d}{dx} x \\
-\cos{y} \frac{dy}{dx} &= 1 \\
-\frac{dy}{dx} &= \frac{1}{\cos{y}} \\
+\dv{x} \sin{y} &= \dv{x} x \\
+\cos{y} \dv{y}{x} &= 1 \\
+\dv{y}{x} &= \frac{1}{\cos{y}} \\
 \end{align}
 $$
 
@@ -955,7 +955,7 @@ Thus:
 
 $$
 \begin{equation}
-\frac{dy}{dx} = \frac{1}{\sqrt{1 - x^2}}
+\dv{y}{x} = \frac{1}{\sqrt{1 - x^2}}
 \end{equation}
 $$
 
@@ -967,11 +967,11 @@ $$
 \begin{align}
 y &= \arctan{x} \\
 \tan{y} &= x \\
-\frac{d}{dx} \tan{y} &= \frac{d}{dx} x \\
-\sec^2{y} \frac{dy}{dx} &= 1 \\
-(1 + \tan^2{y}) \frac{dy}{dx} &= 1 \\
-(1 + x^2) \frac{dy}{dx} &= 1 \\
-\frac{dy}{dx} &= \frac{1}{1 + x^2}
+\dv{x} \tan{y} &= \dv{x} x \\
+\sec^2{y} \dv{y}{x} &= 1 \\
+(1 + \tan^2{y}) \dv{y}{x} &= 1 \\
+(1 + x^2) \dv{y}{x} &= 1 \\
+\dv{y}{x} &= \frac{1}{1 + x^2}
 \end{align}
 $$
 
@@ -1026,19 +1026,19 @@ The derivatives of the hyperbolic functions are as follows:
 
 $$
 \begin{align}
-\frac{d}{dx} \sinh{x} &= \cosh{x} \\
-\frac{d}{dx} \cosh{x} &= \sinh{x} \\
-\frac{d}{dx} \tanh{x} &= \text{sech}^2{x} \\
-\frac{d}{dx} \coth{x} &= -\text{csch}^2{x} \\
-\frac{d}{dx} \text{sech}{x} &= -\text{sech}{x} \tanh{x} \\
-\frac{d}{dx} \text{csch}{x} &= -\text{csch}{x} \coth{x}
+\dv{x} \sinh{x} &= \cosh{x} \\
+\dv{x} \cosh{x} &= \sinh{x} \\
+\dv{x} \tanh{x} &= \text{sech}^2{x} \\
+\dv{x} \coth{x} &= -\text{csch}^2{x} \\
+\dv{x} \text{sech}{x} &= -\text{sech}{x} \tanh{x} \\
+\dv{x} \text{csch}{x} &= -\text{csch}{x} \coth{x}
 \end{align}
 $$
 
 ## Summary
 
 -   The derivative of a function $f(x)$ at a point $x$ is the slope of the tangent line at that point.
--   The derivative of a function $f(x)$ is denoted as $f'(x)$ or $\frac{df(x)}{dx}$. Formally it is defined as the limit of the difference quotient.
+-   The derivative of a function $f(x)$ is denoted as $f'(x)$ or $\dv{f(x)}{x}$. Formally it is defined as the limit of the difference quotient.
 -   A function is differentiable at a point if the limit of the difference quotient exists at that point.
 -   Differentiability implies continuity, but continuity does not necessarily imply differentiability.
 -   The product rule, chain rule, and quotient rule are ways to differentiate functions.

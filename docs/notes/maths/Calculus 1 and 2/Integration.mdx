@@ -38,7 +38,7 @@ This is a curve defined by the function $v(x) = x(5 - x)$.
 Let this be the velocity of a vehicle at time $t$ (imagine it as a reading on the speedometer).
 
 From differentiation we know that the derivative of the displacement function $s(t)$ is the velocity function $v(t)$.
-In other words, $\frac{ds}{dt}(t) = v(t)$.
+In other words, $\dv{s}{t}(t) = v(t)$.
 
 If we want to find the displacement of the vehicle at time $t$, we need to find a function $s(t)$ whose derivative is $v(t)$.
 This is known as the antiderivative of $v(t)$.
@@ -102,7 +102,7 @@ Because $\Delta t \to 0$, the sum becomes a "continuous sum". This is what we ca
 
 $$
 \begin{equation}
-\text{Area} = \int_{0}^{T_1} v(t) dt
+\text{Area} = \int_{0}^{T_1} v(t) \dd{t}
 \end{equation}
 $$
 
@@ -114,7 +114,7 @@ In other words:
 
 $$
 \begin{equation}
-s(T_1) = \int_{0}^{T_1} v(t) dt
+s(T_1) = \int_{0}^{T_1} v(t) \dd{t}
 \end{equation}
 $$
 
@@ -179,7 +179,7 @@ And as $\Delta t \to 0$:
 
 $$
 \begin{equation}
-\frac{ds}{dt} = v(t)
+\dv{s}{t} = v(t)
 \end{equation}
 $$
 
@@ -188,8 +188,8 @@ We have derived something known as the fundamental theorem of calculus:
 <Boxed>
 $$
 \begin{align}
-    \frac{ds}{dt} &= v(t) \\
-    s(T_1) &= \int_{0}^{T_1} v(t) dt
+    \dv{s}{t} &= v(t) \\
+    s(T_1) &= \int_{0}^{T_1} v(t) \dd{t}
 \end{align}
 $$
 </Boxed>
@@ -210,11 +210,11 @@ Therefore, the antiderivative of $x^n$ is $x^{n + 1}/(n + 1)$.
 
 ### Antiderivative Notation
 
-The antiderivative of a function $f(x)$ is denoted as $\int f(x) dx$. When we took the antiderivative of $x^n$, we can write it as:
+The antiderivative of a function $f(x)$ is denoted as $\int f(x) \dd{x}$. When we took the antiderivative of $x^n$, we can write it as:
 
 $$
 \begin{equation}
-\int x^n dx = \frac{x^{n + 1}}{n + 1}
+\int x^n \dd{x} = \frac{x^{n + 1}}{n + 1}
 \end{equation}
 $$
 
@@ -253,7 +253,7 @@ We can denote this constant as $C$. Therefore, we can revise our antiderivative 
 
 $$
 \begin{equation}
-\int x^n dx = \frac{x^{n + 1}}{n + 1} + C
+\int x^n \dd{x} = \frac{x^{n + 1}}{n + 1} + C
 \end{equation}
 $$
 
@@ -265,17 +265,17 @@ Now let's connect the antiderivative to the area under the curve. Using what we 
 
 $$
 \begin{equation}
-\int_{0}^{T_1} v(t) dt = s(T_1) + C \label{eq:definite_integrals-antiderivative}
+\int_{0}^{T_1} v(t) \dd{t} = s(T_1) + C \label{eq:definite_integrals-antiderivative}
 \end{equation}
 $$
 
 However, what do we set $C$ as? It can't be any constant, since the area under the curve is a specific value.
 To solve this conundrum, we introduce the concept of a definite integral. Let's say we want to find the area under the curve of $v(t)$ from $0$ to $0$.
-This is obviously $0$, so, plugging this into Equation $\ref{eq:definite_integrals-antiderivative}$:
+This is obviously $0$, so, plugging this into Equation $\eqref{eq:definite_integrals-antiderivative}$:
 
 $$
 \begin{equation}
-\int_{0}^{0} v(t) dt = 0 = s(0) + C
+\int_{0}^{0} v(t) \dd{t} = 0 = s(0) + C
 \end{equation}
 $$
 
@@ -283,7 +283,7 @@ Therefore, $C = -s(0)$. This is the basis of the definite integral:
 
 $$
 \begin{equation}
-\int_{0}^{T_1} v(t) dt = s(T_1) - s(0)
+\int_{0}^{T_1} v(t) \dd{t} = s(T_1) - s(0)
 \end{equation}
 $$
 
@@ -291,7 +291,7 @@ We can also replace $0$ with any arbitrary constant. For example, if we want to 
 
 $$
 \begin{equation}
-\int_{T_0}^{T_1} v(t) dt = s(T_1) - s(T_0)
+\int_{T_0}^{T_1} v(t) \dd{t} = s(T_1) - s(T_0)
 \end{equation}
 $$
 
@@ -301,8 +301,8 @@ Notice that the area under the curve is derived solely from the endpoints $T_0$ 
 
 The fundamental theorem of calculus states two things:
 
-1. $\displaystyle \frac{d}{dx} \int_{0}^{x} f(t) dt = f(x)$
-2. $\displaystyle \int_{a}^{b} f(x) dx = F(b) - F(a)$
+1. $\displaystyle \dv{x} \int_{0}^{x} f(t) \dd{t} = f(x)$
+2. $\displaystyle \int_{a}^{b} f(x) \dd{x} = F(b) - F(a)$
 
 While we have shown it intuitively, we can also prove it rigorously.
 Both are equally important, as the intuitive visualization helps people understand the concept and helps the concept stick in their minds, while the rigorous proof ensures the validity and correctness of the concept.
@@ -311,7 +311,7 @@ Both are equally important, as the intuitive visualization helps people understa
 
 First, let $f: \mathbb{R} \to \mathbb{R}$ be a function continuous on $[a, b]$.
 
-Let $F(x) = \int_{a}^{x} f(t) dt$ be the accumulation function of $f(x)$ where $a \leq x \leq b$.
+Let $F(x) = \int_{a}^{x} f(t) \dd{t}$ be the accumulation function of $f(x)$ where $a \leq x \leq b$.
 
 export function FTOCProof1({ showDx = false, showMVT = false }) {
     const f = (x) => Math.sin(x / 2) + 4;
@@ -420,8 +420,8 @@ Using the definition of the derivative, the derivative of $F(x)$ is:
 
 $$
 \begin{align}
-\frac{d}{dx} F(x) &= \lim_{\Delta x \to 0} \frac{F(x + \Delta x) - F(x)}{h} \\
-&= \lim_{\Delta x \to 0} \frac{\int_{a}^{x + \Delta x} f(t) dt - \int_{a}^{x} f(t) dt}{\Delta x}
+\dv{x} F(x) &= \lim_{\Delta x \to 0} \frac{F(x + \Delta x) - F(x)}{h} \\
+&= \lim_{\Delta x \to 0} \frac{\int_{a}^{x + \Delta x} f(t) \dd{t} - \int_{a}^{x} f(t) \dd{t}}{\Delta x}
 \end{align}
 $$
 
@@ -431,7 +431,7 @@ As shown in the graph, the numerator can be represented as the area under the cu
 
 $$
 \begin{align}
-\frac{d}{dx} F(x) &= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) dt \\
+\dv{x} F(x) &= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) \dd{t} \\
 \end{align}
 $$
 
@@ -439,7 +439,7 @@ The Mean-Value Theorem states:
 
 $$
 \begin{equation}
-\exists c \in [x, x + \Delta x] \text{ such that } f(c)\Delta x = \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) dt
+\exists c \in [x, x + \Delta x] \text{ such that } f(c)\Delta x = \frac{1}{\Delta x} \int_{x}^{x + \Delta x} f(t) \dd{t}
 \end{equation}
 $$
 
@@ -452,7 +452,7 @@ Therefore:
 
 $$
 \begin{equation}
-\frac{d}{dx} F(x) = \lim_{\Delta x \to 0} f(c)
+\dv{x} F(x) = \lim_{\Delta x \to 0} f(c)
 \end{equation}
 $$
 
@@ -462,7 +462,7 @@ Therefore:
 
 $$
 \begin{equation}
-\frac{d}{dx} F(x) = f(x)
+\dv{x} F(x) = f(x)
 \end{equation}
 $$
 
@@ -525,7 +525,7 @@ Therefore, the average value of a function is:
 
 $$
 \begin{equation}
-\text{Average} = \frac{\int_{T_0}^{T_1} v(t) dt}{T_1 - T_0} = \frac{s(T_1) - s(T_0)}{T_1 - T_0}
+\text{Average} = \frac{\int_{T_0}^{T_1} v(t) \dd{t}}{T_1 - T_0} = \frac{s(T_1) - s(T_0)}{T_1 - T_0}
 \end{equation}
 $$
 
@@ -640,10 +640,10 @@ If we let $n \to \infty$, then we don't need to use the trapezoidal rule, as the
 
 If we let $n \to \infty$, then the Riemann sum will converge to the actual area under the curve.
 
-Therefore, we can generalize the area under the curve as the limit of $\ref{eq:riemann_sums-total-area}$ as $n \to \infty$:
+Therefore, we can generalize the area under the curve as the limit of $\eqref{eq:riemann_sums-total-area}$ as $n \to \infty$:
 
 $$
-\int_{T_0}^{T_1} v(t) dt = \lim_{n \to \infty} \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) \Delta t
+\int_{T_0}^{T_1} v(t) \dd{t} = \lim_{n \to \infty} \sum_{i = 0}^{n - 1} v(T_0 + i \Delta t) \Delta t
 $$
 
 :::info Proof using Epsilon-Delta
@@ -675,32 +675,32 @@ The proof of this theorem is quite complex, but it can be done using the $\varep
 
             $$
             \begin{align}
-            \left|R(f, P, t) - \int_{a}^{b} f(x)dx \right| &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \int_{a}^{b} f(x)dx \right| \\
+            \left|R(f, P, t) - \int_{a}^{b} f(x)\dd{x} \right| &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \int_{a}^{b} f(x)\dd{x} \right| \\
             &= \left|\sum f(t_i) (x_i - x_{i - 1}) - \sum f(x) (x_i - x_{i - 1}) \right| \\
             &= \left|\sum (f(t_i) - f(x)) (x_i - x_{i - 1}) \right| \\
             &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \\
             \end{align}
             $$
 
-    The proof uses the Mean Value Theorem (MVT). For a continuous function $f$ on $[a, b]$, there exists a point $x \in [x_{i - 1}, x_i]$ such that $\int_{x_{i - 1}}^{x_i} f(x)dx = f(x) (x_i - x_{i - 1})$.
+    The proof uses the Mean Value Theorem (MVT). For a continuous function $f$ on $[a, b]$, there exists a point $x \in [x_{i - 1}, x_i]$ such that $\int_{x_{i - 1}}^{x_i} f(x)\dd{x} = f(x) (x_i - x_{i - 1})$.
     Next, since the width of each interval $x_i - x_{i - 1}$ is less than $\delta$, $c_i - x < \delta$, and by uniform continuity, $|f(c_i) - f(x)| < \frac{\varepsilon}{b - a}$. Therefore:
 
             $$
             \begin{align}
-            \left|R(f, P, t) - \int_{a}^{b} f(x)dx \right| &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \\
+            \left|R(f, P, t) - \int_{a}^{b} f(x)\dd{x} \right| &\leq \sum |f(t_i) - f(x)| (x_i - x_{i - 1}) \\
             &\leq \sum \frac{\varepsilon}{b - a} (x_i - x_{i - 1}) \\
             &= \frac{\varepsilon}{b - a} \sum (x_i - x_{i - 1}) \\
             &= \varepsilon
             \end{align}
             $$
 
-    As such, in conclusion, for any $\varepsilon > 0$, there exists a $\delta > 0$ such that for any partition $P$ with mesh $\|P\| < \delta$, $|R(f, P, t) - \int_{a}^{b} f(x)dx| < \varepsilon$. This is the definition of a limit, and hence the Riemann sum converges to the integral.
+    As such, in conclusion, for any $\varepsilon > 0$, there exists a $\delta > 0$ such that for any partition $P$ with mesh $\|P\| < \delta$, $|R(f, P, t) - \int_{a}^{b} f(x)\dd{x}| < \varepsilon$. This is the definition of a limit, and hence the Riemann sum converges to the integral.
 
     Hence:
 
     $$
     \begin{equation}
-    \int_{a}^{b} f(x)dx = \lim_{\|P\| \to 0} R(f, P, t)
+    \int_{a}^{b} f(x)\dd{x} = \lim_{\|P\| \to 0} R(f, P, t)
     \end{equation}
     $$
 
@@ -710,7 +710,7 @@ For example, consider this integral:
 
 $$
 \begin{equation}
-\int_{0}^{3} x(5 - x) dx
+\int_{0}^{3} x(5 - x) \dd{x}
 \end{equation}
 $$
 
@@ -718,7 +718,7 @@ Let's go through our steps:
 
 1. **Identify $\Delta t$**. Since the interval is $[0, 3]$, $\Delta t = \frac{3 - 0}{n} = \frac{3}{n}$.
 2. **Identify $t_i$**. $t_i = 0 + i \Delta t = \frac{3i}{n}$.
-3. **Identify the area of each $i$th rectangle**. The area of each rectangle is $v(t_i) \Delta t = \frac{3i}{n} \left(5 - \frac{3i}{n}\right) \frac{3}{n} = \frac{9}{n^3} i(5n - 3i) $.
+3. **Identify the area of each $i$th rectangle**. The area of each rectangle is $v(t_i) \Delta t = \frac{3i}{n} \qty(5 - \frac{3i}{n}) \frac{3}{n} = \frac{9}{n^3} i(5n - 3i) $.
 
 Therefore, the Riemann sum is:
 
@@ -733,7 +733,7 @@ And the area under the curve is:
 
 $$
 \begin{equation}
-\int_{0}^{3} x(5 - x) dx = \lim_{n \to \infty} \frac{9}{n^3} \sum_{i = 0}^{n - 1} i(5n - 3i)
+\int_{0}^{3} x(5 - x) \dd{x} = \lim_{n \to \infty} \frac{9}{n^3} \sum_{i = 0}^{n - 1} i(5n - 3i)
 \end{equation}
 $$
 
@@ -743,7 +743,7 @@ A function can be defined by an integral. For example, consider the following fu
 
 $$
 \begin{equation}
-f(x) = \int_{-4}^{x} t^2 dt
+f(x) = \int_{-4}^{x} t^2 \dd{t}
 \end{equation}
 $$
 
@@ -753,7 +753,7 @@ The derivative of an accumulation function can be derived using the fundamental 
 
 $$
 \begin{align}
-\frac{df}{dx}(x) &= \frac{d}{dx} \int_{-4}^{x} t^2 dt \\
+\dv{f}{x}(x) &= \dv{x} \int_{-4}^{x} t^2 \dd{t} \\
 &= x^2
 \end{align}
 $$
@@ -762,7 +762,7 @@ Sometimes the upper bound of the integral isn't just $x$, but a function of $x$.
 
 $$
 \begin{equation}
-f(x) = \int_{-4}^{\sin(x)} t^2 dt
+f(x) = \int_{-4}^{\sin(x)} t^2 \dd{t}
 \end{equation}
 $$
 
@@ -770,8 +770,8 @@ The derivative of this function can be found using the chain rule. Set another f
 
 $$
 \begin{align}
-u(x) &= \int_{-4}^{x} t^2 dt \\
-\frac{du}{dx}(x) &= x^2
+u(x) &= \int_{-4}^{x} t^2 \dd{t} \\
+\dv{u}{x}(x) &= x^2
 \end{align}
 $$
 
@@ -780,7 +780,7 @@ And set $v(x) = \sin(x)$:
 $$
 \begin{align}
 v(x) &= \sin(x) \\
-\frac{dv}{dx}(x) &= \cos(x)
+\dv{v}{x}(x) &= \cos(x)
 \end{align}
 $$
 
@@ -788,8 +788,8 @@ Therefore, the derivative of $f(x)$ is:
 
 $$
 \begin{align}
-\frac{df}{dx}(x) &= \frac{d}{dx} u(v(x)) \\
-&= \frac{du}{dv} \frac{dv}{dx} \\
+\dv{f}{x}(x) &= \dv{x} u(v(x)) \\
+&= \dv{u}{v} \dv{v}{x} \\
 &= v^2 \cos(x) \\
 &= \sin^2(x) \cos(x)
 \end{align}
@@ -799,7 +799,7 @@ Generalizing this, the derivative of an accumulation function with a variable up
 
 $$
 \begin{equation}
-\frac{d}{dx} \int_{a}^{g(x)} f(t) dt = \frac{dg}{dx}(x) f(g(x))
+\dv{x} \int_{a}^{g(x)} f(t) \dd{t} = \dv{g}{x}(x) f(g(x))
 \end{equation}
 $$
 
@@ -809,7 +809,7 @@ A common example is the error function:
 
 $$
 \begin{equation}
-\text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_{0}^{x} e^{-t^2} dt
+\text{erf}(x) = \frac{2}{\sqrt{\pi}} \int_{0}^{x} e^{-t^2} \dd{t}
 \end{equation}
 $$
 
@@ -819,7 +819,7 @@ Another common example is the gamma function:
 
 $$
 \begin{equation}
-\Gamma(x) = \int_{0}^{\infty} t^{x - 1} e^{-t} dt
+\Gamma(x) = \int_{0}^{\infty} t^{x - 1} e^{-t} \dd{t}
 \end{equation}
 $$
 
@@ -855,7 +855,7 @@ $$
 And let $g(x)$ be the accumulation function of $f(x)$:
 
 $$
-g(x) = \int_{0}^{x} f(t) dt
+g(x) = \int_{0}^{x} f(t) \dd{t}
 $$
 
 Because of the fundamental theorem of calculus, the derivative of $g(x)$ is $f(x)$. Using this, we can use $f$ to derive the behavior of $g$.
@@ -878,15 +878,15 @@ If the upper bound is less than the lower bound, you sort of "go backwards" and 
 As such,
 
 $$
-\int_{a}^{b} f(x) dx = -\int_{b}^{a} f(x) dx
+\int_{a}^{b} f(x) \dd{x} = -\int_{b}^{a} f(x) \dd{x}
 $$
 
 This can also be shown through the Riemann sum. Consider the Riemann sum for each integral:
 
 $$
 \begin{align}
-\int_{a}^{b} f(x) dx &= \lim_{n \to \infty} \sum_{i = 0}^{n - 1} f(a + i \Delta x) \Delta x \\
-\int_{b}^{a} f(x) dx &= \lim_{n \to \infty} \sum_{i = 0}^{n - 1} f(b + i \Delta x) \Delta x
+\int_{a}^{b} f(x) \dd{x} &= \lim_{n \to \infty} \sum_{i = 0}^{n - 1} f(a + i \Delta x) \Delta x \\
+\int_{b}^{a} f(x) \dd{x} &= \lim_{n \to \infty} \sum_{i = 0}^{n - 1} f(b + i \Delta x) \Delta x
 \end{align}
 $$
 
@@ -901,19 +901,19 @@ Another way to show this is through the fundamental theorem of calculus. Recall 
 If we flip it:
 
 $$
-\int_{b}^{a} f(x) dx = F(a) - F(b) = -(F(b) - F(a)) = -\int_{a}^{b} f(x) dx
+\int_{b}^{a} f(x) \dd{x} = F(a) - F(b) = -(F(b) - F(a)) = -\int_{a}^{b} f(x) \dd{x}
 $$
 
 One application of this is to evaluate accumulation functions where the function parameter is on the lower bound. For example:
 
 $$
-f(x) = \int_{x}^{3} t(5 - t) dt
+f(x) = \int_{x}^{3} t(5 - t) \dd{t}
 $$
 
 This can be rewritten as:
 
 $$
-f(x) = -\int_{3}^{x} t(5 - t) dt
+f(x) = -\int_{3}^{x} t(5 - t) \dd{t}
 $$
 
 ### Linearity
@@ -921,7 +921,7 @@ $$
 Let's think about the integral of a sum of functions:
 
 $$
-\int_{a}^{b} (f(x) + g(x)) dx
+\int_{a}^{b} (f(x) + g(x)) \dd{x}
 $$
 
 Where $f(x) = x(5 - x)$ and $g(x) = x + sin(x)$.
@@ -969,7 +969,7 @@ If we once again consider the Riemann sum, we can split the integral into separa
 Notice how the rectangle for $f(x) + g(x)$ is the sum of the rectangles for $f(x)$ and $g(x)$. Therefore we can intuitively say that:
 
 $$
-\int_{a}^{b} (f(x) + g(x)) dx = \int_{a}^{b} f(x) dx + \int_{a}^{b} g(x) dx
+\int_{a}^{b} (f(x) + g(x)) \dd{x} = \int_{a}^{b} f(x) \dd{x} + \int_{a}^{b} g(x) \dd{x}
 $$
 
 This is known as the linearity of integrals.
@@ -1050,7 +1050,7 @@ Notice how, once again, the rectangle for $g(x)$ is scaled by $2.5$ compared to 
 Therefore, we can say that:
 
 $$
-\int_{a}^{b} k f(x) dx = k \int_{a}^{b} f(x) dx
+\int_{a}^{b} k f(x) \dd{x}= k \int_{a}^{b} f(x) \dd{x}
 $$
 
 ### Adjacency
@@ -1088,16 +1088,16 @@ Notice how if you add the areas for $f(x)$ from $0$ to $1$ and $1$ to $4$, you g
 Therefore, we can say that:
 
 $$
-\int_{a}^{b} f(x) dx = \int_{a}^{c} f(x) dx + \int_{c}^{b} f(x) dx
+\int_{a}^{b} f(x) \dd{x}= \int_{a}^{c} f(x) \dd{x}+ \int_{c}^{b} f(x) \dd{x}
 $$
 
 Note that $c$ does not have to be in the interval $[a, b]$. A way to show this is through the fundamental theorem of calculus. Let $F(x)$ be the antiderivative of $f(x)$:
 
 $$
 \begin{align}
-\int_{a}^{b} f(x) dx &= F(b) - F(a) \\
+\int_{a}^{b} f(x) \dd{x}&= F(b) - F(a) \\
 &= F(c) - F(a) + F(b) - F(c) \\
-&= \int_{a}^{c} f(x) dx + \int_{c}^{b} f(x) dx
+&= \int_{a}^{c} f(x) \dd{x}+ \int_{c}^{b} f(x) \dd{x}
 \end{align}
 $$
 
@@ -1108,7 +1108,7 @@ Notice how this does not depend on the value of $c$.
 > Consider the following accumulation function:
 >
 > $$
-> f(x) = \int_{x}^{x^2} t^2 \cos(t) dt
+> f(x) = \int_{x}^{x^2} t^2 \cos(t) \dd{t}
 > $$
 >
 > Identify the derivative of $f(x)$.
@@ -1116,26 +1116,26 @@ Notice how this does not depend on the value of $c$.
 Let's first rewrite the accumulation function using Adjacency.
 
 $$
-f(x) = \int_{x}^{x^2} t^2 \cos(t) dt = \int_{x}^{c} t^2 \cos(t) dt + \int_{c}^{x^2} t^2 \cos(t) dt
+f(x) = \int_{x}^{x^2} t^2 \cos(t) \dd{t}= \int_{x}^{c} t^2 \cos(t) \dd{t}+ \int_{c}^{x^2} t^2 \cos(t) \dd{t}
 $$
 
 Next, consider the first integral. $x$ is on the bottom, so we can flip the integral to move it to the top:
 
 $$
-\int_{x}^{c} t^2 \cos(t) dt = -\int_{c}^{x} t^2 \cos(t) dt
+\int_{x}^{c} t^2 \cos(t) \dd{t}= -\int_{c}^{x} t^2 \cos(t) \dd{t}
 $$
 
 Thus, the accumulation function can be rewritten as:
 
 $$
-f(x) = -\int_{c}^{x} t^2 \cos(t) dt + \int_{c}^{x^2} t^2 \cos(t) dt
+f(x) = -\int_{c}^{x} t^2 \cos(t) \dd{t}+ \int_{c}^{x^2} t^2 \cos(t) \dd{t}
 $$
 
 The derivative of $f(x)$ can be found using the fundamental theorem of calculus and the chain rule:
 
 $$
 \begin{align}
-\frac{df}{dx}(x) &= -\frac{d}{dx} \int_{c}^{x} t^2 \cos(t) dt + \frac{d}{dx} \int_{c}^{x^2} t^2 \cos(t) dt \\
+\dv{f}{x}(x) &= -\dv{x} \int_{c}^{x} t^2 \cos(t) \dd{t} + \dv{x} \int_{c}^{x^2} t^2 \cos(t) \dd{t} \\
 &= -x^2 \cos(x) + 2x(x^2 \cos(x^2)) \\
 &= -x^2 \cos(x) + 2x^3 \cos(x^2)
 \end{align}
@@ -1147,11 +1147,11 @@ Here is a cheat sheet of the properties of definite integrals:
 
 | Property | Formula |
 |----------|---------|
-| Signs | $\int_{a}^{b} f(x) dx = -\int_{b}^{a} f(x) dx$ |
-| Linearity | $\int_{a}^{b} (f(x) + g(x)) dx = \int_{a}^{b} f(x) dx + \int_{a}^{b} g(x) dx$ |
-| Singular Points | $\int_{a}^{a} f(x) dx = 0$ |
-| Scaling | $\int_{a}^{b} k f(x) dx = k \int_{a}^{b} f(x) dx$ |
-| Adjacency | $\int_{a}^{b} f(x) dx = \int_{a}^{c} f(x) dx + \int_{c}^{b} f(x) dx$ |
+| Signs | $\int_{a}^{b} f(x) \dd{x} = -\int_{b}^{a} f(x) \dd{x}$ |
+| Linearity | $\int_{a}^{b} (f(x) + g(x)) \dd{x} = \int_{a}^{b} f(x) \dd{x} + \int_{a}^{b} g(x) \dd{x}$ |
+| Singular Points | $\int_{a}^{a} f(x) \dd{x} = 0$ |
+| Scaling | $\int_{a}^{b} k f(x) \dd{x} = k \int_{a}^{b} f(x) \dd{x}$ |
+| Adjacency | $\int_{a}^{b} f(x) \dd{x} = \int_{a}^{c} f(x) \dd{x} + \int_{c}^{b} f(x) \dd{x}$ |
 
 ## Common Antiderivatives
 
@@ -1226,7 +1226,7 @@ Sometimes, the antiderivative of a function is not immediately obvious. In such 
 The first type of substitution is the $u$-substitution, which is basically the chain rule in reverse. Consider the following integral:
 
 $$
-\int 2x \cos(x^2 + 3) dx
+\int 2x \cos(x^2 + 3) \dd{x}
 $$
 
 Now, there's two ways to do this. The first way is to use the chain rule in reverse, and the second way is to use $u$-substitution.
@@ -1237,19 +1237,19 @@ $u$-substitution tends to be _much_ easier, but reverse chain rule lets you do i
 Recall the chain rule:
 
 $$
-\frac{d}{dx} f(g(x)) = \frac{df}{dg} \frac{dg}{dx}
+\dv{x} f(g(x)) = \dv{f}{g} \dv{g}{x}
 $$
 
 We have a composite function $\cos(x^2 + 3)$, and the derivative of $x^2 + 3$ is $2x$. As such we have all the components of the chain rule:
 
 $$
-\overbrace{2x}^{dg/dx} \mathrlap{\underbrace{\phantom{\cos(x^2 + 3)}}_{df/dg}} \cos(\overbrace{x^2 + 3}^{g(x)}) = \frac{dg}{dx} \frac{df}{dg}
+\overbrace{2x}^{\dd{g}/\dd{x}} \mathrlap{\underbrace{\phantom{\cos(x^2 + 3)}}_{\dd{f}/\dd{g}}} \cos(\overbrace{x^2 + 3}^{g(x)}) = \dv{g}{x} \dv{f}{g}
 $$
 
-In this case $\frac{df}{dg}$ is $\cos(g)$, so $f(g)$ is $\sin(g)$. By reversing the chain rule, the antiderivative is:
+In this case $\dv{f}{g}$ is $\cos(g)$, so $f(g)$ is $\sin(g)$. By reversing the chain rule, the antiderivative is:
 
 $$
-\int 2x \cos(x^2 + 3) dx = f(g(x)) + C = \sin(x^2 + 3) + C
+\int 2x \cos(x^2 + 3) \dd{x} = f(g(x)) + C = \sin(x^2 + 3) + C
 $$
 
 ### $u$-Substitution
@@ -1259,15 +1259,15 @@ We have a composite function $\cos(x^2 + 3)$, and the derivative of $x^2 + 3$ is
 $$
 \begin{align}
 u &= x^2 + 3 \\
-\frac{du}{dx} &= 2x \\
-du &= 2x dx \\
+\dv{u}{x} &= 2x \\
+\dd{u} &= 2x \dd{x} \\
 \end{align}
 $$
 
 Hence, the integral can be rewritten as:
 
 $$
-\int 2x \cos(x^2 + 3) dx = \int \cos(u) du = \sin(u) + C = \sin(x^2 + 3) + C
+\int 2x \cos(x^2 + 3) \dd{x} = \int \cos(u) \dd{u} = \sin(u) + C = \sin(x^2 + 3) + C
 $$
 
 ### $u$-Substitution in Definite Integrals
@@ -1275,13 +1275,13 @@ $$
 $u$-substitution can also be used in definite integrals. Consider the following integral:
 
 $$
-\int_{0}^{\pi} \frac{4x}{\ln(x^2 + 5)} dx
+\int_{0}^{\pi} \frac{4x}{\ln(x^2 + 5)} \dd{x}
 $$
 
-This can be solved by letting $u = x^2 + 5$ and $du = 2x dx$:
+This can be solved by letting $u = x^2 + 5$ and $\dd{u} = 2x \dd{x}$:
 
 $$
-\int_{0}^{\pi} \frac{4x}{x^2 + 5} dx = \int_{0}^{\pi} \frac{2}{\ln(u)} du
+\int_{0}^{\pi} \frac{4x}{x^2 + 5} \dd{x} = \int_{0}^{\pi} \frac{2}{\ln(u)} \dd{u}
 $$
 
 **BUT WAIT!** We changed the function from $x$ to $u$, so we need to change the bounds as well.
@@ -1290,13 +1290,13 @@ The bounds are $x = 0$ and $x = \pi$, so when $x = 0$, $u = 5$, and when $x = \p
 Therefore the new bounds should be $5$ and $\pi^2 + 5$:
 
 $$
-\int_{0}^{\pi} \frac{4x}{x^2 + 5} dx = \int_{5}^{\pi^2 + 5} \frac{2}{\ln(u)} du
+\int_{0}^{\pi} \frac{4x}{x^2 + 5} \dd{x} = \int_{5}^{\pi^2 + 5} \frac{2}{\ln(u)} \dd{u}
 $$
 
 It's clearer if we label the variables in the bounds as well:
 
 $$
-\int\limits_{x = 0}^{x = \pi} \frac{4x}{x^2 + 5} dx = \int\limits_{x = 0}^{x = \pi} \frac{2}{\ln(u)} du = \int\limits_{u = 5}^{u = \pi^2 + 5} \frac{2}{\ln(u)} du
+\int\limits_{x = 0}^{x = \pi} \frac{4x}{x^2 + 5} \dd{x} = \int\limits_{x = 0}^{x = \pi} \frac{2}{\ln(u)} \dd{u} = \int\limits_{u = 5}^{u = \pi^2 + 5} \frac{2}{\ln(u)} \dd{u}
 $$
 
 ## Integration by Long Division
@@ -1307,7 +1307,7 @@ The difference is that instead of dividing numbers, you are dividing polynomials
 For example, consider the following integral:
 
 $$
-\int \frac{x^2 + 3x + 2}{x + 1} dx
+\int \frac{x^2 + 3x + 2}{x + 1} \dd{x}
 $$
 
 The first step is to divide $x^2 + 3x + 2$ by $x + 1$.
@@ -1340,7 +1340,7 @@ $$
 As such, the integral can be rewritten as:
 
 $$
-\int \frac{x^2 + 3x + 2}{x + 1} dx = \int (x + 2) dx = \frac{x^2}{2} + 2x + C
+\int \frac{x^2 + 3x + 2}{x + 1} \dd{x} = \int (x + 2) \dd{x} = \frac{x^2}{2} + 2x + C
 $$
 
 ### Example Problem: Integration by Long Division
@@ -1348,7 +1348,7 @@ $$
 > Evaluate the following integral:
 >
 > $$
-> \int \frac{x - 5}{-2x + 2} dx
+> \int \frac{x - 5}{-2x + 2} \dd{x}
 > $$
 
 Once again, we can use long division to divide $x - 5$ by $-2x + 2$.
@@ -1369,8 +1369,8 @@ For example $7 = 3 + \frac{1}{2}$. Hence, the integral can be rewritten as:
 
 $$
 \begin{align}
-\int \frac{x - 5}{-2x + 2} dx &= \int \left(-\frac{1}{2} + \frac{-4}{-2x + 2}\right) dx \\
-&= \int \left(-\frac{1}{2} + \frac{2}{x - 1}\right) dx \\
+\int \frac{x - 5}{-2x + 2} \dd{x} &= \int \qty(-\frac{1}{2} + \frac{-4}{-2x + 2}) \dd{x} \\
+&= \int \qty(-\frac{1}{2} + \frac{2}{x - 1}) \dd{x} \\
 \end{align}
 $$
 
@@ -1379,15 +1379,15 @@ The integral of $-\frac{1}{2}$ is $-\frac{x}{2}$, and the integral of $\frac{2}{
 $$
 \begin{align}
 u &= x - 1 \\
-du &= dx \\
-\int \frac{2}{x - 1} dx &= 2 \int \frac{1}{u} du = 2 \ln|u| + C = 2 \ln|x - 1| + C
+\dd{u} &= \dd{x} \\
+\int \frac{2}{x - 1} \dd{x} &= 2 \int \frac{1}{u} \dd{u} = 2 \ln|u| + C = 2 \ln|x - 1| + C
 \end{align}
 $$
 
 Therefore, the integral is:
 
 $$
-\int \frac{x - 5}{-2x + 2} dx = -\frac{x}{2} + 2 \ln|x - 1| + C
+\int \frac{x - 5}{-2x + 2} \dd{x} = -\frac{x}{2} + 2 \ln|x - 1| + C
 $$
 
 ## Integration by Completing the Square
@@ -1397,7 +1397,7 @@ Completing the square is a technique used to solve quadratic equations. It can a
 For example, consider the following integral:
 
 $$
-\int \frac{1}{2x^2 + 8x + 12} dx
+\int \frac{1}{2x^2 + 8x + 12} \dd{x}
 $$
 
 The first step is to complete the square in the denominator. Recall that to complete the square, you need to find the value that makes the square a perfect square trinomial.
@@ -1405,19 +1405,19 @@ The first step is to complete the square in the denominator. Recall that to comp
 We will first need to remove the coefficient of $x^2$ by factoring out $\frac{1}{2}$:
 
 $$
-\int \frac{1}{2x^2 + 8x + 12} dx = \frac{1}{2} \int \frac{1}{x^2 + 4x + 6} dx
+\int \frac{1}{2x^2 + 8x + 12} \dd{x} = \frac{1}{2} \int \frac{1}{x^2 + 4x + 6} \dd{x}
 $$
 
 Next, complete the square in the denominator.
 
 $$
-\frac{1}{2} \int \frac{1}{x^2 + 4x + 6} dx = \frac{1}{2} \int \frac{1}{x^2 + 4x + 4 + 2} dx = \frac{1}{2} \int \frac{1}{(x + 2)^2 + 2} dx
+\frac{1}{2} \int \frac{1}{x^2 + 4x + 6} \dd{x} = \frac{1}{2} \int \frac{1}{x^2 + 4x + 4 + 2} \dd{x} = \frac{1}{2} \int \frac{1}{(x + 2)^2 + 2} \dd{x}
 $$
 
 Now, let's factor out the $2$ in the denominator:
 
 $$
-\frac{1}{2} \int \frac{1}{(x + 2)^2 + 2} dx = \frac{1}{4} \int \frac{1}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx
+\frac{1}{2} \int \frac{1}{(x + 2)^2 + 2} \dd{x} = \frac{1}{4} \int \frac{1}{\qty(\frac{x + 2}{\sqrt{2}})^2 + 1} \dd{x}
 $$
 
 Now, let $u = \frac{x + 2}{\sqrt{2}}$:
@@ -1425,22 +1425,22 @@ Now, let $u = \frac{x + 2}{\sqrt{2}}$:
 $$
 \begin{align}
 u &= \frac{x + 2}{\sqrt{2}} \\
-du &= \frac{1}{\sqrt{2}} dx \\
-\sqrt{2} du &= dx
+\dd{u} &= \frac{1}{\sqrt{2}} \dd{x} \\
+\sqrt{2} \dd{u} &= \dd{x}
 \end{align}
 $$
 
-We need to get the $\sqrt{2}dx$ to match $du$. Therefore, multiply the numerator by $\sqrt{2}$ and divide the fraction outside by $\sqrt{2}$:
+We need to get the $\sqrt{2}\dd{x}$ to match $\dd{u}$. Therefore, multiply the numerator by $\sqrt{2}$ and divide the fraction outside by $\sqrt{2}$:
 
 $$
-\frac{1}{4} \int \frac{1}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} du
+\frac{1}{4} \int \frac{1}{\qty(\frac{x + 2}{\sqrt{2}})^2 + 1} \dd{x} = \frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\qty(\frac{x + 2}{\sqrt{2}})^2 + 1} \dd{x} = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} \dd{u}
 $$
 
 The integral of $\frac{1}{u^2 + 1}$ is $\arctan(u) + C$. Therefore, the integral is:
 
 $$
 \begin{align}
-\frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\left(\frac{x + 2}{\sqrt{2}}\right)^2 + 1} dx = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} du = \frac{1}{4 \sqrt{2}} \arctan(u) + C = \frac{1}{4 \sqrt{2}} \arctan\left(\frac{x + 2}{\sqrt{2}}\right) + C
+\frac{1}{4 \sqrt{2}} \int \frac{\sqrt{2}}{\qty(\frac{x + 2}{\sqrt{2}})^2 + 1} \dd{x} = \frac{1}{4 \sqrt{2}} \int \frac{1}{u^2 + 1} \dd{u} = \frac{1}{4 \sqrt{2}} \arctan(u) + C = \frac{1}{4 \sqrt{2}} \arctan\qty(\frac{x + 2}{\sqrt{2}}) + C
 \end{align}
 $$
 
@@ -1452,7 +1452,7 @@ Let's say we have $f(x)$ and $g(x)$ whose derivatives are $f'(x)$ and $g'(x)$ re
 
 $$
 \begin{equation}
-\frac{d}{dx} f(x)g(x) = f'(x)g(x) + f(x)g'(x)
+\dv{x} f(x)g(x) = f'(x)g(x) + f(x)g'(x)
 \end{equation}
 $$
 
@@ -1460,7 +1460,7 @@ Integrating both sides with respect to $x$:
 
 $$
 \begin{equation}
-f(x)g(x) = \int f'(x)g(x) dx + \int f(x)g'(x) dx
+f(x)g(x) = \int f'(x)g(x) \dd{x} + \int f(x)g'(x) \dd{x}
 \end{equation}
 $$
 
@@ -1468,7 +1468,7 @@ Rearranging the equation, we get:
 
 $$
 \begin{equation}
-\int f(x)g'(x) dx = f(x)g(x) - \int f'(x)g(x) dx \label{eq:integration_by_parts}
+\int f(x)g'(x) \dd{x} = f(x)g(x) - \int f'(x)g(x) \dd{x} \label{eq:integration_by_parts}
 \end{equation}
 $$
 
@@ -1480,22 +1480,22 @@ This is the formula for integration by parts. The idea is to choose $f(x)$ and $
 >
 > $$
 > \begin{equation}
-> \int x \cos(x) dx \label{eq:example_problem_integration_by_parts_xcosx}
+> \int x \cos(x) \dd{x} \label{eq:example_problem_integration_by_parts_xcosx}
 > \end{equation}
 > $$
 
-We have a product of $x$ and $\cos(x)$. Determining which is $f(x)$ and which is $g'(x)$ comes down to the right hand side, specifically $\int f'(x)g(x)dx$.
+We have a product of $x$ and $\cos(x)$. Determining which is $f(x)$ and which is $g'(x)$ comes down to the right hand side, specifically $\int f'(x)g(x)\dd{x}$.
 
 Therefore, we assign $f(x)$ such that $f'(x)$ is easy, and asssign $g'(x)$ such that $g(x)$ is easy.
 
 Choose $f(x) = x$ because $f'(x) = 1$, and choose $g'(x) = \cos(x)$ because $g(x) = \sin(x)$.
 
-Plugging into $\ref{eq:example_problem_integration_by_parts_xcosx}$ and using $\ref{eq:integration_by_parts}$:
+Plugging into $\eqref{eq:example_problem_integration_by_parts_xcosx}$ and using $\eqref{eq:integration_by_parts}$:
 
 $$
 \begin{align}
-\int \class{red}{\overbrace{x}^{f(x)}} \class{blue}{\underbrace{\cos(x)}_{g'(x)}} dx &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} dx \\
-&= \class{red}{x}\class{blue}{\sin(x)} - \int \class{blue}{\sin(x)} dx \\
+\int \class{red}{\overbrace{x}^{f(x)}} \class{blue}{\underbrace{\cos(x)}_{g'(x)}} \dd{x} &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} \dd{x} \\
+&= \class{red}{x}\class{blue}{\sin(x)} - \int \class{blue}{\sin(x)} \dd{x} \\
 &= \class{red}{x}\class{blue}{\sin(x)} + \class{blue}{\cos(x)} + C
 \end{align}
 $$
@@ -1506,7 +1506,7 @@ $$
 >
 > $$
 > \begin{equation}
-> \int \ln(x) dx \label{eq:example_problem_integration_by_parts_lnx}
+> \int \ln(x) \dd{x} \label{eq:example_problem_integration_by_parts_lnx}
 > \end{equation}
 > $$
 
@@ -1516,7 +1516,7 @@ However, you can add another term simply by multiplying by $1$:
 
 $$
 \begin{equation}
-\int \ln(x) dx = \int (\ln(x))\cdot 1 dx \label{eq:example_problem_integration_by_parts_lnx-mul1}
+\int \ln(x) \dd{x} = \int (\ln(x))\cdot 1 \dd{x} \label{eq:example_problem_integration_by_parts_lnx-mul1}
 \end{equation}
 $$
 
@@ -1524,12 +1524,12 @@ We assign $f(x)$ such that $f'(x)$ is easy, and asssign $g'(x)$ such that $g(x)$
 
 Choose $f(x) = \ln(x)$ because $f'(x) = 1/x$, and choose $g'(x) = 1$ because $g(x) = x$.
 
-Plugging into $\ref{eq:example_problem_integration_by_parts_lnx-mul1}$ and using $\ref{eq:integration_by_parts}$:
+Plugging into $\eqref{eq:example_problem_integration_by_parts_lnx-mul1}$ and using $\eqref{eq:integration_by_parts}$:
 
 $$
 \begin{align}
-\int \class{red}{\overbrace{\ln(x)}^{f(x)}} \class{blue}{\underbrace{(1)}_{g'(x)}} dx &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} dx \\
-&= \class{red}{\ln(x)}\class{blue}{x} - \int \class{red}{\frac{1}{x}}\class{blue}{x} dx \\
+\int \class{red}{\overbrace{\ln(x)}^{f(x)}} \class{blue}{\underbrace{(1)}_{g'(x)}} \dd{x} &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} \dd{x} \\
+&= \class{red}{\ln(x)}\class{blue}{x} - \int \class{red}{\frac{1}{x}}\class{blue}{x} \dd{x} \\
 &= \class{red}{\ln(x)}\class{blue}{x} - x + C \\
 &= x(\ln(x) - 1) + C
 \end{align}
@@ -1541,7 +1541,7 @@ $$
 >
 > $$
 > \begin{equation}
-> \int x^2 e^x dx \label{eq:example_problem_integration_by_parts_x2ex}
+> \int x^2 e^x \dd{x} \label{eq:example_problem_integration_by_parts_x2ex}
 > \end{equation}
 > $$
 
@@ -1549,8 +1549,8 @@ We shall first use Integration by Parts like before:
 
 $$
 \begin{align}
-\int \class{red}{\overbrace{x^2}^{f(x)}} \class{blue}{\underbrace{e^x}_{g'(x)}} dx &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} dx \\
-&= \class{red}{x^2}\class{blue}{e^x} - \int \class{red}{2x}\class{blue}{e^x} dx \\
+\int \class{red}{\overbrace{x^2}^{f(x)}} \class{blue}{\underbrace{e^x}_{g'(x)}} \dd{x} &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} \dd{x} \\
+&= \class{red}{x^2}\class{blue}{e^x} - \int \class{red}{2x}\class{blue}{e^x} \dd{x} \\
 \end{align}
 $$
 
@@ -1558,9 +1558,9 @@ The integral on the right can be solved using Integration by Parts again:
 
 $$
 \begin{align}
-\int x^2 e^x dx &= \class{red}{x^2}\class{blue}{e^x} - 2\int \class{green}{\overbrace{x}^{u(x)}} \class{yellow}{\underbrace{e^x}_{v'(x)}} dx \\
-&= \class{red}{x^2}\class{blue}{e^x} - 2\left(\class{green}{u(x)}\class{yellow}{v(x)} - \int \class{green}{u'(x)}\class{yellow}{v(x)} dx\right) \\
-&= \class{red}{x^2}\class{blue}{e^x} - 2\left(\class{green}{x}\class{yellow}{e^x} - \int \class{green}{1}\class{yellow}{e^x} dx \right) \\
+\int x^2 e^x \dd{x} &= \class{red}{x^2}\class{blue}{e^x} - 2\int \class{green}{\overbrace{x}^{u(x)}} \class{yellow}{\underbrace{e^x}_{v'(x)}} \dd{x} \\
+&= \class{red}{x^2}\class{blue}{e^x} - 2\qty(\class{green}{u(x)}\class{yellow}{v(x)} - \int \class{green}{u'(x)}\class{yellow}{v(x)} \dd{x}) \\
+&= \class{red}{x^2}\class{blue}{e^x} - 2\qty(\class{green}{x}\class{yellow}{e^x} - \int \class{green}{1}\class{yellow}{e^x} \dd{x} ) \\
 &= \class{red}{x^2}\class{blue}{e^x} - \class{green}{2x}\class{yellow}{e^x} + \class{yellow}{2e^x} + C \\
 &= e^x(x^2 - 2x + 2) + C \\
 \end{align}
@@ -1576,7 +1576,7 @@ Consider this integral:
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{a^2 - x^2}}dx \label{eq:trigonometric_substitution_with_sine-first}
+\int \frac{1}{\sqrt{a^2 - x^2}}\dd{x} \label{eq:trigonometric_substitution_with_sine-first}
 \end{equation}
 $$
 
@@ -1630,7 +1630,7 @@ Therefore, we can construct a right triangle to visualize this:
     );
 })()}
 
-Through the Pythagorean Theorem, the red line is $\sqrt{a^2 - x^2}$, which is the denominator of the expression in Equation $\ref{eq:trigonometric_substitution_with_sine-first}$.
+Through the Pythagorean Theorem, the red line is $\sqrt{a^2 - x^2}$, which is the denominator of the expression in Equation $\eqref{eq:trigonometric_substitution_with_sine-first}$.
 
 Set angle $\theta$ to be the opposite of $\class{yellow}{x}$. As such,
 
@@ -1651,15 +1651,15 @@ d\class{yellow}{x} = \class{green}{a} \cos(\theta) d\theta \label{eq:trigonometr
 \end{equation}
 $$
 
-Take the original integral $\ref{eq:trigonometric_substitution_with_sine-first}$ and substitute Equation $\ref{eq:trigonometric_substitution_with_sine-first-dx-def}$ into it:
+Take the original integral $\eqref{eq:trigonometric_substitution_with_sine-first}$ and substitute Equation $\eqref{eq:trigonometric_substitution_with_sine-first-dx-def}$ into it:
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{a^2 - x^2}}\class{blue}{dx} = \int \frac{\class{blue}{a \cos(\theta)}}{\sqrt{a^2 - x^2}}\class{blue}{d\theta}
+\int \frac{1}{\sqrt{a^2 - x^2}}\class{blue}\dd{x} = \int \frac{\class{blue}{a \cos(\theta)}}{\sqrt{a^2 - x^2}}\class{blue}{d\theta}
 \end{equation}
 $$
 
-Then, substitute $\ref{eq:trigonometric_substitution_with_sine-first-radical-def}$ into it:
+Then, substitute $\eqref{eq:trigonometric_substitution_with_sine-first-radical-def}$ into it:
 
 $$
 \begin{align}
@@ -1668,12 +1668,12 @@ $$
 \end{align}
 $$
 
-We can solve Equation $\ref{eq:trigonometric_substitution_with_sine-first-x-def}$ for $\theta$ in terms of $\class{yellow}{x}$:
+We can solve Equation $\eqref{eq:trigonometric_substitution_with_sine-first-x-def}$ for $\theta$ in terms of $\class{yellow}{x}$:
 
 $$
 \begin{align}
 \sin(\theta) &= \frac{\class{yellow}{x}}{\class{green}{a}} \\
-\theta &= \arcsin\left(\frac{\class{yellow}{x}}{\class{green}{a}} \right)
+\theta &= \arcsin\qty(\frac{\class{yellow}{x}}{\class{green}{a}} )
 \end{align}
 $$
 
@@ -1681,11 +1681,11 @@ Therefore:
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{a^2 - x^2}} dx = \arcsin\left(\frac{x}{a}\right) + C
+\int \frac{1}{\sqrt{a^2 - x^2}} \dd{x} = \arcsin\qty(\frac{x}{a}) + C
 \end{equation}
 $$
 
-Another way to derive Equation $\ref{eq:trigonometric_substitution_with_sine-first-radical-def}$ through the Pythagorean Identity:
+Another way to derive Equation $\eqref{eq:trigonometric_substitution_with_sine-first-radical-def}$ through the Pythagorean Identity:
 
 $$
 \begin{align}
@@ -1709,7 +1709,7 @@ Now we look at an integral like this:
 
 $$
 \begin{equation}
-\int \frac{1}{a^2 + x^2} dx \label{eq:trigonometric_substitution_with_tangent-first}
+\int \frac{1}{a^2 + x^2} \dd{x} \label{eq:trigonometric_substitution_with_tangent-first}
 \end{equation}
 $$
 
@@ -1769,7 +1769,7 @@ $$
 \begin{align}
 \tan(\theta) &= \frac{\class{yellow}{x}}{\class{red}{a}} \\
 \class{yellow}{x} &= \class{red}{a} \tan(\theta) \label{eq:trigonometric_substitution_with_tangent-first-x-def} \\
-\theta &= \arctan\left(\frac{\class{yellow}{x}}{\class{red}{a}}\right) \label{eq:trigonometric_substitution_with_tangent-first-theta-def} \\
+\theta &= \arctan\qty(\frac{\class{yellow}{x}}{\class{red}{a}}) \label{eq:trigonometric_substitution_with_tangent-first-theta-def} \\
 d\class{yellow}{x} &= \class{red}{a} \sec^2(\theta) d\theta \label{eq:trigonometric_substitution_with_tangent-first-dx-def}
 \end{align}
 $$
@@ -1784,27 +1784,27 @@ $$
 \end{align}
 $$
 
-We can substitute this back into $\ref{eq:trigonometric_substitution_with_tangent-first}$:
+We can substitute this back into $\eqref{eq:trigonometric_substitution_with_tangent-first}$:
 
 $$
 \begin{equation}
-\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} dx = \int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} dx
+\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} \dd{x} = \int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} \dd{x}
 \end{equation}
 $$
 
-Now substitute $\ref{eq:trigonometric_substitution_with_tangent-first-dx-def}$ into it:
+Now substitute $\eqref{eq:trigonometric_substitution_with_tangent-first-dx-def}$ into it:
 
 $$
 \begin{equation}
-\int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} \class{blue}{dx} = \int \frac{\class{blue}{a \cancel{\sec^2(\theta)}}}{\class{red}{a}^2 \cancel{\sec^2(\theta)}} \class{blue}{d\theta} = \frac{1}{\class{red}{a}} \theta + C
+\int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} \class{blue}\dd{x} = \int \frac{\class{blue}{a \cancel{\sec^2(\theta)}}}{\class{red}{a}^2 \cancel{\sec^2(\theta)}} \class{blue}{d\theta} = \frac{1}{\class{red}{a}} \theta + C
 \end{equation}
 $$
 
-Finally, substitute $\ref{eq:trigonometric_substitution_with_tangent-first-theta-def}$:
+Finally, substitute $\eqref{eq:trigonometric_substitution_with_tangent-first-theta-def}$:
 
 $$
 \begin{equation}
-\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} dx = \frac{1}{\class{red}{a}}\arctan\left(\frac{\class{yellow}{x}}{\class{red}{a}}\right) + C
+\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} dx = \frac{1}{\class{red}{a}}\arctan\qty(\frac{\class{yellow}{x}}{\class{red}{a}}) + C
 \end{equation}
 $$
 
@@ -1833,7 +1833,7 @@ $$
 \begin{align}
 x &= \sqrt{\frac{3}{2}}\sin(\theta) \\
 dx &= \sqrt{\frac{3}{2}}\cos(\theta) d\theta \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def} \\
-\theta &= \arcsin\left(\sqrt{\frac{2}{3}}x\right) \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}
+\theta &= \arcsin\qty(\sqrt{\frac{2}{3}}x) \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}
 \end{align}
 $$
 
@@ -1841,7 +1841,7 @@ Calculate the denominator:
 
 $$
 \begin{align}
-2\left(\sqrt{\frac{3}{2}}^2 - x^2\right) &= 2\left(\frac{3}{2} - \frac{3}{2}\sin^2(\theta)\right) \\
+2\qty(\sqrt{\frac{3}{2}}^2 - x^2) &= 2\qty(\frac{3}{2} - \frac{3}{2}\sin^2(\theta)) \\
 &= 3(1 - \sin^2(\theta))
 \end{align}
 $$
@@ -1854,21 +1854,21 @@ $$
 \end{equation}
 $$
 
-Substituting this, along with Equation $\ref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def}$ back into $\ref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)}$:
+Substituting this, along with Equation $\eqref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def}$ back into $\eqref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)}$:
 
 $$
 \begin{align}
-\int \frac{1}{\sqrt{3 - 2x^2}} dx &= \int \frac{1}{\sqrt{3\cos^2(\theta)}} \class{yellow}{dx} \\
+\int \frac{1}{\sqrt{3 - 2x^2}} dx &= \int \frac{1}{\sqrt{3\cos^2(\theta)}} \class{yellow}\dd{x} \\
 &= \int \frac{\class{yellow}{\sqrt{3}/\sqrt{2} \cos(\theta)}}{\sqrt{3} \cos(\theta)} \class{yellow}{d\theta} \\
 &= \int \frac{1}{\sqrt{2}} d\theta = \frac{1}{\sqrt{2}} \theta + C
 \end{align}
 $$
 
-Substituting $\ref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}$:
+Substituting $\eqref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}$:
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{3 - 2x^2}} dx = \frac{1}{\sqrt{2}} \theta + C = \frac{1}{\sqrt{2}} \arcsin\left(\sqrt{\frac{2}{3}}x\right) + C
+\int \frac{1}{\sqrt{3 - 2x^2}} dx = \frac{1}{\sqrt{2}} \theta + C = \frac{1}{\sqrt{2}} \arcsin\qty(\sqrt{\frac{2}{3}}x) + C
 \end{equation}
 $$
 
@@ -1918,7 +1918,7 @@ $$
 \end{align}
 $$
 
-We now have two terms in the numerator, one with $x$ and one without $x$. Since all we did is rewrite the original fraction, we can equate the fraction in $\ref{eq:integration_by_partial_fractions-original}$ and $\ref{eq:integration_by_partial_fractions-numerator}$:
+We now have two terms in the numerator, one with $x$ and one without $x$. Since all we did is rewrite the original fraction, we can equate the fraction in $\eqref{eq:integration_by_partial_fractions-original}$ and $\eqref{eq:integration_by_partial_fractions-numerator}$:
 
 $$
 \begin{align}
@@ -1967,7 +1967,7 @@ $$
 
 </details>
 
-Substitute $A = 4$ and $B = -7$ back into $\ref{eq:integration_by_partial_fractions-split}$:
+Substitute $A = 4$ and $B = -7$ back into $\eqref{eq:integration_by_partial_fractions-split}$:
 
 $$
 \begin{align}
@@ -1980,14 +1980,14 @@ Now we can integrate the two terms by reversing the chain rule:
 
 $$
 \begin{align}
-\int \overbrace{\boxed{\frac{1}{\class{red}{\underbrace{x - 1}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace{dx}_{g'(x)}} &= f(g(x)) + C \\
+\int \overbrace{\boxed{\frac{1}{\class{red}{\underbrace{x - 1}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace\dd{x}_{g'(x)}} &= f(g(x)) + C \\
 &= \ln|x - 1| + C \\
-\int \overbrace{\boxed{\frac{2}{\class{red}{\underbrace{2x - 3}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace{dx}_{g'(x)}} &= f(g(x)) + C \\
+\int \overbrace{\boxed{\frac{2}{\class{red}{\underbrace{2x - 3}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace\dd{x}_{g'(x)}} &= f(g(x)) + C \\
 &= \ln|2x - 3| + C
 \end{align}
 $$
 
-Therefore, the integral at $\ref{eq:integration_by_partial_fractions-original}$ can be rewritten as:
+Therefore, the integral at $\eqref{eq:integration_by_partial_fractions-original}$ can be rewritten as:
 
 $$
 \begin{equation}
@@ -2031,8 +2031,8 @@ Since you can't add infinite things, you consider what the area approaches as th
 $$
 \begin{align}
 \int_1^{\infty} \frac{1}{x^2} dx = \lim_{n \to \infty} \int_1^n \frac{1}{x^2} dx &= \lim_{n \to \infty} \frac{x^{-1}}{-1} dx \\
-&= \lim_{n \to \infty}\left(-\frac{1}{n} - \left(-\frac{1}{1}\right)\right) \\
-&= \lim_{n \to \infty}\left(-\frac{1}{n} + 1\right) = 1
+&= \lim_{n \to \infty}\qty(-\frac{1}{n} - \qty(-\frac{1}{1})) \\
+&= \lim_{n \to \infty}\qty(-\frac{1}{n} + 1) = 1
 \end{align}
 $$
 
@@ -2079,17 +2079,17 @@ $$
 \begin{align}
 x &= 3\sin(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-x-def} \\
 dx &= 3\cos(\theta) d\theta \\
-\theta &= \arcsin\left(\frac{x}{3}\right) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-theta-def} \\
+\theta &= \arcsin\qty(\frac{x}{3}) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-theta-def} \\
 \sqrt{9 - x^2} &= \sqrt{9 - 9\sin^2(\theta)} \\
 &= \sqrt{9(1 - \sin^2(\theta))} = 3\cos(\theta)
 \end{align}
 $$
 
-Therefore, the integral at $\ref{eq:example_problem_combining_u_and_trigonometric_substitution-main}$ can be rewritten as:
+Therefore, the integral at $\eqref{eq:example_problem_combining_u_and_trigonometric_substitution-main}$ can be rewritten as:
 
 $$
 \begin{align}
-\int \class{red}{x^3} \class{blue}{\sqrt{9 - x^2}} \class{green}{dx} &= \int \class{red}{27\sin^3(\theta)} \class{blue}{3\cos(\theta)} \class{green}{3\cos(\theta) d\theta} \\
+\int \class{red}{x^3} \class{blue}{\sqrt{9 - x^2}} \class{green}\dd{x} &= \int \class{red}{27\sin^3(\theta)} \class{blue}{3\cos(\theta)} \class{green}{3\cos(\theta) d\theta} \\
 &= \int 243 \sin^3(\theta) \cos^2(\theta) d\theta
 \end{align}
 $$
@@ -2102,7 +2102,7 @@ $$
 \end{equation}
 $$
 
-Here, if we let $-\sin(\theta) d\theta$ be $du$, then we need to make $u = \cos(\theta)$. To do so, we can make use of the Pythagorean identity once again:
+Here, if we let $-\sin(\theta) d\theta$ be $\dd{u}$, then we need to make $u = \cos(\theta)$. To do so, we can make use of the Pythagorean identity once again:
 
 $$
 \begin{equation}
@@ -2118,13 +2118,13 @@ $$
 u &= \cos(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-u-def} \\
 du &= -\sin(\theta) d\theta \\
 243 \int (1 - \cos^2(\theta)) \cos^2(\theta) \sin(\theta) d\theta &= -243 \int \class{red}{(1 - \cos^2(\theta)) \cos^2(\theta)} \class{blue}{(-\sin(\theta)) d\theta} \\
-&= -243 \int \class{red}{(1 - u^2)u^2} \class{blue}{du} \\
+&= -243 \int \class{red}{(1 - u^2)u^2} \class{blue}\dd{u} \\
 &= -243 \int (u^2 - u^4) du \\
-&= -243 \left(\frac{u^3}{3} - \frac{u^5}{5}\right) + C \label{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}
+&= -243 \qty(\frac{u^3}{3} - \frac{u^5}{5}) + C \label{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}
 \end{align}
 $$
 
-We can manipulate $\ref{eq:example_problem_combining_u_and_trigonometric_substitution-main-x-def}$ to derive an expression for $u$:
+We can manipulate $\eqref{eq:example_problem_combining_u_and_trigonometric_substitution-main-x-def}$ to derive an expression for $u$:
 
 $$
 \begin{align}
@@ -2134,14 +2134,14 @@ u = \cos(\theta) &= \sqrt{1 - \sin^2(\theta)} = \sqrt{1 - \frac{x^2}{9}}
 \end{align}
 $$
 
-Finally, substituting this back into $\ref{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}$, and performing some algebra, we get the result:
+Finally, substituting this back into $\eqref{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}$, and performing some algebra, we get the result:
 
 $$
 \begin{align}
-\int x^3 \sqrt{9 - x^2} dx = \dots &= -243 \left(\frac{u^3}{3} - \frac{u^5}{5}\right) + C \\
-&= -243 \left(\frac{\left(1 - \frac{x^2}{9}\right)^\frac{3}{2}}{3} - \frac{\left(1 - \frac{x^2}{9}\right)^\frac{5}{2}}{5}\right) + C \\
-&= -243 \left(\frac{\frac{1}{9^{3/2}} \left(9 - x^2\right)^\frac{3}{2}}{3} - \frac{\frac{1}{9^{5/2}} \left(9 - x^2\right)^\frac{5}{2}}{5}\right) + C \\
-&= -243 \left(\frac{\left(9 - x^2\right)^\frac{3}{2}}{3 \cdot 3^3} - \frac{\left(9 - x^2\right)^\frac{5}{2}}{5 \cdot 3^5} \right) + C \\
+\int x^3 \sqrt{9 - x^2} dx = \dots &= -243 \qty(\frac{u^3}{3} - \frac{u^5}{5}) + C \\
+&= -243 \qty(\frac{\qty(1 - \frac{x^2}{9})^\frac{3}{2}}{3} - \frac{\qty(1 - \frac{x^2}{9})^\frac{5}{2}}{5}) + C \\
+&= -243 \qty(\frac{\frac{1}{9^{3/2}} \qty(9 - x^2)^\frac{3}{2}}{3} - \frac{\frac{1}{9^{5/2}} \qty(9 - x^2)^\frac{5}{2}}{5}) + C \\
+&= -243 \qty(\frac{\qty(9 - x^2)^\frac{3}{2}}{3 \cdot 3^3} - \frac{\qty(9 - x^2)^\frac{5}{2}}{5 \cdot 3^5} ) + C \\
 &= -3(9 - x^2)^\frac{3}{2} + \frac{1}{5} (9 - x^2)^\frac{5}{2} + C
 \end{align}
 $$
@@ -2168,7 +2168,7 @@ The fundamental theorem of calculus states that the integral of a function is th
 
 $$
 \begin{align}
-\frac{d}{dx} F(x) &= f(x) \\
+\dv{x} F(x) &= f(x) \\
 \int_a^b f(x) dx &= F(b) - F(a)
 \end{align}
 $$
@@ -2191,8 +2191,8 @@ There are several techniques to solve integrals:
 - **Trigonometric substitution** is used to substitute trigonometric functions to simplify the integrand:
     $$
     \begin{align}
-    \int \frac{1}{\sqrt{a^2 - x^2}} dx &= \arcsin\left(\frac{x}{a}\right) + C \\
-    \int \frac{1}{a^2 + x^2} dx &= \frac{1}{a}\arctan\left(\frac{x}{a}\right) + C
+    \int \frac{1}{\sqrt{a^2 - x^2}} dx &= \arcsin\qty(\frac{x}{a}) + C \\
+    \int \frac{1}{a^2 + x^2} dx &= \frac{1}{a}\arctan\qty(\frac{x}{a}) + C
     \end{align}
     $$
 

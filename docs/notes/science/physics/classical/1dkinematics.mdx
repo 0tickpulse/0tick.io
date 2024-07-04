@@ -21,8 +21,8 @@ On the other hand, dynamics studies the causes of motion, the forces that cause 
 
 Position is the location of an object in space. It is a vector quantity, meaning it has both magnitude and direction.
 
-Usually, position is denoted as a function of time $\bvec{r}(t)$, where $t$ is time.
-In one-dimensional kinematics, the position can be written as $x(t)\hat{\bvec{i}}$. Here, $\hat{\bvec{i}}$ is the unit vector in the direction of motion.
+Usually, position is denoted as a function of time $\va{r}(t)$, where $t$ is time.
+In one-dimensional kinematics, the position can be written as $x(t)\hat{\va{i}}$. Here, $\hat{\va{i}}$ is the unit vector in the direction of motion.
 
 {(() => {
     const x = useMovablePoint([2, 0], { constrain: ([x, y]) => [x, 0] });
@@ -34,7 +34,7 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\bvec{i}
             color={Theme.green}
         />
         <LaTeX
-            tex={`\\bvec{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\bvec{i}}`}
+            tex={`\\va{r}(t) = ${x.point[0].toFixed(2)}\\hat{\\va{i}}`}
             at={[x.point[0] / 2, 0.3]}
         />
 
@@ -44,7 +44,7 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\bvec{i}
             color={Theme.red}
         />
         <LaTeX
-            tex={`\\hat{\\bvec{i}}`}
+            tex={`\\hat{\\va{i}}`}
             at={[0.5, -0.3]}
         />
         {x.element}
@@ -53,17 +53,17 @@ In one-dimensional kinematics, the position can be written as $x(t)\hat{\bvec{i}
 
 ## Displacement
 
-Displacement is the change in position of an object, or $\Delta \bvec{r}$. It is also a vector quantity.
+Displacement is the change in position of an object, or $\Delta \va{r}$. It is also a vector quantity.
 Displacement can be expressed as follows:
 
 $$
-\Delta \bvec{r} = \bvec{r}(t_2) - \bvec{r}(t_1)
+\Delta \va{r} = \va{r}(t_2) - \va{r}(t_1)
 $$
 
 In one-dimensional kinematics, the displacement can be written as:
 
 $$
-\Delta \bvec{r} = x(t_2)\hat{\bvec{i}} - x(t_1)\hat{\bvec{i}} \equiv \Delta x\hat{\bvec{i}}
+\Delta \va{r} = x(t_2)\hat{\va{i}} - x(t_1)\hat{\va{i}} \equiv \Delta x\hat{\va{i}}
 $$
 
 ## Velocity
@@ -74,7 +74,7 @@ The SI unit of velocity is meters per second ($\text{ms}^{-1}$).
 The average velocity, which is the average rate of change of position, is given by:
 
 $$
-\bvec{v}_{\text{avg}} = \frac{\Delta \bvec{r}}{\Delta t}
+\va{v}_{\text{avg}} = \frac{\Delta \va{r}}{\Delta t}
 $$
 
 In one-dimensional kinematics, the average velocity can be written as:
@@ -88,19 +88,19 @@ $$
 The instantaneous velocity is the velocity at a specific point in time. It is the limit of the average velocity as the time interval approaches zero:
 
 $$
-v = \lim_{\Delta t \to 0} \frac{x(t + \Delta t) - x(t)}{\Delta t} = \frac{dx}{dt}
+v = \lim_{\Delta t \to 0} \frac{x(t + \Delta t) - x(t)}{\Delta t} = \dv{x}{t}
 $$
 
 The vector form of velocity is:
 
 $$
-\bvec{v} = \frac{d\bvec{r}}{dt}
+\va{v} = \frac{d\va{r}}\dd{t}
 $$
 
 And in one-dimensional kinematics:
 
 $$
-\bvec{v} = \frac{d}{dt}(x\hat{\bvec{i}}) = \frac{dx}{dt}\hat{\bvec{i}}
+\va{v} = \dv{t}(x\hat{\va{i}}) = \dv{x}{t}\hat{\va{i}}
 $$
 
 ## Acceleration
@@ -111,7 +111,7 @@ The SI unit of acceleration is meters per second squared ($\text{ms}^{-2}$).
 The average acceleration, which is the average rate of change of velocity, is given by:
 
 $$
-\bvec{a}_{\text{avg}} = \frac{\Delta \bvec{v}}{\Delta t}
+\va{a}_{\text{avg}} = \frac{\Delta \va{v}}{\Delta t}
 $$
 
 In one-dimensional kinematics, the average acceleration can be written as:
@@ -123,19 +123,19 @@ $$
 Just like velocity, the instantaneous acceleration is the acceleration at a specific point in time. It is the limit of the average acceleration as the time interval approaches zero:
 
 $$
-a = \lim_{\Delta t \to 0} \frac{v(t + \Delta t) - v(t)}{\Delta t} = \frac{dv}{dt}
+a = \lim_{\Delta t \to 0} \frac{v(t + \Delta t) - v(t)}{\Delta t} = \dv{v}{t}
 $$
 
 The vector form of acceleration is:
 
 $$
-\bvec{a} = \frac{d\bvec{v}}{dt}
+\va{a} = \frac{d\va{v}}\dd{t}
 $$
 
 And in one-dimensional kinematics:
 
 $$
-\bvec{a} = \frac{d}{dt}(v\hat{\bvec{i}}) = \frac{dv}{dt}\hat{\bvec{i}}
+\va{a} = \dv{t}(v\hat{\va{i}}) = \dv{v}{t}\hat{\va{i}}
 $$
 
 ## Constant Acceleration
@@ -208,7 +208,7 @@ $$
 In vector form in one-dimensional kinematics, the displacement can be written as:
 
 $$
-\bvec{x}(t) = \bvec{x}_0 + \bvec{v}_0 t + \frac{1}{2} \bvec{a} t^2
+\va{x}(t) = \va{x}_0 + \va{v}_0 t + \frac{1}{2} \va{a} t^2
 $$
 
 ## Example: Vehicles
@@ -283,7 +283,7 @@ For non-constant acceleration, the velocity-time graph is not a straight line.
 To get the velocity, we need to make use of calculus.
 
 $$
-a(t) = \frac{dv}{dt} \implies v(t) = \int a(t) \, dt
+a(t) = \dv{v}{t} \implies v(t) = \int a(t) \, dt
 $$
 
 This is an antiderivative, which is the reverse of differentiation.
@@ -294,8 +294,8 @@ v(t) = \int bt^2 \, dt = \frac{1}{3} bt^3 + v_0
 $$
 
 Consider an acceleration-time graph. The area under the graph is the velocity.
-The area is thought of as a sum of rectangles, each with a width of $dt$ and a height of $a(t)$.
-To find the area, notice that a small change in time $dt$ incurs a small change in area, which is a rectangle and as such can be calculated as $a(t) dt$.
+The area is thought of as a sum of rectangles, each with a width of \dd{t} and a height of $a(t)$.
+To find the area, notice that a small change in time \dd{t} incurs a small change in area, which is a rectangle and as such can be calculated as $a(t) dt$.
 
 {(() => {
     const k = 3
@@ -343,7 +343,7 @@ To find the area, notice that a small change in time $dt$ incurs a small change 
 })()}
 
 $$
-d\text{Area} = dv = a(t) \, dt \implies \frac{dv}{dt} = a(t)
+d\text{Area} = dv = a(t) \, dt \implies \dv{v}{t} = a(t)
 $$
 
 And therefore,
@@ -415,7 +415,7 @@ Then, the position function can be found by integrating the velocity function:
 $$
 \begin{align*}
     x_{\text{c}}(t) - x_{\text{c}}(t_1) &= \int_{t_1}^{t} v_{\text{c}}(t') \, dt' \\
-    &= \int_{t_1}^{t} \left( v_{\text{c}, 0} + \frac{1}{2} k(t' - t_1)^2 \right) \, dt'
+    &= \int_{t_1}^{t} \qty( v_{\text{c}, 0} + \frac{1}{2} k(t' - t_1)^2 ) \, dt'
 \end{align*}
 $$
 
@@ -423,9 +423,9 @@ Let $u = t' - t_1$, then $du = dt'$:
 
 $$
 \begin{align*}
-    x_{\text{c}}(t) - x_{\text{c}}(t_1) &= \int_{0}^{t - t_1} \left( v_{\text{c}, 0} + \frac{1}{2} ku^2 \right) \, du \\
+    x_{\text{c}}(t) - x_{\text{c}}(t_1) &= \int_{0}^{t - t_1} \qty( v_{\text{c}, 0} + \frac{1}{2} ku^2 ) \, du \\
     &= \left[ v_{\text{c}, 0}u + \frac{1}{6} ku^3 \right]_{0}^{t - t_1} \\
-    &= \left( v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3 \right) \\
+    &= \qty( v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3 ) \\
     \implies x_{\text{c}}(t) &= x_{\text{c}}(t_1) + v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3 \\
     &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}(t - t_1) + \frac{1}{6} k(t - t_1)^3
 \end{align*}
@@ -466,9 +466,9 @@ Therefore, the position at which the car stops is:
 $$
 \begin{align*}
     x_{\text{c}}(t_2) &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}(t_2 - t_1) + \frac{1}{6} k(t_2 - t_1)^3 \\
-    &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}\sqrt{\frac{-2v_{\text{c}, 0}}{k}} + \frac{1}{6} k\left(\frac{-2v_{\text{c}, 0}}{k}\right)^{3/2} \\
+    &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}\sqrt{\frac{-2v_{\text{c}, 0}}{k}} + \frac{1}{6} k\qty(\frac{-2v_{\text{c}, 0}}{k})^{3/2} \\
     &= v_{\text{c}, 0}t_1 + v_{\text{c}, 0}{\color{red} \sqrt{\frac{2v_{\text{c}, 0}}{-k}}} - \frac{1}{6} \cancel{k}{\color{red} \sqrt{\frac{2v_{\text{c}, 0}}{-k}}}\frac{2}{\cancel{k}} \\
-    &= v_{\text{c}, 0}t_1 + \frac{\sqrt{2}(v_{\text{c}, 0})^{3/2}}{\sqrt{-k}}\left(1 - \frac{1}{3}\right) \\
+    &= v_{\text{c}, 0}t_1 + \frac{\sqrt{2}(v_{\text{c}, 0})^{3/2}}{\sqrt{-k}}\qty(1 - \frac{1}{3}) \\
     &= v_{\text{c}, 0}t_1 + \frac{4\sqrt{2}}{3}\frac{(v_{\text{c}, 0})^{3/2}}{\sqrt{-k}} \\
     &= (20 \text{ms}^{-1}) (1 \text{s}) + \frac{4\sqrt{2}}{3}\frac{(20 \text{ms}^{-1})^{3/2}}{\sqrt{5 \text{ms}^{-3}}} \\
     &= 95.424 \text{m}

@@ -37,7 +37,7 @@ This is a differential equation:
 $$
 
 \begin{equation}
-\frac{df}{dx}(x) = \alpha f(x)
+\dv{f}{x}(x) = \alpha f(x)
 \end{equation}
 $$
 
@@ -61,14 +61,14 @@ $$
 
 We set $k$ as the proportionality constant. Now let's consider what each term should be:
 
-- The rate of change of atoms is the derivative of the number of atoms with respect to time: $\frac{dN}{dt}(t)$.
+- The rate of change of atoms is the derivative of the number of atoms with respect to time: $\dv{N}{t}(t)$.
 - The number of atoms is $N(t)$.
 
 Therefore, the differential equation is:
 
 $$
 \begin{equation}
-\frac{dN}{dt}(t) = -kN(t)
+\dv{N}{t}(t) = -kN(t)
 \end{equation}
 $$
 
@@ -111,7 +111,8 @@ A visualization of the decay of radioactive atoms is shown below:
                         color={color("red")}
                     />
                     <LaTeX
-                        tex={`\\frac{dN}{dt}(t)`}
+                        // tex={`\\dv{N}{t}(t)`}
+                        tex="\frac{\mathrm{d}N}{\mathrm{d}t}(t)"
                         at={lineLabel(point, vTip, "left", { sideOffset: 0.5 })}
                     />
                 </Mafs>
@@ -140,7 +141,7 @@ For example, consider the same differential equation from the previous example:
 
 $$
 \begin{equation}
-\frac{dN}{dt}(t) = -kN(t)
+\dv{N}{t}(t) = -kN(t)
 \end{equation}
 $$
 
@@ -148,7 +149,7 @@ Let's verify that the function $N(t) = 5e^{-0.5t}$ satisfies the equation:
 
 $$
 \begin{equation}
-\frac{dN}{dt}(t) = \frac{d}{dt}(5e^{-0.5t}) = -2.5e^{-0.5t} = -0.5 \times 5e^{-0.5t} = -kN(t)
+\dv{N}{t}(t) = \dv{t}(5e^{-0.5t}) = -2.5e^{-0.5t} = -0.5 \times 5e^{-0.5t} = -kN(t)
 \end{equation}
 $$
 
@@ -158,14 +159,14 @@ The function satisfies the differential equation.
 
 > Verify that the function $f(x) = 3x$ satisfies the following differential equation:
 > $$
-> \frac{df}{dx}(x) = \frac{3f(x)}{x}
+> \dv{f}{x}(x) = \frac{3f(x)}{x}
 > $$
 
 Substitute $f(x) = 3x$ into the equation:
 
 $$
 \begin{align}
-\frac{df}{dx}(x) &= \frac{3f(x)}{x} \\
+\dv{f}{x}(x) &= \frac{3f(x)}{x} \\
 4 &= \frac{3 \times 3x}{x} \\
 4 &= 9
 \end{align}
@@ -379,7 +380,7 @@ The component perpendicular to the direction of motion does not affect the motio
 
 You can use something called the dot product here.
 
-The dot product "projects" one vector onto another. If you have two vectors $\bvec{a}$ and $\bvec{b}$, the dot product is $\bvec{a} \cdot \bvec{b} = |\bvec{a}| |\bvec{b}| \cos(\theta)$, where $\theta$ is the angle between the two vectors.
+The dot product "projects" one vector onto another. If you have two vectors $\va{a}$ and $\va{b}$, the dot product is $\va{a} \cdot \va{b} = |\va{a}| |\va{b}| \cos(\theta)$, where $\theta$ is the angle between the two vectors.
 
 More info on this is in the Linear Algebra section.
 
@@ -387,7 +388,7 @@ Essentially, we are projecting the gravity vector onto the direction of the bob'
 
 $$
 \begin{equation}
-\text{Acceleration} = \frac{d\bvec{x}}{dt} \cdot \bvec{g} = -g \sin(\theta)
+\text{Acceleration} = \frac{d\va{x}}\dd{t} \cdot \va{g} = -g \sin(\theta)
 \end{equation}
 $$
 
@@ -415,16 +416,16 @@ $$
 
 Air drag is a force that opposes the motion of the bob. It is proportional to the velocity of the bob and acts in the opposite direction.
 
-We can set the air drag force as $-b \frac{dx}{dt}$, where $b$ is the proportionality constant.
+We can set the air drag force as $-b \dv{x}{t}$, where $b$ is the proportionality constant.
 
 The equation of motion becomes:
 
 $$
 \begin{align}
-\frac{d^2x}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \frac{dx}{dt} \\
-\frac{d^2(L \theta)}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \frac{d(L \theta)}{dt} \\
-L \frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b L \frac{d\theta}{dt} \\
-\frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \frac{d\theta}{dt}
+\frac{d^2x}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{x}{t} \\
+\frac{d^2(L \theta)}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{(L \theta)}{t} \\
+L \frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b L \dv{\theta}{t} \\
+\frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{\theta}{t}
 \end{align}
 $$
 
@@ -466,7 +467,7 @@ Consider this DE:
 
 $$
 \begin{equation}
-\frac{dy}{dx} = -\frac{x}{y}
+\dv{y}{x} = -\frac{x}{y}
 \end{equation}
 $$
 
@@ -474,7 +475,7 @@ Now we construct a graph. For each point $(x_i, y_i)$, find the slope using the 
 
 We can first construct a table like this:
 
-| $x$ | $y$ | $\frac{dy}{dx}$ |
+| $x$ | $y$ | $\dv{y}{x}$ |
 | --- | --- | --------------- |
 | $0$ | $1$ | $0$             |
 | $1$ | $1$ | $-1$            |
@@ -608,30 +609,30 @@ export function ExampleProblemEquationFromSlopeField() {
 >
 > Choose the correct differential equation from the following:
 >
-> 1. $\frac{dy}{dx} = x - y$
-> 1. $\frac{dy}{dx} = -\frac{x}{y}$
-> 1. $\frac{dy}{dx} = y - x$
-> 1. $\frac{dy}{dx} = x + y$
-> 1. $\frac{dy}{dx} = \frac{x}{y}$
+> 1. $\dv{y}{x} = x - y$
+> 1. $\dv{y}{x} = -\frac{x}{y}$
+> 1. $\dv{y}{x} = y - x$
+> 1. $\dv{y}{x} = x + y$
+> 1. $\dv{y}{x} = \frac{x}{y}$
 
 We can go through each option and see which one matches the slope field.
 To do so, we can pick a point that is easy to calculate the slope for, such as $(1, 1)$.
 At this point, looking visually, the slope is positive and more than $1$.
 
-1. $\frac{dy}{dx} = x - y$:
+1. $\dv{y}{x} = x - y$:
     - For $(1, 1)$, the slope is $1 - 1 = 0$, which is not correct.
-1. $\frac{dy}{dx} = -\frac{x}{y}$:
+1. $\dv{y}{x} = -\frac{x}{y}$:
     - For $(1, 1)$, the slope is $-\frac{1}{1} = -1$, which is not correct.
-1. $\frac{dy}{dx} = y - x$:
+1. $\dv{y}{x} = y - x$:
     - For $(1, 1)$, the slope is $1 - 1 = 0$, which is not correct.
-1. $\frac{dy}{dx} = x + y$:
+1. $\dv{y}{x} = x + y$:
     - For $(1, 1)$, the slope is $1 + 1 = 2$, which _could_ be correct.
-1. $\frac{dy}{dx} = \frac{x}{y}$:
+1. $\dv{y}{x} = \frac{x}{y}$:
     - For $(1, 1)$, the slope is $\frac{1}{1} = 1$, which is not correct.
 
-Since $\frac{dy}{dx} = x + y$ is the only one that could be correct, it is, by elimination, the correct answer.
+Since $\dv{y}{x} = x + y$ is the only one that could be correct, it is, by elimination, the correct answer.
 
-Therefore, the correct answer is $\frac{dy}{dx} = x + y$.
+Therefore, the correct answer is $\dv{y}{x} = x + y$.
 
 ### Example Problem: Slope Field from Equation
 
@@ -720,7 +721,7 @@ export function ExampleProblemSlopeFieldFromEquation() {
 >
 > $$
 > \begin{equation}
-> \frac{dy}{dx} = x - y
+> \dv{y}{x} = x - y
 > \end{equation}
 > $$
 >
@@ -742,7 +743,7 @@ Slope fields can be used to approximate solution curves to DEs. Consider the DE:
 
 $$
 \begin{equation}
-\frac{dy}{dx} = \frac{y}{6}(4 - y)
+\dv{y}{x} = \frac{y}{6}(4 - y)
 \end{equation}
 $$
 
@@ -874,7 +875,7 @@ Consider the DE:
 
 $$
 \begin{equation}
-\frac{dy}{dx} = y, \quad y(0) = 1
+\dv{y}{x} = y, \quad y(0) = 1
 \end{equation}
 $$
 
@@ -889,7 +890,7 @@ We can use this to find the next point. Instead of an infinitesimal change, we m
 
 $$
 \begin{align}
-\frac{\Delta y}{\Delta x} &\approx \frac{dy}{dx} = 1 \\
+\frac{\Delta y}{\Delta x} &\approx \dv{y}{x} = 1 \\
 \Delta y &\approx 1 \times \Delta x = 1 \times 0.5 = 0.5
 \end{align}
 $$

@@ -21,8 +21,8 @@ Differentiation is a powerful tool in mathematics, and it has many applications 
 Linear approximation is a method of approximating a function near a certain point by using the tangent line at that point.
 Essentially, get a function, find the slope at some point $a$, and pretend the function is a straight tangent line.
 
-Given a function $f(x)$, the slope at that line is $\frac{df}{dx}$.
-Thus, the slope of the tangent line at $x = a$ is $\frac{df}{dx}(a)$.
+Given a function $f(x)$, the slope at that line is $\dv{f}{x}$.
+Thus, the slope of the tangent line at $x = a$ is $\dv{f}{x}(a)$.
 
 To find the equation of the tangent line, we use the point-slope form.
 
@@ -72,11 +72,11 @@ $$
 
 :::
 
-Using the point-slope form, our slope $m$ is $\frac{df}{dx}$ and the point $(x_1, y_1)$ is $(a, f(a))$.
+Using the point-slope form, our slope $m$ is $\dv{f}{x}$ and the point $(x_1, y_1)$ is $(a, f(a))$.
 Thus, the equation of the tangent line is:
 
 $$
-y - f(a) = \frac{df(a)}{dx}(x - a)
+y - f(a) = \dv{f(a)}{x}(x - a)
 $$
 
 Known as linear approximation of the function $f(x)$ near $x = a$.
@@ -90,7 +90,7 @@ Trying to do calculations with this function can be difficult, but we can approx
 The derivative of $f(x)$ can be found using the chain rule:
 
 $$
-\frac{df}{dx} = \frac{df}{du} \cdot \frac{du}{dx} = \frac{1}{2\sqrt{1 + x}} \cdot 1 = \frac{1}{2\sqrt{1 + x}}
+\dv{f}{x} = \dv{f}{u} \cdot \dv{u}{x} = \frac{1}{2\sqrt{1 + x}} \cdot 1 = \frac{1}{2\sqrt{1 + x}}
 $$
 
 And at $x = 0$:
@@ -164,8 +164,8 @@ Similarly, we can find the acceleration of the ball at any time $t$ by taking th
 $$
 \begin{align}
 s(t) &= 5t^2 + 3t + 2 \\
-v(t) &= \frac{ds}{dt} = 10t + 3 \\
-a(t) &= \frac{dv}{dt} = 10
+v(t) &= \dv{s}{t} = 10t + 3 \\
+a(t) &= \dv{v}{t} = 10
 \end{align}
 $$
 
@@ -173,8 +173,8 @@ Integration can be used to do this in reverse, although it isn't covered yet.
 
 $$
 \begin{align}
-v(t) - v(0) &= \int_{t' = 0}^{t' = t} a(t') dt' \\
-s(t) - s(0) &= \int_{t' = 0}^{t' = t} v(t') dt' \\
+v(t) - v(0) &= \int_{t' = 0}^{t' = t} a(t')\dd{t}' \\
+s(t) - s(0) &= \int_{t' = 0}^{t' = t} v(t')\dd{t}' \\
 a(t) = -g &\implies v(t) = -gt + v(0) \\
 \therefore s(t) &= -\frac{1}{2}gt^2 + v(0)t + s(0)
 \end{align}
@@ -251,12 +251,12 @@ The graph shows the numerator and denominator of the function $f(x)$ as individu
 
 As $x$ approaches $1$, the numerator approaches $1$ and the denominator approaches $1$. Therefore, the fraction is indeterminate.
 
-In differentiation, we calculate the slope at a point by using a small interval of $dx$.
-Likewise, here we can think of a point that's just a little bit ($dx$) away from $1$:
+In differentiation, we calculate the slope at a point by using a small interval of $\dd{x}$.
+Likewise, here we can think of a point that's just a little bit ($\dd{x}$) away from $1$:
 
 <LhopitalsRule showDx />
 
-As shown in the graph, we have an interval of $dx$ around $1$.
+As shown in the graph, we have an interval of $\dd{x}$ around $1$.
 Since this is non-zero, there _is_ a value here, which are marked by the blue and green vectors.
 As we decrease the interval, the value of the function approaches a certain value, and that is the limit of the function at $1$.
 
@@ -264,8 +264,8 @@ The value of the numerator and denominator are calculated below:
 
 $$
 \begin{align}
-d(\cos(\pi x / 2)) &= -\frac{\pi}{2} \sin\left(\frac{\pi x}{2}\right) dx \\
-d(x - 1) &= dx
+d(\cos(\pi x / 2)) &= -\frac{\pi}{2} \sin\qty(\frac{\pi x}{2}) \dd{x} \\
+d(x - 1) &= \dd{x}
 \end{align}
 $$
 
@@ -273,19 +273,19 @@ And when we plug in $x = 1$:
 
 $$
 \begin{align}
-d(\cos(\pi / 2)) &= -\frac{\pi}{2} \sin\left(\frac{\pi}{2}\right) dx = -\frac{\pi}{2} dx \\
-d(x - 1) &= dx
+d(\cos(\pi / 2)) &= -\frac{\pi}{2} \sin\qty(\frac{\pi}{2})\dd{x}= -\frac{\pi}{2}\dd{x}\\
+d(x - 1) &=\dd{x}
 \end{align}
 $$
 
-Remember that the value of our limit is the limit of this ratio as $dx$ approaches $0$.
+Remember that the value of our limit is the limit of this ratio as $\dd{x}$ approaches $0$.
 
 Thus, the limit is:
 
 $$
 \begin{align}
-\lim_{x \to 1} \frac{\cos(\pi x / 2)}{x - 1} &= \lim_{dx \to 0} \frac{-(\pi / 2) \cancel{dx}}{\cancel{dx}} \\
-&= \lim_{dx \to 0} -\frac{\pi}{2} = -\frac{\pi}{2}
+\lim_{x \to 1} \frac{\cos(\pi x / 2)}{x - 1} &= \lim_{\dd{x}\to 0} \frac{-(\pi / 2) \cancel\dd{x}}{\cancel\dd{x}} \\
+&= \lim_{\dd{x}\to 0} -\frac{\pi}{2} = -\frac{\pi}{2}
 \end{align}
 $$
 
@@ -296,8 +296,8 @@ The numerator and denominators are calculated as:
 
 $$
 \begin{align}
-\text{Numerator} &= \frac{d(f(a))}{dx} dx \\
-\text{Denominator} &= \frac{d(g(a))}{dx} dx
+\text{Numerator} &= \dv{(f(a))}{x}\dd{x}\\
+\text{Denominator} &= \dv{(g(a))}{x}\dd{x}
 \end{align}
 $$
 
@@ -305,7 +305,7 @@ As such, the limit is the ratio of the two derivatives:
 
 $$
 \begin{equation}
-\lim_{x \to a} \frac{f(x)}{g(x)} = \frac{\dfrac{d(f(a))}{dx}}{\dfrac{d(g(a))}{dx}}
+\lim_{x \to a} \frac{f(x)}{g(x)} = \frac{\dfrac{d(f(a))}\dd{x}}{\dfrac{d(g(a))}\dd{x}}
 \end{equation}
 $$
 
@@ -330,8 +330,8 @@ Thus, the rule is applicable. Differentiating the numerator and denominator:
 
 $$
 \begin{align}
-\frac{d(\sin(x))}{dx} &= \cos(x) \\
-\frac{d(x)}{dx} &= 1
+\dv{(\sin(x))}{x} &= \cos(x) \\
+\dv{(x)}{x} &= 1
 \end{align}
 $$
 
@@ -356,7 +356,7 @@ Formally it is written like this:
 
 $$
 \begin{equation}
-\exists c \in (a, b) \, \text{such that} \, \frac{df}{dx}(c) = \frac{f(b) - f(a)}{b - a}
+\exists c \in (a, b) \, \text{such that} \, \dv{f}{x}(c) = \frac{f(b) - f(a)}{b - a}
 \end{equation}
 $$
 
@@ -393,15 +393,15 @@ m &= \frac{f(b) - f(a)}{b - a}
 \end{align}
 $$
 
-According to Rolle's theorem, there must be a point on the graph where it is flat (horizontal), that is, $(\exists c \in (a, b)) \, \frac{dg}{dx}(c) = 0$.
+According to Rolle's theorem, there must be a point on the graph where it is flat (horizontal), that is, $(\exists c \in (a, b)) \, \dv{g}{x}(c) = 0$.
 
 Based on the definition of $g(x)$:
 
 $$
 \begin{align}
-\frac{dg}{dx}(c) &= \frac{df}{dx}(c) - m = 0 \\
-\frac{df}{dx}(c) &= m \\
-\frac{df}{dx}(c) &= \frac{f(b) - f(a)}{b - a}
+\dv{g}{x}(c) &= \dv{f}{x}(c) - m = 0 \\
+\dv{f}{x}(c) &= m \\
+\dv{f}{x}(c) &= \frac{f(b) - f(a)}{b - a}
 \end{align}
 $$
 
@@ -420,15 +420,15 @@ $$
 $$
 
 According to the MVT, there must be a point $c$ in the interval $(-4, 2)$ where the slope of $g$ is equal to the average slope.
-Therefore, $\frac{dg}{dx}(c) = -4$. We can find $\frac{dg}{dx}(x)$ by differentiating $g(x)$:
+Therefore, $\dv{g}{x}(c) = -4$. We can find $\dv{g}{x}(x)$ by differentiating $g(x)$:
 
 $$
 \begin{equation}
-\frac{dg}{dx}(x) = 3x^2 - 16
+\dv{g}{x}(x) = 3x^2 - 16
 \end{equation}
 $$
 
-Setting $\frac{dg}{dx}(c) = -4$:
+Setting $\dv{g}{x}(c) = -4$:
 
 $$
 \begin{equation}
@@ -450,7 +450,7 @@ To do this, you can use the mean value theorem. The average velocity is:
 
 $$
 \begin{equation}
-v_{\text{avg}} = \frac{\bvec{r}(b) - \bvec{r}(a)}{b - a} = \frac{75}{1} = 75 \text{ km/h}
+v_{\text{avg}} = \frac{\va{r}(b) - \va{r}(a)}{b - a} = \frac{75}{1} = 75 \text{ km/h}
 \end{equation}
 $$
 
@@ -609,7 +609,7 @@ Now there's clearly a minimum and maximum point within this region at $x = 1$ an
 
 To find the critical points of a function, we need to find where the derivative is $0$ or undefined.
 
-For a function $f(x)$, the critical points are the solutions to $\frac{df}{dx} = 0$.
+For a function $f(x)$, the critical points are the solutions to $\dv{f}{x} = 0$.
 
 Consider the same function $f(x) = x^3 - 3x^2 + 2$.
 
@@ -617,7 +617,7 @@ The derivative of $f(x)$ is:
 
 $$
 \begin{equation}
-\frac{df}{dx}(x) = \frac{d}{dx}(x^3 - 3x^2 + 2) = 3x^2 - 6x
+\dv{f}{x}(x) = \dv{x}(x^3 - 3x^2 + 2) = 3x^2 - 6x
 \end{equation}
 $$
 
@@ -643,7 +643,7 @@ For the function $f(x) = x^3 - 3x^2 + 2$, the second derivative is:
 
 $$
 \begin{equation}
-\frac{d^2f}{dx^2}(x) = \frac{d}{dx}(3x^2 - 6x) = 6x - 6
+\frac{d^2f}{dx^2}(x) = \dv{x}(3x^2 - 6x) = 6x - 6
 \end{equation}
 $$
 
@@ -686,7 +686,7 @@ The derivative of $f(x)$ is:
 
 $$
 \begin{equation}
-\frac{df}{dx}(x) = \frac{d}{dx}(x^5 - 3x^4) = 5x^4 - 12x^3
+\dv{f}{x}(x) = \dv{x}(x^5 - 3x^4) = 5x^4 - 12x^3
 \end{equation}
 $$
 
@@ -750,13 +750,13 @@ The second derivative of $f(x)$ is:
 
 $$
 \begin{equation}
-\frac{d^2f}{dx^2}(x) = \frac{d}{dx}(5x^4 - 12x^3) = 20x^3 - 36x^2
+\frac{d^2f}{dx^2}(x) = \dv{x}(5x^4 - 12x^3) = 20x^3 - 36x^2
 \end{equation}
 $$
 
 At $x = 0$, the second derivative is $0$, so the test is inconclusive.
 
-At $x = \frac{12}{5}$, the second derivative is $20 \left(\frac{12}{5}\right)^3 - 36 \left(\frac{12}{5}\right)^2 = 69.12$. Since the second derivative is positive, the function is concave up, and $x = \frac{12}{5}$ is a minimum point.
+At $x = \frac{12}{5}$, the second derivative is $20 \qty(\frac{12}{5})^3 - 36 \qty(\frac{12}{5})^2 = 69.12$. Since the second derivative is positive, the function is concave up, and $x = \frac{12}{5}$ is a minimum point.
 
 This means that the function is decreasing before $x = \frac{12}{5}$ and increasing after $x = \frac{12}{5}$.
 
@@ -793,7 +793,7 @@ The derivative of $f(x)$ is:
 
 $$
 \begin{equation}
-\frac{df}{dx}(x) = \frac{d}{dx}(8\ln(x) - x^2) = \frac{8}{x} - 2x
+\dv{f}{x}(x) = \dv{x}(8\ln(x) - x^2) = \frac{8}{x} - 2x
 \end{equation}
 $$
 
@@ -813,7 +813,7 @@ The second derivative of $f(x)$ is:
 
 $$
 \begin{equation}
-\frac{d^2f}{dx^2}(x) = \frac{d}{dx}\left(\frac{8}{x} - 2x\right) = \frac{-8}{x^2} - 2
+\frac{d^2f}{dx^2}(x) = \dv{x}\qty(\frac{8}{x} - 2x) = \frac{-8}{x^2} - 2
 \end{equation}
 $$
 
@@ -850,11 +850,11 @@ For example, consider the function $f(x) = x^2 \ln(x)$:
 
 The function is continuous over the entire domain $x > 0$, so we can find the absolute maximum and minimum points.
 
-As always, we start by finding the critical points of the function, which are the solutions to $\frac{df}{dx} = 0$.
+As always, we start by finding the critical points of the function, which are the solutions to $\dv{f}{x} = 0$.
 
 $$
 \begin{align}
-\frac{df}{dx}(x) &= \frac{d}{dx}(x^2 \ln(x)) = 2x \ln(x) + x \\
+\dv{f}{x}(x) &= \dv{x}(x^2 \ln(x)) = 2x \ln(x) + x \\
 &= x(2 \ln(x) + 1) = 0 \\
 \therefore x &= 0, e^{-1/2}
 \end{align}
@@ -866,8 +866,8 @@ Next, we can use the second derivative to determine if this is a maximum or mini
 
 $$
 \begin{align}
-\frac{d^2f}{dx^2}(x) &= \frac{d}{dx}(2x \ln(x) + x) = 2 \ln(x) + 2 \\
-\frac{d^2f}{dx^2}(e^{-1/2}) &= 2 \ln(e^{-1/2}) + 2 = 2\left(\frac{-1}{2}\right) + 2 = 1
+\frac{d^2f}{dx^2}(x) &= \dv{x}(2x \ln(x) + x) = 2 \ln(x) + 2 \\
+\frac{d^2f}{dx^2}(e^{-1/2}) &= 2 \ln(e^{-1/2}) + 2 = 2\qty(\frac{-1}{2}) + 2 = 1
 \end{align}
 $$
 
@@ -913,7 +913,7 @@ Next, we need to find the critical points of the profit function.
 The derivative of $P(x)$ is:
 $$
 \begin{align}
-\frac{dP}{dx}(x) &= \frac{d}{dx}(-x^2 + 90x - 50) \\
+\dv{P}{x}(x) &= \dv{x}(-x^2 + 90x - 50) \\
 &= -2x + 90
 \end{align}
 $$
@@ -934,7 +934,7 @@ The second derivative of $P(x)$ is:
 
 $$
 \begin{align}
-\frac{d^2P}{dx^2}(x) &= \frac{d}{dx}(-2x + 90) \\
+\frac{d^2P}{dx^2}(x) &= \dv{x}(-2x + 90) \\
 &= -2
 \end{align}
 $$
@@ -954,10 +954,10 @@ The vertex of a parabola $y = ax^2 + bx + c$ is at $x = -\frac{b}{2a}$, which ca
 - By completing the square:
     $$
     \begin{equation}
-    y = a\left(x + \frac{b}{2a}\right)^2 - \frac{b^2}{4a} + c
+    y = a\qty(x + \frac{b}{2a})^2 - \frac{b^2}{4a} + c
     \end{equation}
     $$
-    The vertex is at $\left(-\frac{b}{2a}, -\frac{b^2}{4a} + c\right)$, simply because of how function transformations work.
+    The vertex is at $\qty(-\frac{b}{2a}, -\frac{b^2}{4a} + c)$, simply because of how function transformations work.
 - By using the derivative of the function, which is what we did above.
 
 :::
@@ -988,9 +988,9 @@ Next, we need to find the critical points of the area function, and then identif
 
 $$
 \begin{align}
-\frac{dA}{dw}(w) &= \frac{d}{dw}(50w - w^2) = 50 - 2w \\
+\dv{A}{w}(w) &= \dv{w}(50w - w^2) = 50 - 2w \\
 50 - 2w &= 0 \implies w = 25 \\
-\frac{d^2A}{dw^2}(w) &= \frac{d}{dw}(50 - 2w) = -2
+\frac{d^2A}{dw^2}(w) &= \dv{w}(50 - 2w) = -2
 \end{align}
 $$
 

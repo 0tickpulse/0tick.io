@@ -1,7 +1,7 @@
 /**
- * Converts a vector of strings to a latex vector (e.g. ['a', 'b', 'c'] -> '\begin{bmatrix} a \\ b \\ c \end{bmatrix}')
+ * Converts a vector of strings to a latex vector (e.g. ['a', 'b', 'c'] -> '\mqty[ a \\ b \\ c ]')
  * @param vec The vector to convert
  */
 export function toLatex(vec: unknown[]) {
-    return `\\begin{bmatrix} ${vec.join(" \\\\ ")} \\end{bmatrix}`;
+    return `\\mqty[ ${vec.join(" \\\\ ")} \]`;
 }

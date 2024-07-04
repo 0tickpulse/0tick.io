@@ -274,19 +274,19 @@ This leaves Rod B with a net positive charge, even though we didn't ever touch i
 Like energy and momentum, charge is conserved. Mathematically,
 
 $$
-\frac{dQ}{dt} = \dot{Q}_{\text{in}} - \dot{Q}_{\text{out}}
+\dv{Q}{t} = \dot{Q}_{\text{in}} - \dot{Q}_{\text{out}}
 $$
 
 Looks complicated, but these are what the symbols mean:
 
--   $\frac{dQ}{dt}$ is the rate of change of charge.
+-   $\dv{Q}{t}$ is the rate of change of charge.
 -   $\dot{Q}_{\text{in}}$ is the rate of charge entering a system.
 -   $\dot{Q}_{\text{out}}$ is the rate of charge leaving a system.
 
 In a system where no charge is entering or leaving, the total charge is therefore constant:
 
 $$
-\frac{dQ}{dt} = 0
+\dv{Q}{t} = 0
 $$
 
 In other words,
@@ -356,16 +356,16 @@ Move the blue point around. You would notice that the force on the test charge c
 Mathematically, the electric field at a point is given by:
 
 $$
-\bvec{E} = \frac{\bvec{F}}{q}
+\va{E} = \frac{\va{F}}{q}
 $$
 
 Where:
 
--   $\bvec{E}$ is the electric field.
--   $\bvec{F}$ is the force on a test charge.
+-   $\va{E}$ is the electric field.
+-   $\va{F}$ is the force on a test charge.
 -   $q$ is the magnitude of the test charge.
 
-$\bvec{E}$ hence has units of force per charge, or $\text{N} \text{C}^{-1}$.
+$\va{E}$ hence has units of force per charge, or $\text{N} \text{C}^{-1}$.
 
 As a vector field, the electric field has both magnitude and direction.
 If the charge is positive, the field points away from the charge. If the charge is negative, the field points towards the charge.
@@ -374,7 +374,7 @@ If you take the magnitude of the electric field, it can be simplified to:
 
 $$
 \begin{align*}
-\left| \bvec{E} \right| &= \frac{\left| \bvec{F} \right|}{q} \\
+\left| \va{E} \right| &= \frac{\left| \va{F} \right|}{q} \\
 &= \frac{k \frac{q_1\times q}{r^2}}{q} \tag{using Coulomb's Law} \\
 &= k \frac{q}{r^2}
 \end{align*}

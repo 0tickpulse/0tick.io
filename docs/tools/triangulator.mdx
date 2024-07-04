@@ -11,26 +11,26 @@ THis has various purposes, like finding someone's base in Minecraft using arrow 
 
 ## Explanation
 
-Given the two pairs of points, the tool creates a vector for each point, $\bvec{P_1}$, $\bvec{Q_1}$, $\bvec{P_2}$, and $\bvec{Q_2}$.
+Given the two pairs of points, the tool creates a vector for each point, $\va{P_1}$, $\va{Q_1}$, $\va{P_2}$, and $\va{Q_2}$.
 
-To calculate a line crossing two points, $\bvec{P}$ and $\bvec{Q}$, given $\bvec{D}$ as the direction vector, we can use the following parametric equation:
-
-$$
-\bvec{r} = \bvec{P} + t\bvec{D}
-$$
-
-Since the direction can be expressed as the difference between the two points, i.e. $\bvec{D} = \bvec{Q} - \bvec{P}$, we can simplify the equation to:
+To calculate a line crossing two points, $\va{P}$ and $\va{Q}$, given $\va{D}$ as the direction vector, we can use the following parametric equation:
 
 $$
-\bvec{r} = \bvec{P} + t(\bvec{Q} - \bvec{P})
+\va{r} = \va{P} + t\va{D}
+$$
+
+Since the direction can be expressed as the difference between the two points, i.e. $\va{D} = \va{Q} - \va{P}$, we can simplify the equation to:
+
+$$
+\va{r} = \va{P} + t(\va{Q} - \va{P})
 $$
 
 So we create two of these parametric equations, one for each pair of points, and expand them into the vector form:
 
 $$
 \begin{align*}
-    \bvec{r_1} &= \bvec{P_1} + t_1(\bvec{Q_1} - \bvec{P_1}) &= \begin{bmatrix} (\bvec{P_1})_0 \\ (\bvec{P_1})_1 \\ \vdots{} \\ \bvec{(P_1)_n} \end{bmatrix} + t_1\begin{bmatrix} (\bvec{Q_1})_0 - (\bvec{P_1})_0 \\ (\bvec{Q_1})_1 - (\bvec{P_1})_1 \\ \vdots{} \\ \bvec{(Q_1)_n} - \bvec{(P_1)_n} \end{bmatrix} \\
-    \bvec{r_2} &= \bvec{P_2} + t_2(\bvec{Q_2} - \bvec{P_2}) &= \begin{bmatrix} (\bvec{P_2})_0 \\ (\bvec{P_2})_1 \\ \vdots{} \\ \bvec{(P_2)_n} \end{bmatrix} + t_2\begin{bmatrix} (\bvec{Q_2})_0 - (\bvec{P_2})_0 \\ (\bvec{Q_2})_1 - (\bvec{P_2})_1 \\ \vdots{} \\ \bvec{(Q_2)_n} - \bvec{(P_2)_n} \end{bmatrix}
+    \va{r_1} &= \va{P_1} + t_1(\va{Q_1} - \va{P_1}) &= \mqty[ (\va{P_1})_0 \\ (\va{P_1})_1 \\ \vdots{} \\ \va{(P_1)_n} ] + t_1\mqty[ (\va{Q_1})_0 - (\va{P_1})_0 \\ (\va{Q_1})_1 - (\va{P_1})_1 \\ \vdots{} \\ \va{(Q_1)_n} - \va{(P_1)_n} ] \\
+    \va{r_2} &= \va{P_2} + t_2(\va{Q_2} - \va{P_2}) &= \mqty[ (\va{P_2})_0 \\ (\va{P_2})_1 \\ \vdots{} \\ \va{(P_2)_n} ] + t_2\mqty[ (\va{Q_2})_0 - (\va{P_2})_0 \\ (\va{Q_2})_1 - (\va{P_2})_1 \\ \vdots{} \\ \va{(Q_2)_n} - \va{(P_2)_n} ]
 \end{align*}
 $$
 
@@ -38,17 +38,17 @@ Note that I use 0-based indexing for notating elements of the vectors because it
 We can then set these two equations equal to each other:
 
 $$
-\bvec{P_1} + t_1(\bvec{Q_1} - \bvec{P_1}) = \bvec{P_2} + t_2(\bvec{Q_2} - \bvec{P_2})
+\va{P_1} + t_1(\va{Q_1} - \va{P_1}) = \va{P_2} + t_2(\va{Q_2} - \va{P_2})
 $$
 
 Expand the parametric equation so that it becomes a system of equations:
 
 $$
 \begin{cases}
-    (\bvec{P_1})_0 + t_1((\bvec{Q_1})_0 - (\bvec{P_1})_0) &= (\bvec{P_2})_0 + t_2((\bvec{Q_2})_0 - (\bvec{P_2})_0) \\
-    (\bvec{P_1})_1 + t_1((\bvec{Q_1})_1 - (\bvec{P_1})_1) &= (\bvec{P_2})_1 + t_2((\bvec{Q_2})_1 - (\bvec{P_2})_1) \\
+    (\va{P_1})_0 + t_1((\va{Q_1})_0 - (\va{P_1})_0) &= (\va{P_2})_0 + t_2((\va{Q_2})_0 - (\va{P_2})_0) \\
+    (\va{P_1})_1 + t_1((\va{Q_1})_1 - (\va{P_1})_1) &= (\va{P_2})_1 + t_2((\va{Q_2})_1 - (\va{P_2})_1) \\
     &\vdots{} \\
-    \bvec{(P_1)_n} + t_1(\bvec{(Q_1)_n} - \bvec{(P_1)_n}) &= \bvec{(P_2)_n} + t_2(\bvec{(Q_2)_n} - \bvec{(P_2)_n})
+    \va{(P_1)_n} + t_1(\va{(Q_1)_n} - \va{(P_1)_n}) &= \va{(P_2)_n} + t_2(\va{(Q_2)_n} - \va{(P_2)_n})
 \end{cases}
 $$
 
@@ -56,8 +56,8 @@ Only two of them are needed to solve for $t_1$ and $t_2$, so we can pick any two
 
 $$
 \begin{cases}
-    (\bvec{P_1})_0 + t_1((\bvec{Q_1})_0 - (\bvec{P_1})_0) &= (\bvec{P_2})_0 + t_2((\bvec{Q_2})_0 - (\bvec{P_2})_0) \\
-    (\bvec{P_1})_1 + t_1((\bvec{Q_1})_1 - (\bvec{P_1})_1) &= (\bvec{P_2})_1 + t_2((\bvec{Q_2})_1 - (\bvec{P_2})_1)
+    (\va{P_1})_0 + t_1((\va{Q_1})_0 - (\va{P_1})_0) &= (\va{P_2})_0 + t_2((\va{Q_2})_0 - (\va{P_2})_0) \\
+    (\va{P_1})_1 + t_1((\va{Q_1})_1 - (\va{P_1})_1) &= (\va{P_2})_1 + t_2((\va{Q_2})_1 - (\va{P_2})_1)
 \end{cases}
 $$
 
@@ -65,14 +65,14 @@ For the sake of simplicity, let's define the following variables for the coeffic
 
 $$
 \begin{align*}
-    a &= (\bvec{P_1})_0 \\
-    b &= (\bvec{Q_1})_0 - (\bvec{P_1})_0 \\
-    c &= (\bvec{P_2})_0 \\
-    d &= (\bvec{Q_2})_0 - (\bvec{P_2})_0 \\
-    e &= (\bvec{P_1})_1 \\
-    f &= (\bvec{Q_1})_1 - (\bvec{P_1})_1 \\
-    g &= (\bvec{P_2})_1 \\
-    h &= (\bvec{Q_2})_1 - (\bvec{P_2})_1
+    a &= (\va{P_1})_0 \\
+    b &= (\va{Q_1})_0 - (\va{P_1})_0 \\
+    c &= (\va{P_2})_0 \\
+    d &= (\va{Q_2})_0 - (\va{P_2})_0 \\
+    e &= (\va{P_1})_1 \\
+    f &= (\va{Q_1})_1 - (\va{P_1})_1 \\
+    g &= (\va{P_2})_1 \\
+    h &= (\va{Q_2})_1 - (\va{P_2})_1
 \end{align*}
 $$
 
@@ -155,19 +155,19 @@ $$
 In this case, the coefficient matrix is:
 
 $$
-\begin{bmatrix}
+\mqty[
     b & -d \\
     f & -h
-\end{bmatrix}
+]
 $$
 
 And the column vectors are:
 
 $$
-\begin{bmatrix}
+\mqty[
     c - a \\
     g - e
-\end{bmatrix}
+]
 $$
 
 Hence, the determinants are:
@@ -222,40 +222,40 @@ By the way, if you put the values for $a$ to $h$ back into the system of equatio
 $$
 \begin{align*}
     t_1 &= \frac{
-                ((\bvec{Q_2})_0 - (\bvec{P_2})_0)((\bvec{P_2})_1 - (\bvec{P_1})_1)
-                + ((\bvec{Q_2})_1 - (\bvec{P_2})_1)((\bvec{P_1})_0 - (\bvec{P_2})_0)
+                ((\va{Q_2})_0 - (\va{P_2})_0)((\va{P_2})_1 - (\va{P_1})_1)
+                + ((\va{Q_2})_1 - (\va{P_2})_1)((\va{P_1})_0 - (\va{P_2})_0)
             }{
-                ((\bvec{Q_2})_0 - (\bvec{P_2})_0)((\bvec{Q_1})_1 - (\bvec{P_1})_1)
-                - ((\bvec{Q_1})_0 - (\bvec{P_1})_0)((\bvec{Q_2})_1 - (\bvec{P_2})_1)
+                ((\va{Q_2})_0 - (\va{P_2})_0)((\va{Q_1})_1 - (\va{P_1})_1)
+                - ((\va{Q_1})_0 - (\va{P_1})_0)((\va{Q_2})_1 - (\va{P_2})_1)
             } \\
         &= \frac{
-                ((\bvec{Q_2})_0)((\bvec{P_2})_1) - ((\bvec{Q_2})_0)((\bvec{P_1})_1)
-                - ((\bvec{P_2})_0)((\bvec{P_2})_1) + ((\bvec{P_2})_0)((\bvec{P_1})_1)
-                + ((\bvec{Q_2})_1)((\bvec{P_1})_0) - ((\bvec{Q_2})_1)((\bvec{P_2})_0)
-                - ((\bvec{P_2})_1)((\bvec{P_1})_0) + ((\bvec{P_2})_1)((\bvec{P_2})_0)
+                ((\va{Q_2})_0)((\va{P_2})_1) - ((\va{Q_2})_0)((\va{P_1})_1)
+                - ((\va{P_2})_0)((\va{P_2})_1) + ((\va{P_2})_0)((\va{P_1})_1)
+                + ((\va{Q_2})_1)((\va{P_1})_0) - ((\va{Q_2})_1)((\va{P_2})_0)
+                - ((\va{P_2})_1)((\va{P_1})_0) + ((\va{P_2})_1)((\va{P_2})_0)
             }{
-                ((\bvec{Q_2})_0)((\bvec{Q_1})_1) - ((\bvec{Q_2})_0)((\bvec{P_1})_1)
-                - ((\bvec{P_2})_0)((\bvec{Q_1})_1) + ((\bvec{P_2})_0)((\bvec{P_1})_1)
-                + ((\bvec{Q_1})_0)((\bvec{Q_2})_1) - ((\bvec{Q_1})_0)((\bvec{P_2})_1)
-                - ((\bvec{P_1})_0)((\bvec{Q_2})_1) + ((\bvec{P_1})_0)((\bvec{P_2})_1)
+                ((\va{Q_2})_0)((\va{Q_1})_1) - ((\va{Q_2})_0)((\va{P_1})_1)
+                - ((\va{P_2})_0)((\va{Q_1})_1) + ((\va{P_2})_0)((\va{P_1})_1)
+                + ((\va{Q_1})_0)((\va{Q_2})_1) - ((\va{Q_1})_0)((\va{P_2})_1)
+                - ((\va{P_1})_0)((\va{Q_2})_1) + ((\va{P_1})_0)((\va{P_2})_1)
             } \\
     t_2 &= \frac{
-                ((\bvec{Q_1})_0 - (\bvec{P_1})_0)((\bvec{P_2})_1 - (\bvec{P_1})_1)
-                - ((\bvec{Q_1})_1 - (\bvec{P_1})_1)((\bvec{P_1})_0 - (\bvec{P_2})_0)
+                ((\va{Q_1})_0 - (\va{P_1})_0)((\va{P_2})_1 - (\va{P_1})_1)
+                - ((\va{Q_1})_1 - (\va{P_1})_1)((\va{P_1})_0 - (\va{P_2})_0)
             }{
-                ((\bvec{Q_2})_0 - (\bvec{P_2})_0)((\bvec{Q_1})_1 - (\bvec{P_1})_1)
-                - ((\bvec{Q_1})_0 - (\bvec{P_1})_0)((\bvec{Q_2})_1 - (\bvec{P_2})_1)
+                ((\va{Q_2})_0 - (\va{P_2})_0)((\va{Q_1})_1 - (\va{P_1})_1)
+                - ((\va{Q_1})_0 - (\va{P_1})_0)((\va{Q_2})_1 - (\va{P_2})_1)
             } \\
         &= \frac{
-                ((\bvec{Q_1})_0)((\bvec{P_2})_1) - ((\bvec{Q_1})_0)((\bvec{P_1})_1)
-                - ((\bvec{P_1})_0)((\bvec{P_2})_1) + ((\bvec{P_1})_0)((\bvec{P_1})_1)
-                - ((\bvec{Q_1})_1)((\bvec{P_1})_0) + ((\bvec{Q_1})_1)((\bvec{P_2})_0)
-                + ((\bvec{P_1})_1)((\bvec{P_1})_0) - ((\bvec{P_1})_1)((\bvec{P_2})_0)
+                ((\va{Q_1})_0)((\va{P_2})_1) - ((\va{Q_1})_0)((\va{P_1})_1)
+                - ((\va{P_1})_0)((\va{P_2})_1) + ((\va{P_1})_0)((\va{P_1})_1)
+                - ((\va{Q_1})_1)((\va{P_1})_0) + ((\va{Q_1})_1)((\va{P_2})_0)
+                + ((\va{P_1})_1)((\va{P_1})_0) - ((\va{P_1})_1)((\va{P_2})_0)
             }{
-                ((\bvec{Q_2})_0)((\bvec{Q_1})_1) - ((\bvec{Q_2})_0)((\bvec{P_1})_1)
-                - ((\bvec{P_2})_0)((\bvec{Q_1})_1) + ((\bvec{P_2})_0)((\bvec{P_1})_1)
-                + ((\bvec{Q_1})_0)((\bvec{Q_2})_1) - ((\bvec{Q_1})_0)((\bvec{P_2})_1)
-                - ((\bvec{P_1})_0)((\bvec{Q_2})_1) + ((\bvec{P_1})_0)((\bvec{P_2})_1)
+                ((\va{Q_2})_0)((\va{Q_1})_1) - ((\va{Q_2})_0)((\va{P_1})_1)
+                - ((\va{P_2})_0)((\va{Q_1})_1) + ((\va{P_2})_0)((\va{P_1})_1)
+                + ((\va{Q_1})_0)((\va{Q_2})_1) - ((\va{Q_1})_0)((\va{P_2})_1)
+                - ((\va{P_1})_0)((\va{Q_2})_1) + ((\va{P_1})_0)((\va{P_2})_1)
             }
 \end{align*}
 $$
