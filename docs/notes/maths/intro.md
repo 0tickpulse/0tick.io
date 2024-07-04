@@ -49,3 +49,36 @@ This shows the advantage of abstraction. By abstracting things into their fundam
 For instance, when Newton was studying the motion of the planets, he developed the concept of calculus to describe the motion of objects in general. Today, calculus is used everywhere, from physics to economics to computer science to just about every field you can think of.
 
 One shortcoming of the modern education system is that it usually does this process in reverse. It starts with the formulation. This is probably partly responsible for the large distaste for mathematics. It's like learning to paint by starting with the chemical composition of paint.
+
+## Fields of Mathematics
+
+Mathematics is a vast field, with many different branches and subfields. Some of the main branches of mathematics include:
+
+- Algebra, which studies the properties of mathematical objects such as numbers, vectors, and matrices.
+- Analysis, which studies the properties of functions and their derivatives and integrals.
+- Geometry, which studies the properties of shapes and spaces.
+
+These are just a few of the many branches of mathematics. Each branch has its own set of concepts, techniques, and applications, yet they are all interconnected in some way.
+
+Another way to categorize mathematics is by its level of abstraction:
+
+- Pure mathematics, which studies abstract concepts and structures for their own sake.
+- Applied mathematics, which uses mathematical tools and techniques to solve real-world problems.
+
+Pure and applied mathematics are not mutually exclusive; they are two ends of a spectrum. Many areas of mathematics lie somewhere in between, using abstract concepts to solve practical problems.
+
+One particular saying I like is that "pure mathematics explores the world _of_ mathematics, while applied mathematics explores the world _with_ mathematics".
+It perfectly illustrates the difference between the two, and how they are both important in their own right.
+
+## Resources
+
+The main resources I used to create these notes are:
+
+- [Wikipedia](https://en.wikipedia.org/wiki/Main_Page)
+- [Wolfram MathWorld](https://mathworld.wolfram.com/)
+- [Brilliant](https://brilliant.org/)
+- [Khan Academy](https://www.khanacademy.org/)
+- [3b1b](https://www.youtube.com/@3blue1brown)
+- [MIT OpenCourseWare](https://ocw.mit.edu/index.htm)
+
+These are all excellent resources for learning (esp. self-learning) mathematics.
