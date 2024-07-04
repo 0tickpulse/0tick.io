@@ -1384,15 +1384,6 @@ $$
 \end{equation}
 $$
 
-The order of this section is as follows:
-
-1. Show the two definitions of the dot product, assuming they're the same.
-2. Use both definitions to prove the properties of the dot product.
-3. Use these definitions to prove the equivalence of the two definitions.
-
-It's not circular reasoning becuase the properties can be proven with one definition.
-Each property's subsection has an algebraic proof with the first definition, and a geometric proof with the second definition.
-
 ### Magnitude from the Dot Product
 
 The dot product can also be used to calculate the magnitude of a vector:
@@ -1516,7 +1507,7 @@ The Cauchy-Schwarz Inequality states that for any two vectors $\va{v}$ and $\va{
 $$
 \begin{align}
 \abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \label{eq:cauchy-schwarz-inequality-1} \\
-\abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = c\va{w}, c \in \mathbb{R} \label{eq:cauchy-schwarz-inequality-2}
+\abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = c\va{w}, c > 0 \label{eq:cauchy-schwarz-inequality-2}
 \end{align}
 $$
 
@@ -1574,21 +1565,289 @@ $$
 4\class{yellow}{\norm{\va{w}}^2}\class{blue}{\norm{\va{v}}^2} &\geq \class{green}{(2\va{w} \cdot \va{v})}^2 \\
 4\class{yellow}{\norm{\va{w}}^2}\class{blue}{\norm{\va{v}}^2} &\geq 4(\va{w} \cdot \va{v})^2 \\
 \class{yellow}{\norm{\va{w}}^2}\class{blue}{\norm{\va{v}}^2} &\geq (\va{w} \cdot \va{v})^2 \\
-\norm{\va{w}}\norm{\va{v}} &\geq \va{w} \cdot \va{v}
+\norm{\va{w}}\norm{\va{v}} &\geq \abs{\va{w} \cdot \va{v}}
 \end{align}
 $$
 
+Note that we used various properties of the dot product to simplify the quadratic, like the commutativity and associativity with scalar multiplication.
+
+Additionally, note that in the last step, we took the _principal square root_ of both sides, hence the absolute value.
+
 Which proves $\eqref{eq:cauchy-schwarz-inequality-1}$. To prove $\eqref{eq:cauchy-schwarz-inequality-2}$, we need to show that the equality holds when $\va{v} = c\va{w}$.
+
+$$
+\begin{align}
+\abs{\va{v} \cdot \va{w}} &= \abs{c\va{w} \cdot \va{w}} \\
+&= \abs{c}\abs{\va{w} \cdot \va{w}} \\
+&= \abs{c}\norm{\va{w}}^2 \\
+= \norm{c\va{w}}\norm{\va{w}} &= \norm{\va{v}}\norm{\va{w}}
+\end{align}
+$$
+
+This aligns with the second part of the Cauchy-Schwarz Inequality.
 
 #### Geometric Proof of the Cauchy-Schwarz Inequality
 
-This is actually really easy to prove geometrically.
+This is actually really easy to prove geometrically, and is an excellent example of the various approaches one can take to interpret a mathematical statement.
 
 When you project one vector onto another, the length of the projection is always less than or equal to the length of the vector.
 
 Therefore, the projection of $\va{v}$ onto $\va{w}$ is less than or equal to the length of $\va{v}$, proving the inequality.
 
 In addition, when the vectors are parallel, the projection is equal to the length of the vector. This is when the equality holds.
+
+### Vector Triangle Inequality
+
+The Triangle Inequality states that for any two vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$:
+
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}} \leq \norm{\va{v}} + \norm{\va{w}}
+\end{equation}
+$$
+
+#### Algebraic Proof of the Triangle Inequality
+
+Let's build on top of the Cauchy-Schwarz Inequality to prove the Triangle Inequality.
+
+Recall that the Cauchy-Schwarz Inequality states that for any two non-zero vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$:
+
+$$
+\begin{align}
+\abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \\
+\abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = c\va{w}, c > 0
+\end{align}
+$$
+
+#### Geometric Proof of the Triangle Inequality
+
+Once again, the Triangle Inequality is trivial to prove geometrically.
+
+Consider two vectors $\va{v}$ and $\va{w}$:
+
+{(() => {
+    const vMovable = useMovablePoint([2, 3]);
+    const wMovable = useMovablePoint([3, -1]);
+    const v = vMovable.point;
+    const w = wMovable.point;
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [1, 3],
+                y: [0, 3]
+            }}
+        >
+            <Vector
+                tail={[0, 0]}
+                tip={v}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v, "left")}
+            />
+
+            <Vector
+                tail={v}
+                tip={vec.add(v, w)}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel(v, vec.add(v, w), "right")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={vec.add(v, w)}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v} + \vec{w}}"
+                at={lineLabel([0, 0], vec.add(v, w), "right")}
+            />
+
+            {vMovable.element}
+            <Transform
+                translate={v}
+            >
+                {wMovable.element}
+            </Transform>
+        </Mafs>
+    );
+})()}
+
+Consider the triangle formed by the vectors $\va{v}$, $\va{w}$ placed at the tip of $\va{v}$, as well as their sum $\va{v} + \va{w}$.
+
+Now consider the regular triangle inequality, which states that the sum of the lengths of two sides of a triangle is greater than or equal to the length of the third side.
+
+The sum of the lengths of $\va{v}$ and $\va{w}$ is greater than or equal to the length of $\va{v} + \va{w}$.
+
+Therefore, the Vector Triangle Inequality holds, given the regular triangle inequality.
+
+:::info A More Rigorous Geometric Proof of the Triangle Inequality
+
+To prove the regular triangle inequality, consider the angle between $\va{v}$ and $\va{v} + \va{w}$, labeled $\theta$.
+Splitting the triangle into two right triangles:
+
+{(() => {
+    const vMovable = useMovablePoint([2, 3]);
+    const wMovable = useMovablePoint([3, -1]);
+    const v = vMovable.point;
+    const w = wMovable.point;
+
+    const vplusw = vec.add(v, w);
+    const vpluswAngle = Math.atan2(vplusw[1], vplusw[0]);
+
+    const vAngle = Math.atan2(v[1], v[0]);
+
+    const vProjToVplusWMag = vec.dot(v, vplusw) / vec.mag(vplusw);
+    const vProjToVplusW = vec.withMag(vplusw, vProjToVplusWMag);
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [1, 3],
+                y: [0, 3]
+            }}
+        >
+            <Vector
+                tail={[0, 0]}
+                tip={v}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v, "left")}
+            />
+
+            <Vector
+                tail={v}
+                tip={vec.add(v, w)}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel(v, vec.add(v, w), "right")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={vProjToVplusW}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{p}}_1"
+                at={lineLabel([0, 0], vProjToVplusW, "right")}
+            />
+
+            <Vector
+                tail={vProjToVplusW}
+                tip={vec.add(v, w)}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{p}}_2"
+                at={lineLabel(vProjToVplusW, vec.add(v, w), "right")}
+            />
+
+            <Angle
+                at={[0, 0]}
+                fromRad={vpluswAngle}
+                toRad={vAngle}
+                label="\theta"
+            />
+
+            <Line.Segment
+                point1={v}
+                point2={vProjToVplusW}
+                style="dashed"
+            />
+            <Angle
+                at={vProjToVplusW}
+                fromRad={Math.PI / 2 + vpluswAngle}
+                toRad={Math.PI + vpluswAngle}
+                forceStraightAngle={true}
+            />
+            <LaTeX
+                tex="h"
+                at={lineLabel(v, vProjToVplusW, "left")}
+            />
+
+            {vMovable.element}
+            <Transform
+                translate={v}
+            >
+                {wMovable.element}
+            </Transform>
+        </Mafs>
+    );
+})()}
+
+The new line we introduced is the height of the triangle, which we'll call $h$. $h$ is always positive.
+It splits the triangle into two right triangles.
+
+The vector $\va{v} + \va{w}$ is split into two vectors: $\va{p}_1$ and $\va{p}_2$.
+
+By the Pythagorean Theorem:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{v}}^2 &= h^2 + \norm{\va{p}_1}^2 \\
+\norm{\va{w}}^2 &= h^2 + \norm{\va{p}_2}^2
+\end{cases} \label{eq:triangle-inequality-pythagorean}
+\end{equation}
+$$
+
+Subtracting $h^2$ from both sides of both equations yields:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{p}_1}^2 &= \norm{\va{v}}^2 - h^2 \\
+\norm{\va{p}_2}^2 &= \norm{\va{w}}^2 - h^2
+\end{cases}
+\end{equation}
+$$
+
+Since $h$ is positive by definition:
+
+$$
+\begin{align}
+h &\geq 0 \\
+h^2 &\geq 0 \\
+0 &\geq -h^2 \\
+\norm{\va{v}}^2 &\geq \norm{\va{v}}^2 - h^2 \\
+\norm{\va{v}}^2 &\geq \norm{\va{p}_1}^2 \\
+\norm{\va{v}} &\geq \norm{\va{p}_1} \label{eq:triangle-inequality-v}
+\end{align}
+$$
+
+The same applies for $\va{w}$. Hence we have a new system of inequalities:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{v}} &\geq \norm{\va{p}_1} \\
+\norm{\va{w}} &\geq \norm{\va{p}_2}
+\end{cases} \label{eq:triangle-inequality-new}
+\end{equation}
+$$
+
+Adding the inequalities in Equation $\eqref{eq:triangle-inequality-new}$:
+
+$$
+\begin{align}
+\norm{\va{v}} + \norm{\va{w}} &\geq \norm{\va{p}_1} + \norm{\va{p}_2} \\
+\norm{\va{v}} + \norm{\va{w}} &\geq \norm{\va{v} + \va{w}}
+\end{align}
+$$
+
+Thus proving the Vector Triangle Inequality.
+
+:::
 
 ### Equivalence of Definitions: Angle Between Vectors
 
