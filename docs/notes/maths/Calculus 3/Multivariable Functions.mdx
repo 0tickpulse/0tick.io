@@ -1,6 +1,12 @@
 ---
 sidebar_position: 2
 ---
+
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { color } from "@site/src/utilities/colors"
+
 # Multivariable Functions
 
 Multivariable functions are functions that take multiple inputs and produce a single output.
@@ -35,9 +41,9 @@ f(x, y) = \mqty[ x & y \\ y & x ]
 \end{equation}
 $$
 
-## Visualizing Multivariable Functions
+## Visualizing Multivariable Functions - Scalar-Valued
 
-Multivariable functions can be visualized in a few different ways.
+Multivariable functions can be visuallized in a few different ways.
 Unlike single-variable functions, graphs might not be sufficiently expressive to capture the behavior of a multivariable function.
 
 ### Graphing
@@ -49,6 +55,64 @@ Conventionally, in a 3D graph, you have $x$ and $y$ as the horizontal and vertic
 The $x$ and $y$ axes correspond to the input, and the $z$ axis corresponds to the output.
 
 This also shows that, instead of a line of inputs, now you have an entire plane of inputs.
+
+The graph of the function $f(x, y) = x^2 + y^2$ looks like a paraboloid, which is a three-dimensional parabola:
+
+<MB.ContainedMathbox
+    options={{
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    }}
+    containerStyle={{
+        height: "500px"
+    }}
+>
+    <MB.Cartesian>
+        <MB.Axis axis="x" color={color("blue")} />
+        <MB.Axis axis="y" color={color("green")} />
+        <MB.Axis axis="z" color={color("yellow")} />
+        <MB.Area
+            id="graph"
+            axes="xz"
+            expr={(emit, x, z, i, t) => {
+                emit(x, x ** 2 + z ** 2, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+        />
+        <MB.Surface
+            points="#graph"
+        />
+    </MB.Cartesian>
+</MB.ContainedMathbox>
+
+Instead of having two orthogonal axes, you now have three orthogonal axes. The $x$ and $y$ axes are the same as before, but now you have a third axis, the $z$ axis, which represents the output of the function.
+Consider a singular point on the graph, $[1, 2, 3]$:
+
+<MB.ContainedMathbox
+    options={{
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    }}
+    containerStyle={{
+        height: "500px"
+    }}
+>
+    <MB.Cartesian>
+        <MB.Axis axis="x" color={color("blue")} />
+        <MB.Axis axis="y" color={color("green")} />
+        <MB.Axis axis="z" color={color("yellow")} />
+        <MB.Point
+            points={[1, 2, 3]}
+            color={color("red")}
+        />
+    </MB.Cartesian>
+</MB.ContainedMathbox>
 
 ### Contour Plots
 

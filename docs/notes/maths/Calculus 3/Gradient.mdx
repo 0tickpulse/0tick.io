@@ -1,0 +1,40 @@
+# Gradient
+
+The gradient of a function is a collection of all its partial derivatives.
+
+For a function $f: \mathbb{R}^n \to \mathbb{R}$, the gradient is denoted by $\grad f$.
+The symbol $\nabla$ is called "nabla" or "del", although "del" refers more to the operator instead of the actual symbol.
+The formula for the gradient is:
+
+$$
+\begin{equation}
+\grad f(x_1, y_1, \dots) = \mqty[ \pdv{f}{x}(x_1, y_1, \dots) \\ \pdv{f}{y}(x_1, y_1, \dots) \\ \vdots ]
+\end{equation}
+$$
+
+Alternatively, the gradient can be written as a summation:
+
+$$
+\begin{equation}
+\grad f = \sum_{i=1}^{n} \pdv{f}{x_i} \vu{e}_i
+\end{equation}
+$$
+
+Where $\vu{e}_i$ is the $i$th unit vector ($\ihat$, $\jhat$, etc.).
+
+The gradient is a vector that points in the direction of the greatest increase of the function.
+
+## Properties
+
+The gradient can be thought of as the multivariable analog of the derivative.
+Therefore it has similar properties to the derivative.
+
+### Linearity
+
+The gradient is a linear operator. This means that for any two functions $f$ and $g$ and any scalar $c$, the following holds:
+
+$$
+\begin{equation}
+\grad (cf + g) = c \grad f + \grad g
+\end{equation}
+$$

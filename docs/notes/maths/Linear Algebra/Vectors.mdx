@@ -4,10 +4,13 @@ sidebar_position: 2
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
 import MathEquation from "@site/src/components/Math";
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 # Vectors
 
@@ -1384,6 +1387,14 @@ $$
 \end{equation}
 $$
 
+The dot product, due to this projection property, is helpful to measure the "similarity" between two vectors.
+
+When $\va{v}$ and $\va{w}$ are pointing in the same direction, the dot product is positive.
+
+When they are perpendicular, the dot product is zero.
+
+When they are pointing in opposite directions, the dot product is negative.
+
 ### Magnitude from the Dot Product
 
 The dot product can also be used to calculate the magnitude of a vector:
@@ -1881,6 +1892,13 @@ Given two non-zero vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$, we construct
         at={lineLabel([0, 0], [3, 1], "right")}
     />
 
+    <Angle
+        at={[0, 0]}
+        fromRad={Math.atan2(3, 2)}
+        toRad={Math.atan2(1, 3)}
+        label="\theta"
+    />
+
     <Line.Segment
         point1={[3, 1]}
         point2={[2, 3]}
@@ -1891,6 +1909,8 @@ Given two non-zero vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$, we construct
         at={lineLabel([3, 1], [2, 3], "right")}
     />
 </Mafs>
+
+:::info Is the triangle always possible to construct?
 
 We need to show that a triangle like this is always possible to construct for any two vectors.
 
@@ -1910,3 +1930,114 @@ $$
 \end{equation}
 $$
 
+Therefore:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{v}} = \norm{\va{v} - \va{w} + \va{w}} &\leq \norm{\va{v} - \va{w}} + \norm{\va{w}} \\
+\norm{\va{w}} = \norm{\va{w} - \va{v} + \va{v}} &\leq \norm{\va{w} - \va{v}} + \norm{\va{v}}
+\end{cases}
+\end{equation}
+$$
+
+Both $\norm{va{v} - \va{w}}$ and $\norm{\va{w} - \va{v}}$ are equivalent since they both measure the distance between the same vectors.
+
+This means that the second and third conditions are never met.
+
+For the first condition, consider manipulating $\norm{\va{v} - \va{w}}$ and using the triangle inequality:
+
+$$
+\begin{align}
+\norm{\va{v} - \va{w}} &= \norm{\va{v} + (- \va{w})} \leq \norm{\va{v}} + \norm{- \va{w}} \\
+&= \norm{\va{v}} + \norm{\va{w}}
+\end{align}
+$$
+
+Therefore, the triangle is always possible to construct.
+
+:::
+
+Define the angle between the vectors as $\theta$. Recall the cosine rule:
+
+$$
+\begin{equation}
+c^2 = a^2 + b^2 - 2ab\cos(\theta)
+\end{equation}
+$$
+
+Substitute $a = \norm{\va{v}}$, $b = \norm{\va{w}}$, and $c = \norm{\va{v} - \va{w}}$:
+
+$$
+\begin{equation}
+\norm{\va{v} - \va{w}}^2 = \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{equation}
+$$
+
+Recall that the square of the magnitude of a vector is the dot product of the vector with itself in Equation $\eqref{eq:magnitude-from-dot-product}$:
+
+$$
+\begin{equation}
+\qty(\va{v} - \va{w}) \cdot \qty(\va{v} - \va{w}) = \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{equation}
+$$
+
+Expanding the left side:
+
+$$
+\begin{align}
+\va{v} \cdot \va{v} - 2\va{v} \cdot \va{w} + \va{w} \cdot \va{w} &= \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta) \\
+\norm{\va{v}}^2 - 2\va{v} \cdot \va{w} + \norm{\va{w}}^2 &= \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta) \\
+\end{align}
+$$
+
+Subtracting $\norm{\va{v}}^2 + \norm{\va{w}}^2$ from both sides:
+
+$$
+\begin{align}
+-2\va{v} \cdot \va{w} &= - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta) \\
+\va{v} \cdot \va{w} &= \norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{align}
+$$
+
+Therefore, the dot product can be defined as the product of the magnitudes of the vectors and the cosine of the angle between them.
+
+When $\theta = 90^\circ$, $\cos(\theta) = 0$, and the dot product is zero.
+They are perpendicular and are hence called orthogonal.
+
+When $\theta = 0^\circ$, $\cos(\theta) = 1$, and the dot product is the product of the magnitudes of the vectors.
+
+When $\theta = 180^\circ$, $\cos(\theta) = -1$, and the dot product is the negative of the product of the magnitudes of the vectors.
+
+## Equation of a Plane in R3
+
+Let's consider a plane in $\mathbb{R}^3$.
+
+A plane is a two-dimensional surface that extends infinitely in all directions.
+It's linear, so its equation is in the general form $ax + by + cz = d$.
+
+{(() => {
+    const [container, setContainer] = useState(null);
+    const setup = useCallback((/** @type {MathboxSelection<"root"> | null} */ mathbox) => {
+        // @ts-expect-error Useful for debugging
+        window.mathbox = mathbox
+    }, []);
+    const mathboxOptions = {
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+        color: new THREE.Color(0x000000)
+    }
+    return (
+        <div ref={setContainer}>
+            {container && (
+                <MB.Mathbox setup={setup} container={container} options={mathboxOptions}>
+                    <MB.Cartesian>
+                        <MB.Grid axes="xz" />
+                    </MB.Cartesian>
+                </MB.Mathbox>
+            )}
+        </div>
+    )
+})()}
