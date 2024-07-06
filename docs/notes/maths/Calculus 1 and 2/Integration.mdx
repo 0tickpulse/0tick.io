@@ -869,6 +869,40 @@ At $x \in (6, \infty)$, $f(x) < 0$, so $g(x)$ is decreasing.
 
 Since integrals are the accumulation of areas; the continuous analog of the sum, they have many properties that are similar to sums.
 
+### Variable Notation
+
+The variable of integration can be anything. For example, the following two integrals are equivalent:
+
+$$
+\begin{equation}
+\int_{0}^{3} x(5 - x) \dd{x} = \int_{0}^{3} t(5 - t) \dd{t}
+\end{equation}
+$$
+
+With this in mind; sometimes variables can be confusing.
+Consider a problem where we have the velocity of a particle $v(t)$ and we want to find the position of the particle $s(t)$ at time $t$.
+
+$$
+\begin{equation}
+s(t) = \int_{0}^{t} v(t) \dd{t}
+\end{equation}
+$$
+
+Here, while it seems like we only have $t$ as a variable, we actually have two variables:
+
+- The upper bound of the integral, which is a specific value.
+- The variable of integration, which is a dummy variable that is used to represent the function.
+
+One way to get around this is to use a different variable for the variable of integration, like $t'$:
+
+$$
+\begin{equation}
+s(t) = \int\limits_{t' = 0}^{t' = t} v(t') \dd{t'}
+\end{equation}
+$$
+
+This is common in physics and engineering.
+
 ### Signs
 
 When the area is above the $x$-axis, it is positive. When the area is below the $x$-axis, it is negative.
