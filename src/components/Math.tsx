@@ -8,10 +8,10 @@ import { ReactNode, useEffect, useState } from "react";
 import { Options } from "rehype-mathjax";
 import { isEqual } from "lodash";
 
-export default function MathEquation({ children, ...options }: { children: ReactNode } & Options): JSX.Element {
+export default function MathEquation({ children, inline = false, ...options }: { children: ReactNode; inline: boolean } & Options): JSX.Element {
     const siteConfig = useDocusaurusContext().siteConfig;
     const newOptions = {
-        ...siteConfig.customFields.mathJaxOptions as Options,
+        ...(siteConfig.customFields.mathJaxOptions as Options),
         ...options,
     };
     const input = new TeX({
@@ -22,7 +22,10 @@ export default function MathEquation({ children, ...options }: { children: React
     // co`nst output = new CHTML(newOptions.chtml || undefined);
     try {
         const doc = mathjax.document("", { InputJax: input, OutputJax: output });
-        const domNode: HTMLElement = doc.convert(children.toString(), {});
+        console.log({ children: children.toString() });
+        const domNode: HTMLElement = doc.convert(children.toString(), {
+            display: !inline,
+        });
         return <div dangerouslySetInnerHTML={{ __html: domNode.outerHTML }} />;
     } catch (e) {
         console.log(`Error in MathJax: ${e}`, {

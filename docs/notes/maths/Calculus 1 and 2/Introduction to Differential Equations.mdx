@@ -8,12 +8,26 @@ import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import { useState, useEffect } from "react";
 import range from "lodash/range";
+import memoize from "lodash/memoize";
 import { gamma } from "mathjs";
 import TOCInline from '@theme/TOCInline';
 
 # Introduction to Differential Equations
 
+> Since Newton, mankind has come to realize that the laws of physics are always expressed in the language of differential equations.
+>
+> Steven Strogatz
+
 Differential equations are equations that involve an unknown function and its derivatives. They are used to model a wide variety of phenomena in the natural and social sciences. We will introduce the basic concepts of differential equations and explore some simple examples.
+
+Note that this is just an introduction to differential equations. The topic is vast and deep, and there are many advanced topics that we will not cover here.
+
+Some advanced topics not covered here include:
+
+- Partial differential equations
+- The Laplace transform
+- The Fourier transform
+- DEs involving complex numbers
 
 ## Table of Contents
 
@@ -43,7 +57,7 @@ $$
 
 Instead of solving for some variable, you solve for the function $f(x)$ that satisfies the equation.
 
-### Example Problem: Radioactive Decay
+### Example Problem: Formulating The Differential Equation for Radioactive Decay
 
 > Radioactive Decay is a process in which unstable atomic nuclei lose energy by emitting radiation.
 >
@@ -173,268 +187,6 @@ $$
 $$
 
 The function does not satisfy the differential equation.
-
-## The Simple Pendulum
-
-The simple pendulum is a mass (bob) attached to a string of length $L$ that swings back and forth. The angle $\theta$ that the string makes with the vertical is a function of time.
-
-{(() => {
-    const { time, start, stop } = useStopwatch();
-
-    const [hasStarted, setHasStarted] = useState(false);
-
-    function startStop() {
-        hasStarted ? stop() : start();
-        setHasStarted(!hasStarted);
-    }
-
-    // theta 0 = pi/4
-
-    const theta0 = Math.PI / 6;
-
-    const L = 4;
-    const g = 9.8;
-
-    // Using small angle approximation
-    const theta = (t) => theta0 * Math.cos(Math.sqrt(g / L) * t);
-    const thetat = theta(time)
-
-    const bobCoords = [L * Math.sin(thetat), 2 - L * Math.cos(thetat)];
-    const angularAccelCoords = [
-        -1 * Math.cos(thetat) * Math.sin(thetat),
-        -1 + (Math.cos(thetat) ** 2)
-    ];
-
-    return (
-        <div className="card">
-            <div className="card__body">
-                <Mafs
-                    viewBox={{
-                        x: [-3, 8],
-                        y: [-3, 3],
-                    }}
-                >
-                    <Line.Segment
-                        point1={[-3, 2]}
-                        point2={[3, 2]}
-                    />
-                    <Line.Segment
-                        point1={[0, 2]}
-                        point2={[0, -2]}
-                    />
-
-                    {/* Angle */}
-                    <Angle
-                        at={[0, 2]}
-                        fromRad={- Math.PI / 2 + thetat}
-                        toRad={- Math.PI / 2}
-                        label="\theta"
-                        radius={0.5}
-                    />
-
-                    {/* Arc */}
-                    <Angle
-                        at={[0, 2]}
-                        fromRad={- Math.PI / 2 + thetat}
-                        toRad={- Math.PI / 2}
-                        radius={L}
-                        color={color("blue")}
-                        label="x"
-                        labelOffsetMultiplier={0.9}
-                    />
-
-                    {/* String */}
-                    <Line.Segment
-                        point1={[0, 2]}
-                        point2={[L * Math.sin(thetat), 2 - L * Math.cos(thetat)]}
-                    />
-
-                    {/* Bob */}
-                    <Point
-                        x={bobCoords[0]} y={bobCoords[1]}
-                        color={color("blue")}
-                    />
-
-                    {/* From bob FOR */}
-                    <Transform translate={bobCoords}>
-                        {/* Gravity vector */}
-                        <Vector
-                            tail={[0, 0]}
-                            tip={[0, -1]}
-                            color={color("red")}
-                        />
-
-                        {/* Angular acceleration */}
-                        <Vector
-                            tail={[0, 0]}
-                            tip={angularAccelCoords}
-                            color={color("green")}
-                        />
-
-                        {/* Connect the two */}
-                        <Line.Segment
-                            point1={[0, -1]}
-                            point2={angularAccelCoords}
-                            style="dashed"
-                        />
-                    </Transform>
-
-                    {/* Zoomed in */}
-                    <Transform translate={[6, 2]}>
-                        {/* Bob */}
-                        <Point
-                            x={0} y={0} color={color("blue")}
-                        />
-                        {/* Gravity vector */}
-                        <Vector
-                            tail={[0, 0]}
-                            tip={[0, -3]}
-                            color={color("red")}
-                        />
-                        <LaTeX
-                            at={lineLabel([0, 0], [0, -3], "left")}
-                            color={color("red")}
-                            tex="g"
-                        />
-
-                        {/* Angular acceleration */}
-                        <Vector
-                            tail={[0, 0]}
-                            tip={vec.scale(angularAccelCoords, 3)}
-                            color={color("green")}
-                        />
-                        <LaTeX
-                            at={lineLabel(
-                                [0, 0],
-                                angularAccelCoords,
-                                thetat > 0 ? "right" : "left"
-                            )}
-                            color={color("green")}
-                            tex="-g \sin(\theta)"
-                        />
-
-                        {/* Connect the two */}
-                        <Line.Segment
-                            point1={[0, -3]}
-                            point2={vec.scale(angularAccelCoords, 3)}
-                            style="dashed"
-                        />
-                        <LaTeX
-                            at={lineLabel(
-                                [0, -3],
-                                vec.scale(angularAccelCoords, 3),
-                                thetat > 0 ? "left" : "right",
-                                { sideOffset: 0.5 }
-                            )}
-                            tex="g \cos(\theta)"
-                        />
-
-                        {/* Theta angle */}
-                        <Angle
-                            at={[0, -3]}
-                            fromRad={Math.PI / 2}
-                            toRad={Math.PI / 2 + thetat}
-                            label="\theta"
-                        />
-
-                        {/* Right angle */}
-                        <Angle
-                            at={vec.scale(angularAccelCoords, 3)}
-                            fromRad={-Math.PI / 2 + thetat}
-                            toRad={thetat > 0 ? thetat : (thetat + Math.PI)}
-                            forceStraightAngle
-                        />
-
-                        {/* Text */}
-                        <LaTeX
-                            at={[0, -4.25]}
-                            tex="\text{Zoomed in}"
-                        />
-                        {/* Circle around whole thing to make it look like a magnifying lens*/}
-                        <Circle radius={2.5} center={[0, -1.25]} fillOpacity={0} />
-
-                    </Transform>
-                </Mafs>
-            </div>
-            <div className="card__footer">
-                <button
-                    className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`}
-                    onClick={startStop}
-                >
-                    {hasStarted ? "Stop" : "Start"}
-                </button>
-            </div>
-        </div>
-    )
-})()}
-
-Since we are dealing with the pure mathematical model of the simple pendulum, we can assume the mass of the bob is $1$ and the string is massless.
-
-We shall not consider the forces acting on the bob. For a more physical approach to this problem, see the Classical Mechanics section.
-
-All we need to know is that the bob is subject to gravity, which acts downwards. The force of gravity can be broken down into two components: one parallel to the direction of motion and one perpendicular to it.
-
-The component perpendicular to the direction of motion does not affect the motion of the bob. The component parallel to the direction of motion, which equals $\class{green}{g\sin(\theta)}$ is the one that causes the bob to accelerate.
-
-:::info Dot Products
-
-You can use something called the dot product here.
-
-The dot product "projects" one vector onto another. If you have two vectors $\va{a}$ and $\va{b}$, the dot product is $\va{a} \cdot \va{b} = |\va{a}| |\va{b}| \cos(\theta)$, where $\theta$ is the angle between the two vectors.
-
-More info on this is in the Linear Algebra section.
-
-Essentially, we are projecting the gravity vector onto the direction of the bob's motion. Hence we can notate it as:
-
-$$
-\begin{equation}
-\text{Acceleration} = \frac{d\va{x}}\dd{t} \cdot \va{g} = -g \sin(\theta)
-\end{equation}
-$$
-
-:::
-
-The acceleration can be written as:
-
-$$
-\begin{equation}
-\frac{d^2x}{dt^2} = -g \sin(\theta)
-\end{equation}
-$$
-
-Since $x = L \theta$, we can write the equation in terms of $\theta$:
-
-$$
-\begin{align}
-\frac{d^2(L \theta)}{dt^2} &= -g \sin(\theta) \\
-L \frac{d^2\theta}{dt^2} &= -g \sin(\theta) \\
-\frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta)
-\end{align}
-$$
-
-:::info Air Drag
-
-Air drag is a force that opposes the motion of the bob. It is proportional to the velocity of the bob and acts in the opposite direction.
-
-We can set the air drag force as $-b \dv{x}{t}$, where $b$ is the proportionality constant.
-
-The equation of motion becomes:
-
-$$
-\begin{align}
-\frac{d^2x}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{x}{t} \\
-\frac{d^2(L \theta)}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{(L \theta)}{t} \\
-L \frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b L \dv{\theta}{t} \\
-\frac{d^2\theta}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{\theta}{t}
-\end{align}
-$$
-
-This DE, while more realistic, does not have an analytical solution.
-
-:::
-
-Notice how this DE has a second derivative.
-Just like how the "order" of an algebraic equation is the highest power of the variable, the order of a differential equation is the highest derivative present.
 
 ## Solving Differential Equations
 
@@ -894,3 +646,1221 @@ $$
 \Delta y &\approx 1 \times \Delta x = 1 \times 0.5 = 0.5
 \end{align}
 $$
+
+This means that the next point is $(0.5, 1.5)$. Then we repeat the process.
+
+It should look like this:
+
+{(() => {
+    const [dx, setDx] = useState(0.5);
+    const fn = (x) => Math.exp(x);
+    const slope = (x) => Math.exp(x);
+
+    const initialX = 0;
+
+    const jaggedCurve = (x) => {
+        let y = 1;
+        for (let i = 0; i < x / dx; i++)   {
+            y += dx * slope(initialX + i * dx);
+        }
+        return y;
+    }
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [-1, 5],
+                        y: [-1, 7],
+                    }}
+                    zoom={true}
+                >
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={fn} />
+                    <Plot.OfX y={jaggedCurve} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                {/* Slider */}
+                <input
+                    type="range"
+                    min={0.1}
+                    max={1}
+                step={0.01}
+                    value={dx}
+                    onChange={(e) => setDx(parseFloat(e.target.value))}
+                />
+                <MathEquation>
+                    {`\\Delta x = ${dx.toFixed(2)}`}
+                </MathEquation>
+            </div>
+        </div>
+    )
+})()}
+
+Euler's method is one of the most simple and common methods to numerically approximate the solution to a DE.
+It's heavily used in computer simulations and is the basis for many other numerical methods.
+
+For instance, consider a situation in which you are trying to simulate the motion of a particle in a fluid.
+This could be used for a game, or some type of scientific simulation.
+Since fluid dynamics is a very complex field, it's hard to get an analytical solution to the DEs that govern the motion of the particle.
+Instead, you can use Euler's method to approximate the motion of the particle.
+
+As $\Delta x$ gets smaller, the approximation gets closer to the actual solution.
+This is similar to how the derivative is the limit of the slope as $\Delta x$ approaches $0$.
+
+### Example Problem: Working with Euler's Method
+
+> Consider the DE:
+>
+> $$
+> \begin{equation}
+> \dv{y}{x} = 4y - 3x \label{eq:example_problem_working_with_eulers_method-de}
+> \end{equation}
+> $$
+>
+> Let $y(0) = y_0$, and let the increment be $\Delta x$.
+> After 3 steps, Euler's method yields the approximation $y(3\Delta x) = y_i$.
+> Express $y_0$ in terms of $y_i$ and $\Delta x$.
+
+{/*
+  * The solution to this DE is y = 3/16 (4x + 1) + c1 e^(4x)
+  * Where c1 is determined by the initial condition.
+  *
+  * Since y(0) = y0, we can substitute x = 0 into the solution to get c1:
+  *
+  * y0 = 3/16 (4*0 + 1) + c1 e^(4*0) = 3/16 + c1
+  * c1 = y0 - 3/16
+  * c1 = (16y0 - 3) / 16
+  *
+  * Therefore, the solution is y = 3/16 (4x + 1) + (16y0 - 3) / 16 e^(4x)
+  * = 1/16 [ 12x + 3 + (16y0 - 3)e^(4x) ]
+  */}
+
+Once again let's assume we don't know the solution to the DE.
+
+We start at $y_0$ and follow the slope for $\Delta x$. We can construct the following table:
+
+| $x$ | $y$ | $\dv{y}{x}$ | $\Delta y$ |
+| --- | --- | --------------- | --------------- |
+| $0$ | $y_0$ | $4y_0 \cancel{- 3 \times 0}$ | $4y_0 \Delta x$ |
+
+Let's walk through the table.
+
+- First, we set the initial condition on the first two columns.
+- Then, using the DE in $\eqref{eq:example_problem_working_with_eulers_method-de}$, we find the slope at $x = 0$ to be $4y_0$.
+- Finally, we find the change in $y$ by multiplying $\dv{y}{x}$ with $\Delta x$, so it's $4y_0 \Delta x$.
+
+For simplicity, let's denote $\Delta y = y_0 + 3\Delta x = \Delta y_1$. To understand this better, here's a visualization of it:
+
+export function ExampleProblemWorkingWithEulersMethod({
+    n = 1,
+}) {
+    const fn = (x) => Math.exp(0.5 * x); // Don't use the actual function 1. to avoid spoilers and 2. since the actual function expands too quickly
+    const slope = (x) => 0.5 * fn(x);
+
+    const dx = 1;
+    const x0 = 0;
+    const y0 = fn(x0);
+
+    let points = [[x0, y0]];
+
+    // Intentionally iterating one extra time to get the last dy and dx
+    for (let i = 0; i <= n; i++) {
+        const x = x0 + i * dx;
+        const y = fn(x);
+        const slopeAtPoint = slope(x);
+        const dy = slopeAtPoint * dx;
+
+        points.push([x + dx, y + dy]);
+    }
+
+    return (
+        range(0, n).map((i) => {
+            const [x, y] = points[i];
+            const [dx, dy] = vec.sub(points[i + 1], points[i]);
+
+            console.log({dx, dy})
+
+            return (
+                <Transform key={i} translate={[x, y]}>
+                    {i === 0 && <LaTeX tex={`(${i === 0 ? "0" : i + "\\Delta x"}, y_${i})`} at={[-0.3, 0]} />}
+
+                    <Vector tail={[0, 0]} tip={[dx, 0]} />
+                    <LaTeX tex="\Delta x" at={[dx / 2, -0.3]} />
+
+                    <Vector tail={[dx, 0]} tip={[dx, dy]} />
+                    <LaTeX tex={`\\Delta y_${i + 1}`} at={[dx - 0.2, dy / 2]} />
+
+                    <Line.Segment point1={[0, 0]} point2={[dx, dy]} style="dashed" />
+
+                    <LaTeX tex={`(${i + 1 > 1 ? i + 1 : ""}\\Delta x, y_{${i + 1}})`} at={[dx - 0.6, dy]} />
+                </Transform>
+            );
+        })
+    )
+}
+
+<Mafs
+    viewBox={{
+        x: [0, 3],
+        y: [0, 3],
+    }}
+>
+    <ExampleProblemWorkingWithEulersMethod />
+</Mafs>
+
+We can continue the table:
+
+| $x$ | $y$ | $\dv{y}{x}$ | $\Delta y$ |
+| --- | --- | --------------- | --------------- |
+| $0$ | $y_0$ | $4y_0$ | $4y_0 \Delta x = \Delta y_1$ |
+| $\Delta x$ | $y_0 + \Delta y_1$ | $4(y_0 + \Delta y_1) - 3\Delta x$ | $4(y_0 + \Delta y_1) \Delta x$ |
+
+Let's break it down again:
+
+- In the next increment, $x$ increases by $\Delta x$, and $y$ increases by $\Delta y_1$.
+  Therefore, the new point is $(\Delta x, y_0 + \Delta y_1)$.
+- Next, using those points, we find the slope at that point by plugging it into the DE in $\eqref{eq:example_problem_working_with_eulers_method-de}$, yielding $4(y_0 + \Delta y_1) - 3\Delta x$.
+- To get the next $\Delta y$, we multiply the slope by $\Delta x$, giving $4(y_0 + \Delta y_1) \Delta x$. Denote this as $\Delta y_2$.
+
+Once again, let's visualize this:
+
+<Mafs
+    viewBox={{
+        x: [0, 3],
+        y: [0, 3],
+    }}
+>
+    <ExampleProblemWorkingWithEulersMethod n={2} />
+</Mafs>
+
+Finally, we can continue with the third increment:
+
+| $x$ | $y$ | $\dv{y}{x}$ | $\Delta y$ |
+| --- | --- | --------------- | --------------- |
+| $0$ | $y_0$ | $4y_0$ | $4y_0 \Delta x = \Delta y_1$ |
+| $\Delta x$ | $y_0 + \Delta y_1$ | $4(y_0 + \Delta y_1) - 3\Delta x$ | $4(y_0 + \Delta y_1) \Delta x = \Delta y_2$ |
+| $2\Delta x$ | $y_0 + \Delta y_1 + \Delta y_2$ | $4(y_0 + \Delta y_1 + \Delta y_2) - 3\Delta x$ | $4(y_0 + \Delta y_1 + \Delta y_2) \Delta x$ |
+
+And visualize it:
+
+<Mafs
+    viewBox={{
+        x: [1, 4],
+        y: [1, 4],
+    }}
+>
+    <ExampleProblemWorkingWithEulersMethod n={3} />
+</Mafs>
+
+So, we started at $(0, y_0)$ and after 3 steps, we reached $(3\Delta x, y_0 + \Delta y_1 + \Delta y_2)$.
+
+We need to expand $\Delta y_1$ and $\Delta y_2$:
+
+$$
+\begin{align}
+\Delta y_1 &= 4y_0 \Delta x \\
+\Delta y_2 &= 4(y_0 + \Delta y_1) \Delta x = 4(y_0 + 4y_0 \Delta x) \Delta x = 4y_0 \Delta x + 16y_0 (\Delta x)^2
+\end{align}
+$$
+
+So the $y$ value after 3 steps is:
+
+$$
+\begin{align}
+y(3\Delta x) &= y_0 + \class{red}{\Delta y_1} + \class{green}{\Delta y_2} \\
+&= y_0 + \class{red}{4y_0 \Delta x} + \class{green}{4y_0 \Delta x + 16y_0 (\Delta x)^2} \\
+&= y_0 + 8y_0 \Delta x + 16y_0 (\Delta x)^2 \\
+&= y_0 (1 + 8\Delta x + 16(\Delta x)^2)
+\end{align}
+$$
+
+Recall that the question stated that the approximation after 3 steps is $y(3\Delta x) = y_i$.
+Setting $y(3\Delta x) = y_i$, and then solving for $y_0$ gives:
+
+$$
+\begin{align}
+y_i &= y_0 (1 + 8\Delta x + 16(\Delta x)^2) \\
+y_0 &= \frac{y_i}{1 + 8\Delta x + 16(\Delta x)^2}
+\end{align}
+$$
+
+Therefore, the answer is $y_0 = \frac{y_i}{1 + 8\Delta x + 16(\Delta x)^2}$.
+
+## Separation of variables
+
+This is arguably one of the easiest and most common methods to solve a DE.
+
+### Separable Differential Equations
+
+Consider the DE:
+
+$$
+\begin{equation}
+\dv{y}{x} = -\frac{x}{ye^{x^2}}
+\end{equation}
+$$
+
+With a condition that the solution must pass through $(0, 1)$.
+
+It might seem daunting at first, like as if you don't even know where to start.
+One approach you could try is to separate $x$ and $y$ to different sides.
+
+$$
+\begin{align}
+\dv{y}{x} &= -\frac{x}{ye^{x^2}} \\
+y \dv{y}{x} &= -\frac{x}{e^{x^2}} \\
+y \dd{y} &= -\frac{x}{e^{x^2}} \dd{x} = -x e^{-x^2} \dd{x}
+\end{align}
+$$
+
+Since we are able to separate $x$ and $y$ to different sides, this DE is known as a **Separable Differential Equation**.
+
+Now, we can integrate both sides:
+
+$$
+\begin{align}
+\int y \dd{y} &= \int -x e^{-x^2} \dd{x} \\
+\frac{y^2}{2} + C_1 &= \frac{1}{2} e^{-x^2} + C_2
+\end{align}
+$$
+
+<details>
+<summary>Remind me of the integration steps!</summary>
+
+Recall that the derivative of $-x^2$ is $-2x$. So if we add a $2$ to the integrand, then we can perform a reverse chain rule:
+
+$$
+\begin{equation}
+\int -x e^{-x^2} \dd{x} = \frac{1}{2} \int \overbrace{-2x}^{\dd{g}/\dd{x}} \underbrace{e^{\overbrace{-x^2}^{g(x)}}}_{f'(g(x))} \dd{x}
+\end{equation}
+$$
+
+Recall from the chain rule that the integral of $f'(g(x)) \dv{g}{x}$ is $f(g(x)) + C$. Therefore:
+
+$$
+\begin{align}
+\int -x e^{-x^2} \dd{x} &= \frac{1}{2} \int -2x e^{-x^2} \dd{x} \\
+&= \frac{1}{2} f(g(x)) + C \\
+&= \frac{1}{2} e^{-x^2} + C
+\end{align}
+$$
+
+</details>
+
+We can combine the constants of integration into one constant, $C = C_2 - C_1$:
+
+$$
+\begin{align}
+\frac{y^2}{2} + C_1 &= \frac{1}{2} e^{-x^2} + C_2 \\
+\frac{y^2}{2} &= \frac{1}{2} e^{-x^2} + C_2 - C_1 \\
+\frac{y^2}{2} &= \frac{1}{2} e^{-x^2} + C \label{eq:separable_differential_equations-unsolved_solution}
+\end{align}
+$$
+
+Next, we can use the initial condition $y(0) = 1$ to solve for the constant $C$. Plugging $x = 0$ and $y = 1$ into the equation in $\eqref{eq:separable_differential_equations-unsolved_solution}$:
+
+$$
+\begin{align}
+\frac{\class{yellow}{y}^2}{2} &= \frac{1}{2} e^{-\class{blue}{x}^2} + C \\
+\frac{\class{yellow}{1}^2}{2} &= \frac{1}{2} e^{-\class{blue}{0}^2} + C \\
+\frac{1}{2} &= \frac{1}{2} + C \\
+C &= 0
+\end{align}
+$$
+
+Finally, we can substitute $C = 0$ back into the equation in $\eqref{eq:separable_differential_equations-unsolved_solution}$ and solve for $y$:
+
+$$
+\begin{align}
+\frac{y^2}{2} &= \frac{1}{2} e^{-x^2} \\
+y^2 &= e^{-x^2} \\
+y &= \pm \sqrt{e^{-x^2}} \\
+\end{align}
+$$
+
+Since at $x = 0$, $y = 1$ is positive, we can ignore the $\pm$ sign:
+
+$$
+\begin{equation}
+y = \sqrt{e^{-x^2}} = \qty(e^{-x^2})^{1/2} = \exp(-\frac{x^2}{2})
+\end{equation}
+$$
+
+Therefore, the solution to the DE is $y = \exp(-\frac{x^2}{2})$.
+
+To generalize this process, we can posit that a DE is separable if it can be written in the form:
+
+$$
+\begin{equation}
+g(y) \dd{y} = h(x) \dd{x}
+\end{equation}
+$$
+
+Where $g(y)$ is a function of $y$ and $h(x)$ is a function of $x$.
+
+### Note: Algebraic Manipulation of Differentials
+
+When we separate variables, we treat differentials as if they were algebraic quantities.
+
+Recall the formal definition of a derivative:
+
+$$
+\begin{equation}
+\dv{f}{x}(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+\end{equation}
+$$
+
+When we separate variables, we treat $\dd{y}$ and $\dd{x}$ as if they were algebraic quantities, and we can manipulate them as such.
+For instance:
+
+$$
+\begin{align}
+\dv{y}{x} &= y \\
+\dd{y} &= y \dd{x} \\
+\frac{\dd{y}}{y} &= \dd{x}
+\end{align}
+$$
+
+While this seems reasonable, it's important to remember that differentials are not numbers, but rather infinitesimal quantities.
+Much real analysis is required to make this rigorous, but for the purposes of solving DEs, the notion of treating differentials as algebraic quantities is nonetheless a useful heuristic.
+
+A more thorough treatment of differentials is beyond this scope, and is instead usually covered in a course on real analysis.
+
+### Identifying Separable Differential Equations
+
+As mentioned, to identify a separable DE, look for a DE that can be written in the form:
+
+$$
+\begin{equation}
+g(y) \dd{y} = h(x) \dd{x}
+\end{equation}
+$$
+
+One common type of DE that can be solved using separation of variables is one where $\dv{y}{x}$ is a product or quotient of functions of $x$ and $y$:
+
+$$
+\begin{align}
+\dv{y}{x} &= \frac{f(x)}{g(y)} \implies g(y) \dd{y} &= f(x) \dd{x} \\
+\dv{y}{x} &= f(x) g(y) \implies \frac{1}{g(y)} \dd{y} &= f(x) \dd{x}
+\end{align}
+$$
+
+## Exponential Models
+
+
+One extremely common DE describes exponential growth and decay. This was already mentioned above, but it's worth going into more detail.
+
+Essentially, think of a quantity that, over time, either grows or shrinks at a rate proportional to its current size.
+For instance, interest in a bank account, the number of radioactive atoms in a sample, or the population of a species.
+
+Let $N(t)$ be the quantity at time $t$. The general DE for exponential growth and decay is:
+
+$$
+\begin{equation}
+\dv{N}{t} = k N
+\end{equation}
+$$
+
+Where $k$ is a constant that depends on the specific situation.
+Usually it represents a rate of growth or decay.
+
+In many cases, you want to start with a certain amount of the quantity at time $t = 0$, usually denoted as $N(0) = N_0$.
+
+To solve this DE, we can make use of separation of variables:
+
+$$
+\begin{equation}
+\frac{\dd{N}}{N} = k dt
+\end{equation}
+$$
+
+We can integrate both sides spanning the interval;
+
+- From $t' = 0$ to $t' = t$ on the right side.
+- When $t' = 0$, $N = N_0$ and when $t' = t$, $N = N(t)$ on the left side. So the bounds are $N_0$ and $N(t)$.
+
+$$
+\begin{align}
+\int_{N_0}^{N(t)} \frac{1}{N} dN &= \int_0^t k dt' \\
+\ln\abs{N(t)} - \ln\abs{N_0} &= kt \\
+\ln\abs{\frac{N(t)}{N_0}} &= kt \\
+\frac{N(t)}{N_0} &= e^{kt} \\
+N(t) &= N_0 e^{kt}
+\end{align}
+$$
+
+It's worth noting that $e$ appears in the solution.
+This is a result of a fundamental property of $e$, which is that the derivative of $e^x$ is $e^x$.
+This property is analogous to our case where the rate of change (derivative) of the quantity is proportional to the quantity itself.
+Always understand the meaning of each term in any equation outside of the algebra.
+
+### Example Problem: Radioactive Decay
+
+> Consider the radioactive decay of some substance.
+> The rate of decay is proportional to the amount of the substance, where the constant of proportionality is $-\lambda$, with SI units of $\text{s}^{-1}$.
+> Let the amount of the substance at time $t = 0$ be $N_0$.
+>
+> 1. Write the DE that describes the decay.
+> 2. Solve the DE with the initial condition $N(0) = N_0$.
+> 3. The half-life, $t_{1/2}$ is defined as the time it takes for half of the substance to decay. Write an expression for the half-life in terms of $t$, $N_0$, and $\lambda$, as needed.
+> 4. The half-life of $\ce{^{14}C}$ is about 5730 years. Identify $\lambda$ for $\ce{^{14}C}$.
+
+1. We've already done the first part [here](#example-problem-formulating-the-differential-equation-for-radioactive-decay).
+2. Let's solve the DE:
+
+    $$
+    \begin{align}
+    \dv{N}{t} &= -\lambda N \\
+    \frac{\dd{N}}{N} &= -\lambda \dd{t} \\
+    \int_{N_0}^{N(t)} \frac{1}{N} \dd{N} &= \int_0^t -\lambda \dd{t} \\
+    \ln\abs{N(t)} - \ln\abs{N_0} &= -\lambda t \\
+    \ln\abs{\frac{N(t)}{N_0}} &= -\lambda t \\
+    \frac{N(t)}{N_0} &= e^{-\lambda t} \\
+    N(t) &= N_0 e^{-\lambda t}
+    \end{align}
+    $$
+
+3. The half-life is the time it takes for half of the substance to decay. We can formulate an equation to describe this:
+
+    $$
+    \begin{equation}
+    N(t_{1/2}) = \frac{1}{2} N_0
+    \end{equation}
+    $$
+
+    Substituting $N(t) = N_0 e^{-\lambda t}$:
+
+    $$
+    \begin{align}
+    N_0 e^{-\lambda t_{1/2}} &= \frac{1}{2} N_0 \\
+    e^{-\lambda t_{1/2}} &= \frac{1}{2} \\
+    -\lambda t_{1/2} &= \ln\frac{1}{2} \\
+    t_{1/2} &= \frac{\ln 2}{\lambda} \approx \frac{0.693}{\lambda}
+    \end{align}
+    $$
+
+    This reveals a fundamental property of exponential decay: the half-life is independent of the initial amount of the substance.
+    So whether you start with $1 \text{g}$ or $1 \times 10^{1000} \text{g}$ of a substance, the time it takes for half of it to decay is the same.
+
+4. The half-life of $\ce{^{14}C}$ is about 5730 years. We can identify $\lambda$:
+
+    $$
+    \begin{align}
+    t_{1/2} &= \frac{0.693}{\lambda} \\
+    5730 \text{ years} &= \frac{0.693}{\lambda} \\
+    \lambda &\approx \frac{0.693}{5730 \text{ years}} \approx 0.000121 \text{ years}^{-1}
+    \end{align}
+    $$
+
+    Therefore, the constant of proportionality for $\ce{^{14}C}$ is $\lambda \approx 0.000121 \text{ years}^{-1}$.
+
+## Logistic Growth Models
+
+Things can grow, but they can't grow infinite; there's always a limit to growth.
+
+Thomas Malthus, an English cleric and scholar, observed that populations tend to grow exponentially, but they can't grow forever.
+He suggested that populations couldn't grow indefinitely due to limited resources, so we won't be able to produce infinite food to feed an infinite number of people,
+and the environment would impose a limit on growth.
+
+Pierre François Verhulst, a Belgian mathematician, proposed a model that describes this type of growth.
+He suggested that the rate of growth of a population is proportional to the population itself, but it'll also have an asymptotic limit.
+This is contrary to Malthus' view that populations can go above the limit, but they'll crash and sort of oscillate around the limit.
+
+Let $N(t)$ be some quantity at time $t$ that grows according to the logistic model.
+To show how the logistic model works, we can start with the exponential growth model:
+
+$$
+\begin{equation}
+\dv{N}{t} = k N \implies N(t) = N_0 e^{kt}
+\end{equation}
+$$
+
+The graph of this function is an exponential curve that grows without bound. Let the limit of growth be $L$, also known as the **carrying capacity**.
+So one way to model this is to dampen the growth rate as the population approaches the limit.
+
+As $N \to L$, the growth rate should approach $0$. We can introduce a term $1 - \frac{N}{L}$ to dampen the growth rate:
+
+$$
+\begin{equation}
+\dv{N}{t} = k N \qty(1 - \frac{N}{L})
+\end{equation}
+$$
+
+The graph of this function is an S-shaped curve, known as the logistic curve. It looks like this (you can move around the $N_0$ point):
+
+export function LogisticGrowthModel({ L = 3, k = 1 }) {
+    const N0 = useMovablePoint([0, 1], {
+        constrain: ([x, y]) => [0, Math.max(0, y)],
+    });
+    const fn = (t) => t > 0 ? L / (1 + (L / N0.point[1] - 1) * Math.exp(-k * t)) : undefined;
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [0, 6],
+                        y: [0, 5],
+                    }}
+                >
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={fn} />
+                    <Plot.OfX y={(x) => L} />
+                    <Plot.OfX y={(x) => N0} />
+                    {N0.element}
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <MathEquation>
+                    {`N_0 = ${N0.point[1].toFixed(2)}, L = ${L}, k = ${k}`}
+                </MathEquation>
+            </div>
+        </div>
+    )
+}
+
+<LogisticGrowthModel />
+
+Note that this DE makes sense only under certain conditions:
+
+- $0 < N(t) < L$ for all $t$.
+- $t >= 0$.
+
+Outside of these boundaries, the model might not make sense.
+
+### Properties of the Logistic Growth Model
+
+It's really good to be able to understand certain properties of differential equations.
+They provide a very intuitive understanding of the system you're modeling, so it's a nice skill to be able to understand these properties without having to solve the DE.
+Furthermore, understanding these properties can help validate the DE to the real-world system you're modeling.
+
+1. If $N(0) = 0$, then $\dv{N}{t} = r(0)\qty(1 - \frac{0}{K}) = 0 \implies N(t) = 0$ for all $t$. This makes sense because if you start with no population, then there's nothing to grow, so the population will remain at $0$.
+2. If $N(0) = L$, then $\dv{N}{t} = r(0)\qty(1 - \frac{L}{K}) = 0 \implies N(t) = L$ for all $t$. This makes sense because if you start with the carrying capacity, then the population is already at the limit, so it won't grow.
+
+Let's also identify when the population is growing at its fastest rate. We can plot $\dv{N}{t}$ as a function of $N$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.Parametric
+        xy={(t) => [t, 2 * t * (1 - t / 5)]}
+        t={[0, 5]}
+    />
+</Mafs>
+
+We treat $\dv{N}{t}$ as a function of $N$ and plot it. We can express $\dv{N}{t}$ as a parabola:
+
+$$
+\begin{align}
+\dv{N}{t} &= k N \qty(1 - \frac{N}{L}) \\
+&= k N - \frac{k}{L} N^2
+\end{align}
+$$
+
+The maximum point of this parabola is the vertex, which is at $N = \frac{L}{2}$.
+In addition, the rate is symmetric about the vertex, so the rate of growth is the same when the population is at $\frac{L}{4}$ as when it's at $\frac{3L}{4}$.
+
+### Solving the Logistic Growth Model
+
+Recall that a DE is separable if it can be written in the form:
+
+$$
+\begin{equation}
+g(y) \dd{y} = h(x) \dd{x}
+\end{equation}
+$$
+
+Let's apply this to the logistic growth model. Divide both sides by $N\qty(1 - \frac{N}{L})$:
+
+$$
+\begin{align}
+\frac{1}{N\qty(1 - \frac{N}{L})} \dv{N}{t} &= k \label{eq:solving_the_logistic_growth_model-separable_de} \\
+\end{align}
+$$
+
+The left side is a bit tricky to integrate, but we can use partial fractions to simplify it:
+
+$$
+\begin{align}
+\frac{1}{N\qty(1 - \frac{N}{L})} &= \frac{A}{N} + \frac{B}{1 - \frac{N}{L}} \label{eq:solving_the_logistic_growth_model-partial_fractions} \\
+&= \frac{\class{yellow}{A} - \class{blue}{\frac{A}{L}N + B N}}{N\qty(1 - \frac{N}{L})} = \frac{\class{yellow}{1} + \class{blue}{0N}}{N\qty(1 - \frac{N}{L})} \\
+\end{align}
+$$
+
+Equating the numerators:
+
+$$
+\begin{align}
+\class{yellow}{A} - \class{blue}{\frac{A}{L}N + B N} &= \class{yellow}{1} + \class{blue}{0N} \\
+A &= 1 \\
+-\frac{A}{L} + B &= 0 \\
+-\frac{1}{L} + B &= 0 \\
+B &= \frac{1}{L}
+\end{align}
+$$
+
+Substituting back into $\eqref{eq:solving_the_logistic_growth_model-partial_fractions}$:
+
+$$
+\begin{equation}
+\frac{1}{N\qty(1 - \frac{N}{L})} = \frac{1}{N} + \frac{1}{L\qty(1 - \frac{N}{L})}
+\end{equation}
+$$
+
+Substitute this back into $\eqref{eq:solving_the_logistic_growth_model-separable_de}$:
+
+$$
+\begin{align}
+\frac{1}{N} + \frac{1}{L\qty(1 - \frac{N}{L})} \dv{N}{t} &= k \\
+\int \qty(\frac{1}{N} + \frac{1}{L\qty(1 - \frac{N}{L})}) \dd{N} &= \int k \dd{t} \\
+\int \frac{1}{N} \dd{N} + \int \frac{1}{L\qty(1 - \frac{N}{L})} \dd{N} &= \int k \dd{t} \\
+\int \frac{1}{N} \dd{N} - \int \underbrace{-\frac{1}{L}}_{g'(N)} \overbrace{\boxed{\frac{1}{\underbrace{1 - \frac{N}{L}}_{g(N)}}}}^{f'(g(N))} \dd{N} &= \int k \dd{t} \\
+\ln\abs{N} - \ln\abs{1 - \frac{N}{L}} + C_1 &= kt + C_2 \\
+\ln\abs{\frac{N}{1 - \frac{N}{L}}} &= kt + C_3 \\
+\abs{\frac{N}{1 - \frac{N}{L}}} &= e^{kt + C_3} \\
+\end{align}
+$$
+
+We can drop the absolute value since the quantity inside is always positive:
+
+$$
+\begin{align}
+\frac{N}{1 - \frac{N}{L}} &= e^{kt + C_3} = C_4 e^{kt} \\
+\frac{1 - \frac{N}{L}}{N} &= C_5 e^{-kt} \\
+\frac{1}{N} - \frac{1}{L} &= C_5 e^{-kt} \\
+\frac{1}{N} &= \frac{1}{L} + C_5 e^{-kt} \\
+N &= \frac{1}{\frac{1}{L} + C_5 e^{-kt}} \label{eq:solving_the_logistic_growth_model-solution_c5}
+\end{align}
+$$
+
+Next, we can use the initial condition $N(0) = N_0$ to solve for $C_5$:
+
+$$
+\begin{align}
+N(0) &= \frac{1}{\frac{1}{L} + C_5 e^{-k \cdot 0}} = N_0 \\
+N_0 &= \frac{1}{\frac{1}{L} + C_5} \\
+\frac{1}{N_0} &= \frac{1}{L} + C_5 \\
+C_5 &= \frac{1}{N_0} - \frac{1}{L}
+\end{align}
+$$
+
+Substitute $C_5$ back into $\eqref{eq:solving_the_logistic_growth_model-solution_c5}$:
+
+$$
+\begin{align}
+N &= \frac{1}{\frac{1}{L} + \class{blue}{C_5} e^{-kt}} \\
+&= \frac{1}{\frac{1}{L} + \class{blue}{\qty(\frac{1}{N_0} - \frac{1}{L})} e^{-kt}} \class{yellow}{\frac{N_0 L}{N_0 L}} \\
+&= \frac{N_0 L}{N_0 + (L - N_0) e^{-kt}}
+\end{align}
+$$
+
+### Example Problem: Designing a RPG Defense System
+
+> You are designing a defense system for a role-playing game.
+> Players have a defense rating, and the higher the rating, the higher percentage of damage they can block.
+>
+> Let $P(r)$ be the percentage of damage blocked for a defense rating $r$.
+>
+> The conditions for the defense system are:
+>
+> - The percentage should first increase rapidly, then slow down as the rating approaches $100\%$.
+> - The percentage should never reach $100\%$; it should be an asymptote.
+> - Moreover, the defense system should also function for $r < 0$, which should increase the damage taken.
+>   The effects for negative ratings should be symmetric to the effects for positive ratings.
+>
+> 1. Construct a DE that describes the defense system.
+> 2. Solve the DE with the initial condition $P(0) = 0$.
+
+I chose this problem:
+
+1. To show that DEs can be used in many different contexts, not just in physics or biology.
+2. Because I came across this exact problem myself when designing a game a few years ago.
+3. To combine multiple concepts into one problem: the logistic growth model, initial conditions, and function transformations.
+
+We can apply the logistic model to this problem, however, we need to make some modifications.
+
+Let the carrying capacity, $L$, be $100\% = 1$.
+
+$$
+\begin{equation}
+\dv{P}{r} = k P \qty(1 - P)
+\end{equation}
+$$
+
+Recall that the growth rate is the fastest when $P = \frac{L}{2}$, and the growth rate is symmetric about this point.
+
+Given that we already solved the logistic model, we can use that as a base to solve this problem.
+
+$$
+\begin{equation}
+P(\class{blue}{t}) = \frac{P_0 L}{P_0 + (L - P_0) e^{-k\class{blue}{t}}}
+\end{equation}
+$$
+
+We can set $P_0 = L / 2$ to ensure that the growth rate is the fastest and is symmetric at $t = 0$.
+Furthermore, we can shift the curve down by $L / 2$ to satisfy the second condition:
+
+$$
+\begin{equation}
+P(t) = \frac{L / 2 \cdot L}{L / 2 + (L - L / 2) e^{-kt}} - \frac{L}{2}
+\end{equation}
+$$
+
+However, by shifting the curve down, we set the asymptotes to $-L / 2$ and $L / 2$. To ensure that the percentage approaches $-L$ and $L$ instead, we can multiply the entire function by $2$:
+
+$$
+\begin{align}
+P(t) &= 2\qty(\frac{L / 2 \cdot L}{L / 2 + (L - L / 2) e^{-kt}} - \frac{L}{2}) \\
+&= \frac{L^2}{\frac{L}{2} + \qty(L - \frac{L}{2}) e^{-kt}} - L \\
+&= \frac{L}{\frac{1}{2} + \qty(1 - \frac{1}{2}) e^{-kt}} - L \\
+&= \frac{2L}{1 + e^{-kt}} - L
+\end{align}
+$$
+
+And we're done. We've successfully modeled a defense system for a role-playing game using a logistic growth model.
+
+The graph of this function is an S-shaped curve that satisfies the conditions of the defense system:
+
+{(() => {
+    const [k, setK] = useState(1);
+
+    const L = 1;
+    const f = (t) => (2 * L) / (1 + Math.exp(-k * t)) - L;
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={f} />
+                    <Plot.OfX y={(x) => L} style="dashed" />
+                    <Plot.OfX y={(x) => -L} style="dashed" />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <MathEquation>
+                    {`P(t) = \\frac{2L}{1 + e^{-kt}} - L`}
+                </MathEquation>
+                <div className="input-group">
+                    <label>
+                        <input
+                            type="range"
+                            min={0.1}
+                            max={5}
+                            step={0.05}
+                            value={k}
+                            onChange={(e) => setK(parseFloat(e.target.value))}
+                        />
+                        <span>{`k = ${k.toFixed(2)}`}</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    );
+})()}
+
+## Predator-Prey Models: Systems of Differential Equations and Phase Space
+
+Predator-prey models are a type of DE that describe the interactions between two species: a predator and a prey.
+
+The most famous predator-prey model is the Lotka-Volterra model.
+Let $F(t)$ be the population of foxes (predators) and $R(t)$ be the population of rabbits (prey).
+
+We can think of the interactions between the two species as follows:
+
+- **Prey Abundance &#8594; Predator Growth** - The more rabbits there are, the more food there is for the foxes, so the fox population increases.
+- **Predator Growth &#8594; Prey Decline** - The more foxes there are, the more rabbits they eat, so the rabbit population decreases.
+- **Prey Decline &#8594; Predator Decline** - The less rabbits there are, the less food there is for the foxes, so the fox population decreases.
+- **Predator Decline &#8594; Prey Abundance** - The less foxes there are, the less rabbits are eaten, so the rabbit population increases.
+
+So it sort of follows a cyclic pattern. We can create a system of two DEs to describe this.
+Let's consider the DE for the fox population first.
+
+The rate of change of the fox population is proportional to the rabbit population (Prey Abundance &#8594; Predator Growth), as well as the fox population itself (Offspring).
+
+However, foxes can also die due to natural causes, competition, or other predators, so we can introduce a term that dampens the growth rate.
+
+As such, the DE for the fox population is:
+
+$$
+\begin{equation}
+\dv{F}{t} = \delta F R - \gamma F
+\end{equation}
+$$
+
+Where $\delta F R$ represents growth from offspring and predation and $\gamma F$ represents death from external causes.
+
+Next, let's consider the DE for the rabbit population.
+
+It undergoes natural exponential growth proportional to its current population.
+
+Just like foxes, the growth rate gets dampened by its own population. However, since rabbits are prey, the growth rate is also dampened by the fox population.
+
+The DE for the rabbit population is:
+
+$$
+\begin{equation}
+\dv{R}{t} = \alpha R - \beta R F
+\end{equation}
+$$
+
+Where $\alpha R$ represents growth from offspring and $\beta R F$ represents death from predation.
+
+### Interpreting the Predator-Prey Model
+
+We can make use of various tools to interpret the predator-prey model without having to solve the DEs.
+
+First, we can make use of a **phase space** to visualize the system.
+A phase space is a plot of the variables on axes. It's sort of similar to a slope field.
+
+For the predator-prey model, we can plot the rabbit population on the $x$-axis and the fox population on the $y$-axis.
+
+{(() => {
+    const [alpha, setAlpha] = useState(1);
+    const [beta, setBeta] = useState(0.1);
+    const [delta, setDelta] = useState(0.1);
+    const [gamma, setGamma] = useState(1);
+
+    function slope([x, y]) {
+        if (x <= 0 || y <= 0) return [0, 0];
+        return [
+            alpha * x - beta * x * y,
+            delta * x * y - gamma * y,
+        ];
+    }
+
+    function Slider({ label_tex, value, setValue, ...restProps }) {
+        return (
+            <label key={label_tex} {...restProps}>
+                <input
+                    type="range"
+                    min={0.1}
+                    max={5}
+                    step={0.05}
+                    value={value}
+                    onChange={(e) => setValue(parseFloat(e.target.value))}
+                />
+                <MathEquation inline={true}>{`${label_tex} = ${value.toFixed(2)}`}</MathEquation>
+            </label>
+        );
+    }
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [0, 45],
+                        y: [0, 25],
+                    }}
+                >
+                    <Coordinates.Cartesian
+                        xAxis={{
+                            labels: (x) => x % 5 === 0 ? x : "",
+                            lines: 5,
+                        }}
+                        yAxis={{
+                            labels: (y) => y % 5 === 0 ? y : "",
+                            lines: 5,
+                        }}
+                    />
+                    <Plot.VectorField xy={slope} step={2} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                {[
+                    ["\\alpha", alpha, setAlpha],
+                    ["\\beta", beta, setBeta],
+                    ["\\delta", delta, setDelta],
+                    ["\\gamma", gamma, setGamma],
+                ].map(([label, value, setValue]) => (
+                    <Slider label_tex={label} value={value} setValue={setValue} />
+                ))}
+            </div>
+        </div>
+    )
+})()}
+
+From this visualization, we can see that the system has a stable equilibrium at two places:
+
+- At the origin, where both species are extinct.
+- At a point in the middle, where both species coexist and sort of oscillate around each other.
+
+## The Simple Pendulum
+
+The simple pendulum is a mass (bob) attached to a string of length $L$ that swings back and forth. The angle $\theta$ that the string makes with the vertical is a function of time.
+
+{(() => {
+    const { time, start, stop } = useStopwatch();
+
+    const [hasStarted, setHasStarted] = useState(false);
+
+    function startStop() {
+        hasStarted ? stop() : start();
+        setHasStarted(!hasStarted);
+    }
+
+    // theta 0 = pi/4
+
+    const theta0 = Math.PI / 6;
+
+    const L = 4;
+    const g = 9.8;
+
+    // Using small angle approximation
+    const theta = (t) => theta0 * Math.cos(Math.sqrt(g / L) * t);
+    const thetat = theta(time)
+
+    const bobCoords = [L * Math.sin(thetat), 2 - L * Math.cos(thetat)];
+    const angularAccelCoords = [
+        -1 * Math.cos(thetat) * Math.sin(thetat),
+        -1 + (Math.cos(thetat) ** 2)
+    ];
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [-3, 8],
+                        y: [-3, 3],
+                    }}
+                >
+                    <Line.Segment
+                        point1={[-3, 2]}
+                        point2={[3, 2]}
+                    />
+                    <Line.Segment
+                        point1={[0, 2]}
+                        point2={[0, -2]}
+                    />
+
+                    {/* Angle */}
+                    <Angle
+                        at={[0, 2]}
+                        fromRad={- Math.PI / 2 + thetat}
+                        toRad={- Math.PI / 2}
+                        label="\theta"
+                        radius={0.5}
+                    />
+
+                    {/* Arc */}
+                    <Angle
+                        at={[0, 2]}
+                        fromRad={- Math.PI / 2 + thetat}
+                        toRad={- Math.PI / 2}
+                        radius={L}
+                        color={color("blue")}
+                        label="x"
+                        labelOffsetMultiplier={0.9}
+                    />
+
+                    {/* String */}
+                    <Line.Segment
+                        point1={[0, 2]}
+                        point2={[L * Math.sin(thetat), 2 - L * Math.cos(thetat)]}
+                    />
+
+                    {/* Bob */}
+                    <Point
+                        x={bobCoords[0]} y={bobCoords[1]}
+                        color={color("blue")}
+                    />
+
+                    {/* From bob FOR */}
+                    <Transform translate={bobCoords}>
+                        {/* Gravity vector */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={[0, -1]}
+                            color={color("red")}
+                        />
+
+                        {/* Angular acceleration */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={angularAccelCoords}
+                            color={color("green")}
+                        />
+
+                        {/* Connect the two */}
+                        <Line.Segment
+                            point1={[0, -1]}
+                            point2={angularAccelCoords}
+                            style="dashed"
+                        />
+                    </Transform>
+
+                    {/* Zoomed in */}
+                    <Transform translate={[6, 2]}>
+                        {/* Bob */}
+                        <Point
+                            x={0} y={0} color={color("blue")}
+                        />
+                        {/* Gravity vector */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={[0, -3]}
+                            color={color("red")}
+                        />
+                        <LaTeX
+                            at={lineLabel([0, 0], [0, -3], "left")}
+                            color={color("red")}
+                            tex="g"
+                        />
+
+                        {/* Angular acceleration */}
+                        <Vector
+                            tail={[0, 0]}
+                            tip={vec.scale(angularAccelCoords, 3)}
+                            color={color("green")}
+                        />
+                        <LaTeX
+                            at={lineLabel(
+                                [0, 0],
+                                angularAccelCoords,
+                                thetat > 0 ? "right" : "left"
+                            )}
+                            color={color("green")}
+                            tex="-g \sin(\theta)"
+                        />
+
+                        {/* Connect the two */}
+                        <Line.Segment
+                            point1={[0, -3]}
+                            point2={vec.scale(angularAccelCoords, 3)}
+                            style="dashed"
+                        />
+                        <LaTeX
+                            at={lineLabel(
+                                [0, -3],
+                                vec.scale(angularAccelCoords, 3),
+                                thetat > 0 ? "left" : "right",
+                                { sideOffset: 0.5 }
+                            )}
+                            tex="g \cos(\theta)"
+                        />
+
+                        {/* Theta angle */}
+                        <Angle
+                            at={[0, -3]}
+                            fromRad={Math.PI / 2}
+                            toRad={Math.PI / 2 + thetat}
+                            label="\theta"
+                        />
+
+                        {/* Right angle */}
+                        <Angle
+                            at={vec.scale(angularAccelCoords, 3)}
+                            fromRad={-Math.PI / 2 + thetat}
+                            toRad={thetat > 0 ? thetat : (thetat + Math.PI)}
+                            forceStraightAngle
+                        />
+
+                        {/* Text */}
+                        <LaTeX
+                            at={[0, -4.25]}
+                            tex="\text{Zoomed in}"
+                        />
+                        {/* Circle around whole thing to make it look like a magnifying lens*/}
+                        <Circle radius={2.5} center={[0, -1.25]} fillOpacity={0} />
+
+                    </Transform>
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <button
+                    className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`}
+                    onClick={startStop}
+                >
+                    {hasStarted ? "Stop" : "Start"}
+                </button>
+            </div>
+        </div>
+    )
+})()}
+
+Since we are dealing with the pure mathematical model of the simple pendulum, we can assume the mass of the bob is $1$ and the string is massless.
+
+We shall not consider the forces acting on the bob. For a more physical approach to this problem, see the Classical Mechanics section.
+
+All we need to know is that the bob is subject to gravity, which acts downwards. The force of gravity can be broken down into two components: one parallel to the direction of motion and one perpendicular to it.
+
+The component perpendicular to the direction of motion does not affect the motion of the bob. The component parallel to the direction of motion, which equals $\class{green}{g\sin(\theta)}$ is the one that causes the bob to accelerate.
+
+:::info Dot Products
+
+You can use something called the dot product here.
+
+The dot product sort of "projects" one vector onto another. It's a way to find the component of one vector in the direction of another.
+
+For two vectors $\va{a}$ and $\va{b}$, the dot product is:
+
+$$
+\begin{equation}
+\va{a} \cdot \va{b} = \norm{\text{$\va{a}$ projected onto $\va{b}$}} \norm{\va{b}}
+\end{equation}
+$$
+
+Therefore, we can write the component of $\va{g}$ in the direction of the bob as $\va{g} \cdot \va{u}$, where $\va{u}$ is a unit vector in the direction of the bob.
+
+:::
+
+The acceleration can be written as:
+
+$$
+\begin{equation}
+\frac{d^2x}{dt^2} = -g \sin(\theta)
+\end{equation}
+$$
+
+Since $x = L \theta$, we can write the equation in terms of $\theta$:
+
+$$
+\begin{align}
+\frac{d^2(L \theta)}{dt^2} &= -g \sin(\theta) \\
+L \dv[2]{\theta}{t} &= -g \sin(\theta) \\
+\dv[2]{\theta}{t} &= -\frac{g}{L} \sin(\theta)
+\end{align}
+$$
+
+:::info A more realistic model
+
+Air drag is a force that opposes the motion of the bob. It is proportional to the velocity of the bob and acts in the opposite direction.
+
+We can set the air drag force as $-b \dv{x}{t}$, where $b$ is the proportionality constant.
+
+The equation of motion becomes:
+
+$$
+\begin{align}
+\frac{d^2x}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{x}{t} \\
+\frac{d^2(L \theta)}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{(L \theta)}{t} \\
+L \dv[2]{\theta}{t} &= -\frac{g}{L} \sin(\theta) - b L \dv{\theta}{t} \\
+\dv[2]{\theta}{t} &= -\frac{g}{L} \sin(\theta) - b \dv{\theta}{t}
+\end{align}
+$$
+
+This DE, while more realistic, does not have an analytical solution.
+
+:::
+
+Notice how this DE has a second derivative.
+Just like how the "order" of an algebraic equation is the highest power of the variable, the order of a differential equation is the highest derivative present.
+
+This DE is a second-order DE because it has a second derivative.
+
+This DE will be covered in more detail in the Classical Mechanics section.
+
+## Summary
+
+Differential equations are extremely powerful tools that can be used to model a wide variety of systems.
+The main steps within the study of DEs are:
+
+- **Formulating DEs** - Understand the system you're modeling and formulate the DE accordingly.
+- **Solving DEs** - Solve the DE using various methods, such as separation of variables, substitution, and partial fractions.
+- **Interpreting DEs** - Understand the properties of the DE to gain an intuitive understanding of the system.
+
+Since many DEs cannot be solved analytically, numerical methods, such as Euler's method, are used to approximate the solution.
