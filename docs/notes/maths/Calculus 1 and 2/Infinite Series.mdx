@@ -1,0 +1,516 @@
+---
+sidebar_position: 9
+---
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import { FTOCProof1 } from "./Integration.mdx";
+import TOCInline from '@theme/TOCInline';
+
+# Infinite Series
+
+Infinite series are essentially sums of an infinite number of terms.
+There's a lot of interesting properties and theorems that come out of them.
+
+Although some courses cover infinite series before calculus, analysis of infinite series heavily involves calculus.
+Therefore, trying to understand infinite series without a solid understanding of calculus makes it difficult to grasp the full picture.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Philosophy of Infinite Series
+
+There's actually a lot of philosophy behind infinite series.
+
+Firstly, most philosophers agree that an actual infinite cannot exist in the physical world.
+This is because it leads to paradoxes, such as Hilbert's Hotel.
+
+Therefore, we treat them instead as _potential_ infinites.
+This means that we can keep adding terms to the series, but we never actually "reach" the infinite.
+
+Hold your hands out in front of you.
+
+Now, move them halfway together.
+Then, move them halfway again.
+
+You can keep doing this forever, but you'll never actually touch your hands together.
+There i0't an infinite number of points between your hands, but you can keep dividing the distance in half.
+
+This also means that when we say "the sum of the series **equals** $1$", we're not saying that the sum _is_ $1$, but that it _approaches_ $1$ as the number of terms approaches infinity.
+Perhaps this is a bit pedantic, but it's an important distinction.
+It is also probably one of the main reasons for the debate of whether or not $0.999\dots = 1$.
+
+## Convergence and Divergence
+
+The most important concept in infinite series is that of convergence and divergence.
+
+A series is said to converge if the sequence of partial sums converges to a finite limit.
+In other words, if the sum of the series approaches a finite number as the number of terms approaches infinity, then the series converges.
+
+A series is said to diverge if the sequence of partial sums does not converge to a finite limit.
+
+### Example Problem: Convergence of a Set
+
+> Consider the set of numbers:
+>
+> $$
+> \begin{equation}
+> \qty{1, -\frac{1}{2}, \frac{1}{3}, -\frac{1}{4}, \frac{1}{5}, -\frac{1}{6}, \dots}
+> \end{equation}
+> $$
+>
+> What does this set converge to?
+
+Let's first visualize this by plotting the terms of the series:
+
+<Mafs
+    viewBox={{
+        x: [1, 10],
+        y: [-1, 1]
+    }}
+>
+    <Coordinates.Cartesian />
+    {range(1, 20).map((n) => (
+        <Point x={n} y={n % 2 === 0 ? -1 / n : 1 / n} key={n} />
+    ))}
+</Mafs>
+
+Just visually, it seems like the series is converging to $0$.
+
+We can also show this through algebra.
+When considering series, we often use the concept of the limit of a sequence towards infinity.
+
+So first, we need to decide on an expression for the $n$-th term.
+We have the fraction $1/n$ when $n$ is odd, and $-1/n$ when $n$ is even.
+To add the sign, we can use $(-1)^n$.
+
+Therefore, the $n$-th term is:
+
+$$
+\begin{equation}
+a_n = \frac{(-1)^n}{n}
+\end{equation}
+$$
+
+Meaning, the set can be expressed as:
+
+$$
+\begin{equation}
+\qty{a_n}_{n=1}^{\infty}, \quad a_n = \frac{(-1)^n}{n}
+\end{equation}
+$$
+
+Now, we can find the limit of the sequence as $n$ approaches infinity:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} \frac{(-1)^n}{n} = 0
+\end{equation}
+$$
+
+### Example Problem: Convergence of Different Sequences (Informally)
+
+> Evaluate the convergence of the following sequences:
+>
+> 1. $\displaystyle a_n = \frac{(n + 8)(n + 1)}{n(n - 10)}$
+> 2. $\displaystyle b_n = \frac{e^n + 1}{e \cdot n + 1}$
+> 3. $\displaystyle c_n = \frac{n^2 + 1}{n + 1000}$
+> 4. $\displaystyle d_n = (-1)^n$
+>
+> [(Source)](https://www.khanacademy.org/math/ap-calculus-bc/bc-series-new/bc-10-1/v/identifying-sequence-convergence-divergence)
+
+We can evaluate the convergence of these sequences by finding the limit of the sequence as $n$ approaches infinity.
+
+1. $\displaystyle a_n = \frac{(n + 8)(n + 1)}{n(n - 10)}$
+
+    We can find the limit of this sequence by considering the degree of the numerator and denominator:
+
+    $$
+    \begin{equation}
+    \lim_{n \to \infty} \frac{(n + 8)(n + 1)}{n(n - 10)} = \lim_{n \to \infty} \frac{n^2 + 9n + 8}{n^2 - 10n}
+    \end{equation}
+    $$
+
+    Since both the numerator and denominator have the same degree, then the limit is the ratio of the leading coefficients, which is $1$.
+    Therefore, the sequence convergences.
+
+2. $\displaystyle b_n = \frac{e^n + 1}{e \cdot n + 1}$
+
+    Notice that the numerator has a $e^n$ term, which grows much faster than the $e \cdot n$ term in the denominator.
+    Therefore, the limit of the sequence is $\infty$, and the sequence diverges.
+
+3. $\displaystyle c_n = \frac{n^2 + 1}{n + 1000}$
+
+    Since the numerator has a higher degree ($n^2$) than the denominator ($n$), the limit of the sequence is $\infty$, and the sequence diverges.
+
+4. $\displaystyle d_n = (-1)^n$
+
+    This one is interesting.
+    As $n$ increases, the sequence alternates between $1$ and $-1$.
+    Although it's not unbounded, it doe0't converge to a single value.
+    Therefore, the sequence diverges.
+
+## Partial Sums
+
+Recall that the $n$th partial sum of a series is the sum of the first $n$ terms of the series.
+
+Let $S$ be an infinite series:
+
+$$
+\begin{equation}
+S = \sum_{n=1}^{\infty} a_n = a_1 + a_2 + a_3 + \dots
+\end{equation}
+$$
+
+The $n$th partial sum of $S$ is denoted by $S_n$ and is given by:
+
+$$
+\begin{equation}
+S_n = \sum_{i=1}^{n} a_i = a_1 + a_2 + \dots + a_n
+\end{equation}
+$$
+
+### Example Problem: Evaluating Partial Sums
+
+> The series $S$ is given by:
+>
+> $$
+> \begin{equation}
+> S = \sum_{n=1}^{\infty} \frac{1}{n(n + 1)}
+> \end{equation}
+> $$
+>
+> 1. Evaluate $S_{100}$.
+> 2. Find a general formula for $S_n$.
+
+The $n$th term of the series is given by:
+
+$$
+\begin{equation}
+a_n = \frac{1}{n(n + 1)}
+\end{equation}
+$$
+
+1. Of course we won't manually sum the first $100$ terms, so we'll manipulate the series a bit to hopefully find a pattern.
+
+    We can use partial fractions to split the series into two:
+
+    $$
+    \begin{align}
+    \frac{1}{n(n + 1)} &= \frac{A}{n} + \frac{B}{n + 1} \\
+    1 &= A(n + 1) + Bn
+    \end{align}
+    $$
+
+    Let $n = 0$:
+
+    $$
+    \begin{align}
+    1 &= A(1) + B(0) \\
+    A &= 1
+    \end{align}
+    $$
+
+    Let $n = -1$:
+
+    $$
+    \begin{align}
+    1 &= A(0) + B(-1) \\
+    B &= -1
+    \end{align}
+    $$
+
+    Therefore, the series can be expressed as:
+
+    $$
+    \begin{equation}
+    \frac{1}{n(n + 1)} = \frac{1}{n} - \frac{1}{n + 1}
+    \end{equation}
+    $$
+
+    Therefore, $S_{100}$ can be expressed as:
+
+    $$
+    \begin{align}
+    S_{100} &= \sum_{n=1}^{100} \qty(\frac{1}{n} - \frac{1}{n + 1}) \\
+    &= \qty(\frac{1}{1} - \frac{1}{2}) + \qty(\frac{1}{2} - \frac{1}{3}) + \dots + \qty(\frac{1}{100} - \frac{1}{101}) \\
+    &= \frac{1}{1} - \cancel{\frac{1}{2} + \frac{1}{2}} - \cancel{\frac{1}{3} + \frac{1}{3}} - \dots - \cancel{\frac{1}{100}} - \frac{1}{101} \\
+    &= 1 - \frac{1}{101} \\
+    &= \frac{100}{101}
+    \end{align}
+    $$
+
+2. We can generalize what we did above to find a general formula for $S_n$:
+
+    Using the same cancellation method as above, we can find that:
+
+    $$
+    \begin{align}
+    S_n &= \sum_{i=1}^{n} \qty(\frac{1}{i} - \frac{1}{i + 1}) \\
+    &= \qty(\frac{1}{1} - \frac{1}{2}) + \qty(\frac{1}{2} - \frac{1}{3}) + \dots + \qty(\frac{1}{n} - \frac{1}{n + 1}) \\
+    &= \frac{1}{1} - \cancel{\frac{1}{2} + \frac{1}{2}} - \cancel{\frac{1}{3} + \frac{1}{3}} - \dots - \cancel{\frac{1}{n}} - \frac{1}{n + 1} \\
+    &= 1 - \frac{1}{n + 1} \\
+    &= \frac{n}{n + 1}
+    \end{align}
+    $$
+
+### Example Problem: Identifying nth Term From Partial Sums
+
+> The $n$th partial sum of a series is given by:
+>
+> $$
+> \begin{equation}
+> S_n = \frac{n - 1}{n}
+> \end{equation}
+> $$
+>
+> Find the $n$th term of the series, $a_n$.
+
+The trick to this problem is to notice the relationship between the partial sum and the $n$th term:
+
+$$
+\begin{align}
+S_n &= a_1 + a_2 + \dots + a_{n - 1} + a_n \\
+- \quad S_{n - 1} &= a_1 + a_2 + \dots + a_{n - 1} \\
+\hline
+S_n - S_{n - 1} &= a_n
+\end{align}
+$$
+
+We can use this relationship to find the $n$th term of the series:
+
+$$
+\begin{align}
+a_n &= S_{\class{blue}{n}} - S_{\class{yellow}{n - 1}} \\
+&= \frac{\class{blue}{n} - 1}{\class{blue}{n}} - \frac{\class{yellow}{n - 1} - 1}{\class{yellow}{n - 1}} \\
+&= \frac{(n - 1)^2 - n(n - 2)}{n(n - 1)} \\
+&= \frac{\cancel{n^2 - 2n} + 1 - \cancel{n^2 + 2n}}{n(n - 1)} \\
+&= \frac{1}{n(n - 1)}
+\end{align}
+$$
+
+Therefore, the sum of the series is:
+
+$$
+\begin{equation}
+S = \sum_{n=1}^{\infty} \frac{1}{n(n - 1)}
+\end{equation}
+$$
+
+## To Infinity and Beyond
+
+We've dealt with partial sums, that is, the sum of the first $n$ terms of a series.
+But what happens when we sum an infinite number of terms?
+
+Generally, we can say that the sum of an infinite series is the limit of $S_n$ as $n$ approaches infinity.
+If this limit exists and is finite, then the series converges, and diverges otherwise.
+
+### Example Problem: Sum of an Infinite Series
+
+> Find the sum of the series:
+>
+> $$
+> \begin{equation}
+> \sum_{n=1}^{\infty} \frac{n^3}{n^2 + 1}
+> \end{equation}
+> $$
+
+We can find the sum of this series by finding the limit of the sequence as $n$ approaches infinity:
+
+$$
+\begin{align}
+\lim_{n \to \infty} \frac{n^3}{n^2 + 1} &= \lim_{n \to \infty} \frac{n^3}{n^2} \\
+&= \lim_{n \to \infty} n \\
+&= \infty
+\end{align}
+$$
+
+Therefore, the series diverges.
+
+## The Geometric Series
+
+export function VisualGeometricSeries({ q = 0.5, qrLabels = false }) {
+    const r = 1 - q;
+    const xScale = 5;
+    return (
+        <Mafs
+            viewBox={{
+                x: [1, 5],
+                y: [-4, 1]
+            }}
+        >
+            <Transform scale={[xScale, 1]}>
+                {range(1, 4).map((i) => {
+                    const yOff = -1 * i;
+                    const xOff = 1 - r ** (i - 1);
+                    const rectHeight = 0.5;
+                    return (
+                        <Transform scale={[r ** (i - 1), 1]} translate={[xOff, yOff]} key={i}>
+                            <Polygon
+                                points={[
+                                    [0, 0],
+                                    [q, 0],
+                                    [q, -rectHeight],
+                                    [0, -rectHeight],
+                                ]}
+                                color={color("green")}
+                            />
+                            {qrLabels ?
+                                <LaTeX
+                                    tex={"q" + (i > 1 ? `r^{${i - 1}}` : "")}
+                                    at={[q / 2, -(rectHeight / 2) - 0.4]}
+                                />
+                                : <LaTeX
+                                    tex={String(q ** i)}
+                                    at={[q / 2, -(rectHeight / 2) - 0.4]}
+                                />
+                            }
+
+                            <Polygon
+                                points={[
+                                    [q, 0],
+                                    [1, 0],
+                                    [1, -rectHeight],
+                                    [q, -rectHeight],
+                                ]}
+                                color={color("blue")}
+                            />
+                        </Transform>
+                    )
+                })}
+            </Transform>
+        </Mafs>
+    )
+}
+
+The geometric series is a special type of series where each term is a constant multiple of the previous term.
+It's very intuitive to understand.
+
+In fact, what's shown below is my own independent discovery of the geometric series.
+
+Let's start with $1$. We can split this into $1/2 + 1/2$.
+
+We can then split one of the $1/2$s into $1/4 + 1/4$, and so on:
+
+$$
+\begin{align}
+1 &= \frac{1}{2} + \frac{1}{2} \\
+&= \frac{1}{2} + \qty(\frac{1}{4} + \frac{1}{4}) \\
+&= \frac{1}{2} + \qty(\frac{1}{4} + \qty(\frac{1}{8} + \frac{1}{8})) \\
+&= \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16} + \dots
+\end{align}
+$$
+
+Therefore, we can write:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} \qty(\frac{1}{2})^n = 1
+\end{equation}
+$$
+
+<VisualGeometricSeries q={0.5} qrLabels={false} />
+
+Let's see if we can think of another example.
+Start with $1$ again, but this time split it into $9/10 + 1/10$, and then split the $1/10$ into $9/100 + 1/100$, and so on:
+
+$$
+\begin{align}
+1 &= \frac{9}{10} + \frac{1}{10} \\
+&= \frac{9}{10} + \qty(\frac{9}{100} + \frac{1}{100}) \\
+&= \frac{9}{10} + \qty(\frac{9}{100} + \qty(\frac{9}{1000} + \frac{1}{1000})) \\
+&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{9}{10000} + \dots
+\end{align}
+$$
+
+Therefore, we can write:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} \qty(\frac{9}{10})^n = 1
+\end{equation}
+$$
+
+And in other words,
+
+$$
+\begin{equation}
+0.999\dots = 1
+\end{equation}
+$$
+
+We can imagine generalizing this. Instead of exact quantities to split $1$ into, we can use variables.
+
+Let $1 = q + r$, where both are less than 1. Then, we can generalize the geometric series from the previous example:
+
+$$
+\begin{align}
+1 &= \frac{9}{10} + \frac{1}{10} &&= q + r \\
+&= \frac{9}{10} + \frac{9}{100} + \frac{1}{100} &&= q + qr + r^2 \\
+&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{1}{1000} &&= q + qr + qr^2 + r^3 \\
+&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{9}{10000} + \dots &&= q + qr + qr^2 + qr^3 + \dots
+\end{align}
+$$
+
+<VisualGeometricSeries q={0.4} qrLabels={true} />
+
+As such, we can write:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} q \cdot r^n = 1
+\end{equation}
+$$
+
+We can extract the $q$ from the series and rewrite it as $1 - r$:
+
+$$
+\begin{equation}
+(1 - r) \sum_{n=0}^{\infty} r^n = 1
+\end{equation}
+$$
+
+And after rearranging, we get:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} r^n = \frac{1}{1 - r}
+\end{equation}
+$$
+
+This is the general formula. Sometimes you also multiply everything by some $a$ to get:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r}
+\end{equation}
+$$
+
+One reason it's called a "geometric" series is that there's many clever geometric visualizations of different geometric series.
+
+We need to keep in mind some of the conditions for this formula to hold.
+
+Let's consider the geometric series when $r = 1$:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} 1^n = \frac{1}{1 - 1} = \frac{1}{0}
+\end{equation}
+$$
+
+This is undefined, so the formula does not hold. Then, let's consider when $r = 1.1$:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} 1.1^n = \frac{1}{1 - 1.1} = \frac{1}{-0.1}
+\end{equation}
+$$
+
+This does not make sense either, since according to the formula, the sum of the series is $-10$.
+
+Therefore, the formula only holds when $-1 < r < 1$, or $|r| < 1$.

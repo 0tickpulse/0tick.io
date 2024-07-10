@@ -1,0 +1,108 @@
+---
+sidebar_position: 8
+---
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import { FTOCProof1 } from "./Integration.mdx";
+import TOCInline from '@theme/TOCInline';
+
+# Parametric Equations, Polar Coordinates, and Vector-Valued Functions
+
+Up until now, we've dealt with functions of the form $y = f(x)$ in the Cartesian plane.
+However, there are other ways to represent curves.
+
+Choosing a different system can greatly simplify many calculations, so it's important to be familiar with these other systems.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Parametric Equations
+
+A parametric equation is a way to represent a curve by giving the $x$ and $y$ coordinates as functions of a third variable, usually $t$.
+
+Consider a ball pushed from a ledge.
+
+export function ParametricEquationsBall({ showCoords = false }) {
+    const { time, start, stop } = useStopwatch();
+
+    const [hasStarted, setHasStarted] = useState(false);
+
+    function startStop() {
+        hasStarted ? stop() : start();
+        setHasStarted(!hasStarted);
+    }
+
+    const vx = 1;
+    const g = 3;
+    const vy0 = 0;
+    const y0 = 0;
+
+    // function point(t) {
+    //     return [
+    //         vx * t,
+    //         y0 + vy0 * t - 0.5 * g * t ** 2
+    //     ]
+    // }
+    const x = (t) => vx * t;
+    const y = (t) => y0 + vy0 * t - 0.5 * g * t ** 2;
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [-3, 5],
+                        y: [-3, 2],
+                    }}
+                >
+                    {showCoords && <Coordinates.Caratesian />}
+                    <Polygon
+                        points={[
+                            [-10, -0.5],
+                            [-10, 0],
+                            [0, 0],
+                            [0, -0.5],
+                        ]}
+                    />
+                    <Point
+                        x={x(time)}
+                        y={y(time)}
+                    />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <button
+                    className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`}
+                    onClick={startStop}
+                >
+                    {hasStarted ? "Stop" : "Start"}
+                </button>
+            </div>
+        </div>
+    )
+}
+
+<ParametricEquationsBall />
+
+You could describe the motion by having the $x$ coordinate be the horizontal distance the ball has traveled and the $y$ coordinate be the height of the ball at that time.
+
+At some time $t$, the ball will be at some point with an $x$ coordinate and a $y$ coordinate.
+Hence, we can make two functions, $x(t)$ and $y(t)$, that describe the ball's position at time $t$.
+These two functions are called parametric equations.
+
+The $x$ motion is constant, so $x(t) = v_x t$. The $y$ motion follows the equation derived previously [here](./Applications%20of%20Integration#motion).
+
+Hence, the equations for the ball are:
+
+$$
+\begin{align}
+x(t) &= v_x t \\
+y(t) &= -\frac{1}{2} g t^2 + v_y t + y_0
+\end{align}
+$$

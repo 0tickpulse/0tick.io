@@ -4,5 +4,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "types": ["docusaurus-plugin-sass"]
-  }
+  },
+  "exclude": [
+    "node_modules",
+    "build",
+  ]
 }

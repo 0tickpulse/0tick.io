@@ -1,3 +1,5 @@
+import { vec } from "mafs";
+
 /**
  * Creates a bezier curve from a start point to an end point with a control point.
  *
@@ -7,7 +9,7 @@
  * @param t The time value of the curve.
  * @returns
  */
-export function bezierCurve(start: [number, number], end: [number, number], control: [number, number], t: number): [number, number] {
+export function bezierCurve(start: vec.Vector2, end: vec.Vector2, control: vec.Vector2, t: number): vec.Vector2 {
     const [x0, y0] = start;
     const [x1, y1] = control;
     const [x2, y2] = end;
@@ -26,26 +28,16 @@ export function bezierCurve(start: [number, number], end: [number, number], cont
  * @param direction
  */
 export function lineLabel(
-    from: [number, number],
-    to: [number, number],
+    from: vec.Vector2,
+    to: vec.Vector2,
     direction: "left" | "right",
     { sideOffset = 0.3, forwardOffset = 0 }: Partial<Record<"sideOffset" | "forwardOffset", number>> = {}
-): [number, number] {
-    const [x1, y1] = from;
-    const [x2, y2] = to;
-    let normalizedDifference = [x2 - x1, y2 - y1];
-    const diffLength = Math.sqrt(normalizedDifference[0] ** 2 + normalizedDifference[1] ** 2);
-    normalizedDifference = [normalizedDifference[0] / diffLength, normalizedDifference[1] / diffLength];
-    const midX = (x1 + x2) / 2;
-    const midY = (y1 + y2) / 2;
-    const dx = x2 - x1;
-    const dy = y2 - y1;
-    const length = Math.sqrt(dx ** 2 + dy ** 2);
-    const nx = dy / length;
-    const ny = -dx / length;
-    const side = direction === "left" ? -1 : 1;
-    return [
-        midX + nx * side * sideOffset + normalizedDifference[0] * forwardOffset,
-        midY + ny * side * sideOffset + normalizedDifference[1] * forwardOffset,
-    ];
+): vec.Vector2 {
+    const vector = vec.sub(to, from);
+    const perpendicular = vec.normalize([vector[1], -vector[0]]);
+
+    const sideVec = vec.scale(perpendicular, (direction === "left" ? -1 : 1) * sideOffset);
+    const forwardVec = vec.add(vec.scale(vector, 0.5), vec.scale(vec.withMag(vector, 1), forwardOffset));
+
+    return vec.add(vec.add(from, forwardVec), sideVec);
 }

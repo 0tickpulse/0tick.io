@@ -1,0 +1,364 @@
+---
+sidebar_position: 7
+---
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import { FTOCProof1 } from "./Integration.mdx";
+import TOCInline from '@theme/TOCInline';
+
+# Applications of Integration
+
+At first, integration might seem like a fun party trick to find the area under a curve. However, it has many, **many**, applications in the real world.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Average Value of a Function
+
+Usually, when we talk about the average of a set of numbers, we think of a discrete set of values, like the average of $1, 2, 3, 4, 5$.
+Calculus is all about extending discrete concepts to continuous ones, so we can also find the average value of a continuous function.
+
+Consider a function $f(t)$, splitting it into $n$ intervals of width $\Delta t$.
+
+{(() => {
+    const n = 5;
+    const f = (x) => x * (5 - x);
+    return (
+        <Mafs
+            viewBox={{
+                x: [-1, 6],
+                y: [-1, 6]
+            }}
+        >
+            <Coordinates.Cartesian />
+            <RiemannApproximation
+                f={(x) => x * (5 - x)}
+                lb={0}
+                ub={3}
+                n={n}
+            />
+        </Mafs>
+    )
+})()}
+
+The average value of a set of numbers is the sum of the numbers divided by the count:
+
+$$
+\begin{equation}
+\text{Average} = \frac{\sum_{i} f(t_i)}{n}
+\end{equation}
+$$
+
+Let's consider what $n$ is in a discrete context. It is the number of intervals ($\Delta t$) we split the function into.
+Therefore, it can be represented as the length of the interval divided by $\Delta t$:
+
+$$
+\begin{equation}
+n = \frac{T_1 - T_0}{\Delta t}
+\end{equation}
+$$
+
+Therefore, the average value of a function is:
+
+$$
+\begin{equation}
+\text{Average} = \frac{\sum_{i} f(t_i)}{\frac{T_1 - T_0}{\Delta t}} = \frac{\sum_{i} f(t_i) \Delta t}{T_1 - T_0}
+\end{equation}
+$$
+
+The numerator should look familiar: it is the area under the curve of $f(t)$ from $T_0$ to $T_1$.
+
+Therefore, the average value of a function is:
+
+$$
+\begin{equation}
+\text{Average} = \frac{\int_{T_0}^{T_1} f(t) \dd{t}}{T_1 - T_0}
+\end{equation}
+$$
+
+### Mean Value Theorem for Integrals
+
+Recall the Mean Value Theorem for Derivatives:
+
+For a function $f(x)$ that is continuous on the interval $[a, b]$ and differentiable on $(a, b)$, there exists a point $c$ in $(a, b)$ such that:
+
+$$
+\begin{equation}
+\dv{f}{c}(c) = \frac{f(b) - f(a)}{b - a}
+\end{equation}
+$$
+
+Basically, it means that somewhere in the interval, the average slope is equal to the exact slope at that point.
+
+The key point is that the numerator $f(b) - f(a)$ should look familiar;
+
+$$
+\begin{equation}
+f(b) - f(a) = \int_{a}^{b} f'(x) \dd{x}
+\end{equation}
+$$
+
+If we let $g(x) = f'(x)$, then the Mean Value Theorem for Integrals states that:
+
+$$
+\begin{equation}
+g(c) = \frac{1}{b - a} \int_{a}^{b} g(x) \dd{x}
+\end{equation}
+$$
+
+The conceptual way to think about this is that at some point in the interval, the area of the rectangle with the height of the function is equal to the area under the curve.
+
+<FTOCProof1 showDx={true} showMVT={true} />
+
+## Motion
+
+Calculus was originally developed to solve problems in physics, particularly motion.
+Newton developed his version of calculus to describe the motion of objects, especially to tackle the most significant problem of the time: the motion of the planets.
+Simultanously, Leibniz developed his version of calculus, known as "infinitesimal calculus", which is the basis for modern calculus.
+
+That's why it's essential to learn about motion in calculus, even if you're not interested in physics.
+
+For the purposes of this section, we'll consider motion in one dimension.
+Multi-dimensional motion is a bit more complicated, but the concepts are the same.
+Multi-dimensional motion is covered in Classical Mechanics, a physics course.
+
+### Displacement, Velocity, and Acceleration
+
+In physics, we often talk about the displacement, velocity, and acceleration of an object.
+These are all related to each other, and calculus can help us understand these relationships.
+
+First, let's define these terms:
+
+- **Displacement** is the change in position of an object. It is a vector quantity, meaning it has both magnitude and direction.
+  Since we're considering motion in one dimension, we can represent displacement as a scalar.
+  You can think of displacement as the distance between the starting and ending points of an object's motion.
+  For example, if you have a car that starts at position $x_0$ and ends at position $x_1$, the displacement is $x_1 - x_0$.
+- **Velocity** is the rate of change of displacement. It tells us how fast an object is moving and in what direction.
+  Velocity is also a vector quantity, but in one dimension, it can be represented as a scalar.
+- **Acceleration** is the rate of change of velocity. It tells us how quickly an object's velocity is changing.
+  Acceleration is also a vector quantity, but in one dimension, it can be represented as a scalar.
+
+Let's consider motion of a ball in one dimension. Throw a ball up in the air, and let it fall back down.
+
+The displacement of the ball at time $t$ is given by the function $s(t)$. This can be thought of the height of the ball above where it was thrown.
+
+We'll consider the motion of the ball from time $t = 0$ to time $t = T$.
+
+According to physics, objects fall under the influence of gravity, which causes them to accelerate downwards at a constant rate, usually denoted by $g$.
+Therefore, we can write:
+
+$$
+\begin{equation}
+a(t) = -g
+\end{equation}
+$$
+
+Next, we can find the velocity of the ball at time $t$ by integrating the acceleration function:
+
+$$
+\begin{align}
+v(T) - v(0) &= \int_{0}^{T} a(t) \dd{t} \\
+v(T) - v(0) &= \int_{0}^{T} -g \dd{t} \\
+v(T) - v(0) &= -gT \\
+v(T) &= -gT + v(0)
+\end{align}
+$$
+
+$v(0)$ refers to the initial velocity of the ball, and can be denoted by $v_0$ or $u$.
+
+Finally, we can find the displacement of the ball at time $T$ by integrating the velocity function:
+
+$$
+\begin{align}
+s(T) - s(0) &= \int_{0}^{T} v(t) \dd{t} \\
+s(T) - s(0) &= \int_{0}^{T} (-gT + v_0) \dd{t} \\
+s(T) - s(0) &= -\frac{1}{2}gT^2 + v_0T \\
+s(T) &= -\frac{1}{2}gT^2 + v_0T + s(0)
+\end{align}
+$$
+
+This equation is very common, and because of the expressions $s$, $u = v_0$, $v$, $a$, and $t$, it is known as the "SUVAT" equations.
+
+
+:::info Alternate notation
+
+Some textbooks (such as [MIT's OCW 8.01SC](https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/)) use a different notation for the time variables.
+Instead of using $t$ as the dummy variable for the integrals, they use $t'$.
+And instead of using $T$ as the final time, they just use $t$:
+
+$$
+\begin{align}
+v(t) - v(0) &= \int_{0}^{t} a(t') \dd{t'} \\
+v(t) - v(0) &= \int_{0}^{t} -g \dd{t'} \\
+v(t) - v(0) &= -gt \\
+v(t) &= -gt + v(0)
+\end{align}
+$$
+
+:::
+
+This concept is heavily discussed [here](../../science/physics/classical/1dkinematics).
+The study of motion is usually known as kinematics. It is distinct from dynamics, which studies the forces that cause motion instead of the motion itself.
+
+## Integrals as Net Change
+
+One of the most important applications of integrals is to find the net change of a function.
+Consider a water tank that is being filled at some rate, and emptied at some other rate.
+
+We can represent the rate of change of the water level as a function $f(t)$, defined as the difference between the rate of inflow and the rate of outflow.
+
+Integrating this function from some time interval will give us how much the water level has changed in that time interval.
+In other words, it yields the "net change" of the water level.
+
+### Example Problem: Revenues
+
+> A company makes the revenue of $r(t)$ dollars per week (where $t$ is the number of weeks since the company started).
+> In the zeroth week, the company made $r(0) = 1000$ dollars.
+> Interpret the following equation:
+>
+> $$
+> \begin{equation}
+> 1000 + \int_{1}^{5} r(t) \dd{t} = 5940
+> \end{equation}
+> $$
+
+Let's first interpret the integral part of the equation. Since $r(t)$ is the _rate_ of money made, the integral of $r(t)$ from $1$ to $5$ is the _total_ money made from week $1$ to week $5$.
+The zeroth week is already given as $1000$ dollars, so the meaning of the equation is:
+
+The total money made from the zeroth week to the fifth week is $5940$ dollars.
+
+### Example Problem: Population of a City
+
+> Let the population of a city grow at a rate of $r(t) = 200 e^{0.5t}$ people per year (where $t$ is the number of years since the city was founded).
+> At $t = 2$, the population of the city was $1000$ people.
+>
+> 1. Write an expression for the population of the city at $t = 5$.
+> 2. Evaluate the expression.
+
+1. The rate of change of the population is given by $r(t)$, and the population at $t = 2$ is $1000$ people.
+    To get the remaining population from $t = 2$ to $t = 5$, we need to integrate the rate of change of the population from $2$ to $5$.
+    Then, we add the population at $t = 2$ to get the total population at $t = 5$.
+
+    $$
+    \begin{equation}
+    1000 + \int_{2}^{5} r(t) \dd{t}
+    \end{equation}
+    $$
+
+2. To evaluate the expression, we can make use of the integral's adjacency;
+
+    $$
+    \begin{align}
+    1000 + \int_{2}^{5} r(t) \dd{t} &= \int_{0}^{2} r(t) \dd{t} + \int_{2}^{5} r(t) \dd{t} \\
+    &= \int_{0}^{5} r(t) \dd{t}
+    \end{align}
+    $$
+
+    Next, we can evaluate the integral:
+
+    $$
+    \begin{align}
+    \int_{0}^{5} r(t) \dd{t} &= \int_{0}^{5} 200 e^{0.5t} \dd{t} \\
+    &= 400 \int_{0}^{5} \frac{1}{2} e^{0.5t} \dd{t} \\
+    &= 400 \left[ 2 e^{0.5t} \right]_{0}^{5} \\
+    &= 400 \left[ 2 e^{2.5} - 2 e^{0} \right] \\
+    &= 400 \left[ 2 e^{2.5} - 2 \right] \\
+    &\approx 8946
+    \end{align}
+    $$
+
+    Therefore, the population of the city at $t = 5$ is approximately $8946$ people.
+
+## Area Between Curves
+
+We already know that the integral of a function $f(x)$ from $a$ to $b$ gives us the area under the curve of $f(x)$ from $a$ to $b$.
+We can generalize this concept. Instead of saying "under the curve", we can say "between the curve and the $x$-axis".
+This way, we can change "$x$-axis" to another function $g(x)$.
+
+Recall that the area under a curve can be approximated by a Riemann sum, i.e. a sum of rectangles.
+Consider two functions, $f(x)$ and $g(x)$:
+
+{(() => {
+    const f = (x) => 2 * Math.sin(x) + 2;
+    const g = (x) => x / 3;
+
+    const c = 1;
+    const dx = 0.3;
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [0, 3],
+                y: [0, 4]
+            }}
+        >
+                <Coordinates.Cartesian />
+                <Plot.OfX y={g} style="dashed" opacity={0.25} color={color("blue")} />
+                <Plot.OfX y={f} style="dashed" opacity={0.25} color={color("green")} />
+                <Plot.Parametric xy={(t) => [t, g(t)]} t={[0, 3.56]} color={color("blue")} />
+                <Plot.Parametric xy={(t) => [t, f(t)]} t={[0, 3.56]} color={color("green")} />
+
+                <Polygon
+                    points={[
+                        [c, 0],
+                        [c, g(c)],
+                        [c + dx, g(c)],
+                        [c + dx, 0],
+                    ]}
+                    color={color("blue")}
+                />
+                <Polygon
+                    points={[
+                        [c, g(c)],
+                        [c, f(c)],
+                        [c + dx, f(c)],
+                        [c + dx, g(c)],
+                    ]}
+                    color={color("green")}
+                />
+
+                <Vector tail={[c - 0.1, g(c)]} tip={[c - 0.1, 0]} />
+                <Vector tail={[c - 0.1, g(c)]} tip={[c - 0.1, f(c)]} />
+                <LaTeX tex="f(x)" at={[c - 0.4, f(c) / 2]} />
+
+                <Vector tail={[c + dx + 0.1, g(c)]} tip={[c + dx + 0.1, 0]} />
+                <Vector tail={[c + dx + 0.1, 0]} tip={[c + dx + 0.1, g(c)]} />
+                <LaTeX tex="g(x)" at={[c + dx + 0.4, g(c) / 2]} />
+
+                <Vector tail={[c + dx + 0.1, g(c)]} tip={[c + dx + 0.1, f(c)]} />
+                <Vector tail={[c + dx + 0.1, f(c)]} tip={[c + dx + 0.1, g(c)]} />
+                <LaTeX tex="f(x) - g(x)" at={[c + dx + 0.8, (f(c) + g(c)) / 2]} />
+        </Mafs>
+    )
+})()}
+
+The height of the rectangle between the curve is $f(x) - g(x)$, and the width is $\Delta x$.
+
+Therefore, the Riemann sum for the area between the curves is:
+
+$$
+\begin{equation}
+R = \sum_{i} (f(x_i) - g(x_i)) \Delta x
+\end{equation}
+$$
+
+Taking the limit as $\Delta x \to 0$ gives us the integral:
+
+$$
+\begin{equation}
+\int_{a}^{b} (f(x) - g(x)) \dd{x} = \int_{a}^{b} f(x) \dd{x} - \int_{a}^{b} g(x) \dd{x}
+\end{equation}
+$$
+
+This integral gives us the area between the curves $f(x)$ and $g(x)$ from $a$ to $b$.
+
+### Example Problem: Composite Areas
+
+
+

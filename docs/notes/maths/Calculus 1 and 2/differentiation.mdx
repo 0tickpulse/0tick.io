@@ -11,6 +11,9 @@ import TOCInline from '@theme/TOCInline';
 # Differentiation
 
 Differentiation is the process of finding the _derivative_ of a function.
+Essentially, while we know how to find the slope of a straight line, the derivative allows us to find the slope of a curve at any point.
+
+In other words, what is the speed right now? What is the rate of change of a function at a certain point?
 
 ## Table of Contents
 
@@ -76,12 +79,12 @@ export function SimpleSlope() {
                 />
             </Mafs>
             <MathEquation>{String.raw`
-                \begin{align}
+                \begin{split}
                     \text{Slope} &= \frac{\Delta y}{\Delta x} = \frac{y_2 - y_1}{x_2 - x_1} \\
                     &= \frac{${x2.point[1].toFixed(2)} - ${x1.point[1].toFixed(2)}}{${x2.point[0].toFixed(2)} - ${x1.point[0].toFixed(2)}} \\
                     &= \frac{${(x2.point[1] - x1.point[1]).toFixed(2)}}{${(x2.point[0] - x1.point[0]).toFixed(2)}} \\
                     &= \frac{1}{2}
-                \end{align}
+                \end{split}
             `}</MathEquation>
         </>
     );
@@ -136,6 +139,14 @@ f'(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
 \end{equation}
 $$
 
+Another way to write this is to have the second point as some other variable $a$, so that the derivative at $x$ is:
+
+$$
+\begin{equation}
+f'(x) = \lim_{a \to x} \frac{f(a) - f(x)}{a - x}
+\end{equation}
+$$
+
 :::info Symbols
 
 -   Some textbooks use $h$ instead of $\Delta x$ for some reason.
@@ -167,9 +178,90 @@ $$
 
 The fraction on the left is the _differential operator_.
 
-While some textbooks suggest that $\dv{y}{x}$ shouldn't be thought of as a fraction, it's often much more intuitive to think of it as one.
-Even though it's not a fraction in the strictest sense, it behaves like one in many ways, and it is indeed a slope after all.
-Furthermore, when $\dd{y}$ and $\dd{x}$ are seen by themselves, they are much easier to understand. This is important especially in implicit differentiation.
+### Is the Derivative a Fraction?
+
+Back in Newton's and Leibniz's time, the derivative was defined in terms of infinitesimals, which are quantities that are smaller than any finite quantity but not zero.
+This led to the idea that the derivative was a fraction, with $\dd{y}$ and $\dd{x}$ being the numerator and denominator.
+It is common in introductory calculus courses to treat the derivative as a ratio, especially due to its intuitive nature.
+In the future, we will see that treating the derivative as a fraction is very beneficial in many cases, like implicit differentiation, related rates, substitution, separation of variables, and more.
+
+However, this notion of the derivative as a fraction is not entirely accurate.
+In modern mathematics, calculus is built on Analysis, which is the rigorous study of limits and continuity.
+The derivative, as we've shown, is defined as a limit, not a fraction.
+The concept of an infinitesimal also fell out of favor due to its lack of rigor,
+and is replaced by the Epsilon-Delta definition of limits (except in non-standard analysis and smooth infinitesimal analysis).
+
+When we manipulate them like fractions, what we're really doing "under the hood" is applying the rules of differentiation, like its linearity, chain rule, and product rule.
+Limits often play nicely with these rules, which is why treating the derivative as a fraction works a lot of the time.
+
+A really simple example of where this heuristic fails is in partial derivatives, but we're getting ahead of ourselves.
+
+## Tangent Line Equations
+
+As we've seen, the derivative of a function at a point is the slope of the tangent line at that point.
+Using that slope, as well as a point, we can find the equation of the tangent line.
+
+Recall the point-slope form of a line:
+
+$$
+\begin{equation}
+y - y_1 = m(x - x_1)
+\end{equation}
+$$
+
+where $m$ is the slope of the line, and $(x_1, y_1)$ is a point on the line.
+
+:::info Derivation of the Point-Slope Form
+
+Given a point $(x_1, y_1)$ and a slope $m$, the equation of the line is:
+
+$$
+\begin{equation}
+y = mx + b
+\end{equation}
+$$
+
+We need to find the $y$-intercept $b$. Since the line passes through $(x_1, y_1)$:
+
+$$
+\begin{equation}
+y_1 = mx_1 + b
+\end{equation}
+$$
+
+Therefore:
+
+$$
+\begin{equation}
+b = y_1 - mx_1
+\end{equation}
+$$
+
+Thus, the equation of the line is:
+
+$$
+\begin{equation}
+y = mx + y_1 - mx_1
+\end{equation}
+$$
+
+And rearranging gives:
+
+$$
+\begin{equation}
+y - y_1 = m(x - x_1)
+\end{equation}
+$$
+
+:::
+
+We can set the point to be some $x = a$ and $y = f(a)$, and the slope to be $\dv{f}{x}(a)$:
+
+$$
+\begin{equation}
+y - f(a) = \dv{f}{x}(a)(x - a)
+\end{equation}
+$$
 
 ## Differentiation of Sums of Functions
 
@@ -497,11 +589,13 @@ We can split the change in area into three parts:
 Therefore, the change in the product can be expressed as:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dd(f(x) \cdot g(x)) &= \class{red}{(f(x) \cdot \dd(g(x)))} \\
 &+ \class{yellow}{(g(x) \cdot \dd(f(x)))} \\
 &+ \class{blue}{(\dd(f(x)) \cdot \dd(g(x)))} \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The last term, $\dd(f(x)) \cdot \dd(g(x))$, will approach $0$ because it is the product of two infinitesimally small changes.
@@ -538,9 +632,9 @@ To measure how much $f(g(x))$ changes when you turn the first knob, you can meas
 Another way to think of it is through algebraic manipulation, assuming $y = f(g(x))$:
 
 $$
-\begin{align}
+\begin{equation}
 \dv{y}{x} = \dv{y}{g} \cdot \dv{g}{x}
-\end{align}
+\end{equation}
 $$
 
 ### Proof
@@ -551,30 +645,34 @@ assuming that $f$ and $g$ are differentiable at some point $x$.
 The derivative of $y$ with respect to $x$ is:
 
 $$
-\begin{align}
+\begin{equation}
 \dv{y}{x} = \lim_{\Delta x \to 0} \frac{f(g(x + \Delta x)) - f(g(x))}{\Delta x}
-\end{align}
+\end{equation}
 $$
 
 We can rewrite this as:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \frac{\Delta u}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Since $f$ is differentiable at $u$, as $\Delta x \to 0$, $\Delta u \to 0$. Thus:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= \lim_{{\class{red}{\cancel{\Delta x \to 0}}} \Delta u \to 0} \frac{\Delta y}{\Delta u} \cdot \lim_{\Delta x \to 0} \frac{\Delta u}{\Delta x} \\
 &= \dv{y}{u} \cdot \dv{u}{x} \\
 &= f'(u) \cdot g'(x) \\
 &= f'(g(x)) \cdot g'(x)
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ## Powers
@@ -616,11 +714,13 @@ Where $\binom{n}{k}$ is the _binomial coefficient_, which is what you get when y
 Applying this to the limit:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 f'(x) &= \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{\sum_{k = 0}^{n} \binom{n}{k} x^{n - k} (\Delta x)^k - x^n}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{1}{\Delta x} \qty( \cancel{x^n} + \binom{n}{1} x^{n - 1} (\Delta x)^1 + \ldots + \binom{n}{n} x^0 (\Delta x)^n - \cancel{x^n} ) \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The key part is that after canceling out the $x^n$ terms, the only term that remains is the one where $k = 1$.
@@ -649,13 +749,15 @@ $$
 To find the derivative, we can use the chain rule:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 f'(x) &= \dv{x} \exp(r \ln{x}) \\
 &= \exp(r \ln{x}) \cdot \dv{x} (r \ln{x}) \\
 &= x^r \cdot \dv{x} (r \ln{x}) \\
 &= x^r \cdot r \cdot \frac{1}{x} \\
 &= r \cdot x^{r - 1}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 A few things to note:
@@ -693,17 +795,83 @@ The quotient rule is discussed later [here](#quotient-rule).
 The derivatives of $\tan{x}$, $\cot{x}$, $\sec{x}$, and $\csc{x}$ can be derived using the quotient rule. For example, to find the derivative of $\tan{x}$:
 
 $$
-\begin{align}
-\dv{x} \tan{x} &= \dv{x} \frac{\sin{x}}{\cos{x}} \\
-\dv{x} \frac{u}{v} &= \frac{v \dv{u}{x} - u \dv{v}{x}}{v^2} \\
-\therefore \dv{x} \tan{x} &= \frac{\cos{x} \cos{x} - (\sin{x})(-\sin{x})}{\cos^2{x}} \\
+\begin{equation}
+\dv{x} \frac{u}{v} = \frac{v \dv{u}{x} - u \dv{v}{x}}{v^2}
+\end{equation}
+$$
+
+Plugging in $u = \sin{x}$ and $v = \cos{x}$:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{x} \tan{x} =\dv{x} \frac{\sin{x}}{\cos{x}} &= \frac{\cos{x} \cos{x} - (\sin{x})(-\sin{x})}{\cos^2{x}} \\
 &= \frac{\cos^2{x} + \sin^2{x}}{\cos^2{x}} \\
 &= \frac{1}{\cos^2{x}} \\
 &= \sec^2{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 :::
+
+### Proof of Derivative of Sine
+
+The proof involves two assumed limits:
+
+$$
+\begin{align}
+\lim_{\theta \to 0} \frac{\sin{\theta}}{\theta} &= 1 \\
+\lim_{\theta \to 0} \frac{1 - \cos{\theta}}{\theta} &= 0
+\end{align}
+$$
+
+The first one is proved using squeeze theorem, and the second one can be proved simply like this:
+
+$$
+\begin{equation}
+\begin{split}
+\lim_{\theta \to 0} \frac{1 - \cos{\theta}}{\theta} &= \lim_{\theta \to 0} \frac{1 - \cos{\theta}}{\theta} \cdot \frac{1 + \cos{\theta}}{1 + \cos{\theta}} \\
+&= \lim_{\theta \to 0} \frac{1 - \cos^2{\theta}}{\theta (1 + \cos{\theta})} \\
+&= \lim_{\theta \to 0} \frac{\sin^2{\theta}}{\theta (1 + \cos{\theta})} = \lim_{\theta \to 0} \qty( \frac{\sin{\theta}}{\theta} \cdot \frac{\sin{\theta}}{1 + \cos{\theta}} ) \\
+&= \lim_{\theta \to 0} \frac{\sin{\theta}}{\theta} \cdot \lim_{\theta \to 0} \frac{\sin{\theta}}{1 + \cos{\theta}} \\
+&= 1 \cdot 0 \\
+&= 0
+\end{split}
+\end{equation}
+$$
+
+To prove that the derivative of $\sin{x}$ is $\cos{x}$, we can use the limit definition of the derivative:
+
+$$
+\begin{equation}
+\dv{x} \sin{x} = \lim_{\Delta x \to 0} \frac{\sin(x + \Delta x) - \sin{x}}{\Delta x}
+\end{equation}
+$$
+
+Next, we can use the angle sum formula for sine:
+
+$$
+\begin{align}
+\sin(a + b) &= \sin{a} \cos{b} + \cos{a} \sin{b} \\
+\sin(x + \Delta x) &= \sin{x} \cos{\Delta x} + \cos{x} \sin{\Delta x}
+\end{align}
+$$
+
+Substituting this into the limit definition:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{x} \sin{x} &= \lim_{\Delta x \to 0} \frac{\sin{x} \cos{\Delta x} + \cos{x} \sin{\Delta x} - \sin{x}}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{\sin{x} (\cos{\Delta x} - 1) + \cos{x} \sin{\Delta x}}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{\sin{x} (\cos{\Delta x} - 1)}{\Delta x} + \lim_{\Delta x \to 0} \frac{\cos{x} \sin{\Delta x}}{\Delta x} \\
+&= \sin{x} \lim_{\Delta x \to 0} \frac{\cos{\Delta x} - 1}{\Delta x} + \cos{x} \lim_{\Delta x \to 0} \frac{\sin{\Delta x}}{\Delta x} \\
+&= \sin{x} \cdot 0 + \cos{x} \cdot 1 \\
+&= \cos{x}
+\end{split}
+\end{equation}
+$$
 
 ## Differentiability and Continuity
 
@@ -740,14 +908,22 @@ $$
 Let's suppose we want to find this limit below, assuming $f(x)$ is differentiable at $x = a$:
 
 $$
-\begin{align}
-\lim_{x \to a} f(x) - f(a) &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot (x - a) \\
+\begin{equation}
+\begin{split}
+\lim_{x \to a} (f(x) - f(a)) &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot (x - a) \\
 &= \lim_{x \to a} \frac{f(x) - f(a)}{x - a} \cdot \lim_{x \to a} (x - a) \\
 &= \dv{f}{x}(a) \cdot 0 \\
 &= 0 \\
-\lim_{x \to a} f(x) - f(a) &= 0 \\
-\therefore \lim_{x \to a} f(x) &= f(a)
-\end{align}
+\end{split}
+\end{equation}
+$$
+
+Therefore:
+
+$$
+\begin{equation}
+\lim_{x \to a} f(x) = f(a)
+\end{equation}
 $$
 
 Hence, if $f(x)$ is differentiable at $x = a$, then it is continuous at $x = a$.
@@ -778,19 +954,21 @@ To differentiate this, we can treat $r$ as some constant and $x^2 + y^2$ as some
 Just like how we took small changes in $x$ to find the derivative of $x^2$, we can take small changes in $x$ and $y$ to find the derivative of $P(x, y)$.
 
 $$
-\begin{align}
-\dd{P}= 2x \cdot\dd{x}+ 2y \cdot\dd{y}
-\end{align}
+\begin{equation}
+\dd{P} = 2x \cdot\dd{x}+ 2y \cdot\dd{y}
+\end{equation}
 $$
 
 Remember that $P$ should be constant, so $\dd{P}= 0$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 2x \cdot\dd{x}+ 2y \cdot\dd{y} &= 0 \\
 2x \cdot\dd{x}&= -2y \cdot\dd{y} \\
 \dv{y}{x} &= -\frac{x}{y}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 We can also use implicit differentiation to find the derivative of the natural logarithm.
@@ -798,11 +976,13 @@ We can also use implicit differentiation to find the derivative of the natural l
 Given $y = \ln{x}$, we can rewrite this as $e^y = x$. Then, we can once again think of moving along both the $x$ and $y$ axes and find the derivative of $e^y$ with respect to $x$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 e^y &= x \\
 e^y\dd{y} &=\dd{x}\\
 \dv{y}{x} &= \frac{1}{e^y} = \frac{1}{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ## Quotient Rule
@@ -813,12 +993,14 @@ It can be derived using information from the above sections.
 Given $f(x) = \frac{g(x)}{h(x)}$, the derivative of $f(x)$ is:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{x} \qty( \frac{g(x)}{h(x)} ) &= \dv{x} \qty( g(x) \frac{1}{h(x)} ) \\
 &= g'(x) \frac{1}{h(x)} + g(x) \dv{x} \qty( \frac{1}{h(x)} ) \\
 &= g'(x) \frac{1}{h(x)} - g(x) \frac{1}{h(x)^2} h'(x) \\
 &= \frac{g'(x) h(x) - g(x) h'(x)}{h(x)^2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Therefore, the derivative of $\frac{g(x)}{h(x)}$ is:
@@ -836,36 +1018,42 @@ $e^x$ is a special function because its derivative is itself.
 This can be shown via implicit differentiation:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 y &= e^x \\
 \ln{y} &= x \\
 \dv{x} \ln{y} &= \dv{x} x \\
 \frac{1}{y} \dv{y}{x} &= 1 \\
 \dv{y}{x} &= y = e^x
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Alternatively, you can use the limit definition of the derivative:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{x} e^x &= \lim_{\Delta x \to 0} \frac{e^{x + \Delta x} - e^x}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{e^x e^{\Delta x} - e^x}{\Delta x} \\
 &= \lim_{\Delta x \to 0} \frac{e^x (e^{\Delta x} - 1)}{\Delta x} \\
 &= e^x \lim_{\Delta x \to 0} \frac{e^{\Delta x} - 1}{\Delta x} \\
 &= e^x 1 \\
 &= e^x
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 To find the derivative of $a^x$, where $a$ is some constant, you can use the chain rule:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{x} a^x &= \dv{x} e^{x \ln{a}} \\
 &= e^{x \ln{a}} \ln{a} \\
 &= a^x \ln{a}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ### Example: Derivative of $x^x$
@@ -873,12 +1061,14 @@ $$
 To find the derivative of $x^x$, you can rewrite it as $e^{x \ln{x}}$ and then differentiate it:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{x} x^x &= \dv{x} e^{x \ln{x}} \\
 &= e^{x \ln{x}} \ln{x} + e^{x \ln{x}} \frac{1}{x} \\
 &= x^x \ln{x} + \frac{x^x}{x} \\
 &= x^x (\ln{x} + 1)
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ## Derivatives of Logarithmic Functions
@@ -890,14 +1080,16 @@ To find the derivative of $\log_a{x}$, you can use the change of base formula.
 Start with $\log_a{x} = y$, then rewrite it as $a^y = x$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \log_a{x} &= y \\
 a^y &= x \\
 \ln{a^y} &= \ln{x} \\
 y \ln{a} &= \ln{x} \\
 y &= \frac{\ln{x}}{\ln{a}} \\
 \log_a{x} &= \frac{\ln{x}}{\ln{a}}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Crucially, $\ln$ can be of any base.
@@ -905,10 +1097,12 @@ Crucially, $\ln$ can be of any base.
 Using this, you can find the derivative of $\log_a{x}$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{x} \log_a{x} &= \dv{x} \frac{\ln{x}}{\ln{a}} \\
 &= \frac{1}{x \ln{a}}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ## Derivatives of Inverse Trigonometric Functions
@@ -931,24 +1125,28 @@ To find the derivative of $\arcsin{x}$, you can use implicit differentiation.
 Start with $y = \arcsin{x}$, then rewrite it as $\sin{y} = x$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 y &= \arcsin{x} \\
 \sin{y} &= x \\
 \dv{x} \sin{y} &= \dv{x} x \\
 \cos{y} \dv{y}{x} &= 1 \\
 \dv{y}{x} &= \frac{1}{\cos{y}} \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 To find $\cos{y}$, you can use the Pythagorean identity $\sin^2{y} + \cos^2{y} = 1$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \sin^2{y} + \cos^2{y} &= 1 \\
 \cos^2{y} &= 1 - \sin^2{y} \\
 \cos{y} &= \sqrt{1 - \sin^2{y}} \\
 \cos{y} &= \sqrt{1 - x^2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Thus:
@@ -964,7 +1162,8 @@ The derivative of $\arcsec{x}$ can be found similarly.
 Another example; to find the derivative of $y = \arctan{x}$, you can rewrite it as $\tan{y} = x$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 y &= \arctan{x} \\
 \tan{y} &= x \\
 \dv{x} \tan{y} &= \dv{x} x \\
@@ -972,17 +1171,20 @@ y &= \arctan{x} \\
 (1 + \tan^2{y}) \dv{y}{x} &= 1 \\
 (1 + x^2) \dv{y}{x} &= 1 \\
 \dv{y}{x} &= \frac{1}{1 + x^2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 We used a trigonometric identity, that is $\sec^2{y} = 1 + \tan^2{y}$. Here's how it's derived:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \sin^2{y} + \cos^2{y} &= 1 \\
 \frac{\sin^2{y}}{\cos^2{y}} + \frac{\cos^2{y}}{\cos^2{y}} &= \frac{1}{\cos^2{y}} \\
 \tan^2{y} + 1 &= \sec^2{y}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The derivatives of the other inverse trigonometric functions can be found similarly.
@@ -1013,7 +1215,7 @@ The unit hyperbola and unit circle are shown below:
     <Coordinates.Cartesian />
     <Plot.Parametric
         xy={(t) => [Math.cosh(t), Math.sinh(t)]}
-        t={[0, 15]}
+        t={[-15, 15]}
     />
 
     <Plot.Parametric

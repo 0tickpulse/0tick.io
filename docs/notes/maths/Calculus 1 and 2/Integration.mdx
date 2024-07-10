@@ -466,69 +466,6 @@ $$
 \end{equation}
 $$
 
-## Average Value of a Function
-
-Usually, when we talk about the average of a set of numbers, we think of a discrete set of values, like the average of $1, 2, 3, 4, 5$.
-Calculus is all about extending discrete concepts to continuous ones, so we can also find the average value of a continuous function.
-
-Let's once again consider the velocity function $v(t)$, and split it into $n$ intervals of width $\Delta t$.
-
-{(() => {
-    const n = 5;
-    const f = (x) => x * (5 - x);
-    return (
-        <Mafs
-            viewBox={{
-                x: [-1, 6],
-                y: [-1, 6]
-            }}
-        >
-            <Coordinates.Cartesian />
-            <RiemannApproximation
-                f={(x) => x * (5 - x)}
-                lb={0}
-                ub={3}
-                n={n}
-            />
-        </Mafs>
-    )
-})()}
-
-The average value of a set of numbers is the sum of the numbers divided by the count:
-
-$$
-\begin{equation}
-\text{Average} = \frac{\sum_{i} v(t_i)}{n}
-\end{equation}
-$$
-
-Let's consider what $n$ is in a discrete context. It is the number of intervals ($\Delta t$) we split the function into.
-Therefore, it can be represented as the length of the interval divided by $\Delta t$:
-
-$$
-\begin{equation}
-n = \frac{T_1 - T_0}{\Delta t}
-\end{equation}
-$$
-
-Therefore, the average value of a function is:
-
-$$
-\begin{equation}
-\text{Average} = \frac{\sum_{i} v(t_i)}{\frac{T_1 - T_0}{\Delta t}} = \frac{\sum_{i} v(t_i) \Delta t}{T_1 - T_0}
-\end{equation}
-$$
-
-The numerator should look familiar: it is the area under the curve of $v(t)$ from $T_0$ to $T_1$.
-
-Therefore, the average value of a function is:
-
-$$
-\begin{equation}
-\text{Average} = \frac{\int_{T_0}^{T_1} v(t) \dd{t}}{T_1 - T_0} = \frac{s(T_1) - s(T_0)}{T_1 - T_0}
-\end{equation}
-$$
-
 ## Riemann Sums
 
 When we approximated the area under the curve of $v(t)$, we used rectangles. Now we will go into more detail about this process.

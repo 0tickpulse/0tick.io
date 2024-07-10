@@ -24,45 +24,7 @@ Essentially, get a function, find the slope at some point $a$, and pretend the f
 Given a function $f(x)$, the slope at that line is $\dv{f}{x}$.
 Thus, the slope of the tangent line at $x = a$ is $\dv{f}{x}(a)$.
 
-To find the equation of the tangent line, we use the point-slope form.
-
-The point-slope form is a way to find the equation of a line given a point $(x_1, y_1)$ and a slope $m$:
-
-:::info Derivation of the Point-Slope Form
-
-Given a point $(x_1, y_1)$ and a slope $m$, the equation of the line is:
-
-$$
-\begin{equation}
-y = mx + b
-\end{equation}
-$$
-
-We need to find the $y$-intercept $b$. Since the line passes through $(x_1, y_1)$:
-
-$$
-\begin{equation}
-y_1 = mx_1 + b
-\end{equation}
-$$
-
-Therefore:
-
-$$
-\begin{equation}
-b = y_1 - mx_1
-\end{equation}
-$$
-
-Thus, the equation of the line is:
-
-$$
-\begin{equation}
-y = mx + y_1 - mx_1
-\end{equation}
-$$
-
-And rearranging gives:
+To find the equation of the tangent line, we use the point-slope form:
 
 $$
 \begin{equation}
@@ -70,13 +32,13 @@ y - y_1 = m(x - x_1)
 \end{equation}
 $$
 
-:::
-
 Using the point-slope form, our slope $m$ is $\dv{f}{x}$ and the point $(x_1, y_1)$ is $(a, f(a))$.
 Thus, the equation of the tangent line is:
 
 $$
+\begin{equation}
 y - f(a) = \dv{f(a)}{x}(x - a)
+\end{equation}
 $$
 
 Known as linear approximation of the function $f(x)$ near $x = a$.
@@ -90,7 +52,9 @@ Trying to do calculations with this function can be difficult, but we can approx
 The derivative of $f(x)$ can be found using the chain rule:
 
 $$
+\begin{equation}
 \dv{f}{x} = \dv{f}{u} \cdot \dv{u}{x} = \frac{1}{2\sqrt{1 + x}} \cdot 1 = \frac{1}{2\sqrt{1 + x}}
+\end{equation}
 $$
 
 And at $x = 0$:
@@ -263,19 +227,23 @@ As we decrease the interval, the value of the function approaches a certain valu
 The value of the numerator and denominator are calculated below:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 d(\cos(\pi x / 2)) &= -\frac{\pi}{2} \sin\qty(\frac{\pi x}{2}) \dd{x} \\
 d(x - 1) &= \dd{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 And when we plug in $x = 1$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 d(\cos(\pi / 2)) &= -\frac{\pi}{2} \sin\qty(\frac{\pi}{2})\dd{x}= -\frac{\pi}{2}\dd{x}\\
 d(x - 1) &=\dd{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Remember that the value of our limit is the limit of this ratio as $\dd{x}$ approaches $0$.
@@ -283,10 +251,12 @@ Remember that the value of our limit is the limit of this ratio as $\dd{x}$ appr
 Thus, the limit is:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \lim_{x \to 1} \frac{\cos(\pi x / 2)}{x - 1} &= \lim_{\dd{x}\to 0} \frac{-(\pi / 2) \cancel\dd{x}}{\cancel\dd{x}} \\
 &= \lim_{\dd{x}\to 0} -\frac{\pi}{2} = -\frac{\pi}{2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 To generalize this, instead of using these functions, let's calculate the limit of $\frac{f(x)}{g(x)}$ as $x$ approaches $a$.
@@ -295,10 +265,12 @@ If the limit is indeterminate, that is, $\frac{0}{0}$, we can use the same appro
 The numerator and denominators are calculated as:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \text{Numerator} &= \dv{(f(a))}{x}\dd{x}\\
 \text{Denominator} &= \dv{(g(a))}{x}\dd{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 As such, the limit is the ratio of the two derivatives:
@@ -329,10 +301,12 @@ $$
 Thus, the rule is applicable. Differentiating the numerator and denominator:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{(\sin(x))}{x} &= \cos(x) \\
 \dv{(x)}{x} &= 1
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 And plugging in $x = 0$:
@@ -344,6 +318,144 @@ $$
 $$
 
 Thus, the limit is $1$.
+
+## Related Rates
+
+In many problems, quantities are related to each other.
+For example, the volume of a sphere is related to its radius, and the rate at which the volume changes is related to the rate at which the radius changes.
+These are known as related rates problems.
+
+To solve these problems, we can use differentiation to find the rate at which one quantity changes with respect to another.
+
+Generally, in these problems, you are presented with a rate of change of one quantity $\dv{a}{t}$ and asked to find the rate of change of another quantity $\dv{b}{t}$.
+$b$ is often a function of $a$, so we can use the chain rule to find the rate of change of $b$ with respect to $t$.
+
+This is a bit abstract, so below are some examples to illustrate this.
+
+### Example Problem: Sphere Volume
+
+> Consider a sphere with radius $r$.
+> The volume of a sphere is given by the following formula:
+>
+> $$
+> \begin{equation}
+> V = \frac{4}{3}\pi r^3
+> \end{equation}
+> $$
+>
+> If the radius of the sphere is increasing at a rate of $2 \text{ cm/s}$, find the rate at which the volume of the sphere is changing when the radius is $5 \text{ cm}$.
+
+The rate is given by $\dv{V}{t}$, and the rate of change of the radius is given by $\dv{r}{t}$. We are given that $\dv{r}{t} = 2 \text{ cm/s}$.
+We can first create an expression for $\dv{V}{t}$:
+
+$$
+\begin{equation}
+\dv{V}{t} = \dv{t} \qty(\frac{4}{3}\pi r^3) = 4\pi r^2 \dv{r}{t}
+\end{equation}
+$$
+
+Notice that **we treat $r$ as a function of $t$**, as the radius is changing with respect to time, so we use the chain rule.
+Next, we plug in the value of $\dv{r}{t}$ and $r$:
+
+$$
+\begin{equation}
+\dv{V}{t} = 4\pi \class{blue}{r}^2 \class{green}{\dv{r}{t}} = 4\pi \cdot \class{blue}{(5 \text{ cm})}^2 \cdot \class{green}{2 \text{ cm/s}} = 100\pi \text{ cm}^3/\text{s}
+\end{equation}
+$$
+
+### Example Problem: Ladder Sliding Down a Wall
+
+> A ladder is $10 \text{ m}$ long and is leaning against a wall.
+> The bottom of the ladder is sliding away from the wall at a rate of $2 \text{ m/s}$.
+>
+> 1. How fast is the top of the ladder sliding down the wall when the bottom of the ladder is $6 \text{ m}$ away from the wall?
+> 2. How fast is the angle between the ladder and the wall changing at that time?
+
+This is a classic related rates problem shown in many textbooks and courses.
+It's nice because it has a very clear _real_ application, so it is easy to understand for students.
+
+The ladder is a right-angled triangle, with the wall forming one side, the ground forming the other side, and the ladder forming the hypotenuse.
+
+We can set some variables:
+
+- $\class{blue}{x(t)}$ is the distance from the bottom of the ladder to the wall.
+- $\class{yellow}{y(t)}$ is the distance from the top of the ladder to the ground.
+- $l = 10 \text{ m}$ is the length of the ladder.
+- We are given $\dv{x}{t} = 2 \text{ m/s}$.
+
+export function ExampleProblemLadderSlidingDownAWall() {
+    const [time, setTime] = useState(0);
+
+    const x0 = 6;
+    const xFunc = (t) => x0 + 2 * t;
+    const yFunc = (t) => Math.sqrt(100 - xFunc(t) ** 2);
+
+    const x = xFunc(time);
+    const y = yFunc(time);
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [0, 8],
+                        y: [0, 8]
+                    }}
+                >
+                    <Line.Segment point1={[0, 0]} point2={[10, 0]} style="dashed" />
+                    <Line.Segment point1={[0, 0]} point2={[0, 10]} style="dashed" />
+
+                    <Line.Segment point1={[0, 0]} point2={[x, 0]} color={color("blue")} />
+                    <Line.Segment point1={[0, 0]} point2={[0, y]} color={color("yellow")} />
+                    <Line.Segment point1={[x, 0]} point2={[0, y]} />
+
+                    <LaTeX tex="x(t)" at={lineLabel([0, 0], [x, 0])} />
+                    <LaTeX tex="y(t)" at={lineLabel([0, 0], [0, y], "left", { sideOffset: 0.4 })} />
+                    <LaTeX tex="l = 10 \text{ m}" at={lineLabel([x, 0], [0, y], "right", { sideOffset: 1 })} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                {/* Slider */}
+                <input
+                    type="range"
+                    min="0"
+                    max="2"
+                    step="0.01"
+                    value={time}
+                    onChange={(e) => setTime(parseFloat(e.target.value))}
+                />
+            </div>
+        </div>
+    )
+}
+
+<ExampleProblemLadderSlidingDownAWall />
+
+1. Consider the triangle formed by the ladder, the wall, and the ground.
+    By the Pythagorean theorem, we have:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \class{blue}{x(t)}^2 + \class{yellow}{y(t)}^2 &= l^2 \\
+    \dv{t}(\class{blue}{x(t)}^2 + \class{yellow}{y(t)}^2) &= \dv{t}(l^2) \\
+    2\class{blue}{x(t)}\dv{x}{t} + 2\class{yellow}{y(t)}\dv{y}{t} &= 0 \\
+    \class{yellow}{y(t)}\dv{y}{t} &= -\class{blue}{x(t)}\dv{x}{t} \\
+    \dv{y}{t} &= -\frac{\class{blue}{x(t)}}{\class{yellow}{y(t)}}\dv{x}{t}
+    \end{split}
+    \end{equation}
+    $$
+
+    We are given that $\dv{x}{t} = 2 \text{ m/s}$, and we can find $\dv{y}{t}$ when $\class{blue}{x(t)} = 6 \text{ m}$:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \dv{y}{t} = -\frac{\class{blue}{x(t)}}{\class{yellow}{y(t)}}\dv{x}{t} &= -\frac{\class{blue}{6 \text{ m}}}{\class{yellow}{\sqrt{100 - 6^2 \text{ m}}}}(2 \text{ m/s}) \\
+    &= -\frac{6 \text{ m}}{\sqrt{64 \text{ m}^2}}(2 \text{ m/s}) = -\frac{6 \text{ m}}{8 \text{ m}}(2 \text{ m/s}) = -\frac{3}{2} \text{ m/s}
+    \end{split}
+    \end{equation}
+    $$
 
 ## Mean Value Theorem
 
@@ -373,10 +485,18 @@ It just means that it's uncertain.
 
 ### Proof
 
+The proof of the mean value theorem involves these steps:
+
+1. We find the average slope of the function over the interval $[a, b]$.
+2. We create a new function $g(x) = f(x) - mx$, where $m$ is the average slope.
+3. Using Rolle's theorem, we find a point where the slope of $g(x)$ is $0$.
+4. Then we show that the slope of $g(x)$ at that point is equal to the average slope.
+
 Taking the expression above (which is the average slope of the function), we get the slope of a line that intersects $(a, f(a))$ and $(b, f(b))$.
 
 Let's define a new function $g(x) = f(x) - mx$, where $m$ is a constant.
 Given that $f$ is continuous and differentiable, $g$ is also continuous and differentiable.
+We choose $m$ such that $g(a) = g(b)$:
 
 $$
 \begin{equation}
@@ -387,10 +507,12 @@ $$
 Solving for $m$ gives:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 f(a) - ma &= f(b) - mb \\
 m &= \frac{f(b) - f(a)}{b - a}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 According to Rolle's theorem, there must be a point on the graph where it is flat (horizontal), that is, $(\exists c \in (a, b)) \, \dv{g}{x}(c) = 0$.
@@ -398,11 +520,13 @@ According to Rolle's theorem, there must be a point on the graph where it is fla
 Based on the definition of $g(x)$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{g}{x}(c) &= \dv{f}{x}(c) - m = 0 \\
 \dv{f}{x}(c) &= m \\
 \dv{f}{x}(c) &= \frac{f(b) - f(a)}{b - a}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ### Example Problem
@@ -542,6 +666,41 @@ To find the concavity of a function, we can use the second derivative;
 
 - If $\frac{d^2f}{dx^2} > 0$, the function is concave up.
 - If $\frac{d^2f}{dx^2} < 0$, the function is concave down.
+
+### Inflection Points
+
+Inflection points are points on a function where the concavity changes.
+
+For example, consider the function $f(x) = \sin(x)$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => Math.sin(x)} />
+</Mafs>
+
+Notice how, graphically, the function alternates between being concave up and concave down.
+When $y > 0$, the function is concave up, and when $y < 0$, the function is concave down.
+
+The points where the concavity changes are the inflection points. And in this case, the inflection points are when $y = 0$.
+
+To identify inflection points mathematically, we can use the second derivative.
+Specifically, the inflection points are where the second derivative is $0$.
+
+For the function $f(x) = \sin(x)$, the second derivative is:
+
+$$
+\begin{equation}
+\frac{d^2f}{dx^2} = -\sin(x)
+\end{equation}
+$$
+
+Setting this equal to $0$ gives:
+
+$$
+\begin{equation}
+-\sin(x) = 0 \implies x = 0, \pi, 2\pi, \ldots = n\pi, \, n \in \mathbb{Z}
+\end{equation}
+$$
 
 ## Critical Points
 
@@ -693,10 +852,12 @@ $$
 In an increasing interval, the derivative is positive:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 5x^4 - 12x^3 &> 0 \\
 x^3(5x - 12) &> 0
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 To solve an inequality like this, take the advantage of the fact that the equality has one side being $0$.
@@ -706,18 +867,44 @@ Since the left side is a product of two terms, the product is positive when both
 
 As such, either $x^3 > 0$ and $5x - 12 > 0$, or $x^3 < 0$ and $5x - 12 < 0$.
 
-- The first case, $x^3 > 0$ and $5x - 12 > 0$, gives us $x > 0$ and $x > \frac{12}{5}$. Values of $x$ that satisfy $x > \frac{12}{5}$ is a subset of $x > 0$, meaning that $x > 0$ implies $x > \frac{12}{5}$ but not the other way around. Therefore, the increasing interval is $x > \frac{12}{5}$.
-- The second case, $x^3 < 0$ and $5x - 12 < 0$, gives us $x < 0$ and $x < \frac{12}{5}$. Values of $x$ that satisfy $x < 0$ is a subset of $x < \frac{12}{5}$, meaning that the decreasing interval is $x < 0$.
+{/* - The first case, $x^3 > 0$ and $5x - 12 > 0$, gives us $x > 0$ and $x > \frac{12}{5}$. Values of $x$ that satisfy $x > \frac{12}{5}$ is a subset of $x > 0$, meaning that $x > 0$ implies $x > \frac{12}{5}$ but not the other way around. Therefore, the increasing interval is $x > \frac{12}{5}$.
+- The second case, $x^3 < 0$ and $5x - 12 < 0$, gives us $x < 0$ and $x < \frac{12}{5}$. Values of $x$ that satisfy $x < 0$ is a subset of $x < \frac{12}{5}$, meaning that the decreasing interval is $x < 0$. */}
+
+For the first case:
+
+$$
+\begin{equation}
+\begin{split}
+x^3 > 0 &\implies x > 0 \\
+5x - 12 > 0 &\implies x > \frac{12}{5} \\
+x > 0 \land x > \frac{12}{5} &\implies x > \frac{12}{5}
+\end{split}
+\end{equation}
+$$
+
+And for the second case:
+
+$$
+\begin{equation}
+\begin{split}
+x^3 < 0 &\implies x < 0 \\
+5x - 12 < 0 &\implies x < \frac{12}{5} \\
+x < 0 \land x < \frac{12}{5} &\implies x < 0
+\end{split}
+\end{equation}
+$$
 
 Thus, the increasing intervals are $x > \frac{12}{5}$ and $x < 0$.
 
 In a decreasing interval, the derivative is negative:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 5x^4 - 12x^3 &< 0 \\
 x^3(5x - 12) &< 0
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 This inequality can be interpreted as the product of two terms being **negative**, meaning that one term is positive and the other is negative.
@@ -853,11 +1040,13 @@ The function is continuous over the entire domain $x > 0$, so we can find the ab
 As always, we start by finding the critical points of the function, which are the solutions to $\dv{f}{x} = 0$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{f}{x}(x) &= \dv{x}(x^2 \ln(x)) = 2x \ln(x) + x \\
 &= x(2 \ln(x) + 1) = 0 \\
 \therefore x &= 0, e^{-1/2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The function is not defined at $x = 0$, so we can ignore this value. The critical point of the function is then $x = e^{-1/2}$.
@@ -865,10 +1054,12 @@ The function is not defined at $x = 0$, so we can ignore this value. The critica
 Next, we can use the second derivative to determine if this is a maximum or minimum point.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{d^2f}{dx^2}(x) &= \dv{x}(2x \ln(x) + x) = 2 \ln(x) + 2 \\
 \frac{d^2f}{dx^2}(e^{-1/2}) &= 2 \ln(e^{-1/2}) + 2 = 2\qty(\frac{-1}{2}) + 2 = 1
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Since the second derivative is positive, the function is concave up, and $x = e^{-1/2}$ is a minimum point.
@@ -900,22 +1091,26 @@ In other words, it combines everything we've learned so far.
 To solve this problem, we need to find the profit function, which is the difference between the revenue and cost functions.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 P(x) &= R(x) - C(x) \\
 &= (100x - x^2) - (50 + 10x) \\
 &= 90x - x^2 - 50 \\
 &= -x^2 + 90x - 50
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Next, we need to find the critical points of the profit function.
 
 The derivative of $P(x)$ is:
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{P}{x}(x) &= \dv{x}(-x^2 + 90x - 50) \\
 &= -2x + 90
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Setting this equal to $0$ gives us the critical point(s) of the function:
@@ -933,10 +1128,12 @@ To determine if this is a maximum or minimum point, we can use the second deriva
 The second derivative of $P(x)$ is:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{d^2P}{dx^2}(x) &= \dv{x}(-2x + 90) \\
 &= -2
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Since the second derivative is negative, the function is concave down, and $x = 45$ is a maximum point.
@@ -987,11 +1184,13 @@ $$
 Next, we need to find the critical points of the area function, and then identify if it's a maximum or minimum point.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{A}{w}(w) &= \dv{w}(50w - w^2) = 50 - 2w \\
 50 - 2w &= 0 \implies w = 25 \\
 \frac{d^2A}{dw^2}(w) &= \dv{w}(50 - 2w) = -2
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Since the second derivative is negative, the function is concave down, and $w = 25$ is a maximum point.

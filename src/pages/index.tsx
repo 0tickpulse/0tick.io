@@ -1,9 +1,9 @@
-import React, { ReactNode, useEffect, useState } from "react";
-import clsx from "clsx";
 import Link from "@docusaurus/Link";
 import useDocusaurusContext from "@docusaurus/useDocusaurusContext";
+import Timeline from "@site/src/components/timeline/Timeline";
 import Layout from "@theme/Layout";
 import ThemedImage from "@theme/ThemedImage";
+import React, { ReactNode, useEffect, useState } from "react";
 import { FaDiscord, FaGithub } from "react-icons/fa6";
 import styles from "./index.module.scss";
 
@@ -69,7 +69,7 @@ export default function Home(): JSX.Element {
                 </div>
                 <div className={styles.row}>
                     <h2>Stuff I've worked on</h2>
-                    <div className={styles.items}>
+                    <div className={styles["horizontal-item-list"]}>
                         <PortfolioItem
                             title="Megizen"
                             description="Interop between the ModelEngine and Denizen plugins for Minecraft."
@@ -113,6 +113,36 @@ export default function Home(): JSX.Element {
                                 src: "/img/linesofcode_on_mythicanalyzer.png",
                                 alt: "Lines of code command performed on the mythic-analyzer repo",
                             }}
+                        />
+                    </div>
+                    <div>
+                        <h2>Work experience</h2>
+                        {/* <div className="container">
+                            <div className="row">
+                                <div className="col col--4">
+                                    <h3>AMQ Semiconductor</h3>
+                                </div>
+                                <div className="col col--8">
+                                    <p>Worked on a Rust CLI program to convert BallMap data formats between XLSX and CSV.</p>
+                                </div>
+                            </div>
+                        </div> */}
+                        <Timeline
+                            position="right"
+                            events={[
+                                {
+                                    title: "AMQ Semiconductor",
+                                    description: "Worked on a Rust CLI program to convert BallMap data formats between XLSX and CSV.",
+                                },
+                                {
+                                    title: "AMQ Semiconductor",
+                                    description: "Worked on a Rust CLI program to convert BallMap data formats between XLSX and CSV.",
+                                },
+                                {
+                                    title: "AMQ Semiconductor",
+                                    description: "Worked on a Rust CLI program to convert BallMap data formats between XLSX and CSV.",
+                                },
+                            ]}
                         />
                     </div>
                 </div>

@@ -1157,6 +1157,37 @@ Always understand the meaning of each term in any equation outside of the algebr
 
     Therefore, the constant of proportionality for $\ce{^{14}C}$ is $\lambda \approx 0.000121 \text{ years}^{-1}$.
 
+### Example Problem: Newton's Law of Cooling
+
+Another scenario where exponential models are used is in Newton's Law of Cooling.
+
+Newton observed that the rate of cooling of an object is proportional to the difference in temperature between the object and its surroundings;
+
+$$
+\begin{equation}
+\dv{T}{t} = -k(T - T_s)
+\end{equation}
+$$
+
+Where $T(t)$ is the temperature of the object at time $t$, $T_s$ is the temperature of the surroundings, and $k$ is a constant of proportionality.
+
+First, we assume that $T_s$ is constant. This is a reasonable assumption for many scenarios, such as a cup of coffee cooling in a room; the room is so big that the cup won't warm the room up.
+
+We can solve this DE using separation of variables:
+
+$$
+\begin{align}
+\dv{T}{t} &= -k(T - T_s) \\
+\frac{\dd{T}}{T - T_s} &= -k \dd{t} \\
+\int \frac{\dd{T}}{T - T_s} &= -k \int \dd{t} \\
+\ln\abs{T - T_s} &= -kt + C \\
+T - T_s &= e^{-kt + C} \\
+T - T_s &= e^C e^{-kt} \\
+T - T_s &= Ce^{-kt} \\
+T &= Ce^{-kt} + T_s
+\end{align}
+$$
+
 ## Logistic Growth Models
 
 Things can grow, but they can't grow infinite; there's always a limit to growth.
@@ -1460,6 +1491,134 @@ The graph of this function is an S-shaped curve that satisfies the conditions of
         </div>
     );
 })()}
+
+## Homogeneous Differential Equations
+
+(Not to be confused with homogeneous Linear DEs.)
+
+Consider a DE of the form:
+
+$$
+\begin{equation}
+\dv{y}{x} = f(x, y)
+\end{equation}
+$$
+
+Let's assume we can't separate variables, and we can't solve it using the methods we've learned so far.
+
+One clever trick exists if (and only if) the function can be written in a certain form:
+
+$$
+\begin{equation}
+f(x, y) = g\qty(\frac{y}{x})
+\end{equation}
+$$
+
+This is known as a **homogeneous differential equation**.
+The reason it's useful is that we can make a substitution, namely $y = vx$, where $v$ is a new variable.
+
+This substitution allows us to rewrite the DE in terms of $v$ and $x$:
+
+$$
+\begin{align}
+\dv{y}{x} &= g\qty(\frac{y}{x}) \\
+\dv{vx}{x} &= g(v)
+\end{align}
+$$
+
+Remember that $v$ is dependent on $x$, so to differentiate $vx$, we use the product rule:
+
+$$
+\begin{align}
+v \dv{x}{x} + x \dv{v}{x} &= g(v) \\
+v + x \dv{v}{x} &= g(v)
+\end{align}
+$$
+
+So essentially, we have a DE in terms of $v$ and $x$ instead of $y$ and $x$.
+
+Next, we can use separation of variables to solve this DE:
+
+$$
+\begin{align}
+v + x \dv{v}{x} &= g(v) \\
+x \dv{v}{x} &= g(v) - v \\
+\frac{\dd{v}}{g(v) - v} &= \frac{\dd{x}}{x} \\
+\int \frac{\dd{v}}{g(v) - v} &= \int \frac{\dd{x}}{x} \\
+\int \frac{\dd{v}}{g(v) - v} &= \ln\abs{x} + C
+\end{align}
+$$
+
+From here, it depends on the specific form of $g(v)$.
+
+### Example Problem: Homogeneous Differential Equation
+
+> Solve the DE $\dv{y}{x} = \frac{y}{x} + \frac{x}{y}$.
+
+This DE is not separable, but it can be written in the form $f(x, y) = g\qty(\frac{y}{x})$:
+
+$$
+\begin{align}
+\dv{y}{x} &= \frac{y}{x} + \frac{x}{y} \\
+&= \frac{y}{x} + \qty(\frac{y}{x})^{-1} \\
+&= v + v^{-1}, \text{ where } v = \frac{y}{x}, g(v) = v + v^{-1}
+\end{align}
+$$
+
+Next, we can make the substitution $y = vx$:
+
+$$
+\begin{align}
+\dv{y}{x} &= v + v^{-1} \\
+x \dv{v}{x} + v &= v + v^{-1} \\
+x \dv{v}{x} &= v^{-1} \\
+\int v \dd{v} &= \int \frac{1}{x} \dd{x} \\
+\frac{v^2}{2} + C_1 &= \ln\abs{x} + C_2 \\
+v^2 &= 2\ln\abs{x} + C \\
+v = \frac{y}{x} &= \pm \sqrt{2\ln\abs{x} + C} \\
+y &= \pm x\sqrt{2\ln\abs{x} + C}
+\end{align}
+$$
+
+### Example Problem: A More Complex Homogeneous Differential Equation
+
+> Solve the following DE:
+>
+> $$
+> \begin{equation}
+> \dv{y}{x} = \frac{2x^2 + 3y^2}{2xy}
+> \end{equation}
+> $$
+
+Once again,
+
+$$
+\begin{align}
+\dv{y}{x} &= \frac{2x^2 + 3y^2}{2xy} \\
+&= \frac{\cancel{2}x^{\cancel{2}}}{\cancel{2x}y} + \frac{3y^{\cancel{2}}}{2x\cancel{y}} \\
+&= \frac{x}{y} + \frac{3}{2} \frac{y}{x} \\
+&= v^{-1} + \frac{3}{2}v, \text{ where } v = \frac{y}{x}, g(v) = v^{-1} + \frac{3}{2}v \\
+v + x \dv{v}{x} &= v^{-1} + \frac{3}{2}v \\
+x \dv{v}{x} &= v^{-1} + \frac{1}{2}v \\
+\frac{1}{v^{-1} + \frac{1}{2}v} \dd{v} &= \frac{1}{x} \dd{x} \\
+\frac{2v}{2 + v^2} \dd{v} &= \frac{1}{x} \dd{x} \\
+\int \frac{2v}{2 + v^2} \dd{v} &= \int \frac{1}{x} \dd{x} \\
+\ln\abs{2 + v^2} &= \ln\abs{x} + C_1
+\end{align}
+$$
+
+If $v \in \mathbb{R}$, then $2 + v^2 > 0$, so we can drop the absolute value.
+We can write $C_1 = \ln\abs{C_2}$ to simplify the expression:
+
+$$
+\begin{align}
+\ln\qty(2 + v^2) &= \ln\abs{C_2 x} \\
+2 + v^2 &= \abs{C_2 x} \\
+v^2 &= \abs{C_2 x} - 2 \\
+v &= \pm \sqrt{\abs{C_2 x} - 2} \\
+y &= \pm x\sqrt{\abs{C_2 x} - 2}
+\end{align}
+$$
 
 ## Predator-Prey Models: Systems of Differential Equations and Phase Space
 
@@ -1854,13 +2013,27 @@ This DE is a second-order DE because it has a second derivative.
 
 This DE will be covered in more detail in the Classical Mechanics section.
 
+## The Pitfall of Numerical Solutions
+
+As we know, many DEs cannot be solved analytically, so numerical methods are used to approximate the solution.
+There is a pitfall to numerical solutions that we need to be aware of:
+
+**Chaos**.
+
+Chaos is a phenomenon where a system is highly sensitive to initial conditions.
+This means that even a small change in the initial conditions can lead to a drastically different outcome.
+This is extremely dangerous in the context of numerical solutions because numerical methods are approximations.
+
+One common example of chaos is the double pendulum, where two pendulums are attached to each other.
+
 ## Summary
 
 Differential equations are extremely powerful tools that can be used to model a wide variety of systems.
 The main steps within the study of DEs are:
 
 - **Formulating DEs** - Understand the system you're modeling and formulate the DE accordingly.
-- **Solving DEs** - Solve the DE using various methods, such as separation of variables, substitution, and partial fractions.
+- **Solving DEs** - Solve the DE using various methods:
+    - **Separable DEs** - Separate the variables and integrate.
+    - **Homogeneous DEs** - Use a substitution to rewrite the DE in terms of a new variable $v = y/x$.
+- **Numerical Solutions** - Approximate the solution using numerical methods like Euler's method.
 - **Interpreting DEs** - Understand the properties of the DE to gain an intuitive understanding of the system.
-
-Since many DEs cannot be solved analytically, numerical methods, such as Euler's method, are used to approximate the solution.

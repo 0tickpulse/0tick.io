@@ -56,7 +56,7 @@
 }
 
 // horizontally scrollable row of stuff with arrows on either end
-.items {
+.horizontal-item-list {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;

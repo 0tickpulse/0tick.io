@@ -2015,28 +2015,560 @@ Let's consider a plane in $\mathbb{R}^3$.
 A plane is a two-dimensional surface that extends infinitely in all directions.
 It's linear, so its equation is in the general form $ax + by + cz = d$.
 
-{(() => {
+export function Plane3DGraph({ showPoint = false, showN = false, showV = false, }) {
     const [container, setContainer] = useState(null);
-    const setup = useCallback((/** @type {MathboxSelection<"root"> | null} */ mathbox) => {
-        // @ts-expect-error Useful for debugging
-        window.mathbox = mathbox
-    }, []);
     const mathboxOptions = {
         plugins: ["core", "controls", "cursor"],
         controls: {
             klass: OrbitControls,
         },
-        color: new THREE.Color(0x000000)
     }
+
+    const a = 3;
+    const b = 3;
+    const c = 3;
+    const d = 9;
+
+    function z(x, y) {
+        return (d - a * x - b * y) / c;
+    }
+
+    const zero = [0, 0, 0];
+
+    const P0 = [1, z(1, 1), 1];
+    // Normal vector from point P
+    const magN = Math.sqrt(a ** 2 + b ** 2 + c ** 2);
+    const N = [
+        a / magN + P0[0],
+        b / magN + P0[1],
+        c / magN + P0[2],
+    ];
+
+    // Arbitrary point/vector
+    const P = [0.5, z(0.5, 1.5), 1.5];
+
+    let V = [
+        a,
+        -c,
+        b,
+    ];
+    const magV = Math.sqrt(V[0] ** 2 + V[1] ** 2 + V[2] ** 2);
+    V = [
+        V[0] / magV + P0[0],
+        V[1] / magV + P0[1],
+        V[2] / magV + P0[2],
+    ];
+
     return (
-        <div ref={setContainer}>
-            {container && (
-                <MB.Mathbox setup={setup} container={container} options={mathboxOptions}>
-                    <MB.Cartesian>
-                        <MB.Grid axes="xz" />
-                    </MB.Cartesian>
-                </MB.Mathbox>
-            )}
-        </div>
+        <MB.ContainedMathbox options={mathboxOptions} containerStyle={{ height: "500px" }}>
+            <MB.Cartesian
+                scale={[
+                    0.5, 0.5, 0.5
+                ]}
+            >
+                <MB.Grid axes="xz" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+                <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+                <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+                <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+
+                <MB.Area
+                    id="plane"
+                    axes="xz"
+                    expr={(emit, x, y, i, t) => {
+                        emit(x, z(x, y), y); // Note the order of the axes
+                    }}
+                    width={64}
+                    height={64}
+                    channels={3}
+                    rangeX={[0, 2]}
+                    rangeY={[0, 2]}
+                />
+                <MB.Surface
+                    points="#plane"
+                    opacity={0.5}
+                    color={color("red")}
+                    blending="additive"
+                />
+
+                {showPoint && (
+                    <>
+                        <MB.Array
+                            items={1}
+                            id="point"
+                            data={[P0]}
+                            channels={3}
+                        />
+                        <MB.Point
+                            points="#point"
+                            color={color("blue")}
+                            size={10}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="point_vec"
+                            data={[zero, P0]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#point_vec"
+                            color={color("blue")}
+                        />
+                    </>
+                )}
+
+                {showN && (
+                    <>
+                        <MB.Array
+                            items={2}
+                            id="normal"
+                            data={[P0, N]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#normal"
+                            color={color("green")}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="parallel"
+                            data={[P0, V]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#parallel"
+                            color={color("blue")}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="arbitrary"
+                            data={[zero, P]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#arbitrary"
+                            color={color("green")}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="p_to_p0"
+                            data={[P0, P]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#p_to_p0"
+                            color={color("purple")}
+                        />
+                    </>
+                )}
+            </MB.Cartesian>
+        </MB.ContainedMathbox>
     )
-})()}
+}
+
+<Plane3DGraph />
+
+However, before considering the equation of a plane in $\mathbb{R}^3$, let's consider the equation of a line in $\mathbb{R}^2$.
+
+Recall that the equation of a 2D line can be written as $ax + by = c$.
+
+Let's interpret this equation geometrically;
+
+- At $x = 0$, $y = \frac{c}{b}$.
+- At $y = 0$, $x = \frac{c}{a}$.
+- The slope of the line is $-\frac{a}{b}$.
+- As such, $c$ is sort-of a scaling factor for the line.
+
+We can use the same logic to interpret the equation of a plane in $\mathbb{R}^3$.
+
+Firstly, we can extend the equation of a line to $\mathbb{R}^3$ as $ax + by + cz = d$.
+However, there's other ways to create a plane.
+
+Choose a vector $\va{P}_0 = (x_0, y_0, z_0)$ on the plane and a normal vector $\va{n} = [a, b, c]$ to the plane.
+So $\va{n}$ is perpendicular to the plane, and any vector parallel to the plane is perpendicular to $\va{n}$.
+
+When two vectors are perpendicular, their dot product is zero.
+So, for any vector, $\va{v}$, parallel to the plane (think of it as drawing on top of the plane):
+
+$$
+\begin{equation}
+\va{n} \cdot \va{v} = 0
+\end{equation}
+$$
+
+<Plane3DGraph showPoint showN />
+
+Define an arbitrary vector $\va{P} = (x, y, z)$ on the plane.
+
+Then, if we get the vector between $\va{P}_0$ and $\va{P}$, i.e. $\va{P} - \va{P}_0$ (the purple vector in the diagram), it's parallel to the plane.
+Therefore, $\va{P} - \va{P}_0$ is perpendicular to $\va{n}$, and as such,
+
+$$
+\begin{equation}
+\va{n} \cdot (\va{P} - \va{P}_0) = 0
+\end{equation}
+$$
+
+We can expand $\va{n}$ into $[n_1, n_2, n_3]$ and $\va{P}$ and $\va{P}_0$ into their components:
+
+$$
+\begin{align}
+\class{green}{\va{n}} \cdot (\class{purple}{\va{P}} - \class{blue}{\va{P}_0}) &= 0 \\
+\class{green}{\mqty[ n_1 \\ n_2 \\ n_3 ]} \cdot \qty(\class{purple}{\mqty[ x \\ y \\ z ]} - \class{blue}{\mqty[ x_0 \\ y_0 \\ z_0 ]}) &= 0 \\
+\mqty[ n_1 \\ n_2 \\ n_3 ] \cdot \mqty[ x - x_0 \\ y - y_0 \\ z - z_0 ] &= 0 \\
+n_1(x - x_0) + n_2(y - y_0) + n_3(z - z_0) &= 0
+\end{align}
+$$
+
+This closely resembles the original equation of a plane in $\mathbb{R}^3$, $ax + by + cz = d$.
+
+Hence, with a point $\va{P}_0$ on the plane and a normal vector $\va{n}$ to the plane, the equation of the plane is:
+
+$$
+\begin{equation}
+n_1(x - x_0) + n_2(y - y_0) + n_3(z - z_0) = 0
+\end{equation}
+$$
+
+For example, consider the plane with a point $\va{P}_0 = [2, 1, 3]$ and a normal vector $\va{n} = [1, 3, -3]$.
+Then, for a point $\va{P} = [x, y, z]$ on the plane:
+
+$$
+\begin{align}
+\va{n} \cdot (\va{P} - \va{P}_0) &= 0 \\
+\mqty[ 1 \\ 3 \\ -3 ] \cdot \mqty[ x - 2 \\ y - 1 \\ z - 3 ] &= 0 \\
+(x - 2) + 3(y - 1) - 3(z - 3) &= 0 \\
+x + 3y - 3z &= 8
+\end{align}
+$$
+
+Alternatively, we can plug in the values of $\va{P}_0$ and $\va{n}$ directly into the equation of a plane in $\mathbb{R}^3$:
+
+$$
+\begin{align}
+n_1(x - x_0) + n_2(y - y_0) + n_3(z - z_0) &= 0 \\
+1(x - 2) + 3(y - 1) - 3(z - 3) &= 0 \\
+x + 3y - 3z &= 8
+\end{align}
+$$
+
+This is very useful for anything involving three-dimensional geometry.
+
+## Vector Cross Product
+
+When we introduced the dot product, we mentioned that it was only one of two ways to multiply vectors.
+The other way is through the "cross product".
+
+The main difference is that unlike the dot product, the cross product yields a vector, not a scalar.
+This is why it's sometimes called the "vector product".
+
+However, the cross product is much more limited;
+
+- A dot product works for any $\va{v}, \va{w} \in \mathbb{R}^n$.
+- A cross product only works for $\va{v}, \va{w} \in \mathbb{R}^3$.
+
+The cross product of two vectors is something that's orthogonal (perpendicular) to both vectors.
+
+The definition of the cross product is below, but it's best not to just memorize it:
+
+$$
+\begin{equation}
+\va{v} = \mqty[ v_1 \\ v_2 \\ v_3 ], \va{w} = \mqty[ w_1 \\ w_2 \\ w_3 ] \implies \va{v} \times \va{w} = \mqty[ v_2w_3 - v_3w_2 \\ v_3w_1 - v_1w_3 \\ v_1w_2 - v_2w_1 ]
+\end{equation}
+$$
+
+For each row in the cross product, we ignore the corresponding component in the original vectors and multiply the other two components.
+So for example, in the first row, we ignore $v_1$ and $w_1$ and multiply $v_2$ and $w_3$.
+
+Now that we have the definition, let's consider some properties of the cross product.
+
+### What Does the Cross Product Represent?
+
+The cross product of two vectors is a vector that's orthogonal to both vectors.
+
+That means, given two vectors, if you construct a plane with the two vectors as sides, the cross product is perpendicular to that plane, it "sticks out" of the plane.
+
+This is why the cross product is only defined in $\mathbb{R}^3$; in $\mathbb{R}^2$, there's no third dimension for the cross product to "stick out" into.
+
+However, one might ask, for any plane, there's two vectors perpendicular to it (one above and one below). Which one is it?
+
+To answer this, the orientation of the cross product is determined by the right-hand rule.
+
+If you curl your right hand from the first vector to the second vector, your thumb points in the direction of the cross product.
+
+<MB.ContainedMathbox
+    containerStyle={{ height: "500px" }}
+    options={{
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    }}
+>
+    <MB.Cartesian
+        scale={[0.5, 0.5, 0.5]}
+    >
+        <MB.Grid axes="xz" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+
+        {/* V */}
+        <MB.Array
+            items={1}
+            id="v"
+            data={[
+                [0, 0, 2],
+            ]}
+            channels={3}
+        />
+        <MB.Array
+            items={2}
+            id="v_vec"
+            data={[
+                [0, 0, 0],
+                [0, 0, 2],
+            ]}
+            channels={3}
+        />
+        <MB.Vector
+            end={true}
+            points="#v_vec"
+            color={color("red")}
+            width={4}
+        />
+        <MB.Text
+            id="v_vec_text"
+            expr={(emit) => {
+                emit("v");
+            }}
+        />
+        <MB.Label
+            points="#v"
+            text="#v_vec_text"
+        />
+
+        {/* W */}
+        <MB.Array
+            items={1}
+            id="w"
+            data={[
+                [1.5, 0, 0],
+            ]}
+            channels={3}
+        />
+        <MB.Array
+            items={2}
+            id="w_vec"
+            data={[
+                [0, 0, 0],
+                [1.5, 0, 0],
+            ]}
+            channels={3}
+        />
+        <MB.Vector
+            end={true}
+            points="#w_vec"
+            color={color("blue")}
+            width={4}
+        />
+        <MB.Text
+            id="w_vec_text"
+            expr={(emit) => {
+                emit("w");
+            }}
+        />
+        <MB.Label
+            points="#w"
+            text="#w_vec_text"
+        />
+
+        {/* V x W */}
+        <MB.Array
+            items={1}
+            id="v_cross_w"
+            data={[
+                [0, 3, 0]
+            ]}
+            channels={3}
+        />
+        <MB.Array
+            items={2}
+            id="v_cross_w_vec"
+            data={[
+                [0, 0, 0],
+                [0, 3, 0],
+            ]}
+            channels={3}
+        />
+        <MB.Vector
+            end={true}
+            points="#v_cross_w_vec"
+            color={color("purple")}
+            width={4}
+        />
+        <MB.Text
+            id="v_cross_w_vec_text"
+            expr={(emit) => {
+                emit("v \\times w");
+            }}
+        />
+        <MB.Label
+            points="#v_cross_w"
+            text="#v_cross_w_vec_text"
+        />
+    </MB.Cartesian>
+</MB.ContainedMathbox>
+
+### The Magnitude of the Cross Product
+
+We've shown the direction of the cross product, but since the cross product is a vector, it also has a magnitude.
+
+To find the magnitude of the cross product, essentially we create a parallelogram with the two vectors as sides.
+The area of this parallelogram is the magnitude of the cross product.
+
+export function DotProductMagnitude({ showCalculation = false }) {
+    const v = useMovablePoint([2, 3]);
+    const w = useMovablePoint([3, -1]);
+
+    const parallelogramPoint = vec.add(v.point, w.point);
+    // v and w are 2D, but we pretend they're 3D by setting the z-component to 0.
+    // vec also doesn't have a cross product function, so we'll calculate it manually.
+    const crossProductMag = Math.abs(v.point[0] * w.point[1] - v.point[1] * w.point[0]);
+
+    const vAngle = Math.atan2(v.point[1], v.point[0]);
+    const wAngle = Math.atan2(w.point[1], w.point[0]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Polygon
+                points={[
+                    [0, 0],
+                    v.point,
+                    parallelogramPoint,
+                    w.point,
+                ]}
+                color={color("purple")}
+            />
+
+            <LaTeX
+                tex="||\mathbf{\vec{v} \times \vec{w}}||"
+                at={[
+                    (v.point[0] + w.point[0]) / 2,
+                    (v.point[1] + w.point[1]) / 2,
+                ]}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v.point, "left")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={w.point}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel([0, 0], w.point, "right")}
+            />
+
+            {v.element}
+            {w.element}
+
+            {showCalculation && (
+                <>
+                    <Angle
+                        at={[0, 0]}
+                        fromRad={vAngle}
+                        toRad={wAngle}
+                        label="\theta"
+                    />
+
+                    <Line.Segment
+                        point1={v.point}
+                        point2={vec.withMag(
+                            w.point,
+                            vec.dot(v.point, w.point) / vec.mag(w.point)
+                        )}
+                        style="dashed"
+                    />
+                </>
+            )}
+        </Mafs>
+    )
+}
+
+<DotProductMagnitude />
+
+We can make use of some geometry to find the magnitude of the cross product.
+Recall that the area of a parallelogram is the base times the height (you can show this by cutting off a triangle and moving it to the other side).
+
+We can set the base to one of the vectors (we'll use $\va{w}$) and calculate the height using the angle:
+
+<DotProductMagnitude showCalculation />
+
+We can use trigonometry to find the height:
+
+$$
+\begin{align}
+\sin(\theta) &= \frac{h}{\norm{\va{v}}} \\
+h &= \norm{\va{v}}\sin(\theta)
+\end{align}
+$$
+
+The area of the parallelogram is the base times the height. Therefore:
+
+$$
+\begin{align}
+\text{Area} &= \class{blue}{b} \class{green}{h} \\
+&= \class{blue}{\norm{\va{w}}} \class{green}{\norm{\va{v}}\sin(\theta)} \\
+\norm{\va{v} \times \va{w}} &= \norm{\va{w}}\norm{\va{v}}\sin(\theta)
+\end{align}
+$$
+
+### Relationship Between the Cross Product and its Geometry
+
+We've shown the different ways to interpret the cross product.
+However, we have not yet proven the equivalence of the different interpretations.
+
+Our goal is to show that:
+
+$$
+\begin{equation}
+\mqty[ v_1 \\ v_2 \\ v_3 ] \times \mqty[ w_1 \\ w_2 \\ w_3 ] = \mqty[ v_2w_3 - v_3w_2 \\ v_3w_1 - v_1w_3 \\ v_1w_2 - v_2w_1 ] \implies \norm{\va{v} \times \va{w}} = \norm{\va{v}}\norm{\va{w}}\sin(\theta)
+\end{equation}
+$$
+
+First, let's consider the square of the magnitude of the cross product.
+Recall from equation $\eqref{eq:magnitude-from-dot-product}$ that the square of the magnitude of a vector is the dot product of the vector with itself:
+
+$$
+\begin{equation}
+\norm{\va{v} \times \va{w}}^2 = (\va{v} \times \va{w}) \cdot (\va{v} \times \va{w})
+\end{equation}
+$$
+
+This, in turn, is the sum of the squares of the components of the cross product:
+
+$$
+\begin{align}
+\norm{\va{v} \times \va{w}}^2 &= \class{blue}{(v_2w_3 - v_3w_2)^2} + \class{yellow}{(v_3w_1 - v_1w_3)^2} + \class{green}{(v_1w_2 - v_2w_1)^2} \\
+&= \class{blue}{v_2^2w_3^2 - 2v_2w_2v_3w_3 + v_3^2w_2^2} + \class{yellow}{v_3^2w_1^2 - 2v_1w_1v_3w_3 + v_1^2w_3^2} + \class{green}{v_1^2w_2^2 - 2v_1w_1v_2w_2 + v_2^2w_1^2} \\
+\end{align}
+$$
