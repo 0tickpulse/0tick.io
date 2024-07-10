@@ -179,11 +179,13 @@ The function satisfies the differential equation.
 Substitute $f(x) = 3x$ into the equation:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{f}{x}(x) &= \frac{3f(x)}{x} \\
 4 &= \frac{3 \times 3x}{x} \\
 4 &= 9
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The function does not satisfy the differential equation.
@@ -641,10 +643,12 @@ So we start at $(0, 1)$, where the slope is $dy/dx = y = 1$. This means that for
 We can use this to find the next point. Instead of an infinitesimal change, we make a finite change of $\Delta x = 0.5$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{\Delta y}{\Delta x} &\approx \dv{y}{x} = 1 \\
 \Delta y &\approx 1 \times \Delta x = 1 \times 0.5 = 0.5
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 This means that the next point is $(0.5, 1.5)$. Then we repeat the process.
@@ -781,8 +785,6 @@ export function ExampleProblemWorkingWithEulersMethod({
             const [x, y] = points[i];
             const [dx, dy] = vec.sub(points[i + 1], points[i]);
 
-            console.log({dx, dy})
-
             return (
                 <Transform key={i} translate={[x, y]}>
                     {i === 0 && <LaTeX tex={`(${i === 0 ? "0" : i + "\\Delta x"}, y_${i})`} at={[-0.3, 0]} />}
@@ -860,31 +862,37 @@ So, we started at $(0, y_0)$ and after 3 steps, we reached $(3\Delta x, y_0 + \D
 We need to expand $\Delta y_1$ and $\Delta y_2$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \Delta y_1 &= 4y_0 \Delta x \\
 \Delta y_2 &= 4(y_0 + \Delta y_1) \Delta x = 4(y_0 + 4y_0 \Delta x) \Delta x = 4y_0 \Delta x + 16y_0 (\Delta x)^2
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 So the $y$ value after 3 steps is:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 y(3\Delta x) &= y_0 + \class{red}{\Delta y_1} + \class{green}{\Delta y_2} \\
 &= y_0 + \class{red}{4y_0 \Delta x} + \class{green}{4y_0 \Delta x + 16y_0 (\Delta x)^2} \\
 &= y_0 + 8y_0 \Delta x + 16y_0 (\Delta x)^2 \\
 &= y_0 (1 + 8\Delta x + 16(\Delta x)^2)
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Recall that the question stated that the approximation after 3 steps is $y(3\Delta x) = y_i$.
 Setting $y(3\Delta x) = y_i$, and then solving for $y_0$ gives:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 y_i &= y_0 (1 + 8\Delta x + 16(\Delta x)^2) \\
 y_0 &= \frac{y_i}{1 + 8\Delta x + 16(\Delta x)^2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Therefore, the answer is $y_0 = \frac{y_i}{1 + 8\Delta x + 16(\Delta x)^2}$.
@@ -909,11 +917,13 @@ It might seem daunting at first, like as if you don't even know where to start.
 One approach you could try is to separate $x$ and $y$ to different sides.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= -\frac{x}{ye^{x^2}} \\
 y \dv{y}{x} &= -\frac{x}{e^{x^2}} \\
 y \dd{y} &= -\frac{x}{e^{x^2}} \dd{x} = -x e^{-x^2} \dd{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Since we are able to separate $x$ and $y$ to different sides, this DE is known as a **Separable Differential Equation**.
@@ -921,10 +931,12 @@ Since we are able to separate $x$ and $y$ to different sides, this DE is known a
 Now, we can integrate both sides:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \int y \dd{y} &= \int -x e^{-x^2} \dd{x} \\
 \frac{y^2}{2} + C_1 &= \frac{1}{2} e^{-x^2} + C_2
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 <details>
@@ -941,11 +953,13 @@ $$
 Recall from the chain rule that the integral of $f'(g(x)) \dv{g}{x}$ is $f(g(x)) + C$. Therefore:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \int -x e^{-x^2} \dd{x} &= \frac{1}{2} \int -2x e^{-x^2} \dd{x} \\
 &= \frac{1}{2} f(g(x)) + C \\
 &= \frac{1}{2} e^{-x^2} + C
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 </details>
@@ -953,32 +967,38 @@ $$
 We can combine the constants of integration into one constant, $C = C_2 - C_1$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{y^2}{2} + C_1 &= \frac{1}{2} e^{-x^2} + C_2 \\
 \frac{y^2}{2} &= \frac{1}{2} e^{-x^2} + C_2 - C_1 \\
 \frac{y^2}{2} &= \frac{1}{2} e^{-x^2} + C \label{eq:separable_differential_equations-unsolved_solution}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Next, we can use the initial condition $y(0) = 1$ to solve for the constant $C$. Plugging $x = 0$ and $y = 1$ into the equation in $\eqref{eq:separable_differential_equations-unsolved_solution}$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{\class{yellow}{y}^2}{2} &= \frac{1}{2} e^{-\class{blue}{x}^2} + C \\
 \frac{\class{yellow}{1}^2}{2} &= \frac{1}{2} e^{-\class{blue}{0}^2} + C \\
 \frac{1}{2} &= \frac{1}{2} + C \\
 C &= 0
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Finally, we can substitute $C = 0$ back into the equation in $\eqref{eq:separable_differential_equations-unsolved_solution}$ and solve for $y$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{y^2}{2} &= \frac{1}{2} e^{-x^2} \\
 y^2 &= e^{-x^2} \\
 y &= \pm \sqrt{e^{-x^2}} \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Since at $x = 0$, $y = 1$ is positive, we can ignore the $\pm$ sign:
@@ -1017,11 +1037,13 @@ When we separate variables, we treat $\dd{y}$ and $\dd{x}$ as if they were algeb
 For instance:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= y \\
 \dd{y} &= y \dd{x} \\
 \frac{\dd{y}}{y} &= \dd{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 While this seems reasonable, it's important to remember that differentials are not numbers, but rather infinitesimal quantities.
@@ -1042,10 +1064,12 @@ $$
 One common type of DE that can be solved using separation of variables is one where $\dv{y}{x}$ is a product or quotient of functions of $x$ and $y$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= \frac{f(x)}{g(y)} \implies g(y) \dd{y} &= f(x) \dd{x} \\
 \dv{y}{x} &= f(x) g(y) \implies \frac{1}{g(y)} \dd{y} &= f(x) \dd{x}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ## Exponential Models
@@ -1083,13 +1107,15 @@ We can integrate both sides spanning the interval;
 - When $t' = 0$, $N = N_0$ and when $t' = t$, $N = N(t)$ on the left side. So the bounds are $N_0$ and $N(t)$.
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \int_{N_0}^{N(t)} \frac{1}{N} dN &= \int_0^t k dt' \\
 \ln\abs{N(t)} - \ln\abs{N_0} &= kt \\
 \ln\abs{\frac{N(t)}{N_0}} &= kt \\
 \frac{N(t)}{N_0} &= e^{kt} \\
 N(t) &= N_0 e^{kt}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 It's worth noting that $e$ appears in the solution.
@@ -1112,7 +1138,8 @@ Always understand the meaning of each term in any equation outside of the algebr
 2. Let's solve the DE:
 
     $$
-    \begin{align}
+    \begin{equation}
+    \begin{split}
     \dv{N}{t} &= -\lambda N \\
     \frac{\dd{N}}{N} &= -\lambda \dd{t} \\
     \int_{N_0}^{N(t)} \frac{1}{N} \dd{N} &= \int_0^t -\lambda \dd{t} \\
@@ -1120,7 +1147,8 @@ Always understand the meaning of each term in any equation outside of the algebr
     \ln\abs{\frac{N(t)}{N_0}} &= -\lambda t \\
     \frac{N(t)}{N_0} &= e^{-\lambda t} \\
     N(t) &= N_0 e^{-\lambda t}
-    \end{align}
+    \end{split}
+    \end{equation}
     $$
 
 3. The half-life is the time it takes for half of the substance to decay. We can formulate an equation to describe this:
@@ -1134,12 +1162,14 @@ Always understand the meaning of each term in any equation outside of the algebr
     Substituting $N(t) = N_0 e^{-\lambda t}$:
 
     $$
-    \begin{align}
+    \begin{equation}
+    \begin{split}
     N_0 e^{-\lambda t_{1/2}} &= \frac{1}{2} N_0 \\
     e^{-\lambda t_{1/2}} &= \frac{1}{2} \\
     -\lambda t_{1/2} &= \ln\frac{1}{2} \\
     t_{1/2} &= \frac{\ln 2}{\lambda} \approx \frac{0.693}{\lambda}
-    \end{align}
+    \end{split}
+    \end{equation}
     $$
 
     This reveals a fundamental property of exponential decay: the half-life is independent of the initial amount of the substance.
@@ -1148,11 +1178,13 @@ Always understand the meaning of each term in any equation outside of the algebr
 4. The half-life of $\ce{^{14}C}$ is about 5730 years. We can identify $\lambda$:
 
     $$
-    \begin{align}
+    \begin{equation}
+    \begin{split}
     t_{1/2} &= \frac{0.693}{\lambda} \\
     5730 \text{ years} &= \frac{0.693}{\lambda} \\
     \lambda &\approx \frac{0.693}{5730 \text{ years}} \approx 0.000121 \text{ years}^{-1}
-    \end{align}
+    \end{split}
+    \end{equation}
     $$
 
     Therefore, the constant of proportionality for $\ce{^{14}C}$ is $\lambda \approx 0.000121 \text{ years}^{-1}$.
@@ -1176,7 +1208,8 @@ First, we assume that $T_s$ is constant. This is a reasonable assumption for man
 We can solve this DE using separation of variables:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{T}{t} &= -k(T - T_s) \\
 \frac{\dd{T}}{T - T_s} &= -k \dd{t} \\
 \int \frac{\dd{T}}{T - T_s} &= -k \int \dd{t} \\
@@ -1185,7 +1218,8 @@ T - T_s &= e^{-kt + C} \\
 T - T_s &= e^C e^{-kt} \\
 T - T_s &= Ce^{-kt} \\
 T &= Ce^{-kt} + T_s
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ## Logistic Growth Models
@@ -1284,10 +1318,12 @@ Let's also identify when the population is growing at its fastest rate. We can p
 We treat $\dv{N}{t}$ as a function of $N$ and plot it. We can express $\dv{N}{t}$ as a parabola:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{N}{t} &= k N \qty(1 - \frac{N}{L}) \\
 &= k N - \frac{k}{L} N^2
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The maximum point of this parabola is the vertex, which is at $N = \frac{L}{2}$.
@@ -1306,30 +1342,36 @@ $$
 Let's apply this to the logistic growth model. Divide both sides by $N\qty(1 - \frac{N}{L})$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{1}{N\qty(1 - \frac{N}{L})} \dv{N}{t} &= k \label{eq:solving_the_logistic_growth_model-separable_de} \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 The left side is a bit tricky to integrate, but we can use partial fractions to simplify it:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{1}{N\qty(1 - \frac{N}{L})} &= \frac{A}{N} + \frac{B}{1 - \frac{N}{L}} \label{eq:solving_the_logistic_growth_model-partial_fractions} \\
 &= \frac{\class{yellow}{A} - \class{blue}{\frac{A}{L}N + B N}}{N\qty(1 - \frac{N}{L})} = \frac{\class{yellow}{1} + \class{blue}{0N}}{N\qty(1 - \frac{N}{L})} \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Equating the numerators:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \class{yellow}{A} - \class{blue}{\frac{A}{L}N + B N} &= \class{yellow}{1} + \class{blue}{0N} \\
 A &= 1 \\
 -\frac{A}{L} + B &= 0 \\
 -\frac{1}{L} + B &= 0 \\
 B &= \frac{1}{L}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Substituting back into $\eqref{eq:solving_the_logistic_growth_model-partial_fractions}$:
@@ -1343,7 +1385,8 @@ $$
 Substitute this back into $\eqref{eq:solving_the_logistic_growth_model-separable_de}$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{1}{N} + \frac{1}{L\qty(1 - \frac{N}{L})} \dv{N}{t} &= k \\
 \int \qty(\frac{1}{N} + \frac{1}{L\qty(1 - \frac{N}{L})}) \dd{N} &= \int k \dd{t} \\
 \int \frac{1}{N} \dd{N} + \int \frac{1}{L\qty(1 - \frac{N}{L})} \dd{N} &= \int k \dd{t} \\
@@ -1351,40 +1394,47 @@ $$
 \ln\abs{N} - \ln\abs{1 - \frac{N}{L}} + C_1 &= kt + C_2 \\
 \ln\abs{\frac{N}{1 - \frac{N}{L}}} &= kt + C_3 \\
 \abs{\frac{N}{1 - \frac{N}{L}}} &= e^{kt + C_3} \\
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 We can drop the absolute value since the quantity inside is always positive:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{N}{1 - \frac{N}{L}} &= e^{kt + C_3} = C_4 e^{kt} \\
 \frac{1 - \frac{N}{L}}{N} &= C_5 e^{-kt} \\
 \frac{1}{N} - \frac{1}{L} &= C_5 e^{-kt} \\
 \frac{1}{N} &= \frac{1}{L} + C_5 e^{-kt} \\
 N &= \frac{1}{\frac{1}{L} + C_5 e^{-kt}} \label{eq:solving_the_logistic_growth_model-solution_c5}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Next, we can use the initial condition $N(0) = N_0$ to solve for $C_5$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 N(0) &= \frac{1}{\frac{1}{L} + C_5 e^{-k \cdot 0}} = N_0 \\
 N_0 &= \frac{1}{\frac{1}{L} + C_5} \\
 \frac{1}{N_0} &= \frac{1}{L} + C_5 \\
 C_5 &= \frac{1}{N_0} - \frac{1}{L}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Substitute $C_5$ back into $\eqref{eq:solving_the_logistic_growth_model-solution_c5}$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 N &= \frac{1}{\frac{1}{L} + \class{blue}{C_5} e^{-kt}} \\
 &= \frac{1}{\frac{1}{L} + \class{blue}{\qty(\frac{1}{N_0} - \frac{1}{L})} e^{-kt}} \class{yellow}{\frac{N_0 L}{N_0 L}} \\
 &= \frac{N_0 L}{N_0 + (L - N_0) e^{-kt}}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ### Example Problem: Designing a RPG Defense System
@@ -1442,12 +1492,14 @@ $$
 However, by shifting the curve down, we set the asymptotes to $-L / 2$ and $L / 2$. To ensure that the percentage approaches $-L$ and $L$ instead, we can multiply the entire function by $2$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 P(t) &= 2\qty(\frac{L / 2 \cdot L}{L / 2 + (L - L / 2) e^{-kt}} - \frac{L}{2}) \\
 &= \frac{L^2}{\frac{L}{2} + \qty(L - \frac{L}{2}) e^{-kt}} - L \\
 &= \frac{L}{\frac{1}{2} + \qty(1 - \frac{1}{2}) e^{-kt}} - L \\
 &= \frac{2L}{1 + e^{-kt}} - L
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 And we're done. We've successfully modeled a defense system for a role-playing game using a logistic growth model.
@@ -1520,19 +1572,23 @@ The reason it's useful is that we can make a substitution, namely $y = vx$, wher
 This substitution allows us to rewrite the DE in terms of $v$ and $x$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= g\qty(\frac{y}{x}) \\
 \dv{vx}{x} &= g(v)
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Remember that $v$ is dependent on $x$, so to differentiate $vx$, we use the product rule:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 v \dv{x}{x} + x \dv{v}{x} &= g(v) \\
 v + x \dv{v}{x} &= g(v)
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 So essentially, we have a DE in terms of $v$ and $x$ instead of $y$ and $x$.
@@ -1540,13 +1596,15 @@ So essentially, we have a DE in terms of $v$ and $x$ instead of $y$ and $x$.
 Next, we can use separation of variables to solve this DE:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 v + x \dv{v}{x} &= g(v) \\
 x \dv{v}{x} &= g(v) - v \\
 \frac{\dd{v}}{g(v) - v} &= \frac{\dd{x}}{x} \\
 \int \frac{\dd{v}}{g(v) - v} &= \int \frac{\dd{x}}{x} \\
 \int \frac{\dd{v}}{g(v) - v} &= \ln\abs{x} + C
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 From here, it depends on the specific form of $g(v)$.
@@ -1558,17 +1616,20 @@ From here, it depends on the specific form of $g(v)$.
 This DE is not separable, but it can be written in the form $f(x, y) = g\qty(\frac{y}{x})$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= \frac{y}{x} + \frac{x}{y} \\
 &= \frac{y}{x} + \qty(\frac{y}{x})^{-1} \\
 &= v + v^{-1}, \text{ where } v = \frac{y}{x}, g(v) = v + v^{-1}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 Next, we can make the substitution $y = vx$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= v + v^{-1} \\
 x \dv{v}{x} + v &= v + v^{-1} \\
 x \dv{v}{x} &= v^{-1} \\
@@ -1577,7 +1638,8 @@ x \dv{v}{x} &= v^{-1} \\
 v^2 &= 2\ln\abs{x} + C \\
 v = \frac{y}{x} &= \pm \sqrt{2\ln\abs{x} + C} \\
 y &= \pm x\sqrt{2\ln\abs{x} + C}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 ### Example Problem: A More Complex Homogeneous Differential Equation
@@ -1593,7 +1655,8 @@ $$
 Once again,
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \dv{y}{x} &= \frac{2x^2 + 3y^2}{2xy} \\
 &= \frac{\cancel{2}x^{\cancel{2}}}{\cancel{2x}y} + \frac{3y^{\cancel{2}}}{2x\cancel{y}} \\
 &= \frac{x}{y} + \frac{3}{2} \frac{y}{x} \\
@@ -1604,23 +1667,26 @@ x \dv{v}{x} &= v^{-1} + \frac{1}{2}v \\
 \frac{2v}{2 + v^2} \dd{v} &= \frac{1}{x} \dd{x} \\
 \int \frac{2v}{2 + v^2} \dd{v} &= \int \frac{1}{x} \dd{x} \\
 \ln\abs{2 + v^2} &= \ln\abs{x} + C_1
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 If $v \in \mathbb{R}$, then $2 + v^2 > 0$, so we can drop the absolute value.
 We can write $C_1 = \ln\abs{C_2}$ to simplify the expression:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \ln\qty(2 + v^2) &= \ln\abs{C_2 x} \\
 2 + v^2 &= \abs{C_2 x} \\
 v^2 &= \abs{C_2 x} - 2 \\
 v &= \pm \sqrt{\abs{C_2 x} - 2} \\
 y &= \pm x\sqrt{\abs{C_2 x} - 2}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
-## Predator-Prey Models: Systems of Differential Equations and Phase Space
+## Predator-Prey Models: Systems of Differential Equations
 
 Predator-prey models are a type of DE that describe the interactions between two species: a predator and a prey.
 
@@ -1667,12 +1733,15 @@ $$
 
 Where $\alpha R$ represents growth from offspring and $\beta R F$ represents death from predation.
 
+When there's a system of DEs, sometimes it's called a coupled system.
+
 ### Interpreting the Predator-Prey Model
 
 We can make use of various tools to interpret the predator-prey model without having to solve the DEs.
 
-First, we can make use of a **phase space** to visualize the system.
-A phase space is a plot of the variables on axes. It's sort of similar to a slope field.
+Recall that slope fields are used to visualize the behavior of a DE.
+In a system of DEs, we can plot the slope field by setting each axis to the population of one species.
+This is known as a phase space or phase portrait.
 
 For the predator-prey model, we can plot the rabbit population on the $x$-axis and the fox population on the $y$-axis.
 
@@ -1978,11 +2047,13 @@ $$
 Since $x = L \theta$, we can write the equation in terms of $\theta$:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{d^2(L \theta)}{dt^2} &= -g \sin(\theta) \\
 L \dv[2]{\theta}{t} &= -g \sin(\theta) \\
 \dv[2]{\theta}{t} &= -\frac{g}{L} \sin(\theta)
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 :::info A more realistic model
@@ -1994,12 +2065,14 @@ We can set the air drag force as $-b \dv{x}{t}$, where $b$ is the proportionalit
 The equation of motion becomes:
 
 $$
-\begin{align}
+\begin{equation}
+\begin{split}
 \frac{d^2x}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{x}{t} \\
 \frac{d^2(L \theta)}{dt^2} &= -\frac{g}{L} \sin(\theta) - b \dv{(L \theta)}{t} \\
 L \dv[2]{\theta}{t} &= -\frac{g}{L} \sin(\theta) - b L \dv{\theta}{t} \\
 \dv[2]{\theta}{t} &= -\frac{g}{L} \sin(\theta) - b \dv{\theta}{t}
-\end{align}
+\end{split}
+\end{equation}
 $$
 
 This DE, while more realistic, does not have an analytical solution.
