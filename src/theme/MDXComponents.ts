@@ -8,6 +8,7 @@ import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannAppr
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import { Angle } from "../components/mdxGlobal/Angle";
 import LinearTransformationVisualizer from "../components/mdxGlobal/LinearTransformationVisualizer";
+import MathEquation from "../components/Math";
 
 export default {
     ...MDXComponents,
@@ -20,4 +21,6 @@ export default {
     HoverableBox,
     RiemannApproximation,
     ThreeDTest,
+
+    MathEquation,
 };

@@ -1,0 +1,1899 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Vectors: Part 2
+
+## Vector Multiplication: The Dot Product/Scalar Product
+
+Until now, we have introduced these operations on vectors:
+
+- Addition: $\va{v} + \va{w}$
+- Subtraction: $\va{v} - \va{w}$
+- Scalar Multiplication: $c\va{v}$
+
+We will now introduce a new operation: the dot product, a way to multiply two vectors together.
+The dot product is sort of the linear algebra equivalent of multiplication.
+It's a scalar quantity, so sometimes it's called the "scalar product."
+
+The usual way courses introduce the dot product is by defining it as:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \mqty[ v_1 \\ v_2 \\ \vdots \\ v_n ] \cdot \mqty[ w_1 \\ w_2 \\ \vdots \\ w_n ] = v_1w_1 + v_2w_2 + \dots + v_nw_n \label{eq:vector_multiplication_the_dot_product-definition}
+\end{equation}
+$$
+
+However this definition is not very intuitive, and it doesn't give us much insight into what the dot product actually does.
+
+One way to think of the dot product is to think about the "projection" of one vector onto the other.
+
+Hold a pencil, and observe its shadow on the table/ground. As you rotate the pencil, the shadow changes in length.
+The length of the shadow is the projection of the pencil onto the table.
+
+We can also show this graphically:
+
+{(() => {
+    const vMovable = useMovablePoint([2, 3]);
+    const wMovable = useMovablePoint([5, 2]);
+    const v = vMovable.point;
+    const w = wMovable.point;
+    const dot = vec.dot(v, w);
+    const projected = vec.withMag(w, dot / vec.mag(w));
+
+    const vAngle = Math.atan2(v[1], v[0]);
+    const wAngle = Math.atan2(w[1], w[0]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Vector
+                tail={[0, 0]}
+                tip={v}
+                color={color("red")}
+            />
+            <Vector
+                tail={[0, 0]}
+                tip={w}
+                color={color("blue")}
+            />
+            <Vector
+                tail={[0, -0.03]}
+                tip={vec.sub(projected, [0, 0.03])}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v, "left")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel([0, 0], w, "right", { forwardOffset: 2 })}
+            />
+
+            <Line.Segment
+                point1={v}
+                point2={projected}
+                style="dashed"
+            />
+
+            <Angle
+                at={projected}
+                fromRad={Math.PI / 2 + wAngle}
+                toRad={Math.PI + wAngle}
+                forceStraightAngle={true}
+            />
+            <Angle
+                at={[0, 0]}
+                fromRad={wAngle}
+                toRad={vAngle}
+                label="\theta"
+            />
+
+            {vMovable.element}
+            {wMovable.element}
+        </Mafs>
+    );
+})()}
+
+The dot product is then defined as:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \text{length of the projection of } \va{v} \text{ onto } \va{w} \times \text{length of } \va{w}
+\end{equation}
+$$
+
+The length of the projection $v_w$ can be calculated through trigonometry:
+
+$$
+\begin{equation}
+v_w = \norm{\va{v}} \cos(\theta)
+\end{equation}
+$$
+
+And therefore, the dot product can also be calculated as:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos(\theta)
+\end{equation}
+$$
+
+The dot product, due to this projection property, is helpful to measure the "similarity" between two vectors.
+
+When $\va{v}$ and $\va{w}$ are pointing in the same direction, the dot product is positive.
+
+When they are perpendicular, the dot product is zero, since the projection of one vector onto the other is zero. It's like holding the pencil perpendicular to the table, you get no shadow.
+
+When they are pointing in opposite directions, the dot product is negative.
+
+### Magnitude from the Dot Product
+
+The dot product can also be used to calculate the magnitude of a vector:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{v} = \norm{\va{v}}^2 \label{eq:magnitude-from-dot-product}
+\end{equation}
+$$
+
+#### Algebraic Proof of Magnitude from the Dot Product
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \cdot \va{v} &= v_1v_1 + v_2v_2 + \dots + v_nv_n \\
+&= v_1^2 + v_2^2 + \dots + v_n^2 \\
+&= \sqrt{v_1^2 + v_2^2 + \dots + v_n^2}^2 \\
+&= \norm{\va{v}}^2
+\end{split}
+\end{equation}
+$$
+
+#### Geometric Proof of Magnitude from the Dot Product
+
+Recall that the dot product of $\va{v}$ with $\va{w}$ is the projection of $\va{v}$ onto $\va{w}$ times the length of $\va{w}$.
+If both are $\va{v}$ instead, then the dot product is the projection of $\va{v}$ onto itself times the length of $\va{v}$.
+
+Since the projection of $\va{v}$ onto itself is just... itself, the dot product is the length of $\va{v}$ times the length of $\va{v},$ which is $\norm{\va{v}}^2$.
+
+### Commutativity of the Dot Product
+
+The dot product is commutative, meaning that $\va{v} \cdot \va{w} = \va{w} \cdot \va{v}$.
+
+Let $\va{v} = [ v_1, v_2, \dots, v_n ]$ and $\va{w} = [ w_1, w_2, \dots, w_n ]$.
+
+#### Algebraic Proof of Commutativity of the Dot Product
+
+$$
+\begin{align}
+\va{v} \cdot \va{w} &= v_1w_1 + v_2w_2 + \dots + v_nw_n \\
+\va{w} \cdot \va{v} &= w_1v_1 + w_2v_2 + \dots + w_nv_n
+\end{align}
+$$
+
+Since multiplication is commutative, $v_iw_i = w_iv_i$ for all $i$.
+
+Therefore, $\va{v} \cdot \va{w} = \va{w} \cdot \va{v}$.
+
+#### Geometric Proof of Commutativity of the Dot Product
+
+(Coming soon.)
+
+### Distributivity of the Dot Product
+
+The dot product is distributive over addition, meaning that $\va{x} \cdot (\va{v} + \va{w}) = \va{x} \cdot \va{v} + \va{x} \cdot \va{w}$.
+
+Let $\va{v} = [ v_1, v_2, \dots, v_n ]$ and $\va{w} = [ w_1, w_2, \dots, w_n ]$.
+
+#### Algebraic Proof of Distributivity of the Dot Product
+
+The sum of the two vectors is:
+
+$$
+\begin{equation}
+\va{v} + \va{w} = \mqty[ v_1 + w_1 \\ v_2 + w_2 \\ \vdots \\ v_n + w_n ]
+\end{equation}
+$$
+
+Hence, the dot product of $\va{x}$ with the sum is:
+
+$$
+\begin{equation}
+\begin{split}
+(\va{v} + \va{w}) \cdot \va{x} &= (v_1 + w_1)x_1 + (v_2 + w_2)x_2 + \dots + (v_n + w_n)x_n \\
+&= v_1x_1 + w_1x_1 + v_2x_2 + w_2x_2 + \dots + v_nx_n + w_nx_n \\
+&= v_1x_2 + v_2x_2 + \dots + v_nx_n + w_1x_1 + w_2x_2 + \dots + w_nx_n \\
+&= \va{v} \cdot \va{x} + \va{w} \cdot \va{x}
+\end{split}
+\end{equation}
+$$
+
+Thus proving the distributivity of the dot product.
+
+#### Geometric Proof of Distributivity of the Dot Product
+
+(Coming soon.)
+
+### Associativity of the Dot Product with Scalar Multiplication
+
+The dot product is associative with scalar multiplication, meaning that $(c\va{v}) \cdot \va{w} = c(\va{v} \cdot \va{w})$.
+
+Let $\va{v} = [ v_1, v_2, \dots, v_n ]$ and $\va{w} = [ w_1, w_2, \dots, w_n ]$.
+
+#### Algebraic Proof of Associativity of the Dot Product with Scalar Multiplication
+
+The scalar multiple of $\va{v}$ is:
+
+$$
+\begin{equation}
+c\va{v} = \mqty[ cv_1 \\ cv_2 \\ \vdots \\ cv_n ]
+\end{equation}
+$$
+
+Hence, the dot product of the scalar multiple with $\va{w}$ is:
+
+$$
+\begin{equation}
+\begin{split}
+(c\va{v}) \cdot \va{w} &= cv_1w_1 + cv_2w_2 + \dots + cv_nw_n \\
+&= c(v_1w_1 + v_2w_2 + \dots + v_nw_n) \\
+&= c(\va{v} \cdot \va{w})
+\end{split}
+\end{equation}
+$$
+
+Thus proving the associativity of the dot product with scalar multiplication.
+
+#### Geometric Proof of Associativity of the Dot Product with Scalar Multiplication
+
+(Coming soon.)
+
+### Cauchy-Schwarz Inequality
+
+The Cauchy-Schwarz Inequality states that for any two vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$:
+
+$$
+\begin{align}
+\abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \label{eq:cauchy-schwarz-inequality-1} \\
+\abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = c\va{w}, c > 0 \label{eq:cauchy-schwarz-inequality-2}
+\end{align}
+$$
+
+This is a very important inequality in mathematics.
+
+#### Algebraic Proof of the Cauchy-Schwarz Inequality
+
+Consider a function $f(t) = \norm{t\va{w} - \va{v}}^2$.
+
+The function $f(t)$ is the square of the distance between the vectors $\va{v}$ and $t\va{w}$.
+Why is $t$ there? Because we want to find the value of $t$ that minimizes the distance between the vectors.
+
+For a vector $\va{v}$, the magnitude is $\norm{\va{v}} = \sqrt{\va{v}_1^2 + \va{v}_2^2 + \dots + \va{v}_n^2} \geq 0$.
+
+Therefore, $f(t) \geq 0$ for all $t$.
+
+Recall the magnitude from the dot product in Equation $\eqref{eq:magnitude-from-dot-product}$ and substitute into $f(t)$:
+
+$$
+\begin{equation}
+\begin{split}
+f(t) &= \norm{t\va{w} - \va{v}}^2 \\
+&= (t\va{w} - \va{v}) \cdot (t\va{w} - \va{v})
+\end{split}
+\end{equation}
+$$
+
+Because of all the properties of the dot product, we can basically treat this as a regular binomial expansion:
+
+$$
+\begin{equation}
+\begin{split}
+f(t) &= (t\va{w} - \va{v}) \cdot (t\va{w} - \va{v}) \\
+&= t\va{w} \cdot t\va{w} - t\va{w} \cdot \va{v} - t\va{v} \cdot \va{w} + \va{v} \cdot \va{v} \\
+&= \class{yellow}{\qty(\norm{\va{w}}^2)}t^2 - \class{green}{\qty(2\va{w} \cdot \va{v})}t + \class{blue}{\norm{\va{v}}^2} \\
+&= \class{yellow}{a}t^2 - \class{green}{b}t + \class{blue}{c} \geq 0
+\end{split} \label{eq:cauchy-schwarz-inequality-quadratic}
+\end{equation}
+$$
+
+Oh look, a quadratic! Since $t$ can be any real number, we can plug in $t = b/2a$ (the vertex):
+
+$$
+\begin{equation}
+\begin{split}
+f\qty(\frac{b}{2a}) &= a\qty(\frac{b}{2a})^2 - b\qty(\frac{b}{2a}) + c \\
+&= \frac{b^2}{4a} - \frac{b^2}{2a} + c \\
+&= \frac{b^2}{4a} - \frac{2b^2}{4a} + c \\
+&= -\frac{b^2}{4a} + c \geq 0 \\
+c &\geq \frac{b^2}{4a} \\
+4ac &\geq b^2
+\end{split} \label{eq:cauchy-schwarz-inequality-4acb2}
+\end{equation}
+$$
+
+Substituting the values of $a$, $b$, and $c$ from Equation $\eqref{eq:cauchy-schwarz-inequality-quadratic}$ into Equation $\eqref{eq:cauchy-schwarz-inequality-4acb2}$:
+
+$$
+\begin{equation}
+\begin{split}
+4\class{yellow}{a}\class{blue}{c} &\geq \class{green}{b}^2 \\
+4\class{yellow}{\norm{\va{w}}^2}\class{blue}{\norm{\va{v}}^2} &\geq \class{green}{(2\va{w} \cdot \va{v})}^2 \\
+4\class{yellow}{\norm{\va{w}}^2}\class{blue}{\norm{\va{v}}^2} &\geq 4(\va{w} \cdot \va{v})^2 \\
+\class{yellow}{\norm{\va{w}}^2}\class{blue}{\norm{\va{v}}^2} &\geq (\va{w} \cdot \va{v})^2 \\
+\norm{\va{w}}\norm{\va{v}} &\geq \abs{\va{w} \cdot \va{v}}
+\end{split}
+\end{equation}
+$$
+
+Note that we used various properties of the dot product to simplify the quadratic, like the commutativity and associativity with scalar multiplication.
+
+Additionally, note that in the last step, we took the _principal square root_ of both sides, hence the absolute value.
+
+Which proves $\eqref{eq:cauchy-schwarz-inequality-1}$. To prove $\eqref{eq:cauchy-schwarz-inequality-2}$, we need to show that the equality holds when $\va{v} = c\va{w}$.
+
+$$
+\begin{equation}
+\begin{split}
+\abs{\va{v} \cdot \va{w}} &= \abs{c\va{w} \cdot \va{w}} \\
+&= \abs{c}\abs{\va{w} \cdot \va{w}} \\
+&= \abs{c}\norm{\va{w}}^2 \\
+= \norm{c\va{w}}\norm{\va{w}} &= \norm{\va{v}}\norm{\va{w}}
+\end{split}
+\end{equation}
+$$
+
+This aligns with the second part of the Cauchy-Schwarz Inequality.
+
+#### Geometric Proof of the Cauchy-Schwarz Inequality
+
+This is actually really easy to prove geometrically, and is an excellent example of the various approaches one can take to interpret a mathematical statement.
+
+When you project one vector onto another, the length of the projection is always less than or equal to the length of the vector.
+
+Therefore, the projection of $\va{v}$ onto $\va{w}$ is less than or equal to the length of $\va{v}$, proving the inequality.
+
+In addition, when the vectors are parallel, the projection is equal to the length of the vector. This is when the equality holds.
+
+### Vector Triangle Inequality
+
+The Triangle Inequality states that for any two vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$:
+
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}} \leq \norm{\va{v}} + \norm{\va{w}}
+\end{equation}
+$$
+
+#### Algebraic Proof of the Triangle Inequality
+
+Let's build on top of the Cauchy-Schwarz Inequality to prove the Triangle Inequality.
+
+Recall that the Cauchy-Schwarz Inequality states that for any two non-zero vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$:
+
+$$
+\begin{equation}
+\begin{split}
+\abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \\
+\abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = c\va{w}, c > 0
+\end{split}
+\end{equation}
+$$
+
+#### Geometric Proof of the Triangle Inequality
+
+Once again, the Triangle Inequality is trivial to prove geometrically.
+
+Consider two vectors $\va{v}$ and $\va{w}$:
+
+{(() => {
+    const vMovable = useMovablePoint([2, 3]);
+    const wMovable = useMovablePoint([3, -1]);
+    const v = vMovable.point;
+    const w = wMovable.point;
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [1, 3],
+                y: [0, 3]
+            }}
+        >
+            <Vector
+                tail={[0, 0]}
+                tip={v}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v, "left")}
+            />
+
+            <Vector
+                tail={v}
+                tip={vec.add(v, w)}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel(v, vec.add(v, w), "right")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={vec.add(v, w)}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v} + \vec{w}}"
+                at={lineLabel([0, 0], vec.add(v, w), "right")}
+            />
+
+            {vMovable.element}
+            <Transform
+                translate={v}
+            >
+                {wMovable.element}
+            </Transform>
+        </Mafs>
+    );
+})()}
+
+Consider the triangle formed by the vectors $\va{v}$, $\va{w}$ placed at the tip of $\va{v}$, as well as their sum $\va{v} + \va{w}$.
+
+Now consider the regular triangle inequality, which states that the sum of the lengths of two sides of a triangle is greater than or equal to the length of the third side.
+
+The sum of the lengths of $\va{v}$ and $\va{w}$ is greater than or equal to the length of $\va{v} + \va{w}$.
+
+Therefore, the Vector Triangle Inequality holds, given the regular triangle inequality.
+
+:::info A More Rigorous Geometric Proof of the Triangle Inequality
+
+To prove the regular triangle inequality, consider the angle between $\va{v}$ and $\va{v} + \va{w}$, labeled $\theta$.
+Splitting the triangle into two right triangles:
+
+{(() => {
+    const vMovable = useMovablePoint([2, 3]);
+    const wMovable = useMovablePoint([3, -1]);
+    const v = vMovable.point;
+    const w = wMovable.point;
+
+    const vplusw = vec.add(v, w);
+    const vpluswAngle = Math.atan2(vplusw[1], vplusw[0]);
+
+    const vAngle = Math.atan2(v[1], v[0]);
+
+    const vProjToVplusWMag = vec.dot(v, vplusw) / vec.mag(vplusw);
+    const vProjToVplusW = vec.withMag(vplusw, vProjToVplusWMag);
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [1, 3],
+                y: [0, 3]
+            }}
+        >
+            <Vector
+                tail={[0, 0]}
+                tip={v}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v, "left")}
+            />
+
+            <Vector
+                tail={v}
+                tip={vec.add(v, w)}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel(v, vec.add(v, w), "right")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={vProjToVplusW}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{p}}_1"
+                at={lineLabel([0, 0], vProjToVplusW, "right")}
+            />
+
+            <Vector
+                tail={vProjToVplusW}
+                tip={vec.add(v, w)}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{p}}_2"
+                at={lineLabel(vProjToVplusW, vec.add(v, w), "right")}
+            />
+
+            <Angle
+                at={[0, 0]}
+                fromRad={vpluswAngle}
+                toRad={vAngle}
+                label="\theta"
+            />
+
+            <Line.Segment
+                point1={v}
+                point2={vProjToVplusW}
+                style="dashed"
+            />
+            <Angle
+                at={vProjToVplusW}
+                fromRad={Math.PI / 2 + vpluswAngle}
+                toRad={Math.PI + vpluswAngle}
+                forceStraightAngle={true}
+            />
+            <LaTeX
+                tex="h"
+                at={lineLabel(v, vProjToVplusW, "left")}
+            />
+
+            {vMovable.element}
+            <Transform
+                translate={v}
+            >
+                {wMovable.element}
+            </Transform>
+        </Mafs>
+    );
+})()}
+
+The new line we introduced is the height of the triangle, which we'll call $h$. $h$ is always positive.
+It splits the triangle into two right triangles.
+
+The vector $\va{v} + \va{w}$ is split into two vectors: $\va{p}_1$ and $\va{p}_2$.
+
+By the Pythagorean Theorem:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{v}}^2 &= h^2 + \norm{\va{p}_1}^2 \\
+\norm{\va{w}}^2 &= h^2 + \norm{\va{p}_2}^2
+\end{cases} \label{eq:triangle-inequality-pythagorean}
+\end{equation}
+$$
+
+Subtracting $h^2$ from both sides of both equations yields:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{p}_1}^2 &= \norm{\va{v}}^2 - h^2 \\
+\norm{\va{p}_2}^2 &= \norm{\va{w}}^2 - h^2
+\end{cases}
+\end{equation}
+$$
+
+Since $h$ is positive by definition:
+
+$$
+\begin{equation}
+\begin{split}
+h &\geq 0 \\
+h^2 &\geq 0 \\
+0 &\geq -h^2 \\
+\norm{\va{v}}^2 &\geq \norm{\va{v}}^2 - h^2 \\
+\norm{\va{v}}^2 &\geq \norm{\va{p}_1}^2 \\
+\norm{\va{v}} &\geq \norm{\va{p}_1} \label{eq:triangle-inequality-v}
+\end{split}
+\end{equation}
+$$
+
+The same applies for $\va{w}$. Hence we have a new system of inequalities:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{v}} &\geq \norm{\va{p}_1} \\
+\norm{\va{w}} &\geq \norm{\va{p}_2}
+\end{cases} \label{eq:triangle-inequality-new}
+\end{equation}
+$$
+
+Adding the inequalities in Equation $\eqref{eq:triangle-inequality-new}$:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v}} + \norm{\va{w}} &\geq \norm{\va{p}_1} + \norm{\va{p}_2} \\
+\norm{\va{v}} + \norm{\va{w}} &\geq \norm{\va{v} + \va{w}}
+\end{split}
+\end{equation}
+$$
+
+Thus proving the Vector Triangle Inequality.
+
+:::
+
+### Equivalence of Definitions: Angle Between Vectors
+
+The two definitions of the dot product are equivalent. To show this, we first need to define the angle between two vectors.
+
+Given two non-zero vectors $\va{v}$ and $\va{w}$ in $\mathbb{R}^n$, we construct a triangle with the vectors as sides:
+
+<Mafs
+    viewBox={{
+        x: [0, 3],
+        y: [0, 3]
+    }}
+>
+    <Vector
+        tail={[0, 0]}
+        tip={[2, 3]}
+        color={color("red")}
+    />
+    <LaTeX
+        tex="\mathbf{\vec{v}}"
+        at={lineLabel([0, 0], [2, 3], "left")}
+    />
+
+    <Vector
+        tail={[0, 0]}
+        tip={[3, 1]}
+        color={color("blue")}
+    />
+    <LaTeX
+        tex="\mathbf{\vec{w}}"
+        at={lineLabel([0, 0], [3, 1], "right")}
+    />
+
+    <Angle
+        at={[0, 0]}
+        fromRad={Math.atan2(3, 2)}
+        toRad={Math.atan2(1, 3)}
+        label="\theta"
+    />
+
+    <Line.Segment
+        point1={[3, 1]}
+        point2={[2, 3]}
+        style="dashed"
+    />
+    <LaTeX
+        tex="\mathbf{\vec{v}} - \mathbf{\vec{w}}"
+        at={lineLabel([3, 1], [2, 3], "right")}
+    />
+</Mafs>
+
+:::info Is the triangle always possible to construct?
+
+We need to show that a triangle like this is always possible to construct for any two vectors.
+
+If the sum of two sides is less than the third side, then the triangle is not possible. So:
+
+1. If $\norm{\va{v} - \va{w}} > \norm{\va{v}} + \norm{\va{w}}$, then the triangle is not possible.
+2. If $\norm{\va{w}} > \norm{\va{v}} + \norm{\va{v} - \va{w}}$, then the triangle is not possible.
+3. If $\norm{\va{v}} > \norm{\va{w}} + \norm{\va{v} - \va{w}}$, then the triangle is not possible.
+
+We can show that the triangle is always possible to construct by showing that none of these conditions are met.
+
+Recall the triangle inequality:
+
+$$
+\begin{equation}
+\norm{\va{x} + \va{y}} \leq \norm{\va{x}} + \norm{\va{y}}
+\end{equation}
+$$
+
+Therefore:
+
+$$
+\begin{equation}
+\begin{cases}
+\norm{\va{v}} = \norm{\va{v} - \va{w} + \va{w}} &\leq \norm{\va{v} - \va{w}} + \norm{\va{w}} \\
+\norm{\va{w}} = \norm{\va{w} - \va{v} + \va{v}} &\leq \norm{\va{w} - \va{v}} + \norm{\va{v}}
+\end{cases}
+\end{equation}
+$$
+
+Both $\norm{\va{v} - \va{w}}$ and $\norm{\va{w} - \va{v}}$ are equivalent since they both measure the distance between the same vectors.
+
+This means that the second and third conditions are never met.
+
+For the first condition, consider manipulating $\norm{\va{v} - \va{w}}$ and using the triangle inequality:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v} - \va{w}} &= \norm{\va{v} + (- \va{w})} \leq \norm{\va{v}} + \norm{- \va{w}} \\
+&= \norm{\va{v}} + \norm{\va{w}}
+\end{split}
+\end{equation}
+$$
+
+Therefore, the triangle is always possible to construct.
+
+:::
+
+Define the angle between the vectors as $\theta$. Recall the cosine rule:
+
+$$
+\begin{equation}
+c^2 = a^2 + b^2 - 2ab\cos(\theta)
+\end{equation}
+$$
+
+Substitute $a = \norm{\va{v}}$, $b = \norm{\va{w}}$, and $c = \norm{\va{v} - \va{w}}$:
+
+$$
+\begin{equation}
+\norm{\va{v} - \va{w}}^2 = \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{equation}
+$$
+
+Recall that the square of the magnitude of a vector is the dot product of the vector with itself in Equation $\eqref{eq:magnitude-from-dot-product}$:
+
+$$
+\begin{equation}
+\qty(\va{v} - \va{w}) \cdot \qty(\va{v} - \va{w}) = \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{equation}
+$$
+
+Expanding the left side:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \cdot \va{v} - 2\va{v} \cdot \va{w} + \va{w} \cdot \va{w} &= \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta) \\
+\norm{\va{v}}^2 - 2\va{v} \cdot \va{w} + \norm{\va{w}}^2 &= \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta) \\
+\end{split}
+\end{equation}
+$$
+
+Subtracting $\norm{\va{v}}^2 + \norm{\va{w}}^2$ from both sides:
+
+$$
+\begin{equation}
+\begin{split}
+-2\va{v} \cdot \va{w} &= - 2\norm{\va{v}}\norm{\va{w}}\cos(\theta) \\
+\va{v} \cdot \va{w} &= \norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{split}
+\end{equation}
+$$
+
+Therefore, the dot product can be defined as the product of the magnitudes of the vectors and the cosine of the angle between them.
+
+When $\theta = 90^\circ$, $\cos(\theta) = 0$, and the dot product is zero.
+They are perpendicular and are hence called orthogonal.
+
+When $\theta = 0^\circ$, $\cos(\theta) = 1$, and the dot product is the product of the magnitudes of the vectors.
+
+When $\theta = 180^\circ$, $\cos(\theta) = -1$, and the dot product is the negative of the product of the magnitudes of the vectors.
+
+## Cross Product/Vector Product
+
+When we introduced the dot product, we mentioned that it was only one of two ways to multiply vectors.
+The other way is through the "cross product".
+
+The main difference is that unlike the dot product, the cross product yields a vector, not a scalar.
+This is why it's sometimes called the "vector product".
+
+However, the cross product is much more limited;
+
+- A dot product works for any $\va{v}, \va{w} \in \mathbb{R}^n$.
+- A cross product only works for $\va{v}, \va{w} \in \mathbb{R}^3$.
+
+The cross product of two vectors is something that's orthogonal (perpendicular) to both vectors.
+
+The definition of the cross product is below, but it's best not to just memorize it:
+
+$$
+\begin{equation}
+\va{v} = \mqty[ v_1 \\ v_2 \\ v_3 ], \va{w} = \mqty[ w_1 \\ w_2 \\ w_3 ] \implies \va{v} \times \va{w} = \mqty[ v_2w_3 - v_3w_2 \\ v_3w_1 - v_1w_3 \\ v_1w_2 - v_2w_1 ]
+\end{equation}
+$$
+
+For each row in the cross product, we ignore the corresponding component in the original vectors and multiply the other two components.
+So for example, in the first row, we ignore $v_1$ and $w_1$ and multiply $v_2$ and $w_3$.
+
+Now that we have the definition, let's consider some properties of the cross product.
+
+### What Does the Cross Product Represent?
+
+The cross product of two vectors is a vector that's orthogonal to both vectors.
+
+That means, given two vectors, if you construct a plane with the two vectors as sides, the cross product is perpendicular to that plane, it "sticks out" of the plane.
+
+This is why the cross product is only defined in $\mathbb{R}^3$; in $\mathbb{R}^2$, there's no third dimension for the cross product to "stick out" into.
+
+However, one might ask, for any plane, there's two vectors perpendicular to it (one above and one below). Which one is it?
+
+To answer this, the orientation of the cross product is determined by the right-hand rule.
+
+If you curl your right hand from the first vector to the second vector, your thumb points in the direction of the cross product.
+
+<MB.ContainedMathbox
+    containerStyle={{ height: "500px" }}
+    options={{
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    }}
+>
+    <MB.Cartesian
+        scale={[0.5, 0.5, 0.5]}
+    >
+        <MB.Grid axes="xz" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+
+        {/* V */}
+        <MB.Array
+            items={1}
+            id="v"
+            data={[
+                [0, 0, 2],
+            ]}
+            channels={3}
+        />
+        <MB.Array
+            items={2}
+            id="v_vec"
+            data={[
+                [0, 0, 0],
+                [0, 0, 2],
+            ]}
+            channels={3}
+        />
+        <MB.Vector
+            end={true}
+            points="#v_vec"
+            color={color("red")}
+            width={4}
+        />
+        <MB.Text
+            id="v_vec_text"
+            expr={(emit) => {
+                emit("v");
+            }}
+        />
+        <MB.Label
+            points="#v"
+            text="#v_vec_text"
+        />
+
+        {/* W */}
+        <MB.Array
+            items={1}
+            id="w"
+            data={[
+                [1.5, 0, 0],
+            ]}
+            channels={3}
+        />
+        <MB.Array
+            items={2}
+            id="w_vec"
+            data={[
+                [0, 0, 0],
+                [1.5, 0, 0],
+            ]}
+            channels={3}
+        />
+        <MB.Vector
+            end={true}
+            points="#w_vec"
+            color={color("blue")}
+            width={4}
+        />
+        <MB.Text
+            id="w_vec_text"
+            expr={(emit) => {
+                emit("w");
+            }}
+        />
+        <MB.Label
+            points="#w"
+            text="#w_vec_text"
+        />
+
+        {/* V x W */}
+        <MB.Array
+            items={1}
+            id="v_cross_w"
+            data={[
+                [0, 3, 0]
+            ]}
+            channels={3}
+        />
+        <MB.Array
+            items={2}
+            id="v_cross_w_vec"
+            data={[
+                [0, 0, 0],
+                [0, 3, 0],
+            ]}
+            channels={3}
+        />
+        <MB.Vector
+            end={true}
+            points="#v_cross_w_vec"
+            color={color("purple")}
+            width={4}
+        />
+        <MB.Text
+            id="v_cross_w_vec_text"
+            expr={(emit) => {
+                emit("v \\times w");
+            }}
+        />
+        <MB.Label
+            points="#v_cross_w"
+            text="#v_cross_w_vec_text"
+        />
+    </MB.Cartesian>
+</MB.ContainedMathbox>
+
+### The Magnitude of the Cross Product
+
+We've shown the direction of the cross product, but since the cross product is a vector, it also has a magnitude.
+
+To find the magnitude of the cross product, essentially we create a parallelogram with the two vectors as sides.
+The area of this parallelogram is the magnitude of the cross product.
+
+export function DotProductMagnitude({ showCalculation = false }) {
+    const v = useMovablePoint([2, 3]);
+    const w = useMovablePoint([3, -1]);
+
+    const parallelogramPoint = vec.add(v.point, w.point);
+    // v and w are 2D, but we pretend they're 3D by setting the z-component to 0.
+    // vec also doesn't have a cross product function, so we'll calculate it manually.
+    const crossProductMag = Math.abs(v.point[0] * w.point[1] - v.point[1] * w.point[0]);
+
+    const vAngle = Math.atan2(v.point[1], v.point[0]);
+    const wAngle = Math.atan2(w.point[1], w.point[0]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Polygon
+                points={[
+                    [0, 0],
+                    v.point,
+                    parallelogramPoint,
+                    w.point,
+                ]}
+                color={color("purple")}
+            />
+
+            <LaTeX
+                tex="||\mathbf{\vec{v} \times \vec{w}}||"
+                at={[
+                    (v.point[0] + w.point[0]) / 2,
+                    (v.point[1] + w.point[1]) / 2,
+                ]}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v.point, "left")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={w.point}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel([0, 0], w.point, "right")}
+            />
+
+            {v.element}
+            {w.element}
+
+            {showCalculation && (
+                <>
+                    <Angle
+                        at={[0, 0]}
+                        fromRad={vAngle}
+                        toRad={wAngle}
+                        label="\theta"
+                    />
+
+                    <Line.Segment
+                        point1={v.point}
+                        point2={vec.withMag(
+                            w.point,
+                            vec.dot(v.point, w.point) / vec.mag(w.point)
+                        )}
+                        style="dashed"
+                    />
+                </>
+            )}
+        </Mafs>
+    )
+}
+
+<DotProductMagnitude />
+
+We can make use of some geometry to find the magnitude of the cross product.
+Recall that the area of a parallelogram is the base times the height (you can show this by cutting off a triangle and moving it to the other side).
+
+We can set the base to one of the vectors (we'll use $\va{w}$) and calculate the height using the angle:
+
+<DotProductMagnitude showCalculation />
+
+We can use trigonometry to find the height:
+
+$$
+\begin{equation}
+\begin{split}
+\sin(\theta) &= \frac{h}{\norm{\va{v}}} \\
+h &= \norm{\va{v}}\sin(\theta)
+\end{split}
+\end{equation}
+$$
+
+The area of the parallelogram is the base times the height. Therefore:
+
+$$
+\begin{equation}
+\begin{split}
+\text{Area} &= \class{blue}{b} \class{green}{h} \\
+&= \class{blue}{\norm{\va{w}}} \class{green}{\norm{\va{v}}\sin(\theta)} \\
+\norm{\va{v} \times \va{w}} &= \norm{\va{w}}\norm{\va{v}}\sin(\theta)
+\end{split}
+\end{equation}
+$$
+
+### Relationship Between the Cross Product and its Geometry
+
+We've shown the different ways to interpret the cross product.
+However, we have not yet proven the equivalence of the different interpretations.
+
+Our goal is to show that:
+
+$$
+\begin{equation}
+\mqty[ v_1 \\ v_2 \\ v_3 ] \times \mqty[ w_1 \\ w_2 \\ w_3 ] = \mqty[ v_2w_3 - v_3w_2 \\ v_3w_1 - v_1w_3 \\ v_1w_2 - v_2w_1 ] \implies \norm{\va{v} \times \va{w}} = \norm{\va{v}}\norm{\va{w}}\sin(\theta)
+\end{equation}
+$$
+
+First, let's consider the square of the magnitude of the cross product.
+Recall from Equation $\eqref{eq:magnitude-from-dot-product}$ that the square of the magnitude of a vector is the dot product of the vector with itself:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v} \times \va{w}}^2 &= (\va{v} \times \va{w}) \cdot (\va{v} \times \va{w}) \\
+&= \qty(\mqty[ \class{blue}{v_2w_3 - v_3w_2} \\ \class{yellow}{v_3w_1 - v_1w_3} \\ \class{green}{v_1w_2 - v_2w_1} ]) \cdot \qty(\mqty[ \class{blue}{v_2w_3 - v_3w_2} \\ \class{yellow}{v_3w_1 - v_1w_3} \\ \class{green}{v_1w_2 - v_2w_1} ])
+\end{split}
+\end{equation}
+$$
+
+According to the dot product definition in Equation $\eqref{eq:vector_multiplication_the_dot_product-definition}$, the dot product of two vectors is the sum of the products of their corresponding components.
+As such, the dot product of $\va{v} \times \va{w}$ with itself is:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v} \times \va{w}}^2 &= \class{blue}{(v_2w_3 - v_3w_2)^2} + \class{yellow}{(v_3w_1 - v_1w_3)^2} + \class{green}{(v_1w_2 - v_2w_1)^2} \\
+&= \class{blue}{v_2^2w_3^2- 2v_2w_2v_3w_3 + v_3^2w_2^2} \\
+    &\qquad + \class{yellow}{v_3^2w_1^2 - 2v_1w_1v_3w_3 + v_1^2w_3^2} \\
+    &\qquad + \class{green}{v_1^2w_2^2 - 2v_1w_1v_2w_2 + v_2^2w_1^2}
+\end{split}
+\end{equation}
+$$
+
+That's a lot of terms, but we can simplify it by grouping the terms:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v} \times \va{w}}^2 &= \class{blue}{v_2^2}w_3^2 - \class{red}{2}v_2w_2v_3w_3 + \class{yellow}{v_3^2}w_2^2 \\
+    &\qquad + \class{yellow}{v_3^2}w_1^2 - \class{red}{2}v_1w_1v_3w_3 + \class{green}{v_1^2}w_3^2 \\
+    &\qquad + \class{green}{v_1^2}w_2^2 - \class{red}{2}v_1w_1v_2w_2 + \class{blue}{v_2^2}w_1^2 \\
+&= \class{green}{v_1^2}(w_2^2 + w_3^2) + \class{blue}{v_2^2}(w_1^2 + w_3^2) + \class{yellow}{v_3^2}(w_1^2 + w_2^2) \\
+    &\qquad - \class{red}{2(v_1w_1v_2w_2 + v_2w_2v_3w_3 + v_3w_3v_1w_1)}
+\end{split} \label{eq:relationship_between_the_cross_product_and_its_geometry-cross_product_magnitude_squared}
+\end{equation}
+$$
+
+Keep note of that for now - we will shift our focus to another equation:
+
+$$
+\begin{equation}
+\norm{\va{v}}\norm{\va{w}}\cos(\theta) = \va{v} \cdot \va{w} = (v_1w_1 + v_2w_2 + v_3w_3)
+\end{equation}
+$$
+
+We are going to do something that no sane person would do; we are going to square both sides:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta) &= (\va{v} \cdot \va{w})^2 \\
+&= (v_1w_1 + v_2w_2 + v_3w_3)^2 \\
+&= (v_1w_1 + v_2w_2 + v_3w_3)(v_1w_1 + v_2w_2 + v_3w_3) \\
+&= v_1w_1(v_1w_1 + v_2w_2 + v_3w_3) \\
+    &\qquad + v_2w_2(v_1w_1 + v_2w_2 + v_3w_3) \\
+    &\qquad + v_3w_3(v_1w_1 + v_2w_2 + v_3w_3) \\
+&= \quad \class{blue}{(v_1w_1)^2} + \class{yellow}{(v_1w_1)(v_2w_2)} + \class{green}{(v_1w_1)(v_3w_3)} \\
+    &\qquad + \class{blue}{(v_2w_2)^2} + \class{yellow}{(v_2w_2)(v_1w_1)} \phantom{+ (v_1w_1)(v_3w_3)} + \class{purple}{(v_2w_2)(v_3w_3)} \\
+    &\qquad + \class{blue}{(v_3w_3)^2} \phantom{+ (v_2w_2)(v_1w_1)} + \class{green}{(v_3w_3)(v_1w_1)} + \class{purple}{(v_3w_3)(v_2w_2)} \\
+&= \class{blue}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} \\
+    &\qquad + \class{yellow}{2(v_1w_1v_2w_2)} + \class{green}{2(v_1w_1v_3w_3)} + \class{purple}{2(v_2w_2v_3w_3)} \\
+&= \class{blue}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} + \class{red}{2(v_1w_1v_2w_2 + v_1w_1v_3w_3 + v_2w_2v_3w_3)}
+\end{split}
+\end{equation}
+$$
+
+Miraculously, the right side of the equation is very similar to the right side of Equation $\eqref{eq:relationship_between_the_cross_product_and_its_geometry-cross_product_magnitude_squared}$.
+
+Finally, let's add the two equations. The red terms (fortunately) cancel out, so we are left with:
+
+$$
+\begin{equation}
+\begin{split}
+\class{blue}{\norm{\va{v} \times \va{w}}^2} + \class{yellow}{\norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta)} &= \class{blue}{v_1^2(w_2^2 + w_3^2) + v_2^2(w_1^2 + w_3^2) + v_3^2(w_1^2 + w_2^2)} \\
+    &\qquad + \class{yellow}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} \\
+&= v_1(w_1^2 + w_2^2 + w_3^2) + v_2(w_1^2 + w_2^2 + w_3^2) + v_3(w_1^2 + w_2^2 + w_3^2) \\
+&= (v_1 + v_2 + v_3)(w_1^2 + w_2^2 + w_3^2)
+\end{split}
+\end{equation}
+$$
+
+Recall that the magnitude of a vector is the square root of the sum of the squares of its components, which is exactly what we have here. Hence:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v} \times \va{w}}^2 + \norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta) &= (v_1 + v_2 + v_3)(w_1^2 + w_2^2 + w_3^2) \\
+&= \norm{\va{v}}^2\norm{\va{w}}^2
+\end{split}
+\end{equation}
+$$
+
+Rearranging, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{v} \times \va{w}}^2 + \norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta) &= \norm{\va{v}}^2\norm{\va{w}}^2 \\
+\norm{\va{v} \times \va{w}}^2 &= \norm{\va{v}}^2\norm{\va{w}}^2 - \norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta) \\
+&= \norm{\va{v}}^2\norm{\va{w}}^2(1 - \cos^2(\theta)) \\
+&= \norm{\va{v}}^2\norm{\va{w}}^2\sin^2(\theta)
+\end{split}
+\end{equation}
+$$
+
+Taking the square root of both sides, we get:
+
+$$
+\begin{equation}
+\norm{\va{v} \times \va{w}} = \norm{\va{v}}\norm{\va{w}}\sin(\theta)
+\end{equation}
+$$
+
+And we're done.
+
+### Distributive Property of the Cross Product
+
+The cross product also satisfies the distributive property:
+
+$$
+\begin{equation}
+\va{v} \times (\va{w} + \va{u}) = \va{v} \times \va{w} + \va{v} \times \va{u}
+\end{equation}
+$$
+
+This can be proven by expanding both sides of the equation and showing that they are equal, which for now, I'm not going to do.
+
+### Compatibility with Scalar Multiplication
+
+$$
+\begin{equation}
+\va{v} \times (c\va{w}) = c(\va{v} \times \va{w}) = (c\va{v}) \times \va{w}
+\end{equation}
+$$
+
+### (Anti)Commutative Property of the Cross Product
+
+Recall how we described the direction of the cross product: if you curl your right hand from the first vector to the second vector, your thumb points in the direction of the cross product.
+
+However, this means that if you curl your right hand from the second vector to the first vector, your thumb points in the opposite direction.
+Hence, the direction depends on the order of the vectors. In other words:
+
+$$
+\begin{equation}
+\va{v} \times \va{w} = -\va{w} \times \va{v}
+\end{equation}
+$$
+
+When you switch the order of the vectors, the cross product changes sign. This is known as the "anticommutative property".
+
+### Cross Product of the Basis Vectors
+
+Let $\vu{i} = [1, 0, 0]$, $\vu{j} = [0, 1, 0]$, and $\vu{k} = [0, 0, 1]$ be the basis vectors in $\mathbb{R}^3$.
+
+Recall that the cross product of two vectors is a vector that's orthogonal to both vectors. If we draw the basis vectors:
+
+<MB.ContainedMathbox
+    containerStyle={{ height: "500px" }}
+    options={{
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    }}
+>
+    <MB.Cartesian
+        scale={[0.5, 0.5, 0.5]}
+    >
+        <MB.Axis axis="x" range={[-10, 10]} />
+        <MB.Axis axis="y" range={[-10, 10]} />
+        <MB.Axis axis="z" range={[-10, 10]} />
+
+        <MB.Array items={1} id="i" data={[[1, 0, 0]]} channels={3} />
+        <MB.Array items={2} id="i_vec" data={[[0, 0, 0], [1, 0, 0]]} channels={3} />
+        <MB.Vector end={true} points="#i_vec" color={color("blue")} width={4} />
+        <MB.Text id="i_text" expr={(emit) => { emit("\\vu{i}"); }} />
+        <MB.Label points="#i" text="#i_text" />
+
+        <MB.Array items={1} id="j" data={[[0, 0, 1]]} channels={3} />
+        <MB.Array items={2} id="j_vec" data={[[0, 0, 0], [0, 0, 1]]} channels={3} />
+        <MB.Vector end={true} points="#j_vec" color={color("yellow")} width={4} />
+        <MB.Text id="j_text" expr={(emit) => { emit("\\vu{j}"); }} />
+        <MB.Label points="#j" text="#j_text" />
+
+        <MB.Array items={1} id="k" data={[[0, 1, 0]]} channels={3} />
+        <MB.Array items={2} id="k_vec" data={[[0, 0, 0], [0, 1, 0]]} channels={3} />
+        <MB.Vector end={true} points="#k_vec" color={color("green")} width={4} />
+        <MB.Text id="k_text" expr={(emit) => { emit("\\vu{k}"); }} />
+        <MB.Label points="#k" text="#k_text" />
+    </MB.Cartesian>
+</MB.ContainedMathbox>
+
+The magnitude of the cross product of two vectors is the area of the parallelogram formed by the two vectors.
+Since they all have length $1$ and are orthogonal to each other, the area of the parallelogram is $1$.
+
+Hence, using that, along with the right-hand rule, we can find the cross product of the basis vectors:
+
+$$
+\begin{align}
+\vu{i} \times \vu{j} &= \vu{k} \\
+\vu{j} \times \vu{k} &= \vu{i} \\
+\vu{k} \times \vu{i} &= \vu{j}
+\end{align}
+$$
+
+One way to remember this is to just say "ijkijk", and in that order, you get the cross product of the vectors.
+
+### Alternate Derivation for Cross Product
+
+There's another way to derive the algebraic expression for the cross product, which I found in a [MIT Physics textbook](https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter3/).
+
+We can make some definitions:
+
+$$
+\begin{align}
+\va{v} &= v_1\vu{i} + v_2\vu{j} + v_3\vu{k} \\
+\va{w} &= w_1\vu{i} + w_2\vu{j} + w_3\vu{k} \\
+&= \va{w}_1 + \va{w}_2 + \va{w}_3
+\end{align}
+$$
+
+Then, the cross product of $\va{v}$ and $\va{w}$ is, based on the distributive property of the cross product:
+
+$$
+\begin{equation}
+\va{v} \times \va{w} = \va{v} \times (\va{w}_1 + \va{w}_2 + \va{w}_3) = \va{v} \times \va{w}_1 + \va{v} \times \va{w}_2 + \va{v} \times \va{w}_3
+\end{equation}
+$$
+
+We can find the first term; let $\va{w}_1 = w_1\vu{i}$:
+
+$$
+\begin{equation}
+\va{v} \times \va{w}_1 = (v_1\vu{i} + v_2\vu{j} + v_3\vu{k}) \times (w_1\vu{i})
+\end{equation}
+$$
+
+We can expand this using the distributive property of the cross product:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \times \va{w}_1 &= v_1\vu{i} \times (w_1\vu{i}) + v_2\vu{j} \times (w_1\vu{i}) + v_3\vu{k} \times (w_1\vu{i}) \\
+&= v_1w_1(\cancel{\vu{i} \times \vu{i}}) + v_2w_1(\vu{j} \times \vu{i}) + v_3w_1(\vu{k} \times \vu{i}) \\
+&= v_2w_1\vu{k} - v_3w_1\vu{j}
+\end{split}
+\end{equation}
+$$
+
+Similarly, we can find the other terms:
+
+$$
+\begin{align}
+\va{v} \times \va{w}_2 &= v_3w_2\vu{i} - v_1w_2\vu{k} \\
+\va{v} \times \va{w}_3 &= v_1w_3\vu{j} - v_2w_3\vu{i}
+\end{align}
+$$
+
+Adding them all up, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \times \va{w} &= \va{v} \times \va{w}_1 + \va{v} \times \va{w}_2 + \va{v} \times \va{w}_3 \\
+&= (v_2w_3 - v_3w_2)\vu{i} + (v_3w_1 - v_1w_3)\vu{j} + (v_1w_2 - v_2w_1)\vu{k}
+\end{split}
+\end{equation}
+$$
+
+Or, alternatively:
+
+$$
+\begin{equation}
+\va{v} \times \va{w} = \mqty[ v_2w_3 - v_3w_2 \\ v_3w_1 - v_1w_3 \\ v_1w_2 - v_2w_1 ]
+\end{equation}
+$$
+
+## More on the Angle Between Vectors
+
+We've shown the two different ways to multiply vectors, the dot product and the cross product.
+Both of them have definitions that involve the angle between the vectors. As such, we can use them to find the angle between two vectors.
+
+### Angle Between Vectors from the Dot Product
+
+Recall the definition of the dot product:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \norm{\va{v}}\norm{\va{w}}\cos(\theta)
+\end{equation}
+$$
+
+Rearranging, we get:
+
+$$
+\begin{equation}
+\cos(\theta) = \frac{\va{v} \cdot \va{w}}{\norm{\va{v}}\norm{\va{w}}}
+\end{equation}
+$$
+
+Therefore, the angle between two vectors is:
+
+$$
+\begin{equation}
+\theta = \arccos\qty(\frac{\va{v} \cdot \va{w}}{\norm{\va{v}}\norm{\va{w}}})
+\end{equation}
+$$
+
+### Angle Between Vectors from the Cross Product
+
+Recall the definition of the (magnitude of the) cross product:
+
+$$
+\begin{equation}
+\norm{\va{v} \times \va{w}} = \norm{\va{v}}\norm{\va{w}}\sin(\theta)
+\end{equation}
+$$
+
+Rearranging, we get:
+
+$$
+\begin{equation}
+\sin(\theta) = \frac{\norm{\va{v} \times \va{w}}}{\norm{\va{v}}\norm{\va{w}}}
+\end{equation}
+$$
+
+Therefore, the angle between two vectors is:
+
+$$
+\begin{equation}
+\theta = \arcsin\qty(\frac{\norm{\va{v} \times \va{w}}}{\norm{\va{v}}\norm{\va{w}}})
+\end{equation}
+$$
+
+## Comparison of the Dot and Cross Products
+
+We already know that the dot product is a scalar and the cross product is a vector.
+Let's explore some other differences between the two.
+
+### When the Vectors are Collinear
+
+Recall that the cross product essentially measures the area of the parallelogram formed by the two vectors.
+Well, if they're collinear, then the parallelogram gets "squished" into a line, and the area becomes zero.
+Therefore, the cross product of two collinear vectors is zero.
+
+However, the dot product is not affected by this. Since the dot product is the product of a "projection" of one vector onto the other, it is actually the highest when the vectors are collinear.
+Using the pencil analogy, if you put the pencil flat on the table, the shadow is the longest.
+
+### When the Vectors are Perpendicular
+
+When the vectors are perpendicular, the dot product is zero, as the projection of one vector onto the other is zero.
+
+However, the cross product is not zero. When the vectors are perpendicular, the cross product is the highest, since the height of the parallelogram is exactly equal to the magnitude of the vector.
+
+### Graphical Analysis of the Products
+
+One other way to compare the dot and cross products is to consider their graphs.
+
+Recall the definitions of the products based on the angles:
+
+$$
+\begin{align}
+\va{v} \cdot \va{w} &= \norm{\va{v}}\norm{\va{w}}\class{red}{\cos(\theta)} \\
+\norm{\va{v} \times \va{w}} &= \norm{\va{v}}\norm{\va{w}}\class{blue}{\sin(\theta)}
+\end{align}
+$$
+
+One of them has a $\class{red}{\cos(\theta)}$ term, and the other has a $\class{blue}{\sin(\theta)}$ term.
+As such, we can make use of the properties of the sine and cosine functions to compare the two.
+
+We can graph the two functions for $\theta \in [0, 2\pi]$:
+
+<Mafs>
+    <Coordinates.Cartesian
+        xAxis={{
+            lines: Math.PI,
+            subdivisions: 4,
+            labels: labelPi,
+        }}
+    />
+    <Plot.Parametric
+        xy={(t) => [t, Math.cos(t)]}
+        t={[0, 2 * Math.PI]}
+        color={color("red")}
+    />
+    <Plot.Parametric
+        xy={(t) => [t, Math.sin(t)]}
+        t={[0, 2 * Math.PI]}
+        color={color("blue")}
+    />
+</Mafs>
+
+The red graph is the cosine function, and the blue graph is the sine function.
+
+From the graph, we can see that the cosine function is at its highest when the angle is zero, and the sine function is at its highest when the angle is $\frac{\pi}{2}$.
+This is in line with our previous observations.
+
+### Summary Table of the Dot and Cross Products Based on the Angle
+
+| $\theta$        | $\va{v} \cdot \va{w}$                    | $\norm{\va{v} \times \va{w}}$            |
+| --------------- | ---------------------------------------- | ---------------------------------------- |
+| $0$             | $\norm{\va{v}}\norm{\va{w}}$             | $0$                                      |
+| $\frac{\pi}{2}$ | $0$                                      | $\norm{\va{v}}\norm{\va{w}}$             |
+
+## Equation of a Plane in R3
+
+Let's consider a plane in $\mathbb{R}^3$.
+
+A plane is a two-dimensional surface that extends infinitely in all directions. But before that, let's consider the equation of a line in $\mathbb{R}^2$, then later, we can extend it to $\mathbb{R}^3$.
+
+One way to describe a line in $\mathbb{R}^2$ is to use the general form: $ax + by = c$.
+Before proceeding, it's worth playing around with the equation to understand what it represents.
+
+
+$a$ is the coefficient of $x$. It affects the slope, as well as the $x$-intercept of the line.
+
+Similarly, $b$ is the coefficient of $y$. It affects the slope, as well as the $y$-intercept of the line.
+
+Changing $a$ does not affect the $y$-intercept, and changing $b$ does not affect the $x$-intercept.
+
+export function Line2DGraph() {
+    const [a, setA] = useState(1);
+    const [b, setB] = useState(1);
+    const [c, setC] = useState(1);
+
+    function Slider({ value, setValue, label }) {
+        return (
+            <>
+                <label>{label}</label>
+                <input
+                    type="range"
+                    min={-10}
+                    max={10}
+                    step={0.1}
+                    value={value}
+                    onChange={(e) => setValue(parseFloat(e.target.value))}
+                />
+                <span>{value}</span>
+            </>
+        )
+    }
+
+    const f = (x) => (c - a * x) / b;
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={f} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <input type="range" min={-10} max={10} step={0.1} value={c} onChange={(e) => setC(parseFloat(e.target.value))} />
+                
+            </div>
+        </div>
+    )
+}
+
+<Line2DGraph />
+
+Consider two points on the line, one at $x = 0$ and the other at $y = 0$.
+
+We can calculate the intercepts of the line using the general form:
+
+$$
+\begin{align}
+x = 0 \implies \cancel{ax} + by &= c \implies y = \frac{c}{b} \\
+y = 0 \implies ax + \cancel{by} &= c \implies x = \frac{c}{a}
+\end{align}
+$$
+
+Using two points, we can calculate the slope of the line:
+
+$$
+\begin{equation}
+m = \frac{\frac{c}{b} - 0}{0 - \frac{c}{a}} = -\frac{a}{b}
+\end{equation}
+$$
+
+Next, let's consider the normal vector to this line. You can think of it as rotating the line by $90^\circ$.
+To rotate by $90^\circ$, we can swap the $x$ and $y$ components and negate one of them. A visual representation of this is:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tip={[3, 2]} />
+    <Vector tip={[0, 2]} color={color("blue")} />
+    <Vector tail={[0, 2]} tip={[3, 2]} color={color("yellow")} />
+
+    <Vector tip={[2, -3]} />
+    <Vector tip={[2, 0]} color={color("blue")} />
+    <Vector tail={[2, 0]} tip={[2, -3]} color={color("yellow")} />
+</Mafs>
+
+Since the normal vector is perpendicular, the slope of the normal vector can be calculated as:
+
+$$
+\begin{equation}
+m_{\text{normal}} = -\frac{1}{m} = \frac{b}{a}
+\end{equation}
+$$
+
+Recall that the slope is the ratio of the change in $y$ to the change in $x$. Hence, given a $\Delta x = a$, then $\Delta y = m\Delta x = b$.
+As such, the normal vector is:
+
+$$
+\begin{equation}
+\va{n} = \mqty[ a \\ b ]
+\end{equation}
+$$
+
+### Extension to R3
+
+First, let's consider how to describe a plane in $\mathbb{R}^3$.
+We've used the general form of the equation of a line in $\mathbb{R}^2$ to describe a line.
+Given the equation $ax + by = c$, we will need another dimension to describe a plane;
+
+$$
+\begin{equation}
+ax + by + cz = d
+\end{equation}
+$$
+
+We can interpret this equation geometrically as follows:
+
+- At $x = 0$, $y = \frac{d}{b}$ and $z = \frac{d}{c}$.
+- At $y = 0$, $x = \frac{d}{a}$ and $z = \frac{d}{c}$.
+- At $z = 0$, $x = \frac{d}{a}$ and $y = \frac{d}{b}$.
+
+export function Plane3DGraph({ showPoint = false, showN = false, showV = false, }) {
+    const [container, setContainer] = useState(null);
+    const mathboxOptions = {
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    }
+
+    const a = 3;
+    const b = 3;
+    const c = 3;
+    const d = 9;
+
+    function z(x, y) {
+        return (d - a * x - b * y) / c;
+    }
+
+    const zero = [0, 0, 0];
+
+    const P0 = [1, z(1, 1), 1];
+    // Normal vector from point P
+    const magN = Math.sqrt(a ** 2 + b ** 2 + c ** 2);
+    const N = [
+        a / magN + P0[0],
+        b / magN + P0[1],
+        c / magN + P0[2],
+    ];
+
+    // Arbitrary point/vector
+    const P = [0.5, z(0.5, 1.5), 1.5];
+
+    let V = [
+        a,
+        -c,
+        b,
+    ];
+    const magV = Math.sqrt(V[0] ** 2 + V[1] ** 2 + V[2] ** 2);
+    V = [
+        V[0] / magV + P0[0],
+        V[1] / magV + P0[1],
+        V[2] / magV + P0[2],
+    ];
+
+    return (
+        <MB.ContainedMathbox options={mathboxOptions} containerStyle={{ height: "500px" }}>
+            <MB.Cartesian
+                scale={[
+                    0.5, 0.5, 0.5
+                ]}
+            >
+                <MB.Grid axes="xz" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+                <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+                <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+                <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+
+                <MB.Area
+                    id="plane"
+                    axes="xz"
+                    expr={(emit, x, y, i, t) => {
+                        emit(x, z(x, y), y); // Note the order of the axes
+                    }}
+                    width={64}
+                    height={64}
+                    channels={3}
+                    rangeX={[0, 2]}
+                    rangeY={[0, 2]}
+                />
+                <MB.Surface
+                    points="#plane"
+                    opacity={0.5}
+                    color={color("red")}
+                    blending="additive"
+                />
+
+                {showPoint && (
+                    <>
+                        <MB.Array
+                            items={1}
+                            id="point"
+                            data={[P0]}
+                            channels={3}
+                        />
+                        <MB.Point
+                            points="#point"
+                            color={color("blue")}
+                            size={10}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="point_vec"
+                            data={[zero, P0]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#point_vec"
+                            color={color("blue")}
+                        />
+                    </>
+                )}
+
+                {showN && (
+                    <>
+                        <MB.Array
+                            items={2}
+                            id="normal"
+                            data={[P0, N]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#normal"
+                            color={color("green")}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="parallel"
+                            data={[P0, V]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#parallel"
+                            color={color("blue")}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="arbitrary"
+                            data={[zero, P]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#arbitrary"
+                            color={color("green")}
+                        />
+
+                        <MB.Array
+                            items={2}
+                            id="p_to_p0"
+                            data={[P0, P]}
+                            channels={3}
+                        />
+                        <MB.Vector
+                            end={true}
+                            points="#p_to_p0"
+                            color={color("purple")}
+                        />
+                    </>
+                )}
+            </MB.Cartesian>
+        </MB.ContainedMathbox>
+    )
+}
+
+<Plane3DGraph />
+
+However, before considering the equation of a plane in $\mathbb{R}^3$, let's consider the equation of a line in $\mathbb{R}^2$.
+
+Recall that the equation of a 2D line can be written as $ax + by = c$.
+
+Let's interpret this equation geometrically;
+
+- At $x = 0$, $y = \frac{c}{b}$.
+- At $y = 0$, $x = \frac{c}{a}$.
+- The slope of the line is $-\frac{a}{b}$.
+- As such, $c$ is sort-of a scaling factor for the line.
+
+We can use the same logic to interpret the equation of a plane in $\mathbb{R}^3$.
+
+Firstly, we can extend the equation of a line to $\mathbb{R}^3$ as $ax + by + cz = d$.
+However, there's other ways to create a plane.
+
+Choose a vector $\va{P}_0 = (x_0, y_0, z_0)$ on the plane and a normal vector $\va{n} = [a, b, c]$ to the plane.
+So $\va{n}$ is perpendicular to the plane, and any vector parallel to the plane is perpendicular to $\va{n}$.
+
+When two vectors are perpendicular, their dot product is zero.
+So, for any vector, $\va{v}$, parallel to the plane (think of it as drawing on top of the plane):
+
+$$
+\begin{equation}
+\va{n} \cdot \va{v} = 0
+\end{equation}
+$$
+
+<Plane3DGraph showPoint showN />
+
+Define an arbitrary vector $\va{P} = (x, y, z)$ on the plane.
+
+Then, if we get the vector between $\va{P}_0$ and $\va{P}$, i.e. $\va{P} - \va{P}_0$ (the purple vector in the diagram), it's parallel to the plane.
+Therefore, $\va{P} - \va{P}_0$ is perpendicular to $\va{n}$, and as such,
+
+$$
+\begin{equation}
+\va{n} \cdot (\va{P} - \va{P}_0) = 0
+\end{equation}
+$$
+
+We can expand $\va{n}$ into $[n_1, n_2, n_3]$ and $\va{P}$ and $\va{P}_0$ into their components:
+
+$$
+\begin{equation}
+\begin{split}
+\class{green}{\va{n}} \cdot (\class{purple}{\va{P}} - \class{blue}{\va{P}_0}) &= 0 \\
+\class{green}{\mqty[ n_1 \\ n_2 \\ n_3 ]} \cdot \qty(\class{purple}{\mqty[ x \\ y \\ z ]} - \class{blue}{\mqty[ x_0 \\ y_0 \\ z_0 ]}) &= 0 \\
+\mqty[ n_1 \\ n_2 \\ n_3 ] \cdot \mqty[ x - x_0 \\ y - y_0 \\ z - z_0 ] &= 0 \\
+n_1(x - x_0) + n_2(y - y_0) + n_3(z - z_0) &= 0
+\end{split}
+\end{equation}
+$$
+
+This closely resembles the original equation of a plane in $\mathbb{R}^3$, $ax + by + cz = d$.
+
+Hence, with a point $\va{P}_0$ on the plane and a normal vector $\va{n}$ to the plane, the equation of the plane is:
+
+$$
+\begin{equation}
+n_1(x - x_0) + n_2(y - y_0) + n_3(z - z_0) = 0
+\end{equation}
+$$
+
+For example, consider the plane with a point $\va{P}_0 = [2, 1, 3]$ and a normal vector $\va{n} = [1, 3, -3]$.
+Then, for a point $\va{P} = [x, y, z]$ on the plane:
+
+$$
+\begin{equation}
+\begin{split}
+\va{n} \cdot (\va{P} - \va{P}_0) &= 0 \\
+\mqty[ 1 \\ 3 \\ -3 ] \cdot \mqty[ x - 2 \\ y - 1 \\ z - 3 ] &= 0 \\
+(x - 2) + 3(y - 1) - 3(z - 3) &= 0 \\
+x + 3y - 3z &= 8
+\end{split}
+\end{equation}
+$$
+
+Alternatively, we can plug in the values of $\va{P}_0$ and $\va{n}$ directly into the equation of a plane in $\mathbb{R}^3$:
+
+$$
+\begin{equation}
+\begin{split}
+n_1(x - x_0) + n_2(y - y_0) + n_3(z - z_0) &= 0 \\
+1(x - 2) + 3(y - 1) - 3(z - 3) &= 0 \\
+x + 3y - 3z &= 8
+\end{split}
+\end{equation}
+$$
+
+This is very useful for anything involving three-dimensional geometry.
+
+### Normal Vector from a Plane Equation
+
+We know how to find the equation of a plane given a point on the plane and a normal vector to the plane.
+We can also do this in reverse; given the equation of a plane, we find the normal vector to the plane.
+
+Recall the point-normal equation of a plane in $\mathbb{R}^3$:
+
+$$
+\begin{equation}
+\va{n} \cdot (\va{P} - \va{P}_0) = 0
+\end{equation}
+$$
+
+Let's set $\va{n} = [a, b, c]$ and $\va{P}_0 = [x_0, y_0, z_0]$.
+We can then expand the dot product:
+
+$$
+\begin{equation}
+\begin{split}
+\mqty[ a \\ b \\ c ] \cdot \mqty[ x - x_0 \\ y - y_0 \\ z - z_0 ] &= 0 \\
+a(x - x_0) + b(y - y_0) + c(z - z_0) &= 0 \\
+ax - ax_0 + by - by_0 + cz - cz_0 &= 0 \\
+ax + by + cz = ax_0 + by_0 + cz_0
+\end{split}
+\end{equation}
+$$
+
+Recall that the equation of a plane in $\mathbb{R}^3$ is $ax + by + cz = d$.
+In that sense, $d = ax_0 + by_0 + cz_0$.
+
+Recall that the normal vector to the plane is $[a, b, c]$. Therefore, the normal vector to the plane is $[a, b, c] = a\vu{i} + b\vu{j} + c\vu{k}$.
+It's quite interesting how simple the normal vector is to find from the equation of a plane.
+
+
