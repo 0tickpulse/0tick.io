@@ -29,6 +29,9 @@ importers:
       gl-matrix:
         specifier: ^3.4.3
         version: 3.4.3
+      js-easing-functions:
+        specifier: ^1.0.3
+        version: 1.0.3
       katex:
         specifier: ^0.16.9
         version: 0.16.11
@@ -3178,6 +3181,9 @@ packages:
 
   joi@17.13.3:
     resolution: {integrity: sha512-otDA4ldcIx+ZXsKHWmp0YizCweVRZG96J10b0FevjfuncLO1oX59THoAmHkNubYJ+9gWsYsp5k8v4ib6oDv1fA==}
+
+  js-easing-functions@1.0.3:
+    resolution: {integrity: sha512-skDTLPuwWvAVYQVPwmjcFuCv8i8jtVD4L4FELxICwbS1HWFhs+627vOdDhQUGJMe9os6QO2XgEI4qb5umiUQFg==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -9371,6 +9377,8 @@ snapshots:
       '@sideway/address': 4.1.5
       '@sideway/formula': 3.0.1
       '@sideway/pinpoint': 2.0.0
+
+  js-easing-functions@1.0.3: {}
 
   js-tokens@4.0.0: {}
 
