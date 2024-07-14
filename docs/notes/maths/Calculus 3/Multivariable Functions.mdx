@@ -2,16 +2,26 @@
 sidebar_position: 2
 ---
 
-import * as MB from "mathbox-react"
-import * as THREE from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 # Multivariable Functions
 
 Multivariable functions are functions that take multiple inputs and produce a single output.
 
 A single-variable function might look like $f(x) = x^2$, where the input is a single number $x$ and the output is $x^2$. A multivariable function might look like $f(x, y) = x^2 + y^2$, where the input is two numbers $x$ and $y$ and the output is $x^2 + y^2$.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
 
 ## Inputs to Multivariable Functions
 
@@ -124,4 +134,115 @@ One alternative is to use a contour plot. A contour plot is a 2D plot that shows
 A contour plot can be thought of as a top-down view of the 3D graph.
 Each contour line represents a different output value, and the closer the lines are together, the steeper the function is at that point.
 
-One common example of a contour plot is a topographic map, which shows the elevation of the land as a series of contour lines.
+One common example of a contour plot is a topographic map, which shows the elevation of the land as a series of contour lines:
+
+![Topographic Map](https://upload.wikimedia.org/wikipedia/commons/7/79/Topographic_map_example.png)
+
+The contour plot of the function $f(x, y) = x^2 + y^2$ looks like a series of concentric circles, which represent the different levels of the paraboloid.
+
+Recall that a contour line is a line where the function has a constant value.
+So, for a function $f(x, y)$, a contour line is a line where $f(x, y) = c$ for some constant $c$.
+Therefore, we can iterate over different values of $c$ to plot the contour lines.
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {range(-10, 10, 0.5).map(i => (
+        // Solve for f(x, y) = i
+        // Which is x^2 + y^2 = i ==> a circle with radius sqrt(i)
+        <>
+            <Circle center={[0, 0]} radius={Math.sqrt(i)} fillOpacity={0} />
+        </>
+    ))}
+</Mafs>
+
+## Visualizing Multivariable Functions - Vector-Valued
+
+Some multivariable functions output vectors instead of scalars.
+
+### Parametric Equations
+
+Parametric equations take a single input and produce multiple outputs.
+Usually, you can graph these outputs as a series of points in space.
+
+For example:
+
+$$
+\begin{equation}
+f(t) = \mqty[ t^2 \\ t ]
+\end{equation}
+$$
+
+This function takes a single input $t$ and produces a vector $\mqty[ t^2 \\ t ]$.
+
+Let's consider how this function is applied on one point, $t = 2$:
+
+$$
+\begin{equation}
+f(2) = \mqty[ 2^2 \\ 2 ] = \mqty[ 4 \\ 2 ]
+\end{equation}
+$$
+
+We can graph this single point in space:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tip={[4, 2]} />
+</Mafs>
+
+In order to graph the entire function, we need to consider what _range_ of inputs we want to graph.
+For example, if we graph the function for $t \in [0, 5]$, we get:
+
+<Mafs
+    viewBox={{
+        x: [-1, 26],
+        y: [-1, 6]
+    }}
+>
+    <Coordinates.Cartesian />
+    <Plot.Parametric
+        xy={(t) => [t ** 2, t]}
+        t={[0, 5]}
+    />
+</Mafs>
+
+When visualizing parametric equations, you can think of the input $t$ as time.
+Then, you sort-of trace out the path of the function as time progresses.
+Note that when doing this, input information is lost - you can't tell what the input was at any given point, only where the function was at that time.
+
+Consider these two parametric functions:
+
+$$
+\begin{equation}
+f(t) = \mqty[ \sin(t) \\ \cos(t) ], \quad g(t) = \mqty[ \sin(t + \frac{\pi}{2}) \\ \cos(t + \frac{\pi}{2}) ]
+\end{equation}
+$$
+
+If we graph these two different functions together, we can see that they trace the same path.
+One way to think about this is that the two functions are the same, but one is "ahead" of the other by $\frac{\pi}{2}$.
+
+To get around this, one way is to label some points on the path with the input value.
+
+### Vector Fields
+
+Another way to visualize vector-valued functions is with vector fields.
+This works for any function that takes a point in space and outputs a vector.
+
+For example, consider the function $f(x, y) = \mqty[ -y \\ x ]$.
+This function takes a point $(x, y)$ and outputs the vector $\mqty[ -y \\ x ]$.
+
+We can place a vector on some points in space, where the vector is the output of the function at that point:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.VectorField
+        xy={([x, y]) => [-y, x]}
+    />
+</Mafs>
+
+One visual example of a vector field is the flow of water in a river.
+
+## Transformations
+
+Multivariable functions can also be used to describe transformations in space.
+
+Recall that functions can be thought of as a mapping from one set of points to another set of points.
