@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi } from "mafs";
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point } from "mafs";
 import MathEquation from "@site/src/components/Math";
 import { useState, useCallback } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
@@ -1903,4 +1903,166 @@ In that sense, $d = ax_0 + by_0 + cz_0$.
 Recall that the normal vector to the plane is $[a, b, c]$. Therefore, the normal vector to the plane is $[a, b, c] = a\vu{i} + b\vu{j} + c\vu{k}$.
 It's quite interesting how simple the normal vector is to find from the equation of a plane.
 
+### Example Problem: Distance from a Point to a Plane
+
+> Let a plane in $\mathbb{R}^3$ be defined by the equation $\va{n} \cdot (\va{P} - \va{P}_0) = 0$.
+>
+> Let a point $\va{r} = [r_x, r_y, r_z]$ be an arbitrary point in the same space.
+>
+> Find the shortest distance, $\delta$, from the point to the plane.
+
+The shortest distance is when the line from the point to the plane is perpendicular to the plane:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Point x={0} y={2} />
+    <Vector tail={[0, 2]} tip={[0, 0]}  />
+    <Vector tail={[0, 2]} tip={[-1, 0]}  />
+    <Vector tail={[0, 2]} tip={[1, 0]}  />
+    <Plot.OfX y={() => 0} color={color("green")} />
+</Mafs>
+
+Therefore, the vector from the point to the plane is parallel to the normal vector of the plane, i.e. $k\va{n}$.
+
+We shall first break the vectors into their components:
+
+$$
+\begin{align}
+\va{n} &= [a, b, c] = a\vu{i} + b\vu{j} + c\vu{k} \label{eq:example_problem_distance_from_a_point_to_a_plane-n_components} \\
+\va{r} &= [r_x, r_y, r_z] = r_x\vu{i} + r_y\vu{j} + r_z\vu{k} \label{eq:example_problem_distance_from_a_point_to_a_plane-r_components} \\
+\va{P}_0 &= [x_0, y_0, z_0] = x_0\vu{i} + y_0\vu{j} + z_0\vu{k} \label{eq:example_problem_distance_from_a_point_to_a_plane-p0_components}
+\end{align}
+$$
+
+We are given the equation of the plane as $\va{n} \cdot (\va{P} - \va{P}_0) = 0$.
+Let $\va{f} = \va{r} - \va{P}_0$. Then,
+
+$$
+\begin{equation}
+\begin{split}
+\va{f} &= r_x\vu{i} + r_y\vu{j} + r_z\vu{k} - x_0\vu{i} - y_0\vu{j} - z_0\vu{k} \\
+&= (r_x - x_0)\vu{i} + (r_y - y_0)\vu{j} + (r_z - z_0)\vu{k}
+\end{split} \label{eq:example_problem_distance_from_a_point_to_a_plane-f}
+\end{equation}
+$$
+
+Let $f$ be the magnitude of $\va{f}$.
+
+Remember that $\va{P}_0$ is the defining point of the plane, so it naturally lies on the plane.
+We can use some geometry to find the shortest distance from the point to the plane.
+
+First, let's draw a diagram. Although it's in 2D, the concept is identical.
+
+export function ExampleProblemDistanceFromAPointToAPlane() {
+    const p0 = [2, 1];
+    const n = [-1, 2];
+    const slope = -n[0] / n[1];
+    const lineAngle = Math.atan(slope);
+
+    const r = [4, 5];
+    const f = vec.sub(r, p0);
+    const angleFromP0ToR = Math.atan((r[1] - p0[1]) / (r[0] - p0[0]));
+
+    const projectedVec = vec.scale(n, vec.dot(f, n) / vec.mag(n) ** 2);
+    const angleOfProjection = Math.atan((projectedVec[1]) / (projectedVec[0]));
+
+    return (
+        <Mafs
+            viewBox={{
+                x: [0, 6],
+                y: [0, 6],
+            }}
+        >
+            <Plot.OfX y={(x) => slope * (x - p0[0]) + p0[1]} />
+
+            <Point x={p0[0]} y={p0[1]} color={color("green")} />
+            <LaTeX at={vec.add(p0, [0, -0.5])} tex="\vec{\mathbf{P}}_0" />
+
+            <Vector tail={p0} tip={vec.add(p0, n)} />
+            <LaTeX at={vec.add(p0, vec.scale(n, 1.2))} tex="\vec{\mathbf{n}}" />
+
+            <Point x={r[0]} y={r[1]} />
+            <LaTeX at={vec.add(r, [0, 0.5])} tex="\vec{\mathbf{r}}" />
+
+            <Vector tail={p0} tip={r} />
+            <LaTeX at={lineLabel(p0, r, "left")} tex="\vec{\mathbf{f}}" />
+
+            <Angle at={r} fromRad={angleFromP0ToR - Math.PI} toRad={angleOfProjection} radius={0.6} label="\theta" />
+            <Angle at={vec.sub(r, projectedVec)} fromRad={angleOfProjection + Math.PI} toRad={angleOfProjection + Math.PI * 3 / 2} radius={0.6} />
+
+            <Line.Segment point1={r} point2={vec.sub(r, projectedVec)} style="dashed" />
+            <LaTeX at={lineLabel(r, vec.sub(r, projectedVec), "left")} tex="\delta" />
+        </Mafs>
+    );
+}
+
+<ExampleProblemDistanceFromAPointToAPlane />
+
+We can go about this in two ways. Let's first consider the trigonometric approach.
+
+By SOHCAHTOA:
+
+$$
+\begin{equation}
+\begin{split}
+\cos(\theta) = \frac{\delta}{f} \implies \delta &= f\cos(\theta) \\
+&= \norm{\va{f}}\cos(\theta) \\
+&= \frac{\norm{\va{n}}\norm{\va{f}}\cos(\theta)}{\norm{\va{n}}} \\
+&= \frac{\va{n} \cdot \va{f}}{\norm{\va{n}}}
+\end{split}
+\end{equation}
+$$
+
+There's also another way to think about this.
+Recall that the dot product of two vectors $\va{a}$ and $\va{b}$ is the projection of $\va{a}$ onto $\va{b}$ multiplied by the magnitude of $\va{b}$.
+In our context, to get $\delta$, we can project $\va{f}$ onto $\va{n}$. Since the dot product is the product of the projection and magnitude, we need to divide by the magnitude of $\va{n}$.
+
+As such,
+
+$$
+\begin{equation}
+\delta = \frac{\va{n} \cdot \va{f}}{\norm{\va{n}}}
+\end{equation}
+$$
+
+Plugging in Equations $\eqref{eq:example_problem_distance_from_a_point_to_a_plane-n_components}$ and $\eqref{eq:example_problem_distance_from_a_point_to_a_plane-f}$:
+
+$$
+\begin{equation}
+\begin{split}
+\delta &= \frac{\class{blue}{\va{n}} \cdot \class{yellow}{\va{f}}}{\norm{\class{blue}{\va{n}}}} \\
+&= \frac{1}{\norm{\class{blue}{\va{n}}}}\qty(\class{blue}{a}\class{yellow}{(r_x - x_0)} + \class{blue}{b}\class{yellow}{(r_y - y_0)} + \class{blue}{c}\class{yellow}{(r_z - z_0)}) \\
+&= \frac{1}{\sqrt{a^2 + b^2 + c^2}}\qty(ar_x - ax_0 + br_y - by_0 + cr_z - cz_0) \\
+&= \frac{1}{\sqrt{a^2 + b^2 + c^2}}\qty(ar_x + br_y + cr_z - ax_0 - by_0 - cz_0)
+\end{split}
+\end{equation}
+$$
+
+Recall from Equation $\eqref{eq:normal_vector_from_a_plane_equation-d}$ that $d = ax_0 + by_0 + cz_0$. Therefore:
+
+$$
+\begin{equation}
+\begin{split}
+\delta &= \frac{1}{\sqrt{a^2 + b^2 + c^2}}\qty(ar_x + br_y + cr_z - \class{red}{(ax_0 + by_0 + cz_0)}) \\
+&= \frac{1}{\sqrt{a^2 + b^2 + c^2}}\qty(ar_x + br_y + cr_z - \class{red}{d})
+\end{split}
+\end{equation}
+$$
+
+This is the shortest distance from the point to the plane.
+To demonstrate this, let's consider an example.
+
+Let a plane in $\mathbb{R}^3$ be defined by the equation $1x + 2y - 3z = 4$.
+
+To find the distance between a point $\va{r} = [4, 5, 6]$ and the plane:
+
+$$
+\begin{equation}
+\begin{split}
+\delta &= \frac{1}{\sqrt{a^2 + b^2 + c^2}}\qty(ar_x + br_y + cr_z - d) \\
+&= \frac{1}{\sqrt{1^2 + 2^2 + (-3)^2}}\qty(1(4) + 2(5) + (-3)(6) - 4) \\
+&= \frac{8}{\sqrt{14}} \approx 2.14
+\end{split}
+\end{equation}
+$$
 
