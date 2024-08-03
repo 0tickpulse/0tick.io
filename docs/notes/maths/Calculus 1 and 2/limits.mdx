@@ -368,7 +368,7 @@ $$
 \end{equation}
 $$
 
-:::
+:::note More formal please!
 
 The more formal way to say this is:
 
@@ -591,9 +591,11 @@ export function UnitCircle({
             </Mafs>
             <p>
                 <MathEquation>{String.raw`
+                    \begin{split}
                     \theta &= ${(angle / Math.PI).toFixed(2)}\pi \\
                     ${showTan ? String.raw`\tan{\theta} &= ${Math.tan(angle).toFixed(2)} \\` : ""}
                     ${showSector ? String.raw`\text{Area of sector} &= ${(angle / 2).toFixed(2)} \\` : ""}
+                    \end{split}
                 `}</MathEquation>
             </p>
         </span>
@@ -603,7 +605,7 @@ export function UnitCircle({
 
 <UnitCircle />
 
-The function $\frac{\sin(x)}{x}$ can be visualized as the height of the small, blue triangle.
+The function $\sin(x)$ can be visualized as the height of the small, blue triangle.
 If we extend the line to the right and draw a line from the right to the top, we get a new triangle.
 
 <UnitCircle showTan />

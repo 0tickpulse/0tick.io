@@ -695,7 +695,7 @@ It should look like this:
                     value={dx}
                     onChange={(e) => setDx(parseFloat(e.target.value))}
                 />
-                <MathEquation>
+                <MathEquation inline>
                     {`\\Delta x = ${dx.toFixed(2)}`}
                 </MathEquation>
             </div>
@@ -896,6 +896,61 @@ y_0 &= \frac{y_i}{1 + 8\Delta x + 16(\Delta x)^2}
 $$
 
 Therefore, the answer is $y_0 = \frac{y_i}{1 + 8\Delta x + 16(\Delta x)^2}$.
+
+### Computing Approximations with Technology
+
+Euler's method is a very simple method to approximate the solution to a DE.
+However, it can be very tedious to do by hand, especially for more complex DEs or more steps.
+Thus, it's often done with technology. We'll use Python to demonstrate this, but this can be done with anything.
+
+Consider the DE:
+
+$$
+\begin{equation}
+\dv{y}{x} = y^2 + x^2, \quad y(0) = 1
+\end{equation}
+$$
+
+Let's approximate the solution after 300 steps with $\Delta x = 0.01$.
+
+First, lay out the constants:
+
+```py
+dx = 0.01
+n = 300
+x0 = 0
+y0 = 1
+```
+
+Next, define the function for the slope:
+
+```py
+def slope(x, y):
+    return y ** 2 + x ** 2
+```
+
+Then, iterate through the steps:
+
+```py
+x = x0
+y = y0
+
+for i in range(n):
+    y += dx * slope(x, y)
+    x += dx
+```
+
+Finally, print the result:
+
+```py
+print(y)
+```
+
+This is the bare minimum to get the approximation. You can expand on this by:
+
+- Storing the $x$ and $y$ values in a list.
+- Using some plotting library to visualize the approximation.
+- Using a loop to iterate through different step sizes or initial conditions to see how they affect the approximation.
 
 ## Separation of variables
 

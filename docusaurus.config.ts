@@ -152,6 +152,11 @@ const config = {
             theme: lightCodeTheme,
             darkTheme: darkCodeTheme,
         },
+        mermaid: {
+            options: {
+                fontFamily: "var(--ifm-font-family-base)",
+            }
+        }
     } satisfies Preset.ThemeConfig,
 } satisfies Config;
 

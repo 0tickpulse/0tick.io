@@ -1,0 +1,42 @@
+---
+sidebar_position: 3
+---
+
+# Set Theory Quickstart
+
+Set theory is the true foundation of mathematics; they govern basically everything else.
+A set is, in essence, a collection of objects, and set theory is the study of these collections.
+
+For $S$ to be a set, it must be well-defined, i.e., there must be a clear way to determine whether an object $a$ is in the set or not.
+
+There are a few ways to define a set:
+
+1. **Roster notation**: Listing all the elements of the set within curly braces.
+   For example, the set of even numbers less than 10 can be written as $S = \{2, 4, 6, 8\}$.
+2. **Set-builder notation**: Describing the properties that the elements of the set must satisfy.
+   For example, the set of even numbers less than 10 can be written as $S = \{x \mid x \text{ is even and } x < 10\}$.
+
+Sometimes we can use a both notations to define a set. For example, the set of all even natural numbers can be written as $S = \{2, 4, 6, 8, \ldots\}$ or $S = \{x \mid x \text{ is even and } x \in \mathbb{N}\}$.
+
+Recall the sets of numbers that we have learned previously. We will now try to define them more formally using this notation:
+
+$$
+\begin{alignat}{3}
+\mathbb{N} & = \{ n \mid n \text{ is a natural number} \} && = \{1, 2, 3, \ldots\} \\
+\mathbb{Z} & = \{ n \mid n \text{ is an integer} \} && = \{\ldots, -2, -1, 0, 1, 2, \ldots\} \\
+\mathbb{Q} & = \{ r \mid r \text{ is a rational number} \} && = \left\{\frac{a}{b} \mid a, b \in \mathbb{Z}, b \neq 0\right\} \\
+\mathbb{R} & = \{ r \mid r \text{ is a real number} \} \\
+\mathbb{C} & = \{ z \mid z \text{ is a complex number} \} && = \{a + bi \mid a, b \in \mathbb{R}\}
+\end{alignat}
+$$
+
+## Notation and Terminology
+
+Let $E$ be the set of even natural numbers. We can write this as $E = \{2, 4, 6, 8, \ldots\}$ or $E = \{x \mid x \text{ is even and } x \in \mathbb{N}\}$.
+
+Since the number $8$ is in the set $E$, we write $8 \in E$. If the number $7$ is not in the set $E$, we write $7 \notin E$.
+
+If we have a set $A$ and a set $B$, and everything in $B$ is also in $A$, we say that $B$ is a subset of $A$, and write $B \subseteq A$.
+
+If, additionally, there is at least one element in $A$ that is not in $B$, i.e. $A \neq B$, we say that $B$ is a proper subset of $A$, and write $B \subset A$.
+To prove that $A = B$, we need to show that $A \subseteq B$ and $B \subseteq A$.

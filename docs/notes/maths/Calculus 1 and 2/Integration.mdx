@@ -1252,13 +1252,11 @@ $$
 We have a composite function $\cos(x^2 + 3)$, and the derivative of $x^2 + 3$ is $2x$. As such, we can let $u = x^2 + 3$:
 
 $$
-\begin{equation}
-\begin{split}
+\begin{align}
 u &= x^2 + 3 \\
 \dv{u}{x} &= 2x \\
 \dd{u} &= 2x \dd{x} \\
-\end{split}
-\end{equation}
+\end{align}
 $$
 
 Hence, the integral can be rewritten as:
@@ -1660,7 +1658,7 @@ We have derived the fact that $\class{yellow}{x} = \class{green}{a} \sin(\theta)
 
 $$
 \begin{equation}
-d\class{yellow}{x} = \class{green}{a} \cos(\theta) d\theta \label{eq:trigonometric_substitution_with_sine-first-dx-def}
+d\class{yellow}{x} = \class{green}{a} \cos(\theta) \dd{\theta} \label{eq:trigonometric_substitution_with_sine-first-dx-def}
 \end{equation}
 $$
 
@@ -1668,7 +1666,7 @@ Take the original integral $\eqref{eq:trigonometric_substitution_with_sine-first
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{a^2 - x^2}}\class{blue}\dd{x} = \int \frac{\class{blue}{a \cos(\theta)}}{\sqrt{a^2 - x^2}}\class{blue}{d\theta}
+\int \frac{1}{\sqrt{a^2 - x^2}}\class{blue}{\dd{x}} = \int \frac{\class{blue}{a \cos(\theta)}}{\sqrt{a^2 - x^2}}\class{blue}{\dd{\theta}}
 \end{equation}
 $$
 
@@ -1677,8 +1675,8 @@ Then, substitute $\eqref{eq:trigonometric_substitution_with_sine-first-radical-d
 $$
 \begin{equation}
 \begin{split}
-\int \frac{a \cos(\theta)}{\class{red}{\sqrt{a^2 - x^2}}}d\theta &= \int \frac{\cancel{a \cos(\theta)}}{\class{red}{\cancel{a \cos(\theta)}}}d\theta \\
-&= \int d\theta = \theta + C
+\int \frac{a \cos(\theta)}{\class{red}{\sqrt{a^2 - x^2}}}\dd{\theta} &= \int \frac{\cancel{a \cos(\theta)}}{\class{red}{\cancel{a \cos(\theta)}}}\dd{\theta} \\
+&= \int \dd{\theta} = \theta + C
 \end{split}
 \end{equation}
 $$
@@ -1785,14 +1783,12 @@ As such, we can once again construct a triangle and use $\theta$ as our substitu
 Using this triangle:
 
 $$
-\begin{equation}
-\begin{split}
+\begin{align}
 \tan(\theta) &= \frac{\class{yellow}{x}}{\class{red}{a}} \\
 \class{yellow}{x} &= \class{red}{a} \tan(\theta) \label{eq:trigonometric_substitution_with_tangent-first-x-def} \\
 \theta &= \arctan\qty(\frac{\class{yellow}{x}}{\class{red}{a}}) \label{eq:trigonometric_substitution_with_tangent-first-theta-def} \\
-d\class{yellow}{x} &= \class{red}{a} \sec^2(\theta) d\theta \label{eq:trigonometric_substitution_with_tangent-first-dx-def}
-\end{split}
-\end{equation}
+\dd{\class{yellow}{x}} &= \class{red}{a} \sec^2(\theta) \dd{\theta} \label{eq:trigonometric_substitution_with_tangent-first-dx-def}
+\end{align}
 $$
 
 Using the Pythagorean Theorem, the length of the green line/hypotenuse is $\sqrt{\class{red}{a}^2 + \class{yellow}{x}^2}$. Hence:
@@ -1819,7 +1815,7 @@ Now substitute $\eqref{eq:trigonometric_substitution_with_tangent-first-dx-def}$
 
 $$
 \begin{equation}
-\int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} \class{blue}\dd{x} = \int \frac{\class{blue}{a \cancel{\sec^2(\theta)}}}{\class{red}{a}^2 \cancel{\sec^2(\theta)}} \class{blue}{d\theta} = \frac{1}{\class{red}{a}} \theta + C
+\int \frac{1}{\class{red}{a}^2 \sec^2(\theta)} \class{blue}{\dd{x}} = \int \frac{\class{blue}{a \cancel{\sec^2(\theta)}}}{\class{red}{a}^2 \cancel{\sec^2(\theta)}} \class{blue}{\dd{\theta}} = \frac{1}{\class{red}{a}} \theta + C
 \end{equation}
 $$
 
@@ -1827,7 +1823,7 @@ Finally, substitute $\eqref{eq:trigonometric_substitution_with_tangent-first-the
 
 $$
 \begin{equation}
-\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} dx = \frac{1}{\class{red}{a}}\arctan\qty(\frac{\class{yellow}{x}}{\class{red}{a}}) + C
+\int \frac{1}{\class{red}{a}^2 + \class{yellow}{x}^2} \dd{x} = \frac{1}{\class{red}{a}}\arctan\qty(\frac{\class{yellow}{x}}{\class{red}{a}}) + C
 \end{equation}
 $$
 
@@ -1837,7 +1833,7 @@ $$
 >
 > $$
 > \begin{equation}
-> \int \frac{1}{\sqrt{3 - 2x^2}} dx \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)}
+> \int \frac{1}{\sqrt{3 - 2x^2}} \dd{x} \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)}
 > \end{equation}
 > $$
 
@@ -1845,7 +1841,7 @@ To solve this, we first need to get rid of the coefficient of $x$;
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{3 - 2x^2}} dx = \int \frac{1}{\sqrt{2(3/2 - x^2)}} dx = \int \frac{1}{\sqrt{2(\sqrt{3/2}^2 - x^2)}} dx
+\int \frac{1}{\sqrt{3 - 2x^2}} \dd{x} = \int \frac{1}{\sqrt{2(3/2 - x^2)}} \dd{x} = \int \frac{1}{\sqrt{2(\sqrt{3/2}^2 - x^2)}} \dd{x}
 \end{equation}
 $$
 
@@ -1853,13 +1849,11 @@ This becomes an integral of the form $1/\sqrt{a^2 - x^2}$ where $a = \sqrt{3/2}$
 Differentiating both sides w.r.t $\theta$, and solving for $\theta$ in terms of $x$:
 
 $$
-\begin{equation}
-\begin{split}
+\begin{align}
 x &= \sqrt{\frac{3}{2}}\sin(\theta) \\
-dx &= \sqrt{\frac{3}{2}}\cos(\theta) d\theta \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def} \\
+\dd{x} &= \sqrt{\frac{3}{2}}\cos(\theta) \dd{\theta} \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-dx-def} \\
 \theta &= \arcsin\qty(\sqrt{\frac{2}{3}}x) \label{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)-theta-def}
-\end{split}
-\end{equation}
+\end{align}
 $$
 
 Calculate the denominator:
@@ -1886,9 +1880,9 @@ Substituting this, along with Equation $\eqref{eq:example_problem_trigonometric_
 $$
 \begin{equation}
 \begin{split}
-\int \frac{1}{\sqrt{3 - 2x^2}} dx &= \int \frac{1}{\sqrt{3\cos^2(\theta)}} \class{yellow}\dd{x} \\
-&= \int \frac{\class{yellow}{\sqrt{3}/\sqrt{2} \cos(\theta)}}{\sqrt{3} \cos(\theta)} \class{yellow}{d\theta} \\
-&= \int \frac{1}{\sqrt{2}} d\theta = \frac{1}{\sqrt{2}} \theta + C
+\int \frac{1}{\sqrt{3 - 2x^2}} \dd{x} &= \int \frac{1}{\sqrt{3\cos^2(\theta)}} \class{yellow}{\dd{x}} \\
+&= \int \frac{\class{yellow}{\sqrt{3}/\sqrt{2} \cos(\theta)}}{\sqrt{3} \cos(\theta)} \class{yellow}{\dd{\theta}} \\
+&= \int \frac{1}{\sqrt{2}} \dd{\theta} = \frac{1}{\sqrt{2}} \theta + C
 \end{split}
 \end{equation}
 $$
@@ -1897,7 +1891,7 @@ Substituting $\eqref{eq:example_problem_trigonometric_substitution_1/sqrt(3-2x2)
 
 $$
 \begin{equation}
-\int \frac{1}{\sqrt{3 - 2x^2}} dx = \frac{1}{\sqrt{2}} \theta + C = \frac{1}{\sqrt{2}} \arcsin\qty(\sqrt{\frac{2}{3}}x) + C
+\int \frac{1}{\sqrt{3 - 2x^2}} \dd{x} = \frac{1}{\sqrt{2}} \theta + C = \frac{1}{\sqrt{2}} \arcsin\qty(\sqrt{\frac{2}{3}}x) + C
 \end{equation}
 $$
 
@@ -1909,7 +1903,7 @@ Consider the following integral:
 
 $$
 \begin{equation}
-\int \frac{x - 5}{2x^2 - 5x + 3} dx \label{eq:integration_by_partial_fractions-original}
+\int \frac{x - 5}{2x^2 - 5x + 3} \dd{x} \label{eq:integration_by_partial_fractions-original}
 \end{equation}
 $$
 
@@ -1946,8 +1940,8 @@ $$
 \frac{A}{x - 1} + \frac{B}{2x - 3} &= \frac{A(2x - 3)}{(x - 1)(2x - 3)} + \frac{B(x - 1)}{(x - 1)(2x - 3)} \\
 &= \frac{A(2x - 3) + B(x - 1)}{(x - 1)(2x - 3)} \\
 &= \frac{\class{red}{2Ax} + \class{blue}{(-3A)} + \class{red}{Bx} + \class{blue}{(-B)}}{(x - 1)(2x - 3)} \\
-&= \frac{\class{red}{(2A + B)x} + \class{blue}{(-3A - B)}}{(x - 1)(2x - 3)} \label{eq:integration_by_partial_fractions-numerator}
-\end{split}
+&= \frac{\class{red}{(2A + B)x} + \class{blue}{(-3A - B)}}{(x - 1)(2x - 3)}
+\end{split} \label{eq:integration_by_partial_fractions-numerator}
 \end{equation}
 $$
 
@@ -2011,8 +2005,8 @@ Substitute $A = 4$ and $B = -7$ back into $\eqref{eq:integration_by_partial_frac
 $$
 \begin{equation}
 \begin{split}
-\int \frac{x - 5}{2x^2 - 5x + 3} dx &= \int \frac{4}{x - 1} - \frac{7}{2x - 3} dx \\
-&= 4 \int \frac{1}{x - 1} dx - \frac{7}{2} \int \frac{2}{2x - 3} dx \\
+\int \frac{x - 5}{2x^2 - 5x + 3} \dd{x} &= \int \frac{4}{x - 1} - \frac{7}{2x - 3} \dd{x} \\
+&= 4 \int \frac{1}{x - 1} \dd{x} - \frac{7}{2} \int \frac{2}{2x - 3} \dd{x} \\
 \end{split}
 \end{equation}
 $$
@@ -2022,9 +2016,9 @@ Now we can integrate the two terms by reversing the chain rule:
 $$
 \begin{equation}
 \begin{split}
-\int \overbrace{\boxed{\frac{1}{\class{red}{\underbrace{x - 1}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace\dd{x}_{g'(x)}} &= f(g(x)) + C \\
+\int \overbrace{\boxed{\frac{1}{\class{red}{\underbrace{x - 1}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace{\dd{x}}_{g'(x)}} &= f(g(x)) + C \\
 &= \ln|x - 1| + C \\
-\int \overbrace{\boxed{\frac{2}{\class{red}{\underbrace{2x - 3}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace\dd{x}_{g'(x)}} &= f(g(x)) + C \\
+\int \overbrace{\boxed{\frac{2}{\class{red}{\underbrace{2x - 3}_{g(x)}}}}}^{f'(g(x))} \class{blue}{\underbrace{\dd{x}}_{g'(x)}} &= f(g(x)) + C \\
 &= \ln|2x - 3| + C
 \end{split}
 \end{equation}
@@ -2034,7 +2028,7 @@ Therefore, the integral at $\eqref{eq:integration_by_partial_fractions-original}
 
 $$
 \begin{equation}
-\int \frac{x - 5}{2x^2 - 5x + 3} dx = 4\ln|x - 1| - \frac{7}{2}\ln|2x - 3| + C
+\int \frac{x - 5}{2x^2 - 5x + 3} \dd{x} = 4\ln|x - 1| - \frac{7}{2}\ln|2x - 3| + C
 \end{equation}
 $$
 
@@ -2051,7 +2045,7 @@ Consider the following improper integral:
 
 $$
 \begin{equation}
-\int_1^{\infty} \frac{1}{x^2} dx
+\int_1^{\infty} \frac{1}{x^2} \dd{x}
 \end{equation}
 $$
 
@@ -2074,7 +2068,7 @@ Since you can't add infinite things, you consider what the area approaches as th
 $$
 \begin{equation}
 \begin{split}
-\int_1^{\infty} \frac{1}{x^2} dx = \lim_{n \to \infty} \int_1^n \frac{1}{x^2} dx &= \lim_{n \to \infty} \frac{x^{-1}}{-1} dx \\
+\int_1^{\infty} \frac{1}{x^2} \dd{x} = \lim_{n \to \infty} \int_1^n \frac{1}{x^2} \dd{x} &= \lim_{n \to \infty} \frac{x^{-1}}{-1} \dd{x} \\
 &= \lim_{n \to \infty}\qty(-\frac{1}{n} - \qty(-\frac{1}{1})) \\
 &= \lim_{n \to \infty}\qty(-\frac{1}{n} + 1) = 1
 \end{split}
@@ -2092,7 +2086,7 @@ For instance:
 $$
 \begin{equation}
 \begin{split}
-\int_1^{\infty} \frac{1}{x} dx = \lim_{n \to \infty} \int_1^n \frac{1}{x} dx &= \lim_{n \to \infty} (\ln|n| - \ln|1|) \\
+\int_1^{\infty} \frac{1}{x} \dd{x} = \lim_{n \to \infty} \int_1^n \frac{1}{x} \dd{x} &= \lim_{n \to \infty} (\ln|n| - \ln|1|) \\
 \end{split}
 \end{equation}
 $$
@@ -2118,22 +2112,20 @@ As such, this integral is **divergent**.
 >
 > $$
 > \begin{equation}
-> \int x^3 \sqrt{9 - x^2} dx \label{eq:example_problem_combining_u_and_trigonometric_substitution-main}
+> \int x^3 \sqrt{9 - x^2} \dd{x} \label{eq:example_problem_combining_u_and_trigonometric_substitution-main}
 > \end{equation}
 > $$
 
 Since we have $\sqrt{3^2 - x^2}$, we can substitute $x = 3\sin(\theta)$. As always:
 
 $$
-\begin{equation}
-\begin{split}
+\begin{align}
 x &= 3\sin(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-x-def} \\
-dx &= 3\cos(\theta) d\theta \\
+\dd{x} &= 3\cos(\theta) \dd{\theta} \\
 \theta &= \arcsin\qty(\frac{x}{3}) \label{eq:example_problem_combining_u_and_trigonometric_substitution-main-theta-def} \\
 \sqrt{9 - x^2} &= \sqrt{9 - 9\sin^2(\theta)} \\
 &= \sqrt{9(1 - \sin^2(\theta))} = 3\cos(\theta)
-\end{split}
-\end{equation}
+\end{align}
 $$
 
 Therefore, the integral at $\eqref{eq:example_problem_combining_u_and_trigonometric_substitution-main}$ can be rewritten as:
@@ -2141,8 +2133,8 @@ Therefore, the integral at $\eqref{eq:example_problem_combining_u_and_trigonomet
 $$
 \begin{equation}
 \begin{split}
-\int \class{red}{x^3} \class{blue}{\sqrt{9 - x^2}} \class{green}\dd{x} &= \int \class{red}{27\sin^3(\theta)} \class{blue}{3\cos(\theta)} \class{green}{3\cos(\theta) d\theta} \\
-&= \int 243 \sin^3(\theta) \cos^2(\theta) d\theta
+\int \class{red}{x^3} \class{blue}{\sqrt{9 - x^2}} \class{green}{\dd{x}} &= \int \class{red}{27\sin^3(\theta)} \class{blue}{3\cos(\theta)} \class{green}{3\cos(\theta) \dd{\theta}} \\
+&= \int 243 \sin^3(\theta) \cos^2(\theta) \dd{\theta}
 \end{split}
 \end{equation}
 $$
@@ -2151,15 +2143,15 @@ With odd powers of trigonometric functions, it is often helpful to separate them
 
 $$
 \begin{equation}
-\int 243 \sin^3(\theta) \cos^2(\theta) d\theta = 243 \int \sin^2(\theta) \cos^2(\theta) \sin(\theta) d\theta
+\int 243 \sin^3(\theta) \cos^2(\theta) \dd{\theta} = 243 \int \sin^2(\theta) \cos^2(\theta) \sin(\theta) \dd{\theta}
 \end{equation}
 $$
 
-Here, if we let $-\sin(\theta) d\theta$ be $\dd{u}$, then we need to make $u = \cos(\theta)$. To do so, we can make use of the Pythagorean identity once again:
+Here, if we let $-\sin(\theta) \dd{\theta}$ be $\dd{u}$, then we need to make $u = \cos(\theta)$. To do so, we can make use of the Pythagorean identity once again:
 
 $$
 \begin{equation}
-243 \int \class{red}{\sin^2(\theta)} \cos^2(\theta) \sin(\theta) d\theta = 243 \int \class{red}{(1 - \cos^2(\theta))} \cos^2(\theta) \sin(\theta) d\theta
+243 \int \class{red}{\sin^2(\theta)} \cos^2(\theta) \sin(\theta) \dd{\theta} = 243 \int \class{red}{(1 - \cos^2(\theta))} \cos^2(\theta) \sin(\theta) \dd{\theta}
 \end{equation}
 $$
 
@@ -2167,15 +2159,22 @@ This should be relatively obvious - we have a function of something ($\cos(\thet
 Therefore we can apply $u$-substitution:
 
 $$
+\begin{align}
+u &= \cos(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-u-def} \\
+\dd{u} &= -\sin(\theta) \dd{\theta}
+\end{align}
+$$
+
+Hence:
+
+$$
 \begin{equation}
 \begin{split}
-u &= \cos(\theta) \label{eq:example_problem_combining_u_and_trigonometric_substitution-u-def} \\
-du &= -\sin(\theta) d\theta \\
-243 \int (1 - \cos^2(\theta)) \cos^2(\theta) \sin(\theta) d\theta &= -243 \int \class{red}{(1 - \cos^2(\theta)) \cos^2(\theta)} \class{blue}{(-\sin(\theta)) d\theta} \\
-&= -243 \int \class{red}{(1 - u^2)u^2} \class{blue}\dd{u} \\
-&= -243 \int (u^2 - u^4) du \\
-&= -243 \qty(\frac{u^3}{3} - \frac{u^5}{5}) + C \label{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}
-\end{split}
+243 \int (1 - \cos^2(\theta)) \cos^2(\theta) \sin(\theta) \dd{\theta} &= -243 \int \class{red}{(1 - \cos^2(\theta)) \cos^2(\theta)} \class{blue}{(-\sin(\theta)) \dd{\theta}} \\
+&= -243 \int \class{red}{(1 - u^2)u^2} \class{blue}{\dd{u}} \\
+&= -243 \int (u^2 - u^4) \dd{u} \\
+&= -243 \qty(\frac{u^3}{3} - \frac{u^5}{5}) + C
+\end{split} \label{eq:example_problem_combining_u_and_trigonometric_substitution-answer-u}
 \end{equation}
 $$
 
@@ -2196,7 +2195,7 @@ Finally, substituting this back into $\eqref{eq:example_problem_combining_u_and_
 $$
 \begin{equation}
 \begin{split}
-\int x^3 \sqrt{9 - x^2} dx = \dots &= -243 \qty(\frac{u^3}{3} - \frac{u^5}{5}) + C \\
+\int x^3 \sqrt{9 - x^2} \dd{x} = \dots &= -243 \qty(\frac{u^3}{3} - \frac{u^5}{5}) + C \\
 &= -243 \qty(\frac{\qty(1 - \frac{x^2}{9})^\frac{3}{2}}{3} - \frac{\qty(1 - \frac{x^2}{9})^\frac{5}{2}}{5}) + C \\
 &= -243 \qty(\frac{\frac{1}{9^{3/2}} \qty(9 - x^2)^\frac{3}{2}}{3} - \frac{\frac{1}{9^{5/2}} \qty(9 - x^2)^\frac{5}{2}}{5}) + C \\
 &= -243 \qty(\frac{\qty(9 - x^2)^\frac{3}{2}}{3 \cdot 3^3} - \frac{\qty(9 - x^2)^\frac{5}{2}}{5 \cdot 3^5} ) + C \\
@@ -2218,7 +2217,7 @@ Accumulation functions are used to find the total accumulation of a quantity ove
 The integral is formally defined as the limit of Riemann sums:
 
 $$
-\int_a^b f(x) dx = \lim_{n \to \infty} \sum_{i=1}^n f(x_i) \Delta x
+\int_a^b f(x) \dd{x} = \lim_{n \to \infty} \sum_{i=1}^n f(x_i) \Delta x
 $$
 
 where $\Delta x = \frac{b - a}{n}$ and $x_i = a + i \Delta x$.
@@ -2229,7 +2228,7 @@ $$
 \begin{equation}
 \begin{split}
 \dv{x} F(x) &= f(x) \\
-\int_a^b f(x) dx &= F(b) - F(a)
+\int_a^b f(x) \dd{x} &= F(b) - F(a)
 \end{split}
 \end{equation}
 $$
@@ -2239,22 +2238,22 @@ There are several techniques to solve integrals:
 - **$u$-substitution/reverse chain rule** is used to simplify the integrand by substituting a variable $u$:
     $$
     \begin{equation}
-    \int f(g(x))g'(x) dx = \int f(u) du
+    \int f(g(x))g'(x) \dd{x} = \int f(u) \dd{u}
     \end{equation}
     $$
 - **Algebraic manipulation**, such as long division, completing the square, or partial fractions, can simplify the integrand.
 - **Integration by parts** is used to integrate the product of two functions:
     $$
     \begin{equation}
-    \int f(x)g'(x) dx = f(x)g(x) - \int f'(x)g(x) dx
+    \int f(x)g'(x) \dd{x} = f(x)g(x) - \int f'(x)g(x) \dd{x}
     \end{equation}
     $$
 - **Trigonometric substitution** is used to substitute trigonometric functions to simplify the integrand:
     $$
     \begin{equation}
     \begin{split}
-    \int \frac{1}{\sqrt{a^2 - x^2}} dx &= \arcsin\qty(\frac{x}{a}) + C \\
-    \int \frac{1}{a^2 + x^2} dx &= \frac{1}{a}\arctan\qty(\frac{x}{a}) + C
+    \int \frac{1}{\sqrt{a^2 - x^2}} \dd{x} &= \arcsin\qty(\frac{x}{a}) + C \\
+    \int \frac{1}{a^2 + x^2} \dd{x} &= \frac{1}{a}\arctan\qty(\frac{x}{a}) + C
     \end{split}
     \end{equation}
     $$

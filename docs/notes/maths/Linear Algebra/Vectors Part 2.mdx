@@ -4,7 +4,7 @@ sidebar_position: 3
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point } from "mafs";
 import MathEquation from "@site/src/components/Math";
-import { useState, useCallback } from "react";
+import { useState, useCallback, createElement } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import TOCInline from '@theme/TOCInline';
@@ -829,15 +829,7 @@ To answer this, the orientation of the cross product is determined by the right-
 
 If you curl your right hand from the first vector to the second vector, your thumb points in the direction of the cross product.
 
-<MB.ContainedMathbox
-    containerStyle={{ height: "500px" }}
-    options={{
-        plugins: ["core", "controls", "cursor"],
-        controls: {
-            klass: OrbitControls,
-        },
-    }}
->
+<CustomMathbox>
     <MB.Cartesian
         scale={[0.5, 0.5, 0.5]}
     >
@@ -951,7 +943,7 @@ If you curl your right hand from the first vector to the second vector, your thu
             text="#v_cross_w_vec_text"
         />
     </MB.Cartesian>
-</MB.ContainedMathbox>
+</CustomMathbox>
 
 ### The Magnitude of the Cross Product
 
@@ -1104,8 +1096,8 @@ $$
 \begin{split}
 \norm{\va{v} \times \va{w}}^2 &= \class{blue}{(v_2w_3 - v_3w_2)^2} + \class{yellow}{(v_3w_1 - v_1w_3)^2} + \class{green}{(v_1w_2 - v_2w_1)^2} \\
 &= \class{blue}{v_2^2w_3^2- 2v_2w_2v_3w_3 + v_3^2w_2^2} \\
-    &\qquad + \class{yellow}{v_3^2w_1^2 - 2v_1w_1v_3w_3 + v_1^2w_3^2} \\
-    &\qquad + \class{green}{v_1^2w_2^2 - 2v_1w_1v_2w_2 + v_2^2w_1^2}
+    &\qquad {}+ \class{yellow}{v_3^2w_1^2 - 2v_1w_1v_3w_3 + v_1^2w_3^2} \\
+    &\qquad {}+ \class{green}{v_1^2w_2^2 - 2v_1w_1v_2w_2 + v_2^2w_1^2}
 \end{split}
 \end{equation}
 $$
@@ -1116,8 +1108,8 @@ $$
 \begin{equation}
 \begin{split}
 \norm{\va{v} \times \va{w}}^2 &= \class{blue}{v_2^2}w_3^2 - \class{red}{2}v_2w_2v_3w_3 + \class{yellow}{v_3^2}w_2^2 \\
-    &\qquad + \class{yellow}{v_3^2}w_1^2 - \class{red}{2}v_1w_1v_3w_3 + \class{green}{v_1^2}w_3^2 \\
-    &\qquad + \class{green}{v_1^2}w_2^2 - \class{red}{2}v_1w_1v_2w_2 + \class{blue}{v_2^2}w_1^2 \\
+    &\qquad {}+ \class{yellow}{v_3^2}w_1^2 - \class{red}{2}v_1w_1v_3w_3 + \class{green}{v_1^2}w_3^2 \\
+    &\qquad {}+ \class{green}{v_1^2}w_2^2 - \class{red}{2}v_1w_1v_2w_2 + \class{blue}{v_2^2}w_1^2 \\
 &= \class{green}{v_1^2}(w_2^2 + w_3^2) + \class{blue}{v_2^2}(w_1^2 + w_3^2) + \class{yellow}{v_3^2}(w_1^2 + w_2^2) \\
     &\qquad - \class{red}{2(v_1w_1v_2w_2 + v_2w_2v_3w_3 + v_3w_3v_1w_1)}
 \end{split} \label{eq:relationship_between_the_cross_product_and_its_geometry-cross_product_magnitude_squared}
@@ -1141,13 +1133,13 @@ $$
 &= (v_1w_1 + v_2w_2 + v_3w_3)^2 \\
 &= (v_1w_1 + v_2w_2 + v_3w_3)(v_1w_1 + v_2w_2 + v_3w_3) \\
 &= v_1w_1(v_1w_1 + v_2w_2 + v_3w_3) \\
-    &\qquad + v_2w_2(v_1w_1 + v_2w_2 + v_3w_3) \\
-    &\qquad + v_3w_3(v_1w_1 + v_2w_2 + v_3w_3) \\
-&= \quad \class{blue}{(v_1w_1)^2} + \class{yellow}{(v_1w_1)(v_2w_2)} + \class{green}{(v_1w_1)(v_3w_3)} \\
-    &\qquad + \class{blue}{(v_2w_2)^2} + \class{yellow}{(v_2w_2)(v_1w_1)} \phantom{+ (v_1w_1)(v_3w_3)} + \class{purple}{(v_2w_2)(v_3w_3)} \\
-    &\qquad + \class{blue}{(v_3w_3)^2} \phantom{+ (v_2w_2)(v_1w_1)} + \class{green}{(v_3w_3)(v_1w_1)} + \class{purple}{(v_3w_3)(v_2w_2)} \\
+    &\qquad {}+ v_2w_2(v_1w_1 + v_2w_2 + v_3w_3) \\
+    &\qquad {}+ v_3w_3(v_1w_1 + v_2w_2 + v_3w_3) \\
+&= \qquad \class{blue}{(v_1w_1)^2} + \class{yellow}{(v_1w_1)(v_2w_2)} + \class{green}{(v_1w_1)(v_3w_3)} \\
+    &\qquad {}+ \class{blue}{(v_2w_2)^2} + \class{yellow}{(v_2w_2)(v_1w_1)} \phantom{{}+ (v_1w_1)(v_3w_3)} + \class{purple}{(v_2w_2)(v_3w_3)} \\
+    &\qquad {}+ \class{blue}{(v_3w_3)^2} \phantom{{}+ (v_2w_2)(v_1w_1)} + \class{green}{(v_3w_3)(v_1w_1)} + \class{purple}{(v_3w_3)(v_2w_2)} \\
 &= \class{blue}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} \\
-    &\qquad + \class{yellow}{2(v_1w_1v_2w_2)} + \class{green}{2(v_1w_1v_3w_3)} + \class{purple}{2(v_2w_2v_3w_3)} \\
+    &\qquad {}+ \class{yellow}{2(v_1w_1v_2w_2)} + \class{green}{2(v_1w_1v_3w_3)} + \class{purple}{2(v_2w_2v_3w_3)} \\
 &= \class{blue}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} + \class{red}{2(v_1w_1v_2w_2 + v_1w_1v_3w_3 + v_2w_2v_3w_3)}
 \end{split}
 \end{equation}
@@ -1161,9 +1153,9 @@ $$
 \begin{equation}
 \begin{split}
 \class{blue}{\norm{\va{v} \times \va{w}}^2} + \class{yellow}{\norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta)} &= \class{blue}{v_1^2(w_2^2 + w_3^2) + v_2^2(w_1^2 + w_3^2) + v_3^2(w_1^2 + w_2^2)} \\
-    &\qquad + \class{yellow}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} \\
-&= v_1(w_1^2 + w_2^2 + w_3^2) + v_2(w_1^2 + w_2^2 + w_3^2) + v_3(w_1^2 + w_2^2 + w_3^2) \\
-&= (v_1 + v_2 + v_3)(w_1^2 + w_2^2 + w_3^2)
+    &\qquad {}+ \class{yellow}{v_1^2w_1^2 + v_2^2w_2^2 + v_3^2w_3^2} \\
+&= v_1^2(w_1^2 + w_2^2 + w_3^2) + v_2^2(w_1^2 + w_2^2 + w_3^2) + v_3^2(w_1^2 + w_2^2 + w_3^2) \\
+&= (v_1^2 + v_2^2 + v_3^2)(w_1^2 + w_2^2 + w_3^2)
 \end{split}
 \end{equation}
 $$
@@ -1173,7 +1165,7 @@ Recall that the magnitude of a vector is the square root of the sum of the squar
 $$
 \begin{equation}
 \begin{split}
-\norm{\va{v} \times \va{w}}^2 + \norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta) &= (v_1 + v_2 + v_3)(w_1^2 + w_2^2 + w_3^2) \\
+\norm{\va{v} \times \va{w}}^2 + \norm{\va{v}}^2\norm{\va{w}}^2\cos^2(\theta) &= (v_1^2 + v_2^2 + v_3^2)(w_1^2 + w_2^2 + w_3^2) \\
 &= \norm{\va{v}}^2\norm{\va{w}}^2
 \end{split}
 \end{equation}
@@ -1243,15 +1235,7 @@ Let $\vu{i} = [1, 0, 0]$, $\vu{j} = [0, 1, 0]$, and $\vu{k} = [0, 0, 1]$ be the 
 
 Recall that the cross product of two vectors is a vector that's orthogonal to both vectors. If we draw the basis vectors:
 
-<MB.ContainedMathbox
-    containerStyle={{ height: "500px" }}
-    options={{
-        plugins: ["core", "controls", "cursor"],
-        controls: {
-            klass: OrbitControls,
-        },
-    }}
->
+<CustomMathbox>
     <MB.Cartesian
         scale={[0.5, 0.5, 0.5]}
     >
@@ -1277,7 +1261,7 @@ Recall that the cross product of two vectors is a vector that's orthogonal to bo
         <MB.Text id="k_text" expr={(emit) => { emit("\\vu{k}"); }} />
         <MB.Label points="#k" text="#k_text" />
     </MB.Cartesian>
-</MB.ContainedMathbox>
+</CustomMathbox>
 
 The magnitude of the cross product of two vectors is the area of the parallelogram formed by the two vectors.
 Since they all have length $1$ and are orthogonal to each other, the area of the parallelogram is $1$.
@@ -1662,7 +1646,7 @@ export function Plane3DGraph({ showPoint = false, showN = false, showV = false, 
     ];
 
     return (
-        <MB.ContainedMathbox options={mathboxOptions} containerStyle={{ height: "500px" }}>
+        <CustomMathbox>
             <MB.Cartesian
                 scale={[
                     0.5, 0.5, 0.5
@@ -1772,27 +1756,18 @@ export function Plane3DGraph({ showPoint = false, showN = false, showV = false, 
                     </>
                 )}
             </MB.Cartesian>
-        </MB.ContainedMathbox>
+        </CustomMathbox>
     )
 }
 
 <Plane3DGraph />
 
-However, before considering the equation of a plane in $\mathbb{R}^3$, let's consider the equation of a line in $\mathbb{R}^2$.
-
-Recall that the equation of a 2D line can be written as $ax + by = c$.
-
-Let's interpret this equation geometrically;
-
-- At $x = 0$, $y = \frac{c}{b}$.
-- At $y = 0$, $x = \frac{c}{a}$.
-- The slope of the line is $-\frac{a}{b}$.
-- As such, $c$ is sort-of a scaling factor for the line.
-
-We can use the same logic to interpret the equation of a plane in $\mathbb{R}^3$.
+We can use the same logic used in $\mathbb{R}^2$ to interpret and analyze the equation of a plane in $\mathbb{R}^3$.
 
 Firstly, we can extend the equation of a line to $\mathbb{R}^3$ as $ax + by + cz = d$.
-However, there's other ways to create a plane.
+By adding a $z$ term, we add a new "degree of freedom" to the equation, allowing us to describe a plane.
+
+We will now look at the equation of a plane in $\mathbb{R}^3$ in a different way.
 
 Choose a vector $\va{P}_0 = (x_0, y_0, z_0)$ on the plane and a normal vector $\va{n} = [a, b, c]$ to the plane.
 So $\va{n}$ is perpendicular to the plane, and any vector parallel to the plane is perpendicular to $\va{n}$.
@@ -2069,6 +2044,63 @@ $$
 &= \frac{1}{\sqrt{1^2 + 2^2 + (-3)^2}}\qty(1(4) + 2(5) + (-3)(6) - 4) \\
 &= \frac{8}{\sqrt{14}} \approx 2.14
 \end{split}
+\end{equation}
+$$
+
+## Summary
+
+We have covered a lot of ground in this chapter, primarily relating to the dot and cross products of vectors.
+We have proved the properties of the dot and cross products both algebraically and geometrically.
+
+The dot product is a scalar product with two interpretations:
+
+- Geometrically, it is the product of the projection of one vector onto the other and the magnitude of the other vector.
+- Algebraically, it is the sum of the products of the corresponding components of the two vectors.
+
+The dot product is:
+
+- Commutative: $\va{v} \cdot \va{w} = \va{w} \cdot \va{v}$
+- Distributive: $\va{v} \cdot (\va{w} + \va{u}) = \va{v} \cdot \va{w} + \va{v} \cdot \va{u}$
+- Linear: $(c\va{v}) \cdot \va{w} = c(\va{v} \cdot \va{w})$
+
+On the other hand, the cross product is a vector product with two interpretations:
+
+- Geometrically, it has the magnitude as the area of the parallelogram formed by the two vectors. The direction is perpendicular to the plane formed by the two vectors.
+- Algebraically, it is a certain combination of the components of the two vectors. This will be useful in the next chapter when we discuss matrices.
+
+The cross product is:
+
+- Anticommutative: $\va{v} \times \va{w} = -\va{w} \times \va{v}$
+- Distributive: $\va{v} \times (\va{w} + \va{u}) = \va{v} \times \va{w} + \va{v} \times \va{u}$
+- Linear: $(c\va{v}) \times \va{w} = c(\va{v} \times \va{w})$
+
+We also discussed the angle between two vectors and how it relates to the dot and cross products.
+
+Finally, we applied the concepts of the dot and cross products to find the equation of a plane in $\mathbb{R}^3$ and the shortest distance from a point to a plane.
+
+The equation for a plane in $\mathbb{R}^3$ is:
+
+$$
+\begin{equation}
+ax + by + cz = d
+\end{equation}
+$$
+
+In vector form, the equation of a plane is:
+
+$$
+\begin{equation}
+\va{n} \cdot (\va{P} - \va{P}_0) = 0
+\end{equation}
+$$
+
+Where $\va{P}$ is any point on the plane, $\va{P}_0$ is a point on the plane, and $\va{n}$ is the normal vector to the plane.
+
+The equation for the shortest distance from a point to a plane is:
+
+$$
+\begin{equation}
+\delta = \frac{1}{\sqrt{a^2 + b^2 + c^2}}\qty(ar_x + br_y + cr_z - d)
 \end{equation}
 $$
 

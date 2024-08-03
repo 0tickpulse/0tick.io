@@ -23,6 +23,18 @@ Therefore, trying to understand infinite series without a solid understanding of
 
 <TOCInline toc={toc} />
 
+## The Domain for Infinite Series
+
+When learning about infinite series, it's usually taught many times throughout different years, at different depths.
+
+1. Algebra/Precalculus class - Typically, arithmetic and geometric series are introduced here, along with the formula for the sum of a finite geometric series.
+    The concept of an infinite geometric series and its sum (when it converges) may also be covered.
+2. Calculus class - Calculus classes delve deeper into series, focusing on tests for convergence (e.g. ratio test, comparison test) and divergence. Power series, Taylor series, and their applications are also major topics.
+    The concept of a limit is used to define convergence, but rigorous proofs are usually not the focus.
+3. Real Analysis class - Real analysis is where the rigorous foundations of infinite series are established.
+    Topics like the Cauchy sequences, metric spaces, the types of convergence (i.e. absolute/conditional convergence, pointwise/uniform) are explored in depth.
+    Proofs of theorems from calculus (e.g., convergence tests) are provided, along with a more theoretical understanding of infinite series.
+
 ## Philosophy of Infinite Series
 
 There's actually a lot of philosophy behind infinite series.
@@ -45,6 +57,24 @@ This also means that when we say "the sum of the series **equals** $1$", we're n
 Perhaps this is a bit pedantic, but it's an important distinction.
 It is also probably one of the main reasons for the debate of whether or not $0.999\dots = 1$.
 
+Another example of this distinction is the sum of the series $1 - 1/3 + 1/5 - 1/7 + \cdots$.
+
+Before revealing the sum, consider the following:
+
+> The sum of rational numbers cannot be irrational.
+
+That's just common knowledge, right? You can even construct a simple proof for it:
+
+1. Let $a$ and $b$ be rational numbers. Then, $a = p/q$ and $b = r/s$, where $p, q, r, s \in \mathbb{Z}$.
+2. The sum of $a$ and $b$ is $a + b = (ps + rq) / (qs)$.
+3. Since both the numerator and denominator are integers, the sum of rational numbers is rational; $a + b \in \mathbb{Q}$.
+
+But the sum of the series above evaluates to $\pi/4$, which is irrational.
+Using conventional thinking, this is impossible.
+
+This is why infinite series are so interesting. They challenge our understanding of mathematics and force us to think in new ways.
+However, this entire discussion is more suited to be in a real analysis course, rather than a calculus course.
+
 ## Convergence and Divergence
 
 The most important concept in infinite series is that of convergence and divergence.
@@ -53,6 +83,20 @@ A series is said to converge if the sequence of partial sums converges to a fini
 In other words, if the sum of the series approaches a finite number as the number of terms approaches infinity, then the series converges.
 
 A series is said to diverge if the sequence of partial sums does not converge to a finite limit.
+
+### Important Distinction: Series vs. Sequences
+
+It's important to distinguish between series and sequences.
+
+A **sequence** is an ordered list of numbers.
+
+A **series** is the _sum_ of the terms of a sequence.
+
+| Sequence | Series |
+|----------|--------|
+| $1, 2, 3, 4, 5$ | $1 + 2 + 3 + 4 + 5$ |
+| $1, 1/2, 1/3, 1/4, 1/5$ | $1 + 1/2 + 1/3 + 1/4 + 1/5$ |
+| $1, 2, 4, 8, 16, \dots$ | $1 + 2 + 4 + 8 + 16 + \dots$ |
 
 ### Example Problem: Convergence of a Set
 
@@ -163,7 +207,7 @@ Let $S$ be an infinite series:
 
 $$
 \begin{equation}
-S = \sum_{n=1}^{\infty} a_n = a_1 + a_2 + a_3 + \dots
+S = \sum_{n=1}^{\infty} a_n = a_1 + a_2 + a_3 + \cdots
 \end{equation}
 $$
 
@@ -171,7 +215,7 @@ The $n$th partial sum of $S$ is denoted by $S_n$ and is given by:
 
 $$
 \begin{equation}
-S_n = \sum_{i=1}^{n} a_i = a_1 + a_2 + \dots + a_n
+S_n = \sum_{i=1}^{n} a_i = a_1 + a_2 + \cdots + a_n
 \end{equation}
 $$
 
@@ -238,7 +282,7 @@ $$
     $$
     \begin{align}
     S_{100} &= \sum_{n=1}^{100} \qty(\frac{1}{n} - \frac{1}{n + 1}) \\
-    &= \qty(\frac{1}{1} - \frac{1}{2}) + \qty(\frac{1}{2} - \frac{1}{3}) + \dots + \qty(\frac{1}{100} - \frac{1}{101}) \\
+    &= \qty(\frac{1}{1} - \frac{1}{2}) + \qty(\frac{1}{2} - \frac{1}{3}) + \cdots + \qty(\frac{1}{100} - \frac{1}{101}) \\
     &= \frac{1}{1} - \cancel{\frac{1}{2} + \frac{1}{2}} - \cancel{\frac{1}{3} + \frac{1}{3}} - \dots - \cancel{\frac{1}{100}} - \frac{1}{101} \\
     &= 1 - \frac{1}{101} \\
     &= \frac{100}{101}
@@ -252,7 +296,7 @@ $$
     $$
     \begin{align}
     S_n &= \sum_{i=1}^{n} \qty(\frac{1}{i} - \frac{1}{i + 1}) \\
-    &= \qty(\frac{1}{1} - \frac{1}{2}) + \qty(\frac{1}{2} - \frac{1}{3}) + \dots + \qty(\frac{1}{n} - \frac{1}{n + 1}) \\
+    &= \qty(\frac{1}{1} - \frac{1}{2}) + \qty(\frac{1}{2} - \frac{1}{3}) + \cdots + \qty(\frac{1}{n} - \frac{1}{n + 1}) \\
     &= \frac{1}{1} - \cancel{\frac{1}{2} + \frac{1}{2}} - \cancel{\frac{1}{3} + \frac{1}{3}} - \dots - \cancel{\frac{1}{n}} - \frac{1}{n + 1} \\
     &= 1 - \frac{1}{n + 1} \\
     &= \frac{n}{n + 1}
@@ -275,8 +319,8 @@ The trick to this problem is to notice the relationship between the partial sum 
 
 $$
 \begin{align}
-S_n &= a_1 + a_2 + \dots + a_{n - 1} + a_n \\
-- \quad S_{n - 1} &= a_1 + a_2 + \dots + a_{n - 1} \\
+S_n &= a_1 + a_2 + \cdots + a_{n - 1} + a_n \\
+- \quad S_{n - 1} &= a_1 + a_2 + \cdots + a_{n - 1} \\
 \hline
 S_n - S_{n - 1} &= a_n
 \end{align}
@@ -380,6 +424,12 @@ export function VisualGeometricSeries({ q = 0.5, qrLabels = false }) {
                                 ]}
                                 color={color("blue")}
                             />
+                            {qrLabels && (
+                                <LaTeX
+                                    tex={`r^${i}`}
+                                    at={[q + (1 - q) / 2, -(rectHeight / 2) - 0.4]}
+                                />
+                            )}
                         </Transform>
                     )
                 })}
@@ -402,7 +452,7 @@ $$
 1 &= \frac{1}{2} + \frac{1}{2} \\
 &= \frac{1}{2} + \qty(\frac{1}{4} + \frac{1}{4}) \\
 &= \frac{1}{2} + \qty(\frac{1}{4} + \qty(\frac{1}{8} + \frac{1}{8})) \\
-&= \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16} + \dots
+&= \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16} + \cdots
 \end{align}
 $$
 
@@ -416,6 +466,17 @@ $$
 
 <VisualGeometricSeries q={0.5} qrLabels={false} />
 
+Notice that we can also find the $n$th partial sum of the series by subtracting the blue area from the initial area.
+The blue area is always equal to the smallest green area, which is $(1/2)^n$.
+
+$$
+\begin{align}
+\class{green}{\frac{1}{2} + \frac{1}{4} + \frac{1}{8}} &= 1 - \class{blue}{\frac{1}{8}} \\
+\class{green}{\frac{1}{2} + \frac{1}{4}} &= 1 - \class{blue}{\frac{1}{4}} \\
+\class{green}{\frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \cdots + \frac{1}{2^n}} &= 1 - \class{blue}{\frac{1}{2^n}}
+\end{align}
+$$
+
 Let's see if we can think of another example.
 Start with $1$ again, but this time split it into $9/10 + 1/10$, and then split the $1/10$ into $9/100 + 1/100$, and so on:
 
@@ -424,7 +485,7 @@ $$
 1 &= \frac{9}{10} + \frac{1}{10} \\
 &= \frac{9}{10} + \qty(\frac{9}{100} + \frac{1}{100}) \\
 &= \frac{9}{10} + \qty(\frac{9}{100} + \qty(\frac{9}{1000} + \frac{1}{1000})) \\
-&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{9}{10000} + \dots
+&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{9}{10000} + \cdots
 \end{align}
 $$
 
@@ -444,6 +505,14 @@ $$
 \end{equation}
 $$
 
+We can also find the $n$th partial sum of the series by subtracting the blue area from the initial area:
+
+$$
+\begin{equation}
+\frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \cdots + \frac{9}{10^n} = 1 - \frac{1}{10^n}
+\end{equation}
+$$
+
 We can imagine generalizing this. Instead of exact quantities to split $1$ into, we can use variables.
 
 Let $1 = q + r$, where both are less than 1. Then, we can generalize the geometric series from the previous example:
@@ -453,7 +522,7 @@ $$
 1 &= \frac{9}{10} + \frac{1}{10} &&= q + r \\
 &= \frac{9}{10} + \frac{9}{100} + \frac{1}{100} &&= q + qr + r^2 \\
 &= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{1}{1000} &&= q + qr + qr^2 + r^3 \\
-&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{9}{10000} + \dots &&= q + qr + qr^2 + qr^3 + \dots
+&= \frac{9}{10} + \frac{9}{100} + \frac{9}{1000} + \frac{9}{10000} + \cdots &&= q + qr + qr^2 + qr^3 + \cdots
 \end{align}
 $$
 
@@ -487,7 +556,7 @@ This is the general formula. Sometimes you also multiply everything by some $a$ 
 
 $$
 \begin{equation}
-\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r}
+\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r} \label{eq:the_geometric_series-formula}
 \end{equation}
 $$
 
@@ -513,4 +582,537 @@ $$
 
 This does not make sense either, since according to the formula, the sum of the series is $-10$.
 
-Therefore, the formula only holds when $-1 < r < 1$, or $|r| < 1$.
+Therefore, the formula only holds when $-1 < r < 1$, or $\abs{r} < 1$.
+
+To find the $n$th partial sum of a geometric series, we can use the geometric visualization above, like we did for the $1/2$ and $9/10$ series:
+
+$$
+\begin{equation}
+\sum_{n=0}^{N} qr^n = q + qr + qr^2 + \cdots + qr^N = 1 - \class{blue}{r^{N + 1}}
+\end{equation}
+$$
+
+Using some algebra:
+
+$$
+\begin{equation}
+\begin{split}
+(1 - r) \sum_{n=0}^{N} r^n &= 1 - r^{N + 1} \\
+\sum_{n=0}^{N} r^n &= \frac{1 - r^{N + 1}}{1 - r} \\
+\sum_{n=0}^{N} ar^n &= a\frac{1 - r^{N + 1}}{1 - r}
+\end{split} \label{eq:the_geometric_series-partial_sum}
+\end{equation}
+$$
+
+### Another Way to Derive it
+
+There are other ways to derive the formula for the sum of a geometric series.
+
+In elementary school, this is secretly taught when learning about recurring decimals.
+The gist of it is that when you have a recurring decimal, you can write it as a fraction by doing some clever algebra.
+
+For example, consider the recurring decimal $x = 0.343434\cdots = 0.\overline{34}$.
+
+Since it has two recurring digits, we can multiply it by $100$ to get $100x = 34.343434\cdots$.
+
+Then subtract and witness a miracle:
+
+$$
+\begin{equation}
+\begin{split}
+100x &= 34.\cancel{343434\cdots} \\
+- \quad x &= \phantom{3} 0.\cancel{343434\cdots} \\
+\hline
+99x &= 34
+\end{split}
+\end{equation}
+$$
+
+Therefore, $x = 34/99$.
+
+The derivation for the geometric series is simply a generalization of this method.
+
+Consider the geometric series $S = ar^0 + ar + ar^2 + ar^3 + \cdots$.
+
+Multiply $S$ by $r$:
+
+$$
+\begin{equation}
+\begin{split}
+S &= ar^0 + \cancel{ar^1 + ar^2 + ar^3 + \cdots} \\
+rS &= \phantom{ar^0 +{} } \cancel{ar^1 + ar^2 + ar^3 + \cdots} \\
+\hline
+S - rS &= ar^0 = a
+\end{split}
+\end{equation}
+$$
+
+Then, perform some algebra:
+
+$$
+\begin{equation}
+S(1 - r) = a \implies S = \frac{a}{1 - r}
+\end{equation}
+$$
+
+Alining with the formula in Equation $\eqref{eq:the_geometric_series-formula}$.
+
+Note that this derivation is not rigorous, but it's a nice way to understand the formula.
+
+### A Rigorous Proof
+
+We can also prove the formula for the infinite sum using limits.
+
+Recall from Equation $\eqref{eq:the_geometric_series-partial_sum}$ that the $n$th partial sum of a geometric series is:
+
+$$
+\begin{equation}
+\sum_{n=0}^{N} ar^n = a \frac{1 - r^{N + 1}}{1 - r}
+\end{equation}
+$$
+
+We can take the limit of this as $N \to \infty$:
+
+$$
+\begin{equation}
+\lim_{N \to \infty} \sum_{n=0}^{N} ar^n = a \lim_{N \to \infty} \frac{1 - r^{N + 1}}{1 - r}
+\end{equation}
+$$
+
+If $\abs{r} < 1$, then $r^{N + 1}$ gets arbitrarily close to $0$ as $N$ approaches infinity. The other terms are constant, so:
+
+$$
+\begin{equation}
+\lim_{N \to \infty} \sum_{n=0}^{N} ar^n = a \frac{1}{1 - r} = \frac{a}{1 - r}
+\end{equation}
+$$
+
+### Example Problem: Convergence of a Geometric Series
+
+> Determine whether these two series converges or diverges:
+>
+> 1. $8 + 8/3 + 8/9 + 8/27 + \cdots$
+> 2. $-0.5 + 1.5 - 4.5 + 13.5 - 40.5 + \cdots$
+>
+> [(Source)](https://www.khanacademy.org/math/ap-calculus-bc/bc-series-new/bc-10-2/v/evaluating-infinite-geometric-series)
+
+When we see a series with a common ratio, we should find this ratio and apply the formula for the sum of a geometric series.
+
+1. The first series has a common ratio of $r = 1/3$;
+
+    $$
+    \begin{equation}
+    8 \xRightarrow{1/3} 8/3 \xRightarrow{1/3} 8/9 \xRightarrow{1/3} 8/27 \xRightarrow{1/3} \cdots
+    \end{equation}
+    $$
+
+    Hence the series can be expressed as:
+
+    $$
+    \begin{equation}
+    8 + 8/3 + 8/9 + 8/27 + \cdots = \sum_{n=0}^{\infty} 8 \qty(\frac{1}{3})^n
+    \end{equation}
+    $$
+
+    This can be evaluated using the formula for the sum of a geometric series derived in Equation $\eqref{eq:the_geometric_series-formula}$:
+
+    $$
+    \begin{equation}
+    \sum_{n=0}^{\infty} 8 \qty(\frac{1}{3})^n = \frac{8}{1 - 1/3} = \frac{8}{2/3} = 12
+    \end{equation}
+    $$
+
+    The series converges to $12$.
+
+2. The second series has a common ratio of $r = -3$;
+
+    $$
+    \begin{equation}
+    -0.5 \xRightarrow{-3} 1.5 \xRightarrow{-3} -4.5 \xRightarrow{-3} 13.5 \xRightarrow{-3} \cdots
+    \end{equation}
+    $$
+
+    Recall that the formula for the sum of a geometric series in Equation $\eqref{eq:the_geometric_series-formula}$ only holds when $\abs{r} < 1$.
+    In this case, $\abs{r} = \abs{-3} = 3 > 1$, so the series diverges.
+
+## Testing for Divergence: The nth Term Test
+
+The $n$th term test is a simple and intuitive test for divergence.
+Although it does not tell us whether a series converges, it can definitely  tell us if a series diverges.
+
+It's actually really simple - all it says, in essence, is that given a series, if the terms don't get smaller and approach $0$, then the series diverges.
+
+In mathematical terms:
+
+$$
+\begin{equation}
+\text{If } \lim_{n \to \infty} a_n \neq 0, \text{ then the series } \sum_{n=1}^{\infty} a_n \text{ diverges}
+\end{equation}
+$$
+
+This should make intuitive sense. If the terms don't get smaller and approach $0$, then the sum of the series will keep getting larger and larger, and thus approach infinity.
+
+### Example Problem: Testing for Divergence
+
+> Determine whether this series diverges using the $n$th term test:
+>
+> $$
+> \begin{equation}
+> \sum_{n=1}^{\infty} \frac{n^2 + 1}{n^3 + 1}
+> \end{equation}
+> $$
+
+The $n$th term of the series is:
+
+$$
+\begin{equation}
+a_n = \frac{n^2 + 1}{n^3 + 1}
+\end{equation}
+$$
+
+We can find the limit of this sequence as $n$ approaches infinity:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} \frac{n^2 + 1}{n^3 + 1} = \lim_{n \to \infty} \frac{1/n + 1/n^2}{1 + 1/n^3} = 0
+\end{equation}
+$$
+
+It's very important to note that the $n$th term test only tells us if a series diverges.
+Since the limit of the sequence is $0$, we can't conclude that the series converges.
+
+## Testing for Convergence: The Integral Test
+
+The integral test is a powerful tool for determining the convergence of a series.
+
+Recall that an integral can be evaluated by looking at a sum of rectangles.
+Now the integral sort of "pays back" by helping us analyze sums.
+
+Consider the following series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2} = 1 + \frac{1}{4} + \frac{1}{9} + \frac{1}{16} + \cdots
+\end{equation}
+$$
+
+First, let's ensure this series doesn't pass the $n$th term test:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} \frac{1}{n^2} = 0
+\end{equation}
+$$
+
+Therefore, the $n$th term test is inconclusive and the series still has a chance of converging.
+
+Consider taking the $n$th term of the series and creating a function $f(x)$:
+
+$$
+\begin{equation}
+f(x) = \frac{1}{x^2}
+\end{equation}
+$$
+
+The key here is that the series can be thought of as an underestimation of the integral of $f(x)$.
+This is best visualized through a graph:
+
+export function TestingForConvergenceTheIntegralTest({ f = ((x) => 1 / x ** 2), /** @type {"right" | "left"} */ type = "right" }) {
+    return (
+        <Mafs
+            viewBox={{
+                x: [0, 8],
+                y: [0, 1]
+            }}
+        >
+            <Coordinates.Cartesian />
+            {range(1, 10).map((x) => {
+                const y = type === "right" ? f(x) : f(x - 1);
+                const polyColor = type === "right" && x === 1 ? color("blue") : undefined;
+                return (
+                    <>
+                        <Polygon
+                            points={[
+                                [x - 1, 0],
+                                [x - 1, y],
+                                [x, y],
+                                [x, 0],
+                            ]}
+                            color={polyColor}
+                            key={x}
+                        />
+                        <LaTeX
+                            tex={`a_${x}`}
+                            at={[x - 0.5, -0.3]}
+                        />
+                    </>);
+            })}
+            <Plot.OfX y={f} />
+            <Plot.Inequality y={{"<=": (x) => x < 1 ? 0 : f(x), ">=": (x) => 0}} color={color("yellow")} />
+        </Mafs>
+    );
+}
+
+<TestingForConvergenceTheIntegralTest />
+
+Consider the first term of the series, $1$.
+It can be thought of as the area of the first rectangle with a width of $1$ and a height of $1$.
+
+Then, the second term, $1/4$, can be thought of as the area of the second rectangle with a width of $1$ and a height of $1/4$.
+
+Notice how each rectangle has an area less than the area under the curve of $f(x)$.
+
+We can then say that the series (excluding the $1$ rectangle) is an underestimation of the integral of $f(x)$ from $1$ to $\infty$.
+To account for the $1$ rectangle, simply add $1$ to the integral.
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2} \leq \class{blue}{1} + \class{yellow}{\int_{1}^{\infty} \frac{1}{x^2} \, \dd{x}}
+\end{equation}
+$$
+
+And as such, if the integral is finite, then the series converges. We can evaluate the integral:
+
+$$
+\begin{equation}
+\int_{1}^{\infty} \frac{1}{x^2} \, \dd{x} = \eval{\frac{-1}{x}}_{1}^{\infty} = \lim_{b \to \infty} \qty(\frac{-1}{b} - \frac{-1}{1}) = 1
+\end{equation}
+$$
+
+Hence:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2} \leq 1 + 1 = 2
+\end{equation}
+$$
+
+Therefore, the series converges.
+
+Let's note down our assumptions:
+
+- We assume that $f(x)$ is continuous.
+- We assume that $f(x)$ is positive - this is important because we're dealing with areas.
+- We assume that $f(x)$ is decreasing - recall that we stated that the rectangles are underestimations of the integral. This is only true if $f(x)$ is decreasing.
+
+Therefore we can formalize the integral test:
+
+If $f(x)$ is continuous, positive, and decreasing for $[k, \infty)$, then:
+
+1. If $\displaystyle \int_{k}^{\infty} f(x) \, \dd{x}$ is finite, then $\displaystyle \sum_{n=k}^{\infty} f(n)$ converges.
+2. If $\displaystyle \int_{k}^{\infty} f(x) \, \dd{x}$ is infinite, then $\displaystyle \sum_{n=k}^{\infty} f(n)$ diverges.
+
+Note that in our example we used a right Riemann sum, but the same logic applies to left Riemann sums.
+This will be important when we prove the convergence of the p-series.
+
+## The Harmonic Series and p-Series
+
+The Harmonic Series is a very interesting series that has puzzled mathematicians for centuries.
+
+It's defined as:
+
+$$
+\begin{equation}
+H = 1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \cdots = \sum_{n=1}^{\infty} \frac{1}{n}
+\end{equation}
+$$
+
+<details>
+<summary>Why is it called the Harmonic Series?</summary>
+
+This series has a connection to musical frequencies.
+
+When a note is played, it produces a sound wave with a certain frequency. For example, A4 is usually tuned to be at $440$ Hz.
+However, when we play a note, it doesn't just produce a single frequency, but a combination of frequencies.
+There's still the "main" frequency, but there are also other frequencies called harmonics, which "reinforces" the note.
+
+The harmonics have wavelengths that follow this series.
+
+For instance, the first overtone has $1/2$ the wavelength, then $1/3$, and $1/4$, and so on.
+
+</details>
+
+We can also extend this by raising all terms to a power of $2$:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2} = \frac{1}{1^2} + \frac{1}{2^2} + \frac{1}{3^2} + \frac{1}{4^2} + \cdots
+\end{equation}
+$$
+
+And to the power of $3$:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^3} = \frac{1}{1^3} + \frac{1}{2^3} + \frac{1}{3^3} + \frac{1}{4^3} + \cdots
+\end{equation}
+$$
+
+The generalization of this is called the p-series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^\class{green}{p}} = \frac{1}{1^\class{green}{p}} + \frac{1}{2^\class{green}{p}} + \frac{1}{3^\class{green}{p}} + \frac{1}{4^\class{green}{p}} + \cdots
+\end{equation}
+$$
+
+The p-series considers $p > 0$, as it would obviously diverge otherwise.
+
+When $p$ is higher, the terms get way smaller - if $p > 1$, the series converges, and otherwise for $p \leq 1$.
+This means that the Harmonic Series actually diverges, even though the terms approach 0.
+
+### Proof of the Convergence of the p-Series
+
+We shall use the integral test to prove the convergence of the p-series.
+
+Recall that the p-series is defined, for $p > 0$ as:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^p} = \frac{1}{1^p} + \frac{1}{2^p} + \frac{1}{3^p} + \frac{1}{4^p} + \cdots
+\end{equation}
+$$
+
+Consider the curve of $f(x) = 1/x^p$. This curve is continuous, positive, and decreasing for $[1, \infty)$, so it fits our criteria.
+Next, consider both the left and right Riemann sums of the integral of $f(x)$:
+
+{(() => {
+    const [type, setType] = useState("right");
+    return (
+        <div className="card">
+            <div className="card__body">
+                <TestingForConvergenceTheIntegralTest f={(x) => 1 / x ** 2} type={type} />
+            </div>
+            <div className="card__footer">
+                <div class="row">
+                    <button className={`col col--6 button button--primary ${type === "left" ? "button--outline" : ""}`} onClick={() => setType("right")}>Right Riemann Sum</button>
+                    <button className={`col col--6 button button--primary ${type === "right" ? "button--outline" : ""}`} onClick={() => setType("left")}>Left Riemann Sum</button>
+                </div>
+            </div>
+        </div>
+    )
+})()}
+
+Notice how the left Riemann sum is an **overestimation** of the integral, while the right Riemann sum (excluding the first term) is an **underestimation** of the integral.
+
+Therefore we can say:
+
+$$
+\begin{equation}
+0 < \mathrlap{\overbrace{\phantom{\int_{1}^{\infty} \frac{1}{x^p} \, \dd{x} < \sum_{n=1}^{\infty} \frac{1}{n^p}}}^{\text{Left Riemann Sum}}} \int_{1}^{\infty} \frac{1}{x^p} \, \dd{x} < \underbrace{\sum_{n=1}^{\infty} \frac{1}{n^p} < \class{blue}{1} + \int_{1}^{\infty} \frac{1}{x^p} \, \dd{x}}_{\text{Right Riemann Sum}}
+\end{equation}
+$$
+
+Now we can use this to determine the convergence of the p-series:
+
+1. The Left Riemann Sum part - the integral is an overestimation of the series, so if the integral is finite, then the series converges.
+2. The Right Riemann Sum part - the series is an underestimation of the integral, so if the integral is infinite, then the series diverges.
+
+Let's first rewrite the integral as a limit:
+
+$$
+\begin{equation}
+\int_{1}^{\infty} \frac{1}{x^p} \, \dd{x} = \lim_{b \to \infty} \int_{1}^{b} x^{-p} \, \dd{x}
+\end{equation}
+$$
+
+If $p = 1$, then the integral is:
+
+$$
+\begin{equation}
+\int_{1}^{\infty} \frac{1}{x} \, \dd{x} = \lim_{b \to \infty} \eval{\ln(x)}_{1}^{b} = \lim_{b \to \infty} \ln(b) = \infty
+\end{equation}
+$$
+
+So it diverges. Since the Harmonic Series is a p-series with $p = 1$, the Harmonic Series also diverges.
+
+Next, let's consider when $p \neq 1$:
+
+$$
+\begin{equation}
+\begin{split}
+\int_{1}^{\infty} \frac{1}{x^p} \, \dd{x} = \lim_{b \to \infty} \eval{\frac{x^{1 - p}}{1 - p}}_{1}^{b} &= \lim_{b \to \infty} \frac{b^{1 - p}}{1 - p} - \frac{1^{1 - p}}{1 - p} \\
+&= \frac{1}{1 - p} \lim_{b \to \infty} b^{1 - p} - \frac{1}{1 - p}
+\end{split}
+\end{equation}
+$$
+
+To calculate the limit, consider different cases:
+
+- If $1 - p > 0$, then $b^{1 - p}$ gets arbitrarily large as $b$ approaches infinity, so the limit is infinite. The condition can be rewritten as $p < 1$.
+- If $1 - p < 0$, then $b^{1 - p}$ gets arbitrarily close to $0$ as $b$ approaches infinity, so the limit is finite. This can be rewritten as $p > 1$.
+
+A flowchart can be created to summarize the convergence of the integral:
+
+```mermaid
+graph LR
+    p1["$$ \lim_{b \to \infty} \int_{1}^{b} x^{-p} \, dx $$"]
+    p1 -->|"$$p = 1$$"| div1["$$ ln(x)|_{1}^{b} $$"]
+    div1 --> div1a["$$ ln(b) $$"] --> div1aa["$$ \infty $$"] --> div1aaa[Diverges]
+
+    p1 -->|"$$p \neq 1$$"| div2["$$ \frac{x^{1 - p}}{1 - p} \Big|_{1}^{b} = \frac{b^{1 - p}}{1 - p} - \frac{1^{1 - p}}{1 - p} $$"]
+    div2 --> div2a["$$ \frac{1}{1 - p} \lim_{b \to \infty} b^{1 - p} - \frac{1}{1 - p} $$"]
+    div2a -->|"$$ p \text{\textless} 1 $$"| div2aa[Diverges]
+    div2a -->|"$$ p \text{\textgreater} 1 $$"| div2ab[Converges]
+```
+
+Recall how the integral relates to the series:
+
+1. If the integral is finite, then the series converges.
+2. If the integral is infinite, then the series diverges.
+
+As such, the same logic applies to the p-series:
+
+1. If $p > 1$, then the series converges.
+2. If $p \leq 1$, then the series diverges.
+
+And we're done.
+
+## The Comparison Test
+
+Sometimes it is not immediately clear whether a series converges or diverges.
+For instance, given a Harmonic Series, it's not immediately clear whether it converges or diverges without the p-series test.
+
+The way it goes is, if there's a series where all terms are less than the terms of the Harmonic Series, and that series diverges, then the Harmonic Series also diverges.
+
+Let $H$ be the Harmonic Series:
+
+$$
+\begin{equation}
+H = 1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \cdots
+\end{equation}
+$$
+
+Let $H'$ be another series. In this series, each term is replaced with the nearest power of $1/2$ (that is smaller than the term):
+
+$$
+\begin{equation}
+\begin{split}
+H &= 1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \frac{1}{5} + \frac{1}{6} + \frac{1}{7} + \frac{1}{8} + \cdots \\
+H' &= 1 + \frac{1}{2} + \frac{1}{4} + \frac{1}{4} + \frac{1}{8} + \frac{1}{8} + \frac{1}{8} + \frac{1}{8} + \cdots
+\end{split}
+\end{equation}
+$$
+
+The terms of $H'$ are all less than the terms of $H$. Next, consider adding parts of $H'$:
+
+$$
+\begin{equation}
+\begin{split}
+H' &= 1 + \class{red}{\frac{1}{2}} + \class{blue}{\frac{1}{4} + \frac{1}{4}} + \class{green}{\frac{1}{8} + \frac{1}{8} + \frac{1}{8} + \frac{1}{8}} + \cdots \\
+&= 1 + \class{red}{\frac{1}{2}} + \class{blue}{\frac{1}{2}} + \class{green}{\frac{1}{2}} + \cdots \\
+\end{split}
+\end{equation}
+$$
+
+Notice that all terms, excluding $1$, are $1/2$. It does not go to $0$, so by the $n$th term test, $H'$ diverges.
+Recall that all terms of $H'$ are less than the terms of $H$, so $H' \leq H$. Therefore, $H$ also diverges.
+
+Nicole Oresme, a French philosopher, mathematician, and bishop, was famous for this exact proof.
+
+This is the essence of the Comparison Test, which is what we just did:
+
+- If $0 \leq a_n \leq b_n$ for all $n$, and $\sum b_n$ converges, then $\sum a_n$ converges.
+- If $0 \leq a_n \leq b_n$ for all $n$, and $\sum a_n$ diverges, then $\sum b_n$ diverges.
+
+

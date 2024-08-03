@@ -1,7 +1,7 @@
 ---
 sidebar_position: 3
 ---
-import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, Point } from "mafs";
 import MathEquation from "@site/src/components/Math";
 import { useState } from "react";
 import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentiation";
@@ -196,6 +196,69 @@ Limits often play nicely with these rules, which is why treating the derivative 
 
 A really simple example of where this heuristic fails is in partial derivatives, but we're getting ahead of ourselves.
 
+### Example Problem: Inferring the Derivative
+
+> $f$ is a function that is differentiable throughout its entire domain.
+>
+> It has these properties:
+>
+> 1. $f(a + b) = f(a) + a^3 b - ab^3 - f(b)$ for any $a$ and $b$.
+> 2. $\lim_{x \to 0} \frac{f(x)}{x} = 1$.
+>
+> Using the above information, as well as the definition of the derivative, find $f'(x)$.
+>
+> [(Source)](https://www.youtube.com/watch?v=F8bUDSgcc-o)
+
+This is a nice problem because it requires thinking outside the box.
+
+Let's apply the definition of the derivative:
+
+$$
+\begin{equation}
+\dv{f}{x} = \lim_{\Delta x \to 0} \frac{\class{blue}{f(x + \Delta x)} - f(x)}{\Delta x}
+\end{equation}
+$$
+
+From the first property, we can rewrite $f(x + \Delta x)$ as:
+
+$$
+\begin{equation}
+f(x + \Delta x) = f(x) + x^3 \Delta x - x \Delta x^3 - f(\Delta x)
+\end{equation}
+$$
+
+Substituting this into the derivative:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{f}{x} &= \lim_{\Delta x \to 0} \frac{\class{blue}{f(x + \Delta x)} - f(x)}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{\cancel{\class{blue}{f(x)}} \class{blue}{+ x^3 \Delta x - x \Delta x^3 - f(\Delta x)} - \cancel{f(x)}}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{x^3 \Delta x - x \Delta x^3 - f(\Delta x)}{\Delta x}
+\end{split}
+\end{equation}
+$$
+
+We can utilize the linearity of the limit to split it into two parts:
+
+$$
+\begin{equation}
+\dv{f}{x} = \lim_{\Delta x \to 0} \frac{x^3 \Delta x - x \Delta x^3}{\Delta x} - \lim_{\Delta x \to 0} \frac{f(\Delta x)}{\Delta x}
+\end{equation}
+$$
+
+Using the second property, we know that the second limit is $1$.
+
+$$
+\begin{equation}
+\begin{split}
+\dv{f}{x} &= \lim_{\Delta x \to 0} \frac{x^3 \Delta x - x \Delta x^3}{\Delta x} - 1 \\
+&= \lim_{\Delta x \to 0} (x^3 - x \Delta x^2) - 1 \\
+&= x^3 - 1
+\end{split}
+\end{equation}
+$$
+
 ## Tangent Line Equations
 
 As we've seen, the derivative of a function at a point is the slope of the tangent line at that point.
@@ -211,7 +274,75 @@ $$
 
 where $m$ is the slope of the line, and $(x_1, y_1)$ is a point on the line.
 
-:::info Derivation of the Point-Slope Form
+<details>
+<summary>Derivation of the Point-Slope Form</summary>
+
+A geometric way to think about this is to consider any point on the line, and then measure the distance from that point to the specific point $(x_1, y_1)$.
+
+First, consider the point-slope form of a line:
+
+export function PointSlopeFormDerivation({ showP = false }) {
+    const P = useMovablePoint([1, 1.5], {
+        constrain: ([x, y]) => [x, 0.5 * x + 1],
+    });
+
+    return (
+        <Mafs>
+            {/* m = 0.5, point = 2, 2 ==> y = 0.5x + 1 */}
+            <Point x={2} y={2} />
+            <LaTeX tex="(x_1, y_1)" at={[1.8, 2.5]} />
+
+            <Plot.OfX y={(x) => 0.5 * x + 1} />
+
+            {showP && (
+                <>
+                    {P.element}
+                    <LaTeX tex="(x, y)" at={[P.point[0] - 0.2, P.point[1] - 0.5]} />
+
+                    <Line.Segment
+                        point1={[P.point[0], P.point[1]]}
+                        point2={[2, P.point[1]]}
+                        style="dashed"
+                    />
+                    <Line.Segment
+                        point1={[2, P.point[1]]}
+                        point2={[2, 2]}
+                        style="dashed"
+                    />
+
+
+                </>
+            )}
+        </Mafs>
+    );
+}
+
+<PointSlopeFormDerivation />
+
+Next, consider adding an arbitrary point $P = (x, y)$ on the line:
+
+<PointSlopeFormDerivation showP />
+
+- The vertical distance between the two points is $y - y_1$.
+- The horizontal distance between the two points is $x - x_1$.
+
+Recall that the slope of a line is the ratio of the vertical change to the horizontal change:
+
+$$
+\begin{equation}
+m = \frac{\Delta y}{\Delta x} \implies \Delta y = m \Delta x
+\end{equation}
+$$
+
+Hence:
+
+$$
+\begin{equation}
+y - y_1 = m(x - x_1)
+\end{equation}
+$$
+
+The (more boring) algebraic way to find the equation of the line is to use the slope formula:
 
 Given a point $(x_1, y_1)$ and a slope $m$, the equation of the line is:
 
@@ -253,7 +384,7 @@ y - y_1 = m(x - x_1)
 \end{equation}
 $$
 
-:::
+</details>
 
 We can set the point to be some $x = a$ and $y = f(a)$, and the slope to be $\dv{f}{x}(a)$:
 

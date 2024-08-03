@@ -1,4 +1,5 @@
 import { COLORS } from "@site/colors";
+import rgba from "color-rgba";
 
 export function color(name: string) {
     // get CSS variable --custom-color-<name>
@@ -73,4 +74,15 @@ export function getColorFromMagnitude(magnitude: number, minMagnitude = 0, maxMa
     const [red, green, blue] = HSVtoRGB(hue, saturation, value);
 
     return [red, green, blue];
+}
+
+export function gradient(from: string, to: string, percent: number) {
+    const fromColor = rgba(from);
+    const toColor = rgba(to);
+
+    const r = fromColor[0] + (toColor[0] - fromColor[0]) * percent;
+    const g = fromColor[1] + (toColor[1] - fromColor[1]) * percent;
+    const b = fromColor[2] + (toColor[2] - fromColor[2]) * percent;
+
+    return `rgb(${r}, ${g}, ${b})`;
 }

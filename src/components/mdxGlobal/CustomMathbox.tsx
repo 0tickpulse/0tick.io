@@ -1,68 +1,49 @@
-import React, { useEffect, useState, forwardRef, useImperativeHandle, ReactNode, useMemo, useRef } from "react";
+import React, { useState, forwardRef, useEffect, useImperativeHandle, useCallback } from "react";
+import { RootProps, MathBoxOptions, MathboxSelection } from "mathbox";
+import { Mathbox } from "mathbox-react";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Color } from "three";
-import { mathBox, RootProps, MathboxSelection, MathBoxOptions, NodeType } from "mathbox";
-import { isEqual } from "lodash";
 
-export type WithChildren<T> = {
-    children?: ReactNode | ReactNode[];
-} & T;
-type Props = WithChildren<
-    {
-        container: HTMLElement;
-        options?: MathBoxOptions;
-    } & RootProps
->;
+type Props = {
+    containerId?: string;
+    containerClass?: string;
+    containerStyle?: React.CSSProperties;
+    options?: MathBoxOptions;
+    children?: React.ReactNode;
+} & RootProps;
 
-function useDeepCompareMemo<T>(value: T, initial: T): T {
-    const oldValue = useRef<T>(initial);
-    const memoOptions = useMemo(() => {
-        if (isEqual(value, oldValue.current)) return oldValue.current;
-        oldValue.current = value;
-        return value;
-    }, [value]);
-    return memoOptions;
-}
+const MATHBOX_DEFAULT_PROPS: Props = {
+    options: {
+        plugins: ["core", "controls", "cursor"],
+        controls: {
+            klass: OrbitControls,
+        },
+    },
+    containerStyle: {
+        height: "500px"
+    }
+};
 
-const MathboxAPIContext = React.createContext<MathboxSelection<NodeType> | null>(null);
+const CustomMathbox = (props: Props) => {
+    const { children, containerId, containerClass, containerStyle, ...others } = { ...MATHBOX_DEFAULT_PROPS, ...props };
+    const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
-const Mathbox = (props: Props, ref: React.Ref<MathboxSelection<"root"> | null>) => {
-    const { container, children, options, ...rootProps } = props;
-    const mathboxOptions = useDeepCompareMemo(options ?? {}, {});
-    const [selection, setSelection] = useState<MathboxSelection<"root"> | null>(null);
-    useEffect(() => {
-        if (!container) return () => {};
+    const ref = useCallback((mathbox: MathboxSelection<"root"> | null) => {
+        if (mathbox) {
+            console.log("Setting selection");
+            mathbox.three.renderer.setClearColor(new Color(0x000000), 1.0);
+        }
+    }, []);
 
-        const mathbox = mathBox({
-            ...mathboxOptions,
-            element: container,
-        });
-        setSelection(mathbox);
-
-        /**
-         * TODO: Should Mathbox component allow setting these more easily?
-         */
-        mathbox.three.renderer.setClearColor(new Color(0xffffff), 1.0);
-        mathbox.three.camera.position.set(1, 1, 2);
-        return () => {
-            mathbox.select("*").remove();
-            mathbox.three.destroy();
-            setSelection(null);
-        };
-    }, [container, mathboxOptions]);
-
-    useEffect(() => {
-        if (!selection) return;
-        selection.set(rootProps);
-    }, [selection, rootProps]);
-
-    useImperativeHandle(ref, () => selection, [selection]);
     return (
-        selection && (
-            <MathboxAPIContext.Provider value={selection}>
-                <ThreestrapContext.Provider value={selection.three}>{children}</ThreestrapContext.Provider>
-            </MathboxAPIContext.Provider>
-        )
+        <div ref={setContainer} id={containerId} className={containerClass} style={containerStyle}>
+            {container && (
+                <Mathbox ref={ref} container={container} {...others}>
+                    {children}
+                </Mathbox>
+            )}
+        </div>
     );
 };
 
-export default forwardRef(Mathbox);
+export default CustomMathbox;

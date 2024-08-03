@@ -29,6 +29,14 @@ The inputs to a function are called the **domain** of the function. The domain i
 This can be extended to multivariable functions. For example, the domain of the function $f(x, y) = x^2 + y^2$ is all pairs of real numbers $(x, y)$,
 while the domain of the function $f(x, y) = \ln(x + y)$ is all pairs of real numbers $(x, y)$ such that $x + y > 0$.
 
+More formally written, for the function $f(x, y) = \ln(x + y)$,
+
+$$
+\begin{equation}
+\operatorname{dom}(f) = \{ (x, y) \in \mathbb{R}^2 \mid x + y > 0 \}
+\end{equation}
+$$
+
 ## Outputs of Multivariable Functions
 
 The output of a function is called the **range** of the function. The range is the set of all possible outputs that the function can produce.
@@ -39,17 +47,22 @@ For example, this function outputs a vector:
 
 $$
 \begin{equation}
-f(x, y) = \mqty[ x^2 \\ y^2 ]
+\va{f}(x, y) = \mqty[ x^2 \\ y^2 ]
 \end{equation}
 $$
+
+Vector-valued functions are typically denoted with a bold letter, an arrow, or both. For example, $\va{f}$, $\vec{f}$, or $\vb{f}$.
 
 This function outputs a matrix:
 
 $$
 \begin{equation}
-f(x, y) = \mqty[ x & y \\ y & x ]
+\vb{f}(x, y) = \mqty[ x & y \\ y & x ]
 \end{equation}
 $$
+
+A function is notated as $f: \text{input space} \to \text{output space}$. For example, the function $f: \mathbb{R}^2 \to \mathbb{R}$ takes two real numbers as input and outputs a single real number.
+More info on this can be found in the [Linear Transformations](/notes/maths/Linear%20Algebra/Linear%20Transformations#terminology-and-notation) notes.
 
 ## Visualizing Multivariable Functions - Scalar-Valued
 
@@ -68,17 +81,7 @@ This also shows that, instead of a line of inputs, now you have an entire plane 
 
 The graph of the function $f(x, y) = x^2 + y^2$ looks like a paraboloid, which is a three-dimensional parabola:
 
-<MB.ContainedMathbox
-    options={{
-        plugins: ["core", "controls", "cursor"],
-        controls: {
-            klass: OrbitControls,
-        },
-    }}
-    containerStyle={{
-        height: "500px"
-    }}
->
+<CustomMathbox>
     <MB.Cartesian>
         <MB.Axis axis="x" color={color("blue")} />
         <MB.Axis axis="y" color={color("green")} />
@@ -97,22 +100,12 @@ The graph of the function $f(x, y) = x^2 + y^2$ looks like a paraboloid, which i
             points="#graph"
         />
     </MB.Cartesian>
-</MB.ContainedMathbox>
+</CustomMathbox>
 
 Instead of having two orthogonal axes, you now have three orthogonal axes. The $x$ and $y$ axes are the same as before, but now you have a third axis, the $z$ axis, which represents the output of the function.
 Consider a singular point on the graph, $[1, 2, 3]$:
 
-<MB.ContainedMathbox
-    options={{
-        plugins: ["core", "controls", "cursor"],
-        controls: {
-            klass: OrbitControls,
-        },
-    }}
-    containerStyle={{
-        height: "500px"
-    }}
->
+<CustomMathbox>
     <MB.Cartesian>
         <MB.Axis axis="x" color={color("blue")} />
         <MB.Axis axis="y" color={color("green")} />
@@ -122,7 +115,7 @@ Consider a singular point on the graph, $[1, 2, 3]$:
             color={color("red")}
         />
     </MB.Cartesian>
-</MB.ContainedMathbox>
+</CustomMathbox>
 
 ### Contour Plots
 
@@ -168,7 +161,7 @@ For example:
 
 $$
 \begin{equation}
-f(t) = \mqty[ t^2 \\ t ]
+\va{f}(t) = \mqty[ t^2 \\ t ]
 \end{equation}
 $$
 
@@ -178,7 +171,7 @@ Let's consider how this function is applied on one point, $t = 2$:
 
 $$
 \begin{equation}
-f(2) = \mqty[ 2^2 \\ 2 ] = \mqty[ 4 \\ 2 ]
+\va{f}(2) = \mqty[ 2^2 \\ 2 ] = \mqty[ 4 \\ 2 ]
 \end{equation}
 $$
 
@@ -213,7 +206,7 @@ Consider these two parametric functions:
 
 $$
 \begin{equation}
-f(t) = \mqty[ \sin(t) \\ \cos(t) ], \quad g(t) = \mqty[ \sin(t + \frac{\pi}{2}) \\ \cos(t + \frac{\pi}{2}) ]
+\va{f}(t) = \mqty[ \sin(t) \\ \cos(t) ], \quad \va{g}(t) = \mqty[ \sin(t + \frac{\pi}{2}) \\ \cos(t + \frac{\pi}{2}) ]
 \end{equation}
 $$
 
@@ -222,12 +215,50 @@ One way to think about this is that the two functions are the same, but one is "
 
 To get around this, one way is to label some points on the path with the input value.
 
+#### Parametric Surfaces
+
+For functions with more dimensions, you can graph them as surfaces in space.
+For example, consider this function:
+
+$$
+\begin{equation}
+\va{v}(t, s) = \mqty[ 3\cos(t) + \cos(t)\cos(s) \\ 3\sin(t) + \sin(t)\cos(s) \\ \sin(s) ]
+\end{equation}
+$$
+
+This function takes two inputs, $t$ and $s$, and produces a three-dimensional vector in space.
+Hence, it can be visualized as a mapping from a plane to a surface in space.
+
+Consider the inputs $0 \leq t \leq 2\pi$ and $0 \leq s \leq 2\pi$.
+This can be drawn as a square in the input plane:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Polygon
+        points={[
+            [0, 0],
+            [2 * Math.PI, 0],
+            [2 * Math.PI, 2 * Math.PI],
+            [0, 2 * Math.PI]
+        ]}
+    />
+</Mafs>
+
+For every point in this square, there is a corresponding point in the output 3D space.
+Doing this for all points in the square gives us a surface, and we can visualize this transformation:
+
+<ParametricSurfaceTransformVisualizer fn={(x, y) => [
+    3 * Math.cos(x) + Math.cos(x) * Math.cos(y),
+    3 * Math.sin(x) + Math.sin(x) * Math.cos(y),
+    Math.sin(y)
+]} />
+
 ### Vector Fields
 
 Another way to visualize vector-valued functions is with vector fields.
 This works for any function that takes a point in space and outputs a vector.
 
-For example, consider the function $f(x, y) = \mqty[ -y \\ x ]$.
+For example, consider the function $\va{F}(x, y) = \mqty[ -y \\ x ]$.
 This function takes a point $(x, y)$ and outputs the vector $\mqty[ -y \\ x ]$.
 
 We can place a vector on some points in space, where the vector is the output of the function at that point:
@@ -241,8 +272,19 @@ We can place a vector on some points in space, where the vector is the output of
 
 One visual example of a vector field is the flow of water in a river.
 
-## Transformations
+Vector fields are often denoted with an uppercase letter with an arrow on top, like $\va{F}$.
+They are very common in physics and engineering, where they are used to describe forces, velocities, electric fields, and generally, any physical vector quantity that exists at every point in space.
 
-Multivariable functions can also be used to describe transformations in space.
+A non-example of a physical quantity as a vector field is a temperature field. While it indeed exists at every point in space, temperature is a scalar quantity, not a vector quantity.
 
-Recall that functions can be thought of as a mapping from one set of points to another set of points.
+## Choosing the Right Visualization
+
+When visualizing multivariable functions, it is important to choose the right visualization for the function.
+
+The main method for choosing the right visualization is to consider the dimensions for both the input and output of the function.
+
+For a function $f: \mathbb{R}^n \to \mathbb{R}^m$, where $n$ is the number of inputs and $m$ is the number of outputs, you can use the following guidelines:
+
+1. If $m < n$ (more inputs than outputs), you can usually just use a regular graph or a contour plot.
+2. If $m = n$ (same number of inputs and outputs), you can use a vector field.
+3. If $m > n$ (more outputs than inputs), you can use a parametric plot/surface.
