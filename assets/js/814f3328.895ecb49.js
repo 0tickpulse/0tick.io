@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_0_tick_io=self.webpackChunk_0_tick_io||[]).push([[7472],{55513:e=>{e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Hello","permalink":"/blog/2024/07/15/Hello","unlisted":false,"date":"2024-07-15T00:00:00.000Z"}]}')}}]);
