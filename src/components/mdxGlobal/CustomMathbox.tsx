@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useEffect, useImperativeHandle, useCallback } from "react";
 import { RootProps, MathBoxOptions, MathboxSelection } from "mathbox";
-import { Mathbox } from "mathbox-react";
+import { Cartesian, Mathbox, Swizzle } from "mathbox-react";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Color } from "three";
 
