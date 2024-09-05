@@ -1,0 +1,78 @@
+---
+sidebar_position: 3
+---
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState, Fragment } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Aquinas' Third Way: Contingency
+
+## Formulation
+
+1. Whatever is contingent could have been different or not existed at all.
+2. If everything were contingent, then there would be a time when nothing existed.
+3. If there were a time when nothing existed, then nothing would exist now.
+4. But things do exist now.
+5. Therefore, not everything is contingent. (2, 3)
+6. Therefore, there must be a necessary being.
+7. This necessary being either derives its necessity from another necessary being, or is necessary in itself.
+8. There cannot be an infinite regress of necessary beings.
+9. Therefore, there must be a necessary being that is necessary in itself (God). (7, 8)
+
+This is also pretty similar to the [First Way](./Aquinas%20First%20Way.mdx) and the [Second Way](./Aquinas%20Second%20Way.mdx), but instead of focusing on motion or causation, it focuses on contingency.
+
+## Contingency and the The First Premise
+
+The argument is based on the distinction between necessary and contingent beings.
+Necessary beings are beings that must exist for logical reasons, and contingent beings are beings that could have been different or not existed at all, and still be logically consistent.
+
+There's one issue in the first premise, and this can be seen by comparing the following two statements:
+
+1. Definition - Contingent beings can fail to exist.
+2. Premise 1 - Contingent beings failed to exist at some point.
+
+Being "able" to fail to exist is not the same as actually failing to exist.
+The being could have been present eternally, but still be contingent.
+
+An alternative interpretation is that contingent beings have a natural tendency towards decay and non-existence.
+The problem is that this still does not imply that they actually failed to exist at some point.
+
+While an object could tend towards decay, it must have certain manifestation conditions in order to decay.
+For instance, a glass of water could decay (evaporate), but only given certain conditions, like the pressure difference and temperature.
+
+## Contingency and the Second Premise
+
+The second premise is that if everything were contingent, then there would be a time when nothing existed.
+We shall grant the first premise for the sake of argument, and focus on the second premise.
+
+Let $A_0$ be a contingent being that exists at time $t_0$ and stops existing at time $t_1$.
+Let $A_1$ be another contingent being that starts existing at time $t_1$ and stops existing at time $t_2$, and so on.
+
+Generally, $A_n$ starts existing at time $t_n$ and stops existing at time $t_{n+1}$.
+
+This scenario fits the first premise: each $A_n$ did not exist at some point.
+However, the second premise does not hold, because there is always something that exists at any given time.
+There's always some $A_n$ at any time in $[t_1, t_n]$.
+
+In other words, $\forall t \in [t_1, t_n], \exists A_n, A_n \text{ exists at } t$.
+
+<Mafs>
+    <Transform translate={[-3.5, 0]}>
+        {range(0, 8).map(n => (
+            <Fragment key={n}>
+                <Point x={n} y={0} />
+                <LaTeX tex={"t_" + n} at={[n, 0.3]} />
+                {n > 0 && <LaTeX tex={"A_" + (n - 1)} at={[n - 0.5, -0.3]} />}
+            </Fragment>
+        ))}
+        <Line.Segment point1={[0, 0]} point2={[7, 0]} />
+    </Transform>
+</Mafs>
+
+As such, even if we grant Premise 1 (which is already problematic), Premise 2 does not necessarily follow.
+

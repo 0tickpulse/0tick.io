@@ -1216,7 +1216,35 @@ This is why the curl is highest when the vector field is rotating the fastest.
 ## Laplacian
 
 The Laplacian is another operator for vector fields. It gives a scalar field as an output, and can be thought of as the multivariable generalization of the second derivative.
-It is sometimes written as:
+Essentially you add up the second partial derivatives of the components of the vector field:
+
+$$
+\begin{equation}
+\operatorname{Lap} \va{F}(x, y) = \pdv[2]{P}{x} + \pdv[2]{Q}{y} + \pdv[2]{R}{z}
+\end{equation}
+$$
+
+We can generalize this to any vector space with basis vectors $\vu{e}_i$:
+
+$$
+\begin{equation}
+\operatorname{Lap} \va{F}(x, y, z) = \sum_i \pdv[2]{F_i}{x_i}
+\end{equation}
+$$
+
+An alternate notation for the Laplacian exists.
+The Laplacian can be written as the derivative of the first derivative of the vector field:
+
+$$
+\begin{equation}
+\begin{split}
+\operatorname{Lap} \va{F}(x, y) &= \pdv{x} \pdv{P}{x} + \pdv{y} \pdv{Q}{y} + \pdv{z} \pdv{R}{z} \\
+&= \operatorname{div} \mqty[\pdv{P}{x} \\ \pdv{Q}{y} \\ \pdv{R}{z}] \\
+\end{split}
+\end{equation}
+$$
+
+Hence:
 
 $$
 \begin{equation}
@@ -1224,7 +1252,7 @@ $$
 \end{equation}
 $$
 
-This can be expanded out as:
+Alternatively, we can use the nabla notation:
 
 $$
 \begin{equation}

@@ -102,7 +102,7 @@ Consider a function $f: S_1 \to S_2$.
 
 - The **domain** of the function is the set that you input to the function - in this case, $S_1$.
 - The **codomain** of the function is the set that the function outputs - in this case, $S_2$.
-- The **image** of a set $S$ under the function is the set of all outputs of the function when you input elements of $S$.
+- The **image** or **range** of a set $S$ under the function is the set of all outputs of the function when you input elements of $S$.
 
 $$
 \begin{equation}
@@ -112,29 +112,27 @@ $$
 
 Functions have unique outputs for each input, so the image of a set under a function is unique.
 
-Next, we need to clarify on the difference between the **range** and **codomain** of a function.
+Next, we need to clarify on the difference between the image and codomain of a function.
 
-- The **range** of a function is the set of all possible outputs of the function.
+- The **image** or **range** of a function is the set of all possible outputs of the function.
 - The **codomain** of a function is the set that the function outputs to. It is where the range "lives".
 
 To illustrate this difference, consider a function $f(x) = x^2$.
 
 Its **codomain** is $\mathbb{R}$, as the function outputs real numbers.
-However, the **range** of the function is $[0, \infty)$, as the function only outputs non-negative real numbers.
+However, the **image** of the function is $[0, \infty)$, as the function only outputs non-negative real numbers.
 
-In this way, the range is a subset of the codomain.
+In this way, the image is a subset of the codomain.
 
 {/* box 1 for domain, box 2 for codomain, and an arrow pointing from 1 to 2. smaller box inside box 2 for range */}
 
 ```mermaid
 flowchart LR
     subgraph "Domain"
-        A["Some Input"]
+        A["Input"]
     end
     subgraph "Codomain"
-        subgraph "Range"
-            B["Output (Image)"]
-        end
+        B["Output (Image/Range)"]
     end
     A --> B
 ```
