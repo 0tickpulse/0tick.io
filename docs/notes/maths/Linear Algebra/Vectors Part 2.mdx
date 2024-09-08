@@ -787,6 +787,61 @@ When $\theta = 0^\circ$, $\cos(\theta) = 1$, and the dot product is the product 
 
 When $\theta = 180^\circ$, $\cos(\theta) = -1$, and the dot product is the negative of the product of the magnitudes of the vectors.
 
+### Alternate Derivation of the Dot Product
+
+Here's an alternative derivation of the dot product based on its properties, that I found in a [MIT Physics textbook](https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter13/).
+
+Consider two vectors $\va{v}$ and $\va{w}$:
+
+$$
+\begin{equation}
+\va{v} = \mqty[ v_1 \\ v_2 \\ v_3 ], \va{w} = \mqty[ w_1 \\ w_2 \\ w_3 ]
+\end{equation}
+$$
+
+We can express both vectors as linear combinations of the unit vectors $\vu{i}$, $\vu{j}$, and $\vu{k}$:
+
+$$
+\begin{align}
+\va{v} &= v_1\vu{i} + v_2\vu{j} + v_3\vu{k} \\
+\va{w} &= w_1\vu{i} + w_2\vu{j} + w_3\vu{k}
+\end{align}
+$$
+
+The dot product of the vectors is:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = (v_1\vu{i} + v_2\vu{j} + v_3\vu{k}) \cdot (w_1\vu{i} + w_2\vu{j} + w_3\vu{k})
+\end{equation}
+$$
+
+Let's consider how the dot product acts on the unit vectors:
+
+1. On the same unit vector, both are parallel, and the dot product is the product of the magnitudes, i.e. $1$.
+2. On different unit vectors, they are perpendicular, and the dot product is $0$.
+
+By the distributive property, we can expand the dot product of the two vectors.
+All combinations of the unit vectors will yield $0$ except for the same unit vectors, which will yield $1$:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \cdot \va{w} &= (v_1\vu{i} + v_2\vu{j} + v_3\vu{k}) \cdot (w_1\vu{i} + w_2\vu{j} + w_3\vu{k}) \\
+&= \class{green}{v_1w_1\vu{i} \cdot \vu{i}} + \cancel{v_1w_2\vu{i} \cdot \vu{j}} + \cancel{v_1w_3\vu{i} \cdot \vu{k}} \\
+&\quad + \cancel{v_2w_1\vu{j} \cdot \vu{i}} + \class{green}{v_2w_2\vu{j} \cdot \vu{j}} + \cancel{v_2w_3\vu{j} \cdot \vu{k}} \\
+&\quad + \cancel{v_3w_1\vu{k} \cdot \vu{i}} + \cancel{v_3w_2\vu{k} \cdot \vu{j}} + \class{green}{v_3w_3\vu{k} \cdot \vu{k}} \\
+&= v_1w_1 + v_2w_2 + v_3w_3
+\end{split}
+\end{equation}
+$$
+
+Aligning with the definition of the dot product.
+
+While we have used $\mathbb{R}^3$ as an example, this derivation holds for any $\mathbb{R}^n$.
+
+However, this derivation does not provide much geometric insight, nor does it generalize well to other vector spaces.
+
 ## Cross Product/Vector Product
 
 When we introduced the dot product, we mentioned that it was only one of two ways to multiply vectors.
@@ -1280,7 +1335,7 @@ One way to remember this is to just say "ijkijk", and in that order, you get the
 
 ### Alternate Derivation for Cross Product
 
-There's another way to derive the algebraic expression for the cross product, which I found in a [MIT Physics textbook](https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter3/).
+There's another way to derive the algebraic expression for the cross product, which I found in the same [MIT Physics textbook](https://ocw.mit.edu/courses/8-01sc-classical-mechanics-fall-2016/resources/mit8_01scs22_chapter3/).
 
 We can make some definitions:
 

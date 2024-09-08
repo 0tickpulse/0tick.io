@@ -1855,7 +1855,7 @@ When applied to a vector $\va{x}$:
 
 $$
 \begin{equation}
-\vb{A}\va{x} = \mqty[ u_x & u_y ] \mqty[ x_1 \\ x_2 ] = u_x x_1 + u_y x_2 = \va{u} \cdot \va{x}
+\vb{A}\va{x} = \mqty[ u_x & u_y ] \mqty[ x_1 \\ x_2 ] = \va{u} \cdot \va{x}
 \end{equation}
 $$
 
@@ -1871,6 +1871,26 @@ Hence, the linear transformation would be the projection of $\va{x}$ onto $\va{u
 
 Hence, there's a duality between matrices and dot products.
 This is also a nice non-rigorous way to show the commutativity of dot products (i.e. $\va{u} \cdot \va{x} = \va{x} \cdot \va{u}$).
+
+Furthermore, this offers another way to show the dot product's definition in terms of the components.
+Going back to the matrix-vector product:
+
+$$
+\begin{equation}
+\vb{A}\va{x} = \mqty[ u_x & u_y ] \mqty[ x_1 \\ x_2 ] = u_x x_1 + u_y x_2 = \va{u} \cdot \va{x}
+\end{equation}
+$$
+
+In summary:
+
+$$
+\begin{equation}
+\begin{split}
+\text{Matrix-vector product} &&\quad \mqty[ u_x & u_y ] \mqty[ x_1 \\ x_2 ] &= u_x x_1 + u_y x_2 \\
+\text{Dot product} &&\quad \mqty[ u_x \\ u_y ] \cdot \mqty[ x_1 \\ x_2 ] &= u_x x_1 + u_y x_2
+\end{split}
+\end{equation}
+$$
 
 ## Null Space
 
