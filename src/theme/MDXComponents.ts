@@ -13,6 +13,7 @@ import CustomMathbox from "@site/src/components/mdxGlobal/CustomMathbox";
 import LinearTransformationVisualizer from "@site/src/components/mdxGlobal/LinearTransformationVisualizer";
 import ParametricSurfaceTransformVisualizer from "@site/src/components/mdxGlobal/ParametricSurfaceTransformVisualizer";
 import DivergenceVisualization from "@site/src/components/mdxGlobal/DivergenceVisualization";
+import NonlinearTransformationVisualizer from "../components/mdxGlobal/NonlinearTransformationVisualizer";
 
 export default {
     ...MDXComponents,
@@ -23,6 +24,7 @@ export default {
     DerivativeFromLimits,
     DivergenceVisualization,
     LinearTransformationVisualizer,
+    NonlinearTransformationVisualizer,
     HoverableBox,
     RiemannApproximation,
     ThreeDTest,

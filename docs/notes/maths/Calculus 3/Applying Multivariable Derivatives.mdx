@@ -1,0 +1,38 @@
+---
+sidebar_position: 5
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Applying Multivariable Derivatives
+
+Previously, we covered a lot of the theory behind multivariable derivatives, starting from the partial derivatives, the gradient, and the directional derivative, and ending with the Jacobian matrix.
+Now we will look at how to apply these concepts to solve some problems.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Tangent Planes of Graphs
+
+Recall from single-variable calculus that we can use a tangent line to approximate the behavior of a function near a point.
+Given a point $x_0$ on a curve $f(x)$, the tangent line at $x_0$ is given by the following:
+
+$$
+\begin{equation}
+y = \dv{f}{x}(x_0)(x - x_0) + f(x_0)
+\end{equation}
+$$
+
+We can extend this idea to multivariable functions.
+Instead of a tangent line, we use a tangent *plane* to approximate the behavior of a function near a point.

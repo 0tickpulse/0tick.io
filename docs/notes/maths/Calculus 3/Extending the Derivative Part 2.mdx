@@ -288,7 +288,7 @@ Recall the symbol $\grad$ used for the gradient. The gradient is defined as:
 
 $$
 \begin{equation}
-\grad f(x, y) = \mqty[\pdv{f}{x} \\ \pdv{f}{y}]
+\grad{f(x, y)} = \mqty[\pdv{f}{x} \\ \pdv{f}{y}]
 \end{equation}
 $$
 
@@ -1213,14 +1213,14 @@ As such, the curl should be the highest when the gradient is perpendicular to th
 
 This is why the curl is highest when the vector field is rotating the fastest.
 
-## Laplacian
+## Laplacian of a Scalar Field
 
 The Laplacian is another operator for vector fields. It gives a scalar field as an output, and can be thought of as the multivariable generalization of the second derivative.
-Essentially you add up the second partial derivatives of the components of the vector field:
+Essentially you add up the second partial derivatives of the components of the scalar field:
 
 $$
 \begin{equation}
-\operatorname{Lap} \va{F}(x, y) = \pdv[2]{P}{x} + \pdv[2]{Q}{y} + \pdv[2]{R}{z}
+\operatorname{Lap} f(x, y, z) = \pdv[2]{f}{x} + \pdv[2]{f}{y} + \pdv[2]{f}{z}
 \end{equation}
 $$
 
@@ -1228,7 +1228,7 @@ We can generalize this to any vector space with basis vectors $\vu{e}_i$:
 
 $$
 \begin{equation}
-\operatorname{Lap} \va{F}(x, y, z) = \sum_i \pdv[2]{F_i}{x_i}
+\operatorname{Lap} f(x, y, z) = \sum_i \pdv[2]{f_i}{x_i}
 \end{equation}
 $$
 
@@ -1238,8 +1238,8 @@ The Laplacian can be written as the derivative of the first derivative of the ve
 $$
 \begin{equation}
 \begin{split}
-\operatorname{Lap} \va{F}(x, y) &= \pdv{x} \pdv{P}{x} + \pdv{y} \pdv{Q}{y} + \pdv{z} \pdv{R}{z} \\
-&= \operatorname{div} \mqty[\pdv{P}{x} \\ \pdv{Q}{y} \\ \pdv{R}{z}] \\
+\operatorname{Lap} f(x, y, z) &= \pdv{x} \pdv{f}{x} + \pdv{y} \pdv{f}{y} + \pdv{z} \pdv{f}{z} \\
+&= \operatorname{div} \grad{f(x, y, z)}
 \end{split}
 \end{equation}
 $$
@@ -1256,10 +1256,728 @@ Alternatively, we can use the nabla notation:
 
 $$
 \begin{equation}
-\operatorname{Lap} \va{F}(x, y) = \div \grad \va{F}(x, y) = \laplacian \va{F}(x, y)
+\operatorname{Lap} \va{F}(x, y) = \div{\grad{\va{F}(x, y)}} = \laplacian{\va{F}(x, y)}
+\end{equation}
+$$
+
+Sometimes it is also written using the $\Delta$ symbol:
+
+$$
+\begin{equation}
+\Delta \va{F}(x, y) = \laplacian \va{F}(x, y)
 \end{equation}
 $$
 
 ### Intuition for Laplacian
 
+Recall that the divergence is a measure of how much a vector field is expanding or contracting.
+To illustrate how the Laplacian works, first consider a scalar-valued function $f(x, y)$:
+
+$$
+\begin{equation}
+f(x, y) = \sin(x) \cos(y) + 3
+\end{equation}
+$$
+
+We can plot this function as a surface in 3D space:
+
+<CustomMathbox>
+    <MB.Cartesian
+        scale={[
+            0.1, 0.1, 0.1
+        ]}
+    >
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+        <MB.Area
+            id="graph"
+            axes="xy"
+            expr={(emit, y, x, i, t) => {
+                const z = Math.sin(x) * Math.cos(y) + 3;
+                emit(x, z, y);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Surface
+            points="#graph"
+            color={"#B0B0B0"}
+            lineX={true}
+            lineY={true}
+            opacity={0.75}
+            zBias={-1}
+        />
+    </MB.Cartesian>
+</CustomMathbox>
+
+First, we can plot the gradient as a vector field. The gradient points in the direction of the steepest ascent of the function:
+
+{(() => {
+    const [surfaceVisible, setSurfaceVisible] = useState(true);
+    const [fieldVisible, setFieldVisible] = useState(true);
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox>
+                    <MB.Cartesian
+                        scale={[
+                            0.1, 0.1, 0.1
+                        ]}
+                    >
+                        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+                        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+                        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+                        <MB.Group visible={surfaceVisible}>
+                            <MB.Area
+                                id="graph"
+                                axes="xy"
+                                expr={(emit, y, x, i, t) => {
+                                    const z = Math.sin(x) * Math.cos(y) + 3;
+                                    emit(x, z, y);
+                                }}
+                                width={64}
+                                height={64}
+                                channels={3}
+                                rangeX={[-10, 10]}
+                                rangeY={[-10, 10]}
+                            />
+                            <MB.Surface
+                                points="#graph"
+                                color={"#B0B0B0"}
+                                lineX={true}
+                                lineY={true}
+                                opacity={0.75}
+                                zBias={-1}
+                            />
+                        </MB.Group>
+                        <MB.Group visible={fieldVisible}>
+                            <MB.Area
+                                id="gradient_field"
+                                axes="xy"
+                                expr={(emit, y, x, i, t) => {
+                                    // the original point
+                                    emit(x, 0, y);
+                                    // gradient
+                                    const gradient = [Math.cos(x) * Math.cos(y), -Math.sin(x) * Math.sin(y)];
+                                    const normalized = vec.normalize(gradient);
+                                    emit(x + normalized[0], 0, y + normalized[1]);
+                                }}
+                                items={2}
+                                width={20}
+                                height={20}
+                                channels={3}
+                                rangeX={[-10, 10]}
+                                rangeY={[-10, 10]}
+                            />
+                            <MB.Area
+                                id="gradient_field_colors"
+                                axes="xy"
+                                expr={(emit, y, x, i, t) => {
+                                    const gradient = [Math.cos(x) * Math.cos(y), -Math.sin(x) * Math.sin(y)];
+                                    const mag = vec.mag(gradient);
+                                    const [r, g, b] = getColorFromMagnitude(mag, 0, 1);
+                                    emit(r, g, b, 1.0);
+                                }}
+                                width={20}
+                                height={20}
+                                channels={4}
+                                rangeX={[-10, 10]}
+                            />
+                            <MB.Vector
+                                points="#gradient_field"
+                                colors="#gradient_field_colors"
+                                width={5}
+                                end={true}
+                            />
+                        </MB.Group>
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+            <div className="card__footer">
+                <button onClick={() => setSurfaceVisible(!surfaceVisible)} className={`button button--block ${surfaceVisible ? "button--primary" : "button--secondary"}`}>
+                    {surfaceVisible ? "Hide" : "Show"} Surface
+                </button>
+                <button onClick={() => setFieldVisible(!fieldVisible)} className={`button button--block ${fieldVisible ? "button--primary" : "button--secondary"}`}>
+                    {fieldVisible ? "Hide" : "Show"} Gradient Field
+                </button>
+            </div>
+        </div>
+    )
+})()}
+
+Imagine this surface as some sort of mountain. The gradient points in the direction where you would walk to ascend the mountain the fastest.
+
+At some peak of the mountain, the gradient in the points around it would point towards the peak, since that is the steepest ascent.
+On the other hand, at the "bottom" of the mountain, the gradient would point away from the peak, since that is the steepest descent.
+
+We can view the Laplacian as the divergence of this gradient field. Then:
+
+1. At the peak, the gradient points towards the peak, and the divergence is positive. So the Laplacian is positive.
+2. At the bottom, the gradient points away from the peak, and the divergence is negative. So the Laplacian is negative.
+
+This is similar to how the second derivative works for single-variable functions:
+
+1. At a peak, the second derivative is positive, and the function is concave up. This is also called a "local minimum".
+2. At a bottom, the second derivative is negative, and the function is concave down. This is also called a "local maximum".
+
+### Example Problem: Laplacian of a Scalar Field
+
+> Evaluate the Laplacian for the following scalar field:
+>
+> $$
+> \begin{equation}
+> f(x, y) = (x + y)^2 + \sin(x)\cos(y)
+> \end{equation}
+> $$
+
+Recall the Laplacian formula:
+
+$$
+\begin{equation}
+\operatorname{Lap} \va{F}(x, y) = \operatorname{div} (\operatorname{grad} \va{F}(x, y)) = \div{\grad{f(x, y)}}
+\end{equation}
+$$
+
+First, we need to find the gradient of the scalar field, which is a vector of its partial derivatives:
+
+$$
+\begin{equation}
+\grad{f(x, y)} = \mqty[\pdv{f}{x} \\ \pdv{f}{y}] = \mqty[2(x + y) + \cos(x)\cos(y) \\ 2(x + y) - \sin(x)\sin(y)]
+\end{equation}
+$$
+
+Next, we need to find the divergence of the gradient:
+
+$$
+\begin{equation}
+\begin{split}
+\div{\grad{f(x, y)}} &= \pdv{x} \qty(2(x + y) + \cos(x)\cos(y)) + \pdv{y} \qty(2(x + y) - \sin(x)\sin(y)) \\
+&= 2 - \sin(x)\cos(y) + 2 - \sin(x)\cos(y) \\
+&= 4 - 2\sin(x)\cos(y)
+\end{split}
+\end{equation}
+$$
+
+Hence, the Laplacian of the scalar field is:
+
+$$
+\begin{equation}
+\operatorname{Lap} f(x, y) = 4 - 2\sin(x)\cos(y)
+\end{equation}
+$$
+
+## Harmonic Functions
+
+Harmonic functions are a special class of functions that satisfy something known as the Laplace equation.
+It is defined based on the Laplacian of a scalar field:
+
+$$
+\begin{equation}
+\laplacian{f(x, y)} \equiv 0
+\end{equation}
+$$
+
+Since the Laplacian is the multivariable generalization of the second derivative, we can understand this by first taking a single-variable case:
+
+$$
+\begin{equation}
+\dv[2]{f}{x} = 0
+\end{equation}
+$$
+
+If we integrate this twice, we get:
+
+$$
+\begin{align}
+\dv{f}{x} &= \int 0 \dd{x} = m \\
+f(x) &= \int m \dd{x} = mx + c
+\end{align}
+$$
+
+Meaning it is a straight line.
+This should also make sense intuitively; a zero second derivative means that the slope is constant throughout the function, so the function should never curve.
+
+Consider the following scalar field:
+
+$$
+\begin{equation}
+f(x, y) = e^x \sin(y)
+\end{equation}
+$$
+
+With a constant $y$ value, the function is simply an exponential, and with a nonconstant $y$ value, the function is an exponential that sort of oscillates.
+
+Consider the Laplacion of this scalar field:
+
+$$
+\begin{equation}
+\begin{split}
+\laplacian{f(x, y)} &= \pdv[2]{f}{x} + \pdv[2]{f}{y} \\
+&= \pdv{x} \qty(\pdv{f}{x}) + \pdv{y} \qty(\pdv{f}{y}) \\
+&= \pdv{x} \qty(e^x \sin(y)) + \pdv{y} \qty(e^x \cos(y)) \\
+&= e^x \sin(y) - e^x \sin(y) = 0
+\end{split}
+\end{equation}
+$$
+
+If we plot the scalar field $f(x, y) = e^x \sin(y)$, it doesn't look like a straight line, but it is a harmonic function:
+
+<CustomMathbox>
+    <MB.Cartesian
+        scale={[
+            0.1, 0.1, 0.1
+        ]}
+    >
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+        <MB.Area
+            id="graph"
+            axes="xy"
+            expr={(emit, y, x, i, t) => {
+                const z = Math.exp(x) * Math.sin(y);
+                emit(x, z, y);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Surface
+            points="#graph"
+            color={"#B0B0B0"}
+            lineX={true}
+            lineY={true}
+            opacity={0.75}
+            zBias={-1}
+        />
+    </MB.Cartesian>
+</CustomMathbox>
+
+To show why this is harmonic, consider the single-variable case again:
+
+In a point where $\dv[2]{f}{x} > 0$, the function is concave up. This means that the points around it are higher than the point itself.
+Even in a situation where the function has a positive slope:
+
+<Mafs
+    viewBox={{
+        x: [0, 4],
+        y: [-1, 2]
+    }}
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => x ** 2 / 5} />
+    <Point x={2} y={4 / 5} color={color("red")} />
+    <Point x={1} y={1 / 5} />
+    <Point x={3} y={9 / 5} />
+</Mafs>
+
+While there are points that are lower than the point itself, *on average*, the points around it are higher.
+
+Next, generalize this to a scalar field. If the Laplacian is nonzero, then it means that around the point, its neighbors are higher/lower than the point itself on average:
+
+1. If the Laplacian is positive ($\laplacian{f(x, y)} > 0$), then the neighbors are higher than the point itself on average.
+2. If the Laplacian is negative ($\laplacian{f(x, y)} < 0$), then the neighbors are lower than the point itself on average.
+
+The function we have is harmonic; the Laplacian is zero. This means that **on average, the point's neighbors are at the same height as the point itself**.
+
+Laplacians come up in many areas of physics, and this concept of the neighbors' height does have physical significance.
+For example, if you were considering heat flow, then you would consider the heat around the point to evaluate how the heat is distributed.
+If the temperature around is higher than the point, then the point will heat up, and vice versa.
+This can be written as a proportional relationship. Denoting $T(\va{r}, t)$ as the temperature at a point $\va{r}$ at time $t$, then:
+
+$$
+\begin{equation}
+\pdv{T}{t}(\va{r}, t) = k \laplacian{T(\va{r}, t)}
+\end{equation}
+$$
+
+The word equation for that is as follows:
+
+$$
+\begin{equation}
+\text{Temperature change at point} \propto \text{How much temperature around it is different}
+\end{equation}
+$$
+
+This is also known as the **heat equation**.
+
+## Jacobian and Local Linearity
+
+The Jacobian is another operator for vector fields.
+
+Recall from linear algebra that a matrix can be used to represent a linear transformation.
+Each column decides where the basis vectors go, and the matrix is hence the result of applying the transformation to the basis vectors.
+
+The Jacobian is a generalization of this concept to multivariable functions.
+
+First, consider a vector field $\va{F}(x, y)$:
+
+$$
+\begin{equation}
+\va{F}(x, y) = \mqty[x + \sin(y) \\ y + \sin(x)]
+\end{equation}
+$$
+
+This is not a linear transformation. It does not satisfy the properties of a linear transformation, like additivity and homogeneity.
+We can view this transformation on a grid:
+
+<NonlinearTransformationVisualizer
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+/>
+
+Using the visualization, we can also tell that it is not a linear transformation:
+
+1. The grid lines are not straight after the transformation.
+2. The grid lines are not parallel and evenly spaced after the transformation.
+
+This function has a special property known as **local linearity**. Consider a region in the same vector field at a point $(x_0, y_0)$ and zoom in:
+
+<NonlinearTransformationVisualizer
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    xGridRange={[...range(-10, 11, 1), ...range(-2.3, -1.6, 0.1)]}
+    yGridRange={[...range(-10, 11, 1), ...range(0.7, 1.4, 0.1)]}
+    lerpedItems={(lerpedFn) => {
+        const point = lerpedFn(-2, 1);
+        return (
+            <Circle center={point} radius={0.5} />
+        )
+    }}
+/>
+
+Around this point, notice that while the lines still curve a bit, it is *almost* a linear transformation.
+We can do even better by zooming in further:
+
+<NonlinearTransformationVisualizer
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    xGridRange={[...range(-10, 11, 1), ...range(-2.1, -1.9, 0.05)]}
+    yGridRange={[...range(-10, 11, 1), ...range(0.9, 1.1, 0.05)]}
+    lerpedItems={(lerpedFn) => {
+        const point = lerpedFn(-2, 1);
+        return (
+            <Circle center={point} radius={0.25} />
+        )
+    }}
+    mafsProps={{
+        viewBox: {
+            x: [-3, 0],
+            y: [-1, 2]
+        }
+    }}
+/>
+
+The question is, if the function approaches a linear transformation as we zoom in, what is this linear transformation?
+
+### The Jacobian Matrix
+
+Consider a small step in the $x$ direction at the point $(x_0, y_0)$.
+This corresponds to some small step in the output vector field after the transformation.
+
+<NonlinearTransformationVisualizer
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    xGridRange={[...range(-10, 11, 1), ...range(-2.1, -1.9, 0.05)]}
+    yGridRange={[...range(-10, 11, 1), ...range(0.9, 1.1, 0.05)]}
+    lerpedItems={(lerpedFn) => {
+        const point1 = lerpedFn(-2, 1);
+        const point2 = lerpedFn(-2 + 0.15, 1);
+        const point2middle = [point2[0], point1[1]];
+        return (
+            <>
+                <Circle center={point1} radius={0.25} />
+                <Line.Segment point1={point1} point2={point2middle} />
+                <Line.Segment point1={point2} point2={point2middle} />
+                <Vector tail={point1} tip={point2} color={color("red")} />
+            </>
+        )
+    }}
+    mafsProps={{
+        viewBox: {
+            x: [-2, -1],
+            y: [0, 1]
+        }
+    }}
+/>
+
+Treat the individual components of the vector field as functions:
+
+$$
+\begin{equation}
+\va{F}(x, y) = \mqty[x + \sin(y) \\ y + \sin(x)] = \mqty[f_1(x, y) \\ f_2(x, y)]
+\end{equation}
+$$
+
+Looking at the visualization above, we can see that the step in the output vector field can be expressed as the sum of the steps in the individual components.
+
+Denote the change in $x$ as $\partial x$ and the change in the vector field as $\partial \va{F}$.
+We can write that $\partial \va{F}$ is the sum of the changes in the individual components:
+
+$$
+\begin{equation}
+\partial \va{F} = \mqty[\partial f_1 \\ \partial f_2]
+\end{equation}
+$$
+
+Then, the change in the vector field with respect to the change in $x$ is:
+
+$$
+\begin{equation}
+\pdv{\va{F}}{x} = \mqty[\pdv{f_1}{x} \\ \pdv{f_2}{x}]
+\end{equation}
+$$
+
+We can do the same for the change in $y$:
+
+$$
+\begin{equation}
+\pdv{\va{F}}{y} = \mqty[\pdv{f_1}{y} \\ \pdv{f_2}{y}]
+\end{equation}
+$$
+
+This represents the change in the vector field with respect to the change in $y$:
+
+<NonlinearTransformationVisualizer
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    xGridRange={[...range(-10, 11, 1), ...range(-2.1, -1.9, 0.05)]}
+    yGridRange={[...range(-10, 11, 1), ...range(0.9, 1.1, 0.05)]}
+    lerpedItems={(lerpedFn) => {
+        const point1 = lerpedFn(-2, 1);
+        const point2 = lerpedFn(-2, 1 + 0.15);
+        const point2middle = [point2[0], point1[1]];
+        return (
+            <>
+                <Circle center={point1} radius={0.25} />
+                <Line.Segment point1={point1} point2={point2middle} />
+                <Line.Segment point1={point2} point2={point2middle} />
+                <Vector tail={point1} tip={point2} color={color("red")} />
+            </>
+        )
+    }}
+    mafsProps={{
+        viewBox: {
+            x: [-2, -1],
+            y: [0, 1]
+        }
+    }}
+/>
+
+Combining the vectors of the changes in the vector field with respect to $x$ and $y$, we get:
+
+$$
+\mqty[\pdv{f_1}{x} & \pdv{f_1}{y} \\ \pdv{f_2}{x} & \pdv{f_2}{y}]
+$$
+
+This represents the linear transformation of the vector field around the point $(x_0, y_0)$, and is known as the **Jacobian matrix**.
+
+This is very similar to how linear approximation works for single-variable functions.
+For a single-variable function $f(x)$, if we zoom in around a point $x_0$, then the function can be approximated as a line.
+Then the slope of that line (the transformation) can be found by taking a small step in $x$.
+
+The Jacobian can be denoted as $\va{J}_{\va{F}}$. Then, the Jacobian matrix can be generalized to any dimension:
+
+$$
+\begin{equation}
+\va{J}_{\va{F}} = \mqty[\pdv{\va{F}}{x_1} & \pdv{\va{F}}{x_2} & \ldots & \pdv{\va{F}}{x_n}] = \mqty[\pdv{f_1}{x_1} & \pdv{f_1}{x_2} & \ldots & \pdv{f_1}{x_n} \\ \pdv{f_2}{x_1} & \pdv{f_2}{x_2} & \ldots & \pdv{f_2}{x_n} \\ \vdots & \vdots & \ddots & \vdots \\ \pdv{f_m}{x_1} & \pdv{f_m}{x_2} & \ldots & \pdv{f_m}{x_n}]
+\end{equation}
+$$
+
+### Example Problem: Evaluating the Jacobian Matrix
+
+> Evaluate the Jacobian matrix for the following vector field:
+>
+> $$
+> \begin{equation}
+> \va{F}(x, y) = \mqty[x + \sin(y) \\ y + \sin(x)]
+> \end{equation}
+> $$
+>
+> at the point $(x_0, y_0) = (-2, 1)$.
+
+Recall the Jacobian matrix is:
+
+$$
+\begin{equation}
+\mqty[\pdv{f_1}{x} & \pdv{f_1}{y} \\ \pdv{f_2}{x} & \pdv{f_2}{y}]
+\end{equation}
+$$
+
+First, find the individual components of the vector field:
+
+$$
+\begin{align}
+f_1(x, y) &= x + \sin(y) \\
+f_2(x, y) &= y + \sin(x)
+\end{align}
+$$
+
+Next, find the partial derivatives of the components:
+
+$$
+\begin{align}
+\pdv{f_1}{x} &= 1 + 0 &\quad \pdv{f_1}{y} &= 0 + \cos(y) \\
+\pdv{f_2}{x} &= 0 + \cos(x) &\quad \pdv{f_2}{y} &= 1 + 0
+\end{align}
+$$
+
+Hence, the Jacobian matrix is:
+
+$$
+\begin{equation}
+\va{J}_{\va{F}} = \mqty[\pdv{f_1}{x} & \pdv{f_1}{y} \\ \pdv{f_2}{x} & \pdv{f_2}{y}] = \mqty[1 & \cos(y) \\ \cos(x) & 1]
+\end{equation}
+$$
+
+At the point $(-2, 1)$, the Jacobian matrix is then:
+
+$$
+\begin{equation}
+\va{J}_{\va{F}} = \mqty[1 & \cos(1) \\ \cos(-2) & 1] = \mqty[1 & \cos(1) \\ \cos(2) & 1]
+\end{equation}
+$$
+
+### The Jacobian Determinant
+
+The Jacobian matrix is a square matrix, and hence it has a determinant.
+
+:::info What is a Determinant?
+
+At the time of writing, the notes for the determinant of a matrix have not been written yet.
+Hence, a small introduction to the determinant is given here.
+
+Consider performing a linear transformation on the grid.
+Draw a square on the grid, and apply the transformation to it:
+
+<LinearTransformationVisualizer
+    to={{
+        ihat: [3, 0],
+        jhat: [2, 3]
+    }}
+    transformedItems={<>
+        <Polygon points={[
+            [0, 0],
+            [1, 0],
+            [1, 1],
+            [0, 1]
+        ]} />
+    </>}
+/>
+
+The determinant measures how much the area of the square changes after the transformation.
+
+Without going into the details, the determinant of a 2x2 matrix is given by:
+
+$$
+\begin{equation}
+\det \mqty[\class{blue}{a} & \class{green}{b} \\ \class{green}{c} & \class{blue}{d}] = \class{blue}{ad} - \class{green}{bc}
+\end{equation}
+$$
+
+:::
+
+Let's go back to our example vector field. At the point $(-2, 1)$, we can draw a square around the point and apply the transformation:
+
+<NonlinearTransformationVisualizer
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    xGridRange={[...range(-10, 11, 1), ...range(-2.1, -1.9, 0.05)]}
+    yGridRange={[...range(-10, 11, 1), ...range(0.9, 1.1, 0.05)]}
+    lerpedItems={(lerpedFn) => {
+        const point = lerpedFn(-2, 1);
+        const squarePoints = [
+            point,
+            lerpedFn(-2 + 0.1, 1),
+            lerpedFn(-2 + 0.1, 1 + 0.1),
+            lerpedFn(-2, 1 + 0.1)
+        ];
+        return (
+            <>
+                <Circle center={point} radius={0.25} />
+                <Polygon points={squarePoints} />
+            </>
+        )
+    }}
+    mafsProps={{
+        viewBox: {
+            x: [-2, -1],
+            y: [0, 1]
+        }
+    }}
+/>
+
+Recall the Jacobian matrix for this vector field:
+
+$$
+\begin{equation}
+\va{J}_{\va{F}} = \mqty[1 & \cos(y) \\ \cos(x) & 1]
+\end{equation}
+$$
+
+Then, the Jacobian determinant is:
+
+$$
+\begin{equation}
+\det \va{J}_{\va{F}} = \det \mqty[\class{blue}{1} & \class{green}{\cos(y)} \\ \class{green}{\cos(x)} & \class{blue}{1}] = \class{blue}{1} \cdot \class{blue}{1} - \class{green}{\cos(y)} \cdot \class{green}{\cos(x)} = 1 - \cos(x)\cos(y)
+\end{equation}
+$$
+
+At the point $(-2, 1)$, the Jacobian determinant is then:
+
+$$
+\begin{equation}
+\det \va{J}_{\va{F}} = 1 - \cos(-2)\cos(1) \approx 1.224
+\end{equation}
+$$
+
+This means that the area of the square around the point $(-2, 1)$ increases by a factor of 1.224 after the transformation.
+
+The Jacobian determinant is a useful quantity in many areas of mathematics and physics.
+For example, the Jacobian determinant is used in fluid dynamics to measure how much the volume of a fluid element changes after a coordinate transformation.
+
+## Summary
+
+We have covered a lot of advanced topics related to multivariable derivatives in this chapter.
+We have introduced these concepts:
+
+- **Divergence**: A measure of how much a vector field is expanding or contracting.
+
+    $$
+    \begin{equation}
+    \div{\va{F}(x, y)} = \pdv{F_1}{x} + \pdv{F_2}{y}
+    \end{equation}
+    $$
+
+- **Curl**: A measure of how much a vector field is rotating.
+
+    $$
+    \begin{equation}
+    \curl{\va{F}(x, y)} = \pdv{F_2}{x} - \pdv{F_1}{y}
+    \end{equation}
+    $$
+
+    It is positive when the vector field is rotating counterclockwise.
+    The direction is given by the right-hand rule.
+
+- **Laplacian**: A measure of how much a scalar field is curving, a multivariable generalization of the second derivative.
+
+    $$
+    \begin{equation}
+    \laplacian{f(x, y)} = \pdv[2]{f}{x} + \pdv[2]{f}{y}
+    \end{equation}
+    $$
+
+- **Harmonic Functions**: Functions that satisfy the Laplace equation, $\laplacian{f(x, y)} = 0$.
+    These functions have the property that the neighbors are at the same height as the point itself on average.
+
+- **Jacobian Matrix**: A matrix that represents the linear transformation of a vector field around a point.
+
+    $$
+    \begin{equation}
+    \va{J}_{\va{F}} = \mqty[\pdv{f_1}{x} & \pdv{f_1}{y} \\ \pdv{f_2}{x} & \pdv{f_2}{y}]
+    \end{equation}
+    $$
+
+    The Jacobian determinant measures how much the area of a square changes after the transformation.
 
