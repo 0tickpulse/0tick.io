@@ -6,12 +6,14 @@ import HoverableBox from "@site/src/components/mdxGlobal/HoverableBox";
 import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannApproximation";
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import MDXComponents from "@theme-original/MDXComponents";
-import MathEquation from "../components/Math";
-import { Angle } from "../components/mdxGlobal/Angle";
-import BetterMafsVectorField from "../components/mdxGlobal/BetterMafsVectorField";
-import CustomMathbox from "../components/mdxGlobal/CustomMathbox";
-import LinearTransformationVisualizer from "../components/mdxGlobal/LinearTransformationVisualizer";
-import ParametricSurfaceTransformVisualizer from "../components/mdxGlobal/ParametricSurfaceTransformVisualizer";
+import MathEquation from "@site/src/components/Math";
+import { Angle } from "@site/src/components/mdxGlobal/Angle";
+import BetterMafsVectorField from "@site/src/components/mdxGlobal/BetterMafsVectorField";
+import CustomMathbox from "@site/src/components/mdxGlobal/CustomMathbox";
+import LinearTransformationVisualizer from "@site/src/components/mdxGlobal/LinearTransformationVisualizer";
+import ParametricSurfaceTransformVisualizer from "@site/src/components/mdxGlobal/ParametricSurfaceTransformVisualizer";
+import DivergenceVisualization from "@site/src/components/mdxGlobal/DivergenceVisualization";
+import NonlinearTransformationVisualizer from "../components/mdxGlobal/NonlinearTransformationVisualizer";
 
 export default {
     ...MDXComponents,
@@ -20,7 +22,9 @@ export default {
     Citation,
     Cite,
     DerivativeFromLimits,
+    DivergenceVisualization,
     LinearTransformationVisualizer,
+    NonlinearTransformationVisualizer,
     HoverableBox,
     RiemannApproximation,
     ThreeDTest,

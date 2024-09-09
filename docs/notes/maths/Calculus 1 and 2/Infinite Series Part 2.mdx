@@ -1,0 +1,596 @@
+---
+sidebar_position: 10
+---
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import { FTOCProof1 } from "./Integration.mdx";
+import TOCInline from '@theme/TOCInline';
+
+# Infinite Series: Part 2
+
+Previously we have laid the foundation for understanding infinite series.
+We have seen how to find the sum of an infinite series, and how to determine whether a series converges or diverges using different tests.
+Now we will explore some more advanced topics related to infinite series.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Taylor and Maclaurin Series
+
+The Taylor series is an extremely powerful tool in mathematics, one of the best ways to approximate functions.
+It allows for the approximation of a non-polynomial function using a polynomial.
+Polynomials are easy to compute, manipulate, differentiate, and integrate, so approximating a function with a polynomial can make it much easier to work with.
+
+To start, consider a function $f(x) = \cos(x)$. Assume this is part of some physics problem, and the existence of a $\cos(x)$ term is making the problem difficult to solve.
+Let's say we are interested in the value of $\cos(x)$ near $x = 0$, and we want to approximate it with a degree 2 polynomial (a quadratic function).
+
+Denote the quadratic function as $P_2(x) = a_0 + a_1x + a_2x^2$. Play around with the sliders below to see how the quadratic function changes as you adjust the coefficients a_0, a_1, and a_2:
+
+{(() => {
+    const [a0, setA0] = useState(0);
+    const [a1, setA1] = useState(0);
+    const [a2, setA2] = useState(0);
+
+    const f = (x) => Math.cos(x);
+    const P2 = (x) => a0 + a1 * x + a2 * x ** 2;
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={f} color={color("blue")} />
+                    <Plot.OfX y={P2} color={color("red")} />
+                </Mafs>
+            </div>
+            <div className="card__footer" style={{
+                // split divs into two columns
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+            }}>
+                <div className="input-group">
+                    <label>
+                        <input
+                            type="range"
+                            min={-1}
+                            max={1}
+                            step={0.01}
+                            value={a0}
+                            onChange={(e) => setA0(parseFloat(e.target.value))}
+                        />
+                    </label>
+                    <MathEquation inline>
+                        {`a_0 = ${a0.toFixed(2)}`}
+                    </MathEquation>
+                    <br />
+                    <label>
+                        <input
+                            type="range"
+                            min={-1}
+                            max={1}
+                            step={0.01}
+                            value={a1}
+                            onChange={(e) => setA1(parseFloat(e.target.value))}
+                        />
+                    </label>
+                    <MathEquation inline>
+                        {`a_1 = ${a1.toFixed(2)}`}
+                    </MathEquation>
+                    <br />
+                    <label>
+                        <input
+                            type="range"
+                            min={-1}
+                            max={1}
+                            step={0.01}
+                            value={a2}
+                            onChange={(e) => setA2(parseFloat(e.target.value))}
+                        />
+                    </label>
+                    <MathEquation inline>
+                        {`a_2 = ${a2.toFixed(2)}`}
+                    </MathEquation>
+                </div>
+                <div>
+                    <MathEquation>
+                        {`P_2(x) = ${a0.toFixed(2)} + ${a1.toFixed(2)}x + ${a2.toFixed(2)}x^2`}
+                    </MathEquation>
+                </div>
+            </div>
+        </div>
+    )
+})()}
+
+Consider how the quadratic function $P_2(x)$ changes as you adjust the coefficients $a_0$, $a_1$, and $a_2$.
+The goal is to find the coefficients that make $P_2(x)$ as close as possible to $\cos(x)$ near $x = 0$.
+
+First, consider $\cos(x)$ evaluated at $x = 0$:
+
+$$
+\begin{equation}
+\cos(0) = 1
+\end{equation}
+$$
+
+We want the **value** of $P_2(x)$ to be the same as $\cos(x)$ at $x = 0$.
+
+<table>
+    <tbody>
+        <tr>
+            <td>
+                $$
+                \cos(0) = 1
+                $$
+            </td>
+            <td>
+                $$
+                \begin{split}
+                P_2(0) &= a_0 + a_1 \cdot 0 + a_2 \cdot 0^2 \\
+                &= a_0
+                \end{split}
+                $$
+            </td>
+            <td>
+                $$
+                a_0 = 1
+                $$
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+Hence, one of the coefficients is already determined. Changing the other coefficients will affect the function but will not change the value of $P_2(0)$.
+
+Next, we want the **slope** of $P_2(x)$ to be the same as the slope of $\cos(x)$ at $x = 0$.
+This ensures that the value of $P_2(x)$ is close to $\cos(x)$ not only at $x = 0$ but also in the neighborhood of $x = 0$; it doesn't drift too far away from $\cos(x)$.
+
+<table>
+    <tbody>
+        <tr>
+            <td>
+                $$
+                \cos(0) = 1
+                $$
+            </td>
+            <td>
+                $$
+                \begin{split}
+                P_2(0) &= a_0 + a_1 \cdot 0 + a_2 \cdot 0^2 \\
+                &= a_0
+                \end{split}
+                $$
+            </td>
+            <td>
+                $$
+                a_0 = 1
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $$
+                \dv{x} \cos(x) \Big|_{x = 0} = 0
+                $$
+            </td>
+            <td>
+                $$
+                \begin{split}
+                \dv{P_2}{x}(0) &= a_1 + 2a_2 \cdot 0 \\
+                &= a_1
+                \end{split}
+                $$
+            </td>
+            <td>
+                $$
+                a_1 = 0
+                $$
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+Now, both the position and the slope of $P_2(x)$ are locked as the same as $\cos(x)$ at $x = 0$.
+The only thing left is to make sure the **concavity** of $P_2(x)$ is the same as the concavity of $\cos(x)$ at $x = 0$.
+
+<table>
+    <tbody>
+        <tr>
+            <td>
+                $$
+                \cos(0) = 1
+                $$
+            </td>
+            <td>
+                $$
+                \begin{split}
+                P_2(0) &= a_0 + a_1 \cdot 0 + a_2 \cdot 0^2 \\
+                &= a_0
+                \end{split}
+                $$
+            </td>
+            <td>
+                $$
+                a_0 = 1
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $$
+                \dv{x} \cos(x) \Big|_{x = 0} = 0
+                $$
+            </td>
+            <td>
+                $$
+                \begin{split}
+                \dv{P_2}{x}(0) &= a_1 + 2a_2 \cdot 0 \\
+                &= a_1
+                \end{split}
+                $$
+            </td>
+            <td>
+                $$
+                a_1 = 0
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $$
+                \dv[2]{x} \cos(x) \Big|_{x = 0} = -1
+                $$
+            </td>
+            <td>
+                $$
+                \dv[2]{P_2}{x}(0) = 2a_2
+                $$
+            </td>
+            <td>
+                $$
+                a_2 = -\frac{1}{2}
+                $$
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+Now we have found the coefficients $a_0 = 1$, $a_1 = 0$, and $a_2 = -\frac{1}{2}$. The quadratic functoin is then:
+
+$$
+\begin{equation}
+P_2(x) = 1 - \frac{1}{2}x^2
+\end{equation}
+$$
+
+The quadratic function $P_2(x)$ is a good approximation of $\cos(x)$ near $x = 0$.
+As we add more terms to the polynomial, we can get even closer to the original function. For example, we can add two more terms to get a degree 4 polynomial:
+
+$$
+\begin{equation}
+P_4(x) = 1 - \frac{1}{2}x^2 + a_3x^3 + a_4x^4
+\end{equation}
+$$
+
+The coefficients $a_3$ and $a_4$ can be determined in a similar way as we did for $P_2(x)$. We take the third and fourth derivatives of $\cos(x)$ at $x = 0$ and set them equal to the corresponding derivatives of $P_4(x)$ at $x = 0$.
+Notice what happens when we take the third derivative of the $x^3$ term in $P_4(x)$:
+
+$$
+\begin{equation}
+\begin{split}
+\dv[3]{P_4}{x} &= \dv[3]{x} a_3x^3 \\
+&= \dv[2]{x} 3a_3 x^2 \\
+&= \dv{x} 3 \cdot 2 a_3 x \\
+&= 3 \cdot 2 \cdot 1 a_3 \\
+\end{split}
+\end{equation}
+$$
+
+Notice we are multiplying $3$ by $2$ by $1$ by $a_3$. This is the same as taking the factorial of $3$:
+
+$$
+\begin{equation}
+\dv[3]{P_4}{x} = 3! a_3
+\end{equation}
+$$
+
+Recall that we want this to be equal to the third derivative of $\cos(x)$ at $x = 0$. Thus:
+
+$$
+\begin{equation}
+\dv[3]{P_4}{x} = 3! a_3 = \dv[3]{\cos(x)}{x} \Big|_{x = 0}
+\end{equation}
+$$
+
+And as such, we can solve for $a_3$:
+
+$$
+\begin{equation}
+a_3 = \frac{1}{3!} \dv[3]{\cos(x)}{x} \Big|_{x = 0} = 0
+\end{equation}
+$$
+
+We get a similar result for $a_4$:
+
+$$
+\begin{equation}
+a_4 = \frac{1}{4!} \dv[4]{\cos(x)}{x} \Big|_{x = 0} = -\frac{1}{4!}
+\end{equation}
+$$
+
+Thus, the degree 4 polynomial approximation of $\cos(x)$ is:
+
+$$
+\begin{equation}
+P_4(x) = 1 - \frac{1}{2}x^2 - \frac{1}{4!}x^4
+\end{equation}
+$$
+
+Notice that adding the higher degree term does not affect the previous terms.
+For instance, the concavity of $P_4(x)$ is still the same as the concavity of $\cos(x)$ at $x = 0$.
+
+:::note Why?
+
+When we take the derivative of a term with a higher power of $x$, the power of $x$ decreases by one.
+The concavity is the second derivative, so the power of $x$ decreases by two - so it doesn't become a constant term.
+
+Recall that we set $x = 0$. As such, if there is an $x$ term in the polynomial, it will be multiplied by zero, and the term will disappear.
+
+:::
+
+Hence, each individual coefficient is the "control" for a specific order derivative of the function.
+
+For a value of $x$ near $0$, the polynomial $P_n(x)$ is a good approximation of $\cos(x)$.
+Next, consider approximating $\cos(x)$ with a polynomial near some value $x = \pi/2$.
+
+Then, the polynomial would be written as:
+
+$$
+\begin{equation}
+P_n(x) = a_0 + a_1\qty(x - \frac{\pi}{2}) + a_2\qty(x - \frac{\pi}{2})^2 + \ldots + a_n\qty(x - \frac{\pi}{2})^n
+\end{equation}
+$$
+
+Instead of $x$, we use $x - \frac{\pi}{2}$ as the variable, such that the point $x = \frac{\pi}{2}$ is treated like $0$.
+This means that if you plug in $x = \frac{\pi}{2}$, things will cancel.
+
+We can keep adding more terms to the polynomial to get a better approximation of $\cos(x)$ near a value of $x$.
+The derivatives of $\cos(x)$ follow a pattern of $1, 0, -1, 0, 1, 0, -1, 0, \ldots$ at $x = 0$. As such, the coefficients of the polynomial will follow a similar pattern:
+
+$$
+\begin{equation}
+P_n(x) = 1 + 0 \frac{x^1}{1!} - 1 \frac{x^2}{2!} + 0 \frac{x^3}{3!} + 1 \frac{x^4}{4!} - 0 \frac{x^5}{5!} + \ldots
+\end{equation}
+$$
+
+Next, we can generalize this to any function $f(x)$:
+
+$$
+\begin{equation}
+f(x) = f(0) + \dv{f}{x}(0) x + \frac{1}{2!} \dv[2]{f}{x}(0) x^2 + \frac{1}{3!} \dv[3]{f}{x}(0) x^3 + \ldots
+\end{equation}
+$$
+
+And to any value $a$:
+
+$$
+\begin{equation}
+f(x) = f(a) + \dv{f}{x}(a) (x - a) + \frac{1}{2!} \dv[2]{f}{x}(a) (x - a)^2 + \frac{1}{3!} \dv[3]{f}{x}(a) (x - a)^3 + \ldots
+\end{equation}
+$$
+
+We have just derived the Taylor series for any function $f(x)$ centered at $a$. This can be written in sigma notation as:
+
+$$
+\begin{equation}
+f(x) = \sum_{n=0}^{\infty} \frac{1}{n!} \dv[n]{f}{x}(a) (x - a)^n \label{eq:taylor_and_maclaurin_series-sigma}
+\end{equation}
+$$
+
+When $a = 0$, this is called the Maclaurin series.
+
+What's interesting is that we only need to know the value of the function and its derivatives at a single point $a$ to approximate the function at any other point around it.
+
+{(() => {
+    const f = (x) => Math.cos(x) + Math.exp(x) / 2;
+    const f1 = (x) => -Math.sin(x) + Math.exp(x) / 2;
+    const f2 = (x) => -Math.cos(x) + Math.exp(x) / 2;
+    const f3 = (x) => Math.sin(x) + Math.exp(x) / 2;
+    const f4 = (x) => Math.cos(x) + Math.exp(x) / 2;
+    const aMovable = useMovablePoint([0, f(0)], {
+        constrain: ([x, y]) => [x, f(x)],
+    });
+    const a = aMovable.point[0];
+    const n = 4; // number of terms in the polynomial
+    const factorial = [
+        1,
+        1,
+        2,
+        6,
+        24,
+        120,
+    ]; // precompute factorials
+    const P = (x) => {
+        let sum = 0;
+        for (let i = 0; i < n; i++) {
+            const fac = factorial[i];
+            const deriv = [f, f1, f2, f3, f4][i];
+            sum += deriv(a) / fac * (x - a) ** i;
+        }
+        return sum;
+    };
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={f} color={color("blue")} />
+                    <Plot.OfX y={P} color={color("red")} />
+
+                    {aMovable.element}
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <MathEquation inline>
+                    {`a = ${a.toFixed(2)}`}
+                </MathEquation>
+            </div>
+        </div>
+    )
+})()}
+
+### Relationship Between Taylor Series and the Fundamental Theorem of Calculus
+
+There's a deep connection between the Taylor series and the Fundamental Theorem of Calculus.
+Recall one interpretation of the Fundamental Theorem of Calculus, which is that the derivative of the area under a curve is the curve itself.
+
+Consider the area under the curve of a function from $0$ to some variable $a$:
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+    <Plot.Inequality
+        y={{
+            "<=": (x) => (x > 0 && x < 3) ? (x ** 2) / 3 : 0,
+            ">=": 0,
+        }}
+        color={color("blue")}
+    />
+    <Coordinates.Cartesian xAxis={{ lines: false, labels: (n) => "" }} yAxis={{ lines: false, labels: (n) => "" }} />
+    <Plot.OfX y={(x) => (x ** 2) / 3} />
+    <LaTeX tex={"a"} at={[3, -0.2]} />
+</Mafs>
+
+Let the **area** under the curve be $A(a)$.
+
+Next, consider adding a small change to the variable that increases $a$ to $x$:
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+    <Plot.Inequality
+        y={{
+            "<=": (x) => (x > 0 && x < 3) ? (x ** 2) / 3 : 0,
+            ">=": 0,
+        }}
+        color={color("blue")}
+    />
+    <Coordinates.Cartesian xAxis={{ lines: false, labels: (n) => "" }} yAxis={{ lines: false, labels: (n) => "" }} />
+    <Plot.OfX y={(x) => (x ** 2) / 3} />
+
+    <LaTeX tex={"a"} at={[3, -0.2]} />
+    <LaTeX tex={"x"} at={[4, -0.2]} />
+
+    <Polygon
+        points={[
+            [3, 0],
+            [3, 3 ** 2 / 3],
+            [4, 3 ** 2 / 3],
+            [4, 0],
+        ]}
+        color={color("green")}
+    />
+    <Polygon
+        points={[
+            [3, 3 ** 2 / 3],
+            [4, 3 ** 2 / 3],
+            [4, 4 ** 2 / 3],
+        ]}
+        color={color("red")}
+    />
+</Mafs>
+
+The total area can be approximated by the blue, green, and red areas.
+
+- The blue area is the current area under the curve, $A(a)$.
+- The green area is a rectangle;
+    - The width is the change in $x$, $x - a$.
+    - The height is the value of the function at $a$, $f(a)$, which is the slope of the area $A(a)$.
+    - Hence the area of the green rectangle is $\dv{A}{x}(a) \cdot (x - a)$.
+- The red area is a small triangle;
+    - The base is the change in $x$, $x - a$.
+    - The height is the slope of the function at $a$, $\dv{f}{x}(a)$. Since $f$ is the derivative of $A$, this is the second derivative of $A$.
+    - Hence the area of the red triangle is $\frac{1}{2} \dv[2]{A}{x}(a) \cdot (x - a)^2$.
+
+The total area is then:
+
+$$
+\begin{equation}
+\begin{split}
+A(x) &= \class{blue}{\text{blue area}} + \class{green}{\text{green area}} + \class{red}{\text{red area}} \\
+&= \class{blue}{A(a)} + \class{green}{\dv{A}{x}(a) \cdot (x - a)} + \class{red}{\frac{1}{2} \dv[2]{A}{x}(a) \cdot (x - a)^2}
+\end{split}
+\end{equation}
+$$
+
+This is equivalent to the Taylor series expansion of $A(x)$ centered at $a$:
+
+$$
+\begin{equation}
+A(x) = A(a) + \dv{A}{x}(a) \cdot (x - a) + \frac{1}{2} \dv[2]{A}{x}(a) \cdot (x - a)^2 + \ldots
+\end{equation}
+$$
+
+This shows how interconnected the various concepts in calculus are.
+
+### Example Problem: Finding the n-th Maclaurin Polynomial of a Function
+
+> Consider the function $f(x)$ defined as follows:
+>
+> $$
+> \begin{equation}
+> f(x) = \frac{1}{\sqrt{x + 1}}
+> \end{equation}
+> $$
+>
+> Identify its second degree Maclaurin polynomial.
+>
+> [(Source)](https://www.khanacademy.org/math/ap-calculus-bc/bc-series-new/bc-10-11/v/maclaurin-polynomial-example)
+
+Recall from Equation $\eqref{eq:taylor_and_maclaurin_series-sigma}$ that the Maclaurin series of a function $f(x)$ centered at $a = 0$ is:
+
+$$
+\begin{equation}
+p(x) = \sum_{n=0}^{\infty} \frac{1}{n!} \dv[n]{f}{x}(0) x^n
+\end{equation}
+$$
+
+We only need to find the second degree Maclaurin polynomial, so we only need to find the first three terms of the series:
+
+$$
+\begin{equation}
+p(x) = f(0) + \dv{f}{x}(0) x + \frac{1}{2!} \dv[2]{f}{x}(0) x^2
+\end{equation}
+$$
+
+The derivatives of $f(x)$ are:
+
+$$
+\begin{align}
+f(x) &= (x + 1)^{-1/2} \\
+\dv{f}{x} &= -\frac{1}{2} (x + 1)^{-3/2} \\
+\dv[2]{f}{x} &= \frac{3}{4} (x + 1)^{-5/2}
+\end{align}
+$$
+
+Evaluating these derivatives at $x = 0$:
+
+$$
+\begin{align}
+f(0) &= 1 \\
+\dv{f}{x}(0) &= -\frac{1}{2} \\
+\dv[2]{f}{x}(0) &= \frac{3}{4}
+\end{align}
+$$
+
+Substitute these values into the polynomial:
+
+$$
+\begin{equation}
+p(x) = 1 - \frac{1}{2} x + \frac{1}{2} \cdot \frac{3}{4} x^2 = 1 - \frac{1}{2} x + \frac{3}{8} x^2
+\end{equation}
+$$

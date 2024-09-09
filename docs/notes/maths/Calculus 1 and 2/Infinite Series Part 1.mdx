@@ -11,7 +11,7 @@ import { gamma } from "mathjs";
 import { FTOCProof1 } from "./Integration.mdx";
 import TOCInline from '@theme/TOCInline';
 
-# Infinite Series
+# Infinite Series: Part 1
 
 Infinite series are essentially sums of an infinite number of terms.
 There's a lot of interesting properties and theorems that come out of them.
@@ -556,7 +556,7 @@ This is the general formula. Sometimes you also multiply everything by some $a$ 
 
 $$
 \begin{equation}
-\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r} \label{eq:the_geometric_series-formula}
+\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r} \label{eq:the_geometric_series-formula-incomplete}
 \end{equation}
 $$
 
@@ -582,13 +582,19 @@ $$
 
 This does not make sense either, since according to the formula, the sum of the series is $-10$.
 
-Therefore, the formula only holds when $-1 < r < 1$, or $\abs{r} < 1$.
+Therefore, the formula only holds when $-1 < r < 1$, or $\abs{r} < 1$. So, the complete formula is:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} ar^n = \frac{a}{1 - r}, \quad \abs{r} < 1 \label{eq:the_geometric_series-formula}
+\end{equation}
+$$
 
 To find the $n$th partial sum of a geometric series, we can use the geometric visualization above, like we did for the $1/2$ and $9/10$ series:
 
 $$
 \begin{equation}
-\sum_{n=0}^{N} qr^n = q + qr + qr^2 + \cdots + qr^N = 1 - \class{blue}{r^{N + 1}}
+\sum_{n=0}^{N - 1} qr^n = q + qr + qr^2 + \cdots + qr^{N - 1} = 1 - \class{blue}{r^N}
 \end{equation}
 $$
 
@@ -597,9 +603,9 @@ Using some algebra:
 $$
 \begin{equation}
 \begin{split}
-(1 - r) \sum_{n=0}^{N} r^n &= 1 - r^{N + 1} \\
-\sum_{n=0}^{N} r^n &= \frac{1 - r^{N + 1}}{1 - r} \\
-\sum_{n=0}^{N} ar^n &= a\frac{1 - r^{N + 1}}{1 - r}
+(1 - r) \sum_{n=0}^{N - 1} r^n &= 1 - r^N \\
+\sum_{n=0}^{N - 1} r^n &= \frac{1 - r^N}{1 - r} \\
+\sum_{n=0}^{N - 1} ar^n &= a\frac{1 - r^N}{1 - r} = S_N
 \end{split} \label{eq:the_geometric_series-partial_sum}
 \end{equation}
 $$
@@ -657,7 +663,20 @@ $$
 
 Alining with the formula in Equation $\eqref{eq:the_geometric_series-formula}$.
 
-Note that this derivation is not rigorous, but it's a nice way to understand the formula.
+Similarly we can derive the formula for the $n$th partial sum of a geometric series:
+
+$$
+\begin{equation}
+\begin{split}
+S_N &= a + ar + ar^2 + ar^3 + \cdots + ar^{N - 1} \\
+rS_N &= \phantom{a +{} } ar + ar^2 + ar^3 + \cdots + ar^{N - 1} + ar^N \\
+\hline
+S_N - rS_N &= a - ar^N \implies S_N = a \frac{1 - r^N}{1 - r}
+\end{split}
+\end{equation}
+$$
+
+Aligning with the formula in Equation $\eqref{eq:the_geometric_series-partial_sum}$.
 
 ### A Rigorous Proof
 
@@ -667,7 +686,7 @@ Recall from Equation $\eqref{eq:the_geometric_series-partial_sum}$ that the $n$t
 
 $$
 \begin{equation}
-\sum_{n=0}^{N} ar^n = a \frac{1 - r^{N + 1}}{1 - r}
+S_N = a \frac{1 - r^N}{1 - r}
 \end{equation}
 $$
 
@@ -675,15 +694,15 @@ We can take the limit of this as $N \to \infty$:
 
 $$
 \begin{equation}
-\lim_{N \to \infty} \sum_{n=0}^{N} ar^n = a \lim_{N \to \infty} \frac{1 - r^{N + 1}}{1 - r}
+\lim_{N \to \infty} S_N = a \lim_{N \to \infty} \frac{1 - r^N}{1 - r}
 \end{equation}
 $$
 
-If $\abs{r} < 1$, then $r^{N + 1}$ gets arbitrarily close to $0$ as $N$ approaches infinity. The other terms are constant, so:
+If $\abs{r} < 1$, then $r^N$ gets arbitrarily close to $0$ as $N$ approaches infinity. The other terms are constant, so:
 
 $$
 \begin{equation}
-\lim_{N \to \infty} \sum_{n=0}^{N} ar^n = a \frac{1}{1 - r} = \frac{a}{1 - r}
+\lim_{N \to \infty} S_N = a \frac{1}{1 - r} = \frac{a}{1 - r}
 \end{equation}
 $$
 
@@ -1115,4 +1134,407 @@ This is the essence of the Comparison Test, which is what we just did:
 - If $0 \leq a_n \leq b_n$ for all $n$, and $\sum b_n$ converges, then $\sum a_n$ converges.
 - If $0 \leq a_n \leq b_n$ for all $n$, and $\sum a_n$ diverges, then $\sum b_n$ diverges.
 
+Or,
 
+- If the smaller series diverges, then the larger series also diverges.
+- If the larger series converges, then the smaller series also converges.
+
+### Example Problem: Using the Comparison Test
+
+> Determine whether this series converges or diverges using the Comparison Test:
+>
+> $$
+> \begin{equation}
+> \sum_{n=1}^{\infty} \frac{1}{2^n + n}
+> \end{equation}
+> $$
+>
+> [(Source)](https://www.khanacademy.org/math/ap-calculus-bc/bc-series-new/bc-10-6/v/comparison-test-convergence)
+
+We can first write out some terms of the series to get a sense of how it behaves:
+
+$$
+\begin{equation}
+\begin{split}
+\sum_{n=1}^{\infty} \frac{1}{2^n + n} &= \frac{1}{2^1 + 1} + \frac{1}{2^2 + 2} + \frac{1}{2^3 + 3} + \frac{1}{2^4 + 4} + \cdots \\
+&= \frac{1}{3} + \frac{1}{6} + \frac{1}{11} + \frac{1}{20} + \cdots
+\end{split}
+\end{equation}
+$$
+
+Notice that the fraction is very close to $1/2^n$. In this case, we can use the Comparison Test with the series $\sum 1/2^n$.
+
+Laying out the terms of both series side by side:
+
+$$
+\begin{align}
+\sum_{n=1}^{\infty} \frac{1}{2^n + n} &= \frac{1}{3} + \frac{1}{6} + \frac{1}{11} + \frac{1}{20} + \cdots \\
+\sum_{n=1}^{\infty} \frac{1}{2^n} &= \frac{1}{2} + \frac{1}{4} + \frac{1}{8} + \frac{1}{16} + \cdots
+\end{align}
+$$
+
+The terms of the first series are all less than the terms of the second series.
+The second series is a geometric series with $r = 1/2$, and its convergence is known:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{2^n} = \frac{1}{1 - 1/2} = 2
+\end{equation}
+$$
+
+If the second series converges to $2$, and the first series is less than the second series, then the first series also converges.
+
+## Limit Comparison Test
+
+Sometimes the Comparison Test is not immediately applicable. Consider the following series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2 + 1}
+\end{equation}
+$$
+
+This can be easily compared to a geometric series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2 + 1} \leq \sum_{n=1}^{\infty} \frac{1}{n^2}
+\end{equation}
+$$
+
+This relies on the assumption that $n^2 + 1 \geq n^2$ for all $n$. Now consider a very similar series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{1}{n^2 - 1}
+\end{equation}
+$$
+
+This series can't be compared to a geometric series, as the terms are not less than $1/n^2$ for all $n$.
+However, the key is that as $n$ approaches infinity, the $-1$ becomes insignificant, and the series behaves like $1/n^2$.
+The graphs for both series are shown below:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => 1 / (x ** 2)}
+        color={color("blue")}
+    />
+    <Plot.OfX
+        y={(x) => 1 / (x ** 2 - 1)}
+        color={color("red")}
+    />
+</Mafs>
+
+This is what the Limit Comparison Test formalizes:
+
+For two series $\sum a_n$ and $\sum b_n$, if:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} \frac{a_n}{b_n} = c
+\end{equation}
+$$
+
+where $c$ is a finite positive number, then either both series converge or both series diverge.
+
+Recall that $1/(n^2 - 1)$ could not be directly compared to $1/n^2$, but behave similarly. Taking the limit of the ratio:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} \frac{1/(n^2 - 1)}{1/n^2} = \lim_{n \to \infty} \frac{n^2}{n^2 - 1} = 1
+\end{equation}
+$$
+
+Since the limit is a finite positive number, both series either converge or diverge.
+The series $1/n^2$ converges, so the series $1/(n^2 - 1)$ also converges.
+
+## The Alternating Series Test
+
+The Alternating Series Test is another powerful tool for determining the convergence of a series.
+To illustrate this, consider the following series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{(-1)^n}{n} = -1 + \frac{1}{2} - \frac{1}{3} + \frac{1}{4} - \cdots
+\end{equation}
+$$
+
+This series is called an alternating series because the terms alternate between positive and negative.
+Let's extract the part that determines the sign, and the part that determines the magnitude:
+
+$$
+\begin{equation}
+\frac{(-1)^n}{n} = (-1)^n \frac{1}{n} = (-1)^n b_n
+\end{equation}
+$$
+
+Where we have defined $b_n = 1/n$.
+
+If we consider the terms of the series, we can see that the magnitude of the terms decreases as $n$ increases.
+This means that the series is decreasing in magnitude, which is a good sign for convergence.
+The Alternating Series Test states that if this happens, i.e., if the series is decreasing in magnitude, then the series converges.
+
+The formal statement of the Alternating Series Test is as follows:
+
+> If a series $\sum (-1)^n b_n$ or $\sum (-1)^{n + 1} b_n$ satisfies the following conditions:
+>
+> 1. $b_{n+1} \leq b_n$ for all $n$.
+> 2. $\lim_{n \to \infty} b_n = 0$.
+>
+> Then the series converges.
+
+Note that a negative test result does not necessarily mean that the series diverges.
+
+### Example Problem: Using the Alternating Series Test
+
+> Determine the range of values of $u$ for which the series converges:
+>
+> $$
+> \begin{equation}
+> \sum_{n=1}^{\infty} (-1)^{n + 1} \qty(\frac{u}{4})^n
+> \end{equation}
+> $$
+
+As always, let's first write out some terms of the series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} (-1)^{n + 1} \qty(\frac{u}{4})^n = \frac{u}{4} - \frac{u^2}{16} + \frac{u^3}{64} - \frac{u^4}{256} + \cdots
+\end{equation}
+$$
+
+Since the series is alternating, we can apply the Alternating Series Test. The $b_n$ part of the series is what's not alternating, i.e., $b_n = (u/4)^n$.
+Recall that $b_n$ must be decreasing in magnitude, and its limit must approach $0$. For both conditions to be satisfied, the magnitude of thefraction must be less than $1$:
+
+$$
+\begin{equation}
+\abs{\frac{u}{4}} < 1 \implies -4 < u < 4
+\end{equation}
+$$
+
+Otherwise, if it was bigger than $1$, multiplying by $u$ would make the terms increase in magnitude, and the series would diverge.
+
+## The Ratio Test
+
+This test takes the intuition from the Geometric Series and extends it to other series.
+
+Recall the Geometric Series:
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} ar^n = a + ar + ar^2 + ar^3 + \cdots
+\end{equation}
+$$
+
+The **common ratio** is defined as the ratio between consecutive terms:
+
+$$
+\begin{equation}
+r = \frac{a_{n+1}}{a_n}
+\end{equation}
+$$
+
+From Equation $\eqref{eq:the_geometric_series-formula}$, we know that the series converges if $\abs{r} < 1$.
+This should make intuitive sense; $\abs{r} < 1$ means that the terms get smaller and smaller.
+
+The Ratio Test generalizes this idea to other series. Consider the following series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{n^2}{n!}
+\end{equation}
+$$
+
+We can try to find the common ratio between consecutive terms:
+
+$$
+\begin{equation}
+\begin{split}
+r &= \frac{a_{n+1}}{a_n} = \frac{\frac{(n+1)^2}{(n+1)!}}{\frac{n^2}{n!}} \\
+&= \frac{(n+1)^2}{(n+1)!} \cdot \frac{n!}{n^2} \\
+&= \frac{(n+1)^2}{(n+1) n!} \cdot \frac{n!}{n^2} \\
+&= \frac{n+1}{n^2}
+\end{split}
+\end{equation}
+$$
+
+So in this case, the common ratio is $r = (n+1)/n^2$, meaning that it changes as $n$ changes.
+Recall that the series converges if $\abs{r} < 1$ since the terms get smaller and smaller.
+We can check if this is the case by taking the limit of the ratio as $n$ approaches infinity:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} \frac{n+1}{n^2} = 0
+\end{equation}
+$$
+
+Since the limit is $0$, the series converges. What we just did is the Ratio Test:
+
+> Given a series $\sum a_n$, if:
+>
+> $$
+> \begin{equation}
+> \lim_{n \to \infty} \abs{\frac{a_{n+1}}{a_n}} = L
+> \end{equation}
+> $$
+>
+> 1. If $L < 1$, then the series converges.
+> 2. If $L > 1$, then the series diverges.
+> 3. If $L = 1$, then the test is inconclusive.
+
+## Conditional and Absolute Convergence
+
+Convergence can be classified into two types: **absolute convergence** and **conditional convergence**.
+Recall the Alternating Harmonic Series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{(-1)^{n + 1}}{n} = 1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \cdots
+\end{equation}
+$$
+
+We have shown in [The Alternating Series Test](#the-alternating-series-test) that this series converges. However, if we take the absolute value of the terms:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \abs{\frac{(-1)^{n + 1}}{n}} = 1 + \frac{1}{2} + \frac{1}{3} + \frac{1}{4} + \cdots
+\end{equation}
+$$
+
+This is the Harmonic Series, which we have shown in [The Harmonic Series and p-Series](#the-harmonic-series-and-p-series) to diverge.
+The Alternating Harmonic Series converges, but the Harmonic Series diverges.
+
+The series converges, but the absolute value of the series diverges. This is called **conditional convergence**.
+
+## Error Bounds for Alternating Series
+
+Recall that the Alternating Series Test states that if a series $\sum (-1)^n b_n$ satisfies $b_{n+1} \leq b_n$ and $\lim_{n \to \infty} b_n = 0$, then the series converges.
+This does not, however, tell us what the series converges to.
+
+Consider the following series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{(-1)^{n + 1}}{n^2} = S = 1 - \frac{1}{4} + \frac{1}{9} - \frac{1}{16} + \cdots
+\end{equation}
+$$
+
+Let's look at the first 4 terms of the series, and call the rest of the series $R_4$:
+
+$$
+\begin{equation}
+S = 1 - \frac{1}{4} + \frac{1}{9} - \frac{1}{16} + R_4 = \frac{115}{144} + R_4
+\end{equation}
+$$
+
+Where $R_4$ is the error term, which is the sum of the rest of the series. Note that $R_4$ is positive, which can be shown by grouping the terms:
+
+$$
+\begin{equation}
+\begin{split}
+R_4 &= \frac{1}{25} - \frac{1}{36} + \frac{1}{49} - \frac{1}{64} + \cdots \\
+&= \qty(\frac{1}{25} - \frac{1}{36}) + \qty(\frac{1}{49} - \frac{1}{64}) + \cdots
+\end{split}
+\end{equation}
+$$
+
+Each pair is positive, and the terms are decreasing, so $R_4$ is positive.
+Similarly, the error term $R_4$ can be shown to be less than the next term in the series (in this case, $1/25$):
+
+$$
+\begin{equation}
+\begin{split}
+R_4 &= \frac{1}{25} - \frac{1}{36} + \frac{1}{49} - \frac{1}{64} + \cdots \\
+&= \frac{1}{25} - \qty(\frac{1}{36} - \frac{1}{49}) - \qty(\frac{1}{64} - \frac{1}{81}) - \cdots \\
+\end{split}
+\end{equation}
+$$
+
+Each pair is positive, so we are subtracting a positive number from $1/25$, making $R_4 < 1/25$.
+
+Thus, the error term $R_4$ is positive and less than $1/25$. We can plug this back into the series:
+
+$$
+\begin{equation}
+\frac{115}{144} < S < \frac{115}{144} + 0.04
+\end{equation}
+$$
+
+### Example Problem: Error Bounds for Alternating Series
+
+> A series is shown below.
+>
+> $$
+> \begin{equation}
+> \sum_{n=1}^{\infty} \frac{(-1)^{n + 1}}{\sqrt{n}}
+> \end{equation}
+> $$
+>
+> Determine the minimum number of terms needed to approximate the sum to within $0.01$.
+>
+> [(Source)](https://www.khanacademy.org/math/ap-calculus-bc/bc-series-new/bc-10-10/v/alternating-series-remainder)
+
+As always, let's first write out some terms of the series:
+
+$$
+\begin{equation}
+\sum_{n=1}^{\infty} \frac{(-1)^{n + 1}}{\sqrt{n}} = 1 - \frac{1}{\sqrt{2}} + \frac{1}{\sqrt{3}} - \frac{1}{\sqrt{4}} + \cdots
+\end{equation}
+$$
+
+We can use the Alternating Series Test to show that this series converges.
+
+Let $k$ be the number of terms we want to consider. The error term $R_k$ is the sum of the rest of the series. Thus, the series can be written as:
+
+$$
+\begin{equation}
+S = S_k + R_k
+\end{equation}
+$$
+
+Where $S_k$ is the sum of the first $k$ terms of the series. We want to find the minimum $k$ such that $\abs{R_k} < 0.01$.
+
+Recall that the remainder term $R_k$ is less than the next term in the series, where $n = k + 1$:
+
+$$
+\begin{equation}
+\abs{R_k} < \frac{1}{\sqrt{k + 1}} < 0.01
+\end{equation}
+$$
+
+Solving for $k$:
+
+$$
+\begin{equation}
+\begin{split}
+\frac{1}{\sqrt{k + 1}} &< 0.01 \\
+\sqrt{k + 1} &> 100 \\
+k + 1 &> 100^2 \\
+k &> 100^2 - 1
+\end{split}
+\end{equation}
+$$
+
+Thus, the minimum number of terms needed to approximate the sum to within $0.01$ is $100^2 - 1 = 9999$.
+
+## Summary
+
+We have introduced the concepts of series and sequences, and how they relate to each other.
+We looked through a few common series, such as the Geometric Series and the Harmonic Series, as well as many tests to determine the convergence of a series.
+
+- The $n$th partial sum of a series $S$, denoted as $S_n$, is the sum of the first $n$ terms of the series.
+- A series diverges if $\lim_{n \to \infty} S_n = \infty$.
+- A series converges if $\lim_{n \to \infty} S_n = L$ for some finite number $L$.
+- The Geometric Series is a series of the form $\sum_{n=0}^{\infty} ar^n$. It converges if $\abs{r} < 1$.
+- The $n$th term test states that if $\lim_{n \to \infty} a_n \neq 0$, then the series diverges.
+- The Integral Test states that if $f(x)$ is continuous, positive, and decreasing for $[k, \infty)$, then the convergence of the series $\sum f(n)$ is the same as the convergence of the integral $\int_{k}^{\infty} f(x) \, \dd{x}$.
+- The p-series is a series of the form $\sum_{n=1}^{\infty} 1/n^p$. It converges if $p > 1$.
+- The Comparison Test states that if $0 \leq a_n \leq b_n$ for all $n$, and $\sum b_n$ converges, then $\sum a_n$ converges.
+- The Limit Comparison Test states that if $\lim_{n \to \infty} a_n / b_n = c$, then either both series converge or both series diverge.
+- The Alternating Series Test states that if a series $\sum (-1)^n b_n$ satisfies $b_{n+1} \leq b_n$ and $\lim_{n \to \infty} b_n = 0$, then the series converges.
+- The Ratio Test states that if $\lim_{n \to \infty} \abs{a_{n+1} / a_n} = L$, then the series converges if $L < 1$.
+- Convergence can be classified into two types: absolute convergence and conditional convergence: a series converges absolutely if the series of the absolute values of the terms converges.
+- Error bounds for alternating series can be found by comparing the error term to the next term in the series.
+
+Next, we will apply these concepts to solve problems involving series and sequences, such as the Taylor Series and the Maclaurin Series.

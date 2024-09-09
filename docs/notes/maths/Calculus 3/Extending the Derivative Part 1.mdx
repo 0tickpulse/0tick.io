@@ -2792,3 +2792,82 @@ $$
 \pdv{y} \class{blue}{p}(1, 1) &= 1 & \pdv{y} \class{yellow}{q}(1, 1) &= 1
 \end{align}
 $$
+
+## Summary
+
+In this chapter, we have extended the concept of the derivative from single-variable functions to multi-variable functions.
+
+We showed that the partial derivative is the derivative of a function with respect to one of its variables, while keeping the other variables constant:
+
+$$
+\begin{equation}
+\pdv{f}{x} = \lim_{\Delta x \to 0} \frac{f(x + \Delta x, y) - f(x, y)}{\Delta x}
+\end{equation}
+$$
+
+We introduced these concepts for scalar-valued functions:
+
+- **Gradient**: A vector of partial derivatives of a scalar function.
+
+    $$
+    \begin{equation}
+    \grad{f} = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} ]
+    \end{equation}
+    $$
+
+    The gradient points in the direction of the steepest increase of the function.
+- **Directional Derivative**: The rate of change of a function in a certain direction:
+
+    $$
+    \begin{equation}
+    \grad_{\va{u}} f = \grad{f} \cdot \va{u}
+    \end{equation}
+    $$
+
+    Where $\va{u}$ is a unit vector. Using this we can show that the directional derivative is maximized when $\va{u}$ is in the direction of the gradient:
+
+    $$
+    \begin{equation}
+    \grad_{\va{u}} f = \norm{\grad{f}} \norm{\va{u}} \cos(\theta) = \norm{\grad{f}}
+    \end{equation}
+    $$
+
+    Where $\theta$ is the angle between the gradient and $\va{u}$.
+- **Multivariable Chain Rule**: The chain rule for functions of multiple variables. For a function $f(x(t), y(t))$:
+
+    $$
+    \begin{equation}
+    \pdv{f}{t} = \pdv{f}{x} \pdv{x}{t} + \pdv{f}{y} \pdv{y}{t}
+    \end{equation}
+    $$
+
+We also introduced these concepts for vector-valued functions:
+
+- **Curvature**: The rate of change of the unit tangent vector with respect to arc length. The curvature of a curve $\va{r}(t)$ is:
+
+    $$
+    \begin{equation}
+    \kappa = \frac{\norm{\dv{\va{T}}{t}}}{\norm{\dv{\va{r}}{t}}}
+    \end{equation}
+    $$
+
+    Where $\va{T}$ is the unit tangent vector.
+
+    In 2D Cartesian coordinates, the curvature is:
+
+    $$
+    \begin{equation}
+    \kappa = \frac{\abs{y''(t)x'(t) - x''(t)y'(t)}}{(x'(t)^2 + y'(t)^2)^{3/2}}
+    \end{equation}
+    $$
+
+- **Partial Derivatives of Parametric Surfaces**: The partial derivatives of a vector-valued function with respect to its parameters.
+    For a function $\va{f}(t, s) = \mqty[ x(t, s) \\ y(t, s) \\ z(t, s) ]$:
+
+    $$
+    \begin{equation}
+    \pdv{t} \va{f}(t, s) = \mqty[ \pdv{x}{t} \\ \pdv{y}{t} \\ \pdv{z}{t} ]
+    \end{equation}
+    $$
+
+Next, we will apply these fundamental concepts to formulate more advanced topics in multivariable calculus, like the divergence and curl of vector fields.
