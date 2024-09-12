@@ -1,0 +1,339 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import MathEquation from "@site/src/components/Math";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Review: First Order Differential Equations
+
+The simplest type of differential equation is a first order differential equation.
+These are equations that involve an unknown function and its first derivative.
+We will explore some simple examples of first order differential equations.
+
+## The Most Important Differential Equation: Exponential Growth
+
+The most important differential equation in the world is the equation for exponential growth.
+This has already been covered in depth [previously](/notes/maths/Calculus%201%20and%202/Introduction%20to%20Differential%20Equations), so we will only briefly cover it here.
+
+The equation for exponential growth is:
+
+$$
+\begin{equation}
+\dv{y}{t} = k y(t)
+\end{equation}
+$$
+
+where $y(t)$ is the function we are trying to solve for, and $k$ is a constant.
+By solving this differential equation, we can find the function $y(t)$ that describes exponential growth:
+
+$$
+\begin{equation}
+y(t) = y_0 e^{kt}
+\end{equation}
+$$
+
+The exponential function has a few interesting properties:
+
+1. $e^0 = 1$.
+2. $e^kt$ is always positive and never zero.
+3. $e^{kt + c} = e^c e^{kt}$.
+4. If $k > 0$, then $y(t)$ grows exponentially; $\lim_{t \to \infty} y(t) = \infty$ and $\lim_{t \to -\infty} y(t) = 0$.
+5. If $k < 0$, then $y(t)$ decays exponentially; $\lim_{t \to \infty} y(t) = 0$ and $\lim_{t \to -\infty} y(t) = \infty$.
+6. If $k > 0$, $e^t$ grows much faster than any polynomial function; $\lim_{t \to \infty} \frac{e^t}{t^n} = \infty$ and $\lim_{t \to \infty} k e^{-t} = 0$.
+
+## Separable Differential Equations
+
+A separable differential equation is a first order differential equation that can be written in the form:
+
+$$
+\begin{equation}
+\dv{y}{x} = f(x) g(y)
+\end{equation}
+$$
+
+This equation can be solved by separating the variables and integrating both sides.
+
+## Example Problem: Constructing and Solving a DE
+
+> A population of cows grows at a rate proportional ($k \text{years}^{-1}$) to the number of cows present.
+> Additionally, a farmer harvests a fixed number of cows ($h$) each year.
+>
+> 1. Model and write a differential equation for the population of cows.
+> 2. Given $h = 0$, find the **doubling time** of the population of cows; i.e., the time it takes for the population to double.
+> 3. Solve the differential equation.
+> 4. There is a population where the growth rate is exactluy equal to the harvest rate, thus the population remains constant (at **equilibrium**).
+        Find the equilibrium population.
+> 5. Interpret all the results. What do they mean in the context of the problem?
+
+### Step 1: Creating a Model and Differential Equation
+
+We can introduce some variables to model the population of cows:
+
+1. $P = P(t)$: the population of cows at time $t$, in some unit $\text{cows}$.
+2. $k$: the growth rate of the cows, in $\text{years}^{-1}$.
+3. $h$: the number of cows harvested each year, in $\text{cows}\cdot\text{years}^{-1}$.
+4. $P_0$: the initial population of cows, in $\text{cows}$.
+
+Let's first introduce the growth term:
+
+$$
+\begin{equation}
+\dv{P}{t} = k P(t)
+\end{equation}
+$$
+
+$\dv{P}{t}$ is the rate of change of the population of cows.
+Since we count per year, the unit of $\dv{P}{t}$ is cows per year.
+Next, we introduce the harvesting term:
+
+$$
+\begin{equation}
+\dv{P}{t} = k P(t) - h
+\end{equation}
+$$
+
+Notice that this is constant unlike the $k$ term.
+This means that the harvest amount is constant and does not depend on the population of cows.
+
+### Step 2: Finding the Doubling Time
+
+To find the doubling time, we set $h = 0$. Then, the differential equation becomes:
+
+$$
+\begin{equation}
+\dv{P}{t} = k P(t)
+\end{equation}
+$$
+
+The doubling time is a macroscopic property that cannot be found just through the infinitesimal information provided by the differential equation.
+Thus we need to solve the differential equation to find the doubling time.
+Using separation of variables, we can solve this differential equation:
+
+$$
+\begin{align}
+\frac{1}{P} \dd{P} &= k \dd{t} \\
+\int \frac{1}{P} \dd{P} &= \int k \dd{t} \\
+P &= P_0 e^{kt}
+\end{align}
+$$
+
+To find the doubling time, we need to find the time it takes for the population to double:
+
+$$
+\begin{equation}
+P(T) = 2P_0
+\end{equation}
+$$
+
+Substitute $P = P_0 e^{kT}$ and solve:
+
+$$
+\begin{equation}
+\begin{split}
+2P_0 &= P_0 e^{kT} \\
+2 &= e^{kT} \\
+\ln{2} &= kT \\
+T &= \frac{\ln{2}}{k}
+\end{split}
+\end{equation}
+$$
+
+Note that the doubling time only depends on the growth rate $k$.
+Additionally, the doubling time is only used only when $k > 0$, that is, when the population is growing.
+
+If the population is shrinking, the doubling time is negative and does not carry any physical meaning.
+However, the concept of a halving time can be defined in the same way. In this case, we can use the same equation and find that $-T$, a positive number, is the halving time.
+
+### Step 3: Solving the Differential Equation
+
+First, we need to construct the initial condition.
+
+If $k = 0$,
+
+$$
+\begin{equation}
+\begin{split}
+\dv{P}{t} &= k P(t) - h \\
+&= -h
+\end{split}
+\end{equation}
+$$
+
+Then, at $t = 0$, $P = -h t + C$, where $C$ is the initial population.
+
+In the case where $k \neq 0$, we can perform separation of variables to solve this differential equation:
+
+$$
+\begin{equation}
+\begin{split}
+\frac{\dd{t}}{P(t) - h / k} &= k \dd{t} \\
+\end{split}
+\end{equation}
+$$
+
+Next, we perform a change of variables. Let $u = P(t) - h / k$, and $\dd{u} = \dd{P}$:
+
+$$
+\begin{equation}
+\begin{split}
+\int \frac{1}{u} \dd{u} &= k \int \dd{t} \\
+\ln{u} &= kt + C \\
+\ln(P(t) - \frac{h}{k}) &= kt + C \\
+P(t) - \frac{h}{k} &= e^{kt + C} \\
+P(t) &= \frac{h}{k} + C e^{kt}
+\end{split}
+\end{equation}
+$$
+
+Giving us the solution to the differential equation.
+We can find the value of $C$ by using the initial condition $P(0) = P_0$:
+
+$$
+\begin{equation}
+\begin{split}
+P(0) &= \frac{h}{k} + C e^{k \cdot 0} \\
+P_0 &= \frac{h}{k} + C \\
+C &= P_0 - \frac{h}{k}
+\end{split}
+\end{equation}
+$$
+
+Substitute this back into the solution:
+
+$$
+\begin{equation}
+P(t) = \frac{h}{k} + \qty(P_0 - \frac{h}{k}) e^{kt}
+\end{equation}
+$$
+
+### Step 4: Finding the Equilibrium Population
+
+In the constant/equlibrium case, the population remains constant. That is to say,
+
+$$
+\begin{equation}
+\dv{P}{t} = 0
+\end{equation}
+$$
+
+Substitute this into the differential equation:
+
+$$
+\begin{equation}
+0 = k P - h
+\end{equation}
+$$
+
+If $h = 0$, then the only situation where the population remains constant is when $k = 0$, i.e.
+
+If $h \neq 0$, we can use two methods to obtain the equilibrium population:
+
+1. Just using the infinitesimal information from the differential equation, we can rearrange the equation to find the equilibrium population:
+
+    $$
+    \begin{equation}
+    P = \frac{h}{k}
+    \end{equation}
+    $$
+
+2. Using the solution. The derivative of the solution is $k C e^{kt}$. Setting that to be $0$:
+
+    $$
+    \begin{equation}
+    0 = k C e^{kt} \implies C = 0
+    \end{equation}
+    $$
+
+    Then, plugging this back into the solution:
+
+    $$
+    \begin{equation}
+    P(t) = \frac{h}{k} + C e^{kt} = \frac{h}{k}
+    \end{equation}
+    $$
+
+    This is the same result as the first method, but looks at it from a "macroscopic" perspective.
+
+We can also make intuitive sense of this result.
+First, ensure that units match up:
+
+$$
+\begin{split}
+P(t) = \frac{h}{k} \\
+\text{cows} &= \frac{\text{cows}\cdot\text{years}^{-1}}{\text{years}^{-1}}
+\end{split}
+$$
+
+Next, we can rearrange the result to get:
+
+$$
+\begin{equation}
+h = k P
+\end{equation}
+$$
+
+This should make sense as well. Our population increases at $kP$ cows per year, and we harvest $h$ cows per year.
+Therefore, for the population to remain constant, the growth rate must be equal to the harvest rate.
+In other words, there should be as many cows being born as there are being harvested.
+
+### Step 5: Interpretation
+
+First, let's consider some conditions for the model to be valid:
+
+1. Both $k$ and $h$ must be positive.
+2. The initial population $P_0$ must be positive and less than the equilibrium population $\frac{h}{k}$.
+
+However, these are just condiitons for this specific model to be valid. Hence it is still important to consider what happens when these conditions are not met.
+
+For $k, h > 0$:
+
+1. For populations above $\frac{h}{k}$, the growth will outpace the harvest, and the population will grow exponentially to infinity.
+2. For populations below $\frac{h}{k}$, the growth will be outpaced by the harvest, and the population will decay exponentially to zero.
+
+This means that when pertubed slightly, the population will deviate from the constant solution rather than return to it.
+A constant solution like this is known as an **unstable equilibrium**.
+
+Next, consider the case where $P_0 < \frac{h}{k}$.
+The population will decay to zero, in which case the population will be extinct.
+Let $t_e$ be the time it takes for the population to reach zero.
+
+Then, the time it takes for the population to reach zero is:
+
+$$
+\begin{equation}
+\begin{split}
+P(t_e) &= 0 \\
+\frac{h}{k} + \qty(P_0 - \frac{h}{k}) e^{kt_e} &= 0 \\
+e^{kt_e} &= -\frac{\frac{h}{k}}{P_0 - \frac{h}{k}} \\
+kt_e &= \ln{\qty(-\frac{\frac{h}{k}}{P_0 - \frac{h}{k}})} \\
+\end{split}
+\end{equation}
+$$
+
+A plot of the population over time is shown below:
+
+<Mafs
+    viewBox={{
+        x: [0, 10],
+        y: [0, 5000]
+    }}
+    preserveAspectRatio={false}
+>
+    <Coordinates.Cartesian
+        yAxis={{
+            labels: (n) => n % 1000 === 0 ? n : "",
+            lines: 1000,
+            subdivisions: false,
+        }}
+    />
+</Mafs>

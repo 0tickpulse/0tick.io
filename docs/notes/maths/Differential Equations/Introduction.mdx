@@ -13,3 +13,95 @@ Differential equations are equations that involve an unknown function and its de
 Previously, in Calculus 1 and 2, we introduced differential equations. Here, we go deeper (hint: DEs go *very* deep).
 
 Calculus 3 (multivariable calculus) is not a prerequisite for this course, but rather a corequisite.
+
+## Wide-Ranging Applications
+
+Below are some examples of differential equations that are used to model real-world phenomena.
+It shows how important differential equations are in the sciences.
+
+1. A simple problem from calculus:
+
+    $$
+    \begin{equation}
+    \dv{y}{x} = 2x^3
+    \end{equation}
+    $$
+
+    Problems like this can just be solved by integrating both sides.
+
+2. Newton's Law of Cooling:
+
+    $$
+    \begin{equation}
+    \dv{T}{t} = -k(T - T_a)
+    \end{equation}
+    $$
+
+    where $T$ is the temperature of an object, $T_a$ is the ambient temperature, and $k$ is a constant.
+
+    This is covered in the [Calculus 1 and 2 notes](/notes/maths/Calculus%201%20and%202/Introduction%20to%20Differential%20Equations).
+
+3. Newton's Law of Gravitation:
+
+    $$
+    \begin{equation}
+    \dv[2]{x}{t} = -\frac{GM}{x^2}
+    \end{equation}
+    $$
+
+    where $x$ is the distance between two objects, $M$ is the mass of one of the objects, and $G$ is the gravitational constant.
+
+    This is a second order differential equation, but we can convert it to a first order differential equation by introducing a new variable.
+
+4. Simple harmonic ocsillator; Hooke's Law spring:
+
+    $$
+    \begin{equation}
+    m \dv[2]{x}{t} = -kx
+    \end{equation}
+    $$
+
+    where $m$ is the mass of the object, $k$ is the spring constant, and $x$ is the displacement from equilibrium.
+
+5. Damped harmonic oscillator:
+
+    $$
+    \begin{equation}
+    m \dv[2]{x}{t} = -kx - c \dv{x}{t}
+    \end{equation}
+    $$
+
+    where $c$ is the damping constant.
+
+6. Simple pendulum:
+
+    $$
+    \begin{equation}
+    \dv[2]{\theta}{t} = -\frac{g}{L} \sin{\theta}
+    \end{equation}
+    $$
+
+    where $\theta$ is the angle of the pendulum, $g$ is the acceleration due to gravity, and $L$ is the length of the pendulum.
+
+    This was left unsolved in the [Calculus 1 and 2 notes](/notes/maths/Calculus%201%20and%202/Introduction%20to%20Differential%20Equations).
+    We will solve it in this course.
+
+7. Heat equation:
+
+    $$
+    \begin{equation}
+    \pdv{u}{t} = k \laplacian{u}
+    \end{equation}
+    $$
+
+    where $u$ is the temperature of a substance, $t$ is time, and $k$ is a proportionality constant known as the thermal diffusivity.
+
+    The symbol $\laplacian{u}$ is the **Laplacian** of $u$, which is the sum of the second partial derivatives of $u$ with respect to each spatial variable.
+
+## Resources
+
+- [Khan Academy: Differential Equations](https://www.khanacademy.org/math/differential-equations) - Taught by Sal Khan. A good introduction to differential equations. Not much content, though.
+- [MIT OCW: Differential Equations](https://ocw.mit.edu/courses/mathematics/18-03sc-differential-equations-fall-2011/index.htm) - Taught by Arthur Mattuck. A more advanced course on differential equations.
+- Any mechanics book - mechanics is a field that heavily uses differential equations. If you want to see how DEs are used in practice, and get a **ton** of practice, this is the way to go.
+    Generally, for practice, I like to do mechanics problems instead of DE problems.
+- [3Blue1Brown: Differential Equations](https://www.youtube.com/playlist?list=PLZHQObOWTQDNPOjrT6KVlfJuKtYTftqH6) - A series of videos by Grant Sanderson. These videos are more about the intuition behind differential equations, rather than the math itself.
