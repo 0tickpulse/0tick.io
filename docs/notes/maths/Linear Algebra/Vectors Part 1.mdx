@@ -3,7 +3,7 @@ sidebar_position: 2
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState, useCallback } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
@@ -381,19 +381,18 @@ Here's a playground where you can experiment with scalar multiplication:
                     />
                     {vecTip.element}
                 </Mafs>
-                <div className="slider">
-                    <label htmlFor="scale">Scale:</label>
-                    <input
-                        type="range"
-                        id="scale"
-                        name="scale"
-                        min="-5"
-                        max="5"
-                        step="0.1"
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput
+                        label="Scale"
                         value={scale}
-                        onChange={(e) => setScale(parseFloat(e.target.value))}
+                        onUpdate={(value) => setScale(value)}
+                        min={-5}
+                        max={5}
+                        step={0.1}
                     />
-                </div>
+                </ControlPanel>
             </div>
         </div>
     )

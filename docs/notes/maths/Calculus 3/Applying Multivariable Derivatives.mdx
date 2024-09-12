@@ -3,7 +3,7 @@ sidebar_position: 5
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
@@ -53,6 +53,63 @@ Consider a point in 3D space, $(1, 2, 3)$.
 Then, consider a plane $L(x, y)$ such that the plane passes through the point $(1, 2, 3)$.
 There could be many such planes, so we will need to specify more information to uniquely determine the plane.
 
+
+export function Plane3DGraph() {
+    const a = 3;
+    const b = 3;
+    const c = 3;
+    const d = 9;
+
+    const [slice, setSlice] = useState("x") // "x", "y";
+    const [slicePoint, setSlicePoint] = useState(1);
+
+    function z(x, y) {
+        return (d - a * x - b * y) / c;
+    }
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox>
+                    <MB.Cartesian
+                        scale={[
+                            0.5, 0.5, 0.5
+                        ]}
+                    >
+                        <MB.Grid axes="xz" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+                        <MB.Axis axis="x" range={[-10, 10]} color={color("yellow")} />
+                        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+                        <MB.Axis axis="z" range={[-10, 10]} color={color("blue")} />
+                        <MB.Area
+                            id="plane"
+                            axes="xz"
+                            expr={(emit, x, y, i, t) => {
+                                emit(x, z(x, y), y); // Note the order of the axes
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={slice === "x" ? [slicePoint, 2] : [-2, 2]}
+                            rangeY={slice === "y" ? [slicePoint, 2] : [-2, 2]}
+                        />
+                        <MB.Surface
+                            points="#plane"
+                            opacity={0.5}
+                            color={color("blue")}
+                            blending="additive"
+                        />
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+}
+
 The first property of this plane function, is that it must pass through the point $(1, 2, 3)$. This can be expressed as:
 
 $$
@@ -60,3 +117,11 @@ $$
 L(1, 2) = 3
 \end{equation}
 $$
+
+Next, consider the slope of the plane. If we slice the plane along the $x$-axis, we will see a line, and likewise for the $y$-axis.
+
+<div className="card">
+    <ControlPanel>
+        <SliderInput label="a" latex value={1} min={0} max={10} />
+    </ControlPanel>
+</div>

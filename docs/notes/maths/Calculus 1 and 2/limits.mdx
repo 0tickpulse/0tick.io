@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState } from "react";
 import TOCInline from '@theme/TOCInline';
 import { color } from "@site/src/utilities/colors"
@@ -799,13 +799,9 @@ export function EpsilonDeltaGraph({ a = 0, f = (x) => 0.5 * x + Math.sin(x) / x,
                 <Plot.OfX style="dashed" y={(x) => y_min} />
             </Mafs>
             {/* Slider */}
-            <input
-                type="range"
-                min="0"
-                max="4999"
-                value={narrow * 1000}
-                onChange={(e) => setNarrow(Number(e.target.value / 1000))}
-            />
+            <ControlPanel>
+                <SliderInput label="Narrow" value={narrow} onUpdate={setNarrow} min={0} max={5} step={1} />
+            </ControlPanel>
         </>
     );
 }

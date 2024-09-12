@@ -3,7 +3,7 @@ sidebar_position: 6
 ---
 
 import { Mafs, Point, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import { useState, useEffect } from "react";
@@ -686,18 +686,9 @@ It should look like this:
                 </Mafs>
             </div>
             <div className="card__footer">
-                {/* Slider */}
-                <input
-                    type="range"
-                    min={0.1}
-                    max={1}
-                step={0.01}
-                    value={dx}
-                    onChange={(e) => setDx(parseFloat(e.target.value))}
-                />
-                <MathEquation inline>
-                    {`\\Delta x = ${dx.toFixed(2)}`}
-                </MathEquation>
+                <ControlPanel>
+                    <SliderInput latex label="\Delta x" value={dx} min={0.1} max={1} step={0.1} onUpdate={setDx} />
+                </ControlPanel>
             </div>
         </div>
     )
@@ -1582,17 +1573,9 @@ The graph of this function is an S-shaped curve that satisfies the conditions of
                     {`P(t) = \\frac{2L}{1 + e^{-kt}} - L`}
                 </MathEquation>
                 <div className="input-group">
-                    <label>
-                        <input
-                            type="range"
-                            min={0.1}
-                            max={5}
-                            step={0.05}
-                            value={k}
-                            onChange={(e) => setK(parseFloat(e.target.value))}
-                        />
-                        <span>{`k = ${k.toFixed(2)}`}</span>
-                    </label>
+                    <ControlPanel>
+                        <SliderInput latex label="k" value={k} min={0.1} max={10} step={0.1} onChange={setK} />
+                    </ControlPanel>
                 </div>
             </div>
         </div>
@@ -1814,22 +1797,6 @@ For the predator-prey model, we can plot the rabbit population on the $x$-axis a
         ];
     }
 
-    function Slider({ label_tex, value, setValue, ...restProps }) {
-        return (
-            <label key={label_tex} {...restProps}>
-                <input
-                    type="range"
-                    min={0.1}
-                    max={5}
-                    step={0.05}
-                    value={value}
-                    onChange={(e) => setValue(parseFloat(e.target.value))}
-                />
-                <MathEquation inline={true}>{`${label_tex} = ${value.toFixed(2)}`}</MathEquation>
-            </label>
-        );
-    }
-
     return (
         <div className="card">
             <div className="card__body">
@@ -1853,14 +1820,12 @@ For the predator-prey model, we can plot the rabbit population on the $x$-axis a
                 </Mafs>
             </div>
             <div className="card__footer">
-                {[
-                    ["\\alpha", alpha, setAlpha],
-                    ["\\beta", beta, setBeta],
-                    ["\\delta", delta, setDelta],
-                    ["\\gamma", gamma, setGamma],
-                ].map(([label, value, setValue]) => (
-                    <Slider label_tex={label} value={value} setValue={setValue} />
-                ))}
+                <ControlPanel>
+                    <SliderInput latex label="\alpha" value={alpha} min={0.1} max={2} step={0.1} onChange={setAlpha} />
+                    <SliderInput latex label="\beta" value={beta} min={0.1} max={2} step={0.1} onChange={setBeta} />
+                    <SliderInput latex label="\delta" value={delta} min={0.1} max={2} step={0.1} onChange={setDelta} />
+                    <SliderInput latex label="\gamma" value={gamma} min={0.1} max={2} step={0.1} onChange={setGamma} />
+                </ControlPanel>
             </div>
         </div>
     )

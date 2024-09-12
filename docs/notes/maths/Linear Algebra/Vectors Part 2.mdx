@@ -3,7 +3,7 @@ sidebar_position: 3
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState, useCallback, createElement } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
@@ -1551,23 +1551,6 @@ export function Line2DGraph() {
     const [b, setB] = useState(1);
     const [c, setC] = useState(1);
 
-    function Slider({ value, setValue, label }) {
-        return (
-            <>
-                <label>{label}</label>
-                <input
-                    type="range"
-                    min={-10}
-                    max={10}
-                    step={0.1}
-                    value={value}
-                    onChange={(e) => setValue(parseFloat(e.target.value))}
-                />
-                <span>{value}</span>
-            </>
-        )
-    }
-
     const f = (x) => (c - a * x) / b;
 
     return (
@@ -1578,9 +1561,22 @@ export function Line2DGraph() {
                     <Plot.OfX y={f} />
                 </Mafs>
             </div>
-            <div className="card__footer">
-                <input type="range" min={-10} max={10} step={0.1} value={c} onChange={(e) => setC(parseFloat(e.target.value))} />
-
+            <div className="card__footer" style={{
+                // split divs into two columns
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "1rem",
+            }}>
+                <ControlPanel>
+                    <SliderInput latex label="a" value={a} min={-10} max={10} step={0.1} onChange={setA} />
+                    <SliderInput latex label="b" value={b} min={-10} max={10} step={0.1} onChange={setB} />
+                    <SliderInput latex label="c" value={c} min={-10} max={10} step={0.1} onChange={setC} />
+                </ControlPanel>
+                <div>
+                    <MathEquation>
+                        {`${a}x + ${b}y = ${c}`}
+                    </MathEquation>
+                </div>
             </div>
         </div>
     )

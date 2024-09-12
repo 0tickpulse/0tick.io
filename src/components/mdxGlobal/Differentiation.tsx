@@ -1,5 +1,5 @@
 import { useMovablePoint, Mafs, Coordinates, Plot, Transform, LaTeX, Line, Vector, Theme } from "mafs";
-import MathEquation from "@site/src/components/Math";
+import { MathEquation } from "@site/src/components/Math";
 
 export function DerivativeFromLimits({ yvar = "y", xvar = "x" }: Partial<Record<"yvar" | "xvar", string>> = {}) {
     const f = (x) => 1 / 5 * Math.pow(x, 2);

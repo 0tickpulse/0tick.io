@@ -1,4 +1,4 @@
-import MathEquation from "@site/src/components/Math";
+import { MathEquation } from "@site/src/components/Math";
 import { findIntersectionPoint } from "@site/src/utilities/intersection";
 import { toLatex } from "@site/src/utilities/latex";
 import numeric from "numeric";

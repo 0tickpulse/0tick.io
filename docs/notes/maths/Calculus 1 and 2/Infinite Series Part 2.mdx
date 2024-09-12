@@ -2,7 +2,6 @@
 sidebar_position: 10
 ---
 import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
-import MathEquation from "@site/src/components/Math";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import { useState } from "react";
@@ -55,49 +54,11 @@ Denote the quadratic function as $P_2(x) = a_0 + a_1x + a_2x^2$. Play around wit
                 gridTemplateColumns: "1fr 1fr",
                 gap: "1rem",
             }}>
-                <div className="input-group">
-                    <label>
-                        <input
-                            type="range"
-                            min={-1}
-                            max={1}
-                            step={0.01}
-                            value={a0}
-                            onChange={(e) => setA0(parseFloat(e.target.value))}
-                        />
-                    </label>
-                    <MathEquation inline>
-                        {`a_0 = ${a0.toFixed(2)}`}
-                    </MathEquation>
-                    <br />
-                    <label>
-                        <input
-                            type="range"
-                            min={-1}
-                            max={1}
-                            step={0.01}
-                            value={a1}
-                            onChange={(e) => setA1(parseFloat(e.target.value))}
-                        />
-                    </label>
-                    <MathEquation inline>
-                        {`a_1 = ${a1.toFixed(2)}`}
-                    </MathEquation>
-                    <br />
-                    <label>
-                        <input
-                            type="range"
-                            min={-1}
-                            max={1}
-                            step={0.01}
-                            value={a2}
-                            onChange={(e) => setA2(parseFloat(e.target.value))}
-                        />
-                    </label>
-                    <MathEquation inline>
-                        {`a_2 = ${a2.toFixed(2)}`}
-                    </MathEquation>
-                </div>
+                <ControlPanel>
+                    <SliderInput latex label="a_0" value={a0} min={-2} max={2} step={0.1} onChange={setA0} />
+                    <SliderInput latex label="a_1" value={a1} min={-2} max={2} step={0.1} onChange={setA1} />
+                    <SliderInput latex label="a_2" value={a2} min={-2} max={2} step={0.1} onChange={setA2} />
+                </ControlPanel>
                 <div>
                     <MathEquation>
                         {`P_2(x) = ${a0.toFixed(2)} + ${a1.toFixed(2)}x + ${a2.toFixed(2)}x^2`}

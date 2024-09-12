@@ -8,7 +8,14 @@ import { ReactNode, useEffect, useState } from "react";
 import { Options } from "rehype-mathjax";
 import { isEqual } from "lodash";
 
-export default function MathEquation({ children, inline = false, ...options }: { children: ReactNode; inline?: boolean } & Options): JSX.Element {
+export namespace MathEquation {
+    export type Props = {
+        children: ReactNode;
+        inline?: boolean;
+    } & Options;
+}
+
+export function MathEquation({ children, inline = false, ...options }: MathEquation.Props): JSX.Element {
     const siteConfig = useDocusaurusContext().siteConfig;
     const newOptions = {
         ...(siteConfig.customFields.mathJaxOptions as Options),
