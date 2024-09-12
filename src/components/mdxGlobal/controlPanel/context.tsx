@@ -35,12 +35,12 @@ export namespace Label {
 
 export function Container({ label, latex, latexOptions, LabelComponent, children }: Container.Props) {
     return (
-        <tr style={Container.styles}>
-            <th style={{ border: "none" }}>
+        <div className="row row--no-gutters" style={Container.styles}>
+            <div className="col col--2">
                 <Label label={LabelComponent ? <LabelComponent label={label} /> : label || ""} latex={latex} latexOptions={latexOptions} />
-            </th>
-            <td style={{ border: "none" }}>{children}</td>
-        </tr>
+            </div>
+            <div className="col col--10">{children}</div>
+        </div>
     );
 }
 
@@ -53,10 +53,7 @@ export namespace Container {
         children?: React.ReactNode;
     };
     export const Memo = memo(Container);
-    export const styles: React.CSSProperties = {
-        border: "none",
-        background: "transparent",
-    };
+    export const styles: React.CSSProperties = {};
 }
 
 export function withState<CProps extends Container.Props, PProps>(Comp: React.ComponentType<PProps>) {
