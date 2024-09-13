@@ -68,9 +68,17 @@ label {
     color: var(--custom-color-purple);
 }
 
-mjx-container[jax="SVG"] > svg a {
-    fill: var(--ifm-link-color) !important;
-    stroke: var(--ifm-link-color) !important;
+mjx-container[jax="SVG"] > svg {
+    a {
+        fill: var(--ifm-link-color) !important;
+        stroke: var(--ifm-link-color) !important;
+    }
+    overflow-x: auto !important;
+}
+mjx-container {
+    overflow-x: auto;
+    max-width: 100% !important;
+    min-width: 0 !important;
 }
 
 .tick-input {
