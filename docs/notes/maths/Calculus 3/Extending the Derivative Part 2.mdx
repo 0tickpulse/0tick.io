@@ -383,6 +383,36 @@ Likewise, for a negative charge, the charge density would be negative, so the di
     );
 })()}
 
+### Divergence in Cylindrical and Spherical Coordinates
+
+We have discussed divergence in Cartesian coordinates as the sum of the partial derivatives of the components:
+
+$$
+\begin{equation}
+\operatorname{div} \va{F}(x, y, z) = \pdv{P}{x} + \pdv{Q}{y} + \pdv{R}{z}
+\end{equation}
+$$
+
+Consider a vector field in cylindrical coordinates:
+
+$$
+\begin{equation}
+\va{F}(r, \theta, z) = P(r, \theta, z) \vu{r} + Q(r, \theta, z) \vu{\theta} + R(r, \theta, z) \vu{z}
+\end{equation}
+$$
+
+The divergence of this vector field is then the sum of the partial derivatives of the components:
+
+$$
+\begin{equation}
+\operatorname{div} \va{F}(r, \theta, z) = \frac{1}{r} \pdv{r} (r P) + \frac{1}{r} \pdv{\theta} Q + \pdv{R}{z}
+\end{equation}
+$$
+
+Notice that it is similar to the Cartesian formula, but with some extra things to consider due to the cylindrical coordinates:
+
+- The $r$ component has an extra $\frac{1}{r}$ factor.
+
 ### The Second Maxwell Equation: Gauss's Law for Magnetism
 
 The second Maxwell equation describes how the magnetic field $\class{blue}{\va{B}}$ is related to the divergence of the magnetic field.
