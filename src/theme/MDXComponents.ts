@@ -14,8 +14,13 @@ import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannAppr
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import MDXComponents from "@theme-original/MDXComponents";
 import NonlinearTransformationVisualizer from "../components/mdxGlobal/NonlinearTransformationVisualizer";
-import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
 import { ControlPanel } from "../components/mdxGlobal/controlPanel/ControlPanel";
+import { Dropdown } from "../components/mdxGlobal/controlPanel/Dropdown";
+import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
+import { Pills } from "../components/mdxGlobal/controlPanel/Pills";
+import { Checkbox } from "../components/mdxGlobal/controlPanel/Checkbox";
+
+import * as mafs from "mafs";
 
 export default {
     ...MDXComponents,
@@ -33,6 +38,11 @@ export default {
 
     ControlPanel,
     SliderInput,
+    Dropdown,
+    Pills,
+    Checkbox,
+
+    ...mafs, // This is probably bad practice but whatever
 
     BetterMafsVectorField,
     ParametricSurfaceTransformVisualizer,
