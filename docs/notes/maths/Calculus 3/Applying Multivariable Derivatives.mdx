@@ -103,7 +103,7 @@ export function Plane3DGraph() {
             </div>
             <div className="card__footer">
                 <ControlPanel>
-                    <SliderInput />
+                    <SliderInput label="Slice" value={slice} setValue={setSlice} options={["x", "y"]} />
                 </ControlPanel>
             </div>
         </div>
@@ -119,9 +119,3 @@ L(1, 2) = 3
 $$
 
 Next, consider the slope of the plane. If we slice the plane along the $x$-axis, we will see a line, and likewise for the $y$-axis.
-
-<div className="card">
-    <ControlPanel>
-        <SliderInput label="a" latex value={1} min={0} max={10} />
-    </ControlPanel>
-</div>
