@@ -1,0 +1,42 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Algebraic Properties of Limits
+
+In this section, we will discuss some algebraic properties of limits that can help us evaluate limits of more complex functions.
+
+:::warning No Proofs
+
+Note that we will not be providing formal proofs for these properties.
+The proofs are typically more involved and require a deeper understanding of the concepts involved.
+
+Generally, these properties can be proven using the formal definition of limits, which falls into the realm of real analysis.
+
+:::
+
+## Limit of a Sum
+
+The limit of a sum of two functions is the sum of their limits;
+
+$$
+\begin{equation}
+\lim_{x \to a} [f(x) + g(x)] = \lim_{x \to a} f(x) + \lim_{x \to a} g(x)
+\end{equation}
+$$
+
+This property can be extended to the sum of multiple functions:
+
+$$
+\begin{equation}
+\lim_{x \to a} [f_1(x) + f_2(x) + \ldots + f_n(x)] = \lim_{x \to a} f_1(x) + \lim_{x \to a} f_2(x) + \ldots + \lim_{x \to a} f_n(x)
+\end{equation}
+$$

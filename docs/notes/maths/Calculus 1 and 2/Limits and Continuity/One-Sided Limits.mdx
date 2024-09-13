@@ -1,0 +1,129 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# One-Sided Limits
+
+In the previous section, we discussed the concept of limits and how they can be used to describe the behavior of a function as the input approaches a certain value.
+However, we did not consider the direction from which the input approaches the value.
+We could approach the value from the left or the right, and the limit could be different depending on the direction.
+
+A limit with a specific direction is called a **one-sided limit**.
+
+A graph is shown below, without the function being defined, to drill down on using graphs to understand limits:
+
+export const OSL1 = ({ annotations }) => {
+    const fn1 = (x) => -(Math.E ** (-(x + 2)));
+    const fn2 = (x) => 5 / (x + 2) - 5;
+    const fn1bounded = (x) => {
+        if (x < -2) {
+            return fn1(x);
+        }
+        return NaN;
+    };
+    const fn2bounded = (x) => {
+        if (x > -2) {
+            return fn2(x);
+        }
+        return NaN;
+    };
+    const dfn1_dx = (x) => Math.E ** (-(x + 2));
+    return (
+        <Mafs
+            viewBox={{
+                x: [-10, 10],
+            }}
+        >
+            <Coordinates.Cartesian />
+            <Plot.OfX y={fn1bounded} />
+            <Plot.OfX y={fn2bounded} />
+            <Circle center={[-2, -1]} radius={0.15} />
+            <Plot.OfY style="dashed" x={(y) => {
+                if (y > -1) {
+                    return -2;
+                }
+                return NaN;
+            }} />
+            {annotations && <>
+                <Plot.Parametric t={[-3, -2]} xy={(t) => {
+                    let x = t;
+                    let y = fn1(x);
+                    if (x < -3 || x > -2) {
+                        return NaN;
+                    }
+                    const vel = dfn1_dx(x);
+                    const angle = Math.atan(vel);
+                    const angle_rotated = Math.PI / 2 - angle;
+
+                    y += 0.5 * Math.sin(angle_rotated);
+                    x -= 0.5 * Math.cos(angle_rotated);
+
+                    return [x, y];
+                }} />
+            </>}
+        </Mafs>
+    );
+
+}
+
+<OSL1 />
+
+In the graph above, we have a function that has a vertical asymptote at $x = -2$.
+Looking from the graph, it should be clear that going from different directions will give different limits at $x = -2$.
+
+From the left, the function just approaches $-1$, but from the right, it hits a vertical asymptote and goes to infinity.
+We can write both of these as:
+
+$$
+\begin{align}
+\lim_{x \to -2^-} f(x) &= -1 \\
+\lim_{x \to -2^+} f(x) &= \infty
+\end{align}
+$$
+
+The important notational difference here is the $-$ and $+$ signs. The $-$ sign indicates that we are approaching from the left, and the $+$ sign indicates that we are approaching from the right.
+
+One good mnemonic is to think of $-2^-$ as $-2$ with a little bit less (i.e. to the left), and $-2^+$ as $-2$ with a little bit more (i.e. to the right).
+
+$$
+\begin{align}
+\lim_{x \to \class{red}{-2^-}} f(x) &= -1 && \text{From the left} \\
+\lim_{x \to \class{green}{-2^+}} f(x) &= \infty && \text{From the right}
+\end{align}
+$$
+
+These are just two examples of one-sided limits, but they can be applied to any function that has a discontinuity or a vertical asymptote.
+Consider a case where both one-sided limits are equal:
+
+$$
+\begin{equation}
+\lim_{x \to a^-} f(x) = \lim_{x \to a^+} f(x)
+\end{equation}
+$$
+
+This is then known as the **two-sided limit** and is the same as the limit we discussed in the previous section.
+
+Generally, when we talk about limits, we are referring to two-sided limits; a function is said to have a limit at a point only if the two one-sided limits are equal.
+
+One-sided limits are nevertheless important when dealing with functions that have vertical asymptotes or other discontinuities.
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of one-sided limits.
+
+Here are the key points to remember:
+
+1. A one-sided limit is the limit of a function as the input approaches a certain value from a specific direction.
+2. The notation for one-sided limits includes a $-$ sign for approaching from the left and a $+$ sign for approaching from the right.
+3. One-sided limits are important when dealing with functions that have vertical asymptotes or other discontinuities.
+4. A function is said to have a limit at a point only if the two one-sided limits are equal; that is, the two-sided limit exists.
+
+We have used graphs to understand limits, but in the next section, we will look at another way to estimate limits; through tables.

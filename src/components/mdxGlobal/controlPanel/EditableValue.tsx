@@ -2,9 +2,6 @@ import { useEffect, useRef } from "react";
 
 export function EditableValue({ style, value, onSubmit, width }: EditableValue.Props) {
     const inputRef = useRef<HTMLInputElement>(null);
-    useEffect(() => {
-        inputRef.current?.focus();
-    }, []);
     return (
         <input
             ref={inputRef}

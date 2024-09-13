@@ -1,1 +1,4 @@
 position: 5
+description: |
+  Previously, we covered a lot of the theory behind multivariable derivatives, starting from the partial derivatives, the gradient, and the directional derivative, and ending with the Jacobian matrix.
+  Now we will look at how to apply these concepts to solve some problems.
