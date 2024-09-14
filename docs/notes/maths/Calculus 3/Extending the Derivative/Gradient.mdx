@@ -1,0 +1,262 @@
+---
+sidebar_position: 3
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# Gradient
+
+The gradient of a function has multiple interpretations and uses in mathematics.
+We will explore the gradient in the context of functions of multiple variables.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+As previously stated, there are a few ways to think about the gradient of a function.
+
+Purely computationally, the gradient is essentially a collection of all the partial derivatives of a function.
+
+So for a function $f(x, y)$, the gradient is:
+
+$$
+\begin{equation}
+\text{grad}(f) = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} ]
+\end{equation}
+$$
+
+Consider the function $f(x, y) = x^2 + 2y$. The gradient of $f$ is then:
+
+$$
+\begin{equation}
+\text{grad}(f) = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} ] = \mqty[ 2x \\ 2 ]
+\end{equation}
+$$
+
+The gradient is often denoted as $\grad{f}$, which is pronounced "nabla f" or "del f".
+
+Hence, to create a more general definition, we can define the gradient of a function $f: \mathbb{R}^n \to \mathbb{R}$ as:
+
+$$
+\begin{equation}
+\grad{f(x_1, x_2, \ldots, x_n)} = \mqty[ \pdv{f}{x_1} \\ \pdv{f}{x_2} \\ \vdots \\ \pdv{f}{x_n} ]
+\end{equation}
+$$
+
+Notice that the gradient is a vector, and its dimensions match the number of inputs to the function.
+In terms of basis vectors, the gradient can be written as:
+
+$$
+\begin{equation}
+\grad{f(x_1, x_2, \ldots, x_n)} = \pdv{f}{x_1} \vu{e}_1 + \pdv{f}{x_2} \vu{e}_2 + \ldots + \pdv{f}{x_n} \vu{e}_n = \sum_{i=1}^{n} \pdv{f}{x_i} \vu{e}_i
+\end{equation}
+$$
+
+Recall that the partial derivative is an "incomplete" way to measure the rate of change.
+In this sense, the gradient can be thought of as the "full" derivative of a function of multiple variables.
+
+## The Nabla
+
+One convenient way to think about the gradient is to consider the symbol $\vnabla$ as a vector of partial derivative operators.
+It's easier to understand this with an example. For a function $f(x, y, z)$, $\vnabla$ is:
+
+$$
+\begin{equation}
+\vnabla = \mqty[ \pdv{}{x} \\ \pdv{}{y} \\ \pdv{}{z} ]
+\end{equation}
+$$
+
+Then, the gradient of $f$ is simply a vector multiplication:
+
+$$
+\begin{equation}
+\grad{f} = \mqty[ \pdv{}{x} \\ \pdv{}{y} \\ \pdv{}{z} ] f = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} \\ \pdv{f}{z} ]
+\end{equation}
+$$
+
+## Gradients in the Context of Graphs
+
+Outside of the computational context, there's a graphical way to think about the gradient.
+Consider this simple function $f(x, y) = x^2 + y^2$, and its gradient:
+
+$$
+\begin{equation}
+\grad{f} = \mqty [ \pdv{f}{x} \\ \pdv{f}{y} ] = \mqty[ 2x \\ 2y ]
+\end{equation}
+$$
+
+We can plot this as a vector field.
+
+<CustomMathbox>
+    <MB.Cartesian
+        scale={[
+            0.1, 0.1, 0.1
+        ]}
+    >
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+        <MB.Area
+            id="graph"
+            axes="xz"
+            expr={(emit, x, z, i, t) => {
+                emit(x, x ** 2 + z ** 2, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Surface
+            points="#graph"
+            opacity={0.5}
+            color={color("blue")}
+            zBias={-1}
+            zIndex={-1}
+        />
+
+        <MB.Area
+            id="gradient_field"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                // the original point
+                emit(x, 0, y);
+                // gradient
+                {/* emit(x + 2 * x, 0, y + 2 * y); */}
+                const gradient = [2 * x, 2 * y];
+                const normalized = vec.normalize(gradient);
+                emit(x + normalized[0], 0, y + normalized[1]);
+            }}
+            items={2}
+            width={20}
+            height={20}
+            channels={3}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Area
+            id="gradient_field_colors"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const gradient = [2 * x, 2 * y];
+                const mag = vec.mag(gradient);
+
+                const [r, g, b] = getColorFromMagnitude(mag, 0, 20);
+                emit(r, g, b, 1.0);
+            }}
+            width={20}
+            height={20}
+            channels={4}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Vector
+            points="#gradient_field"
+            colors="#gradient_field_colors"
+            width={5}
+            end={true}
+        />
+    </MB.Cartesian>
+
+</CustomMathbox>
+
+In this graph, the gradient is represented as a vector field, more commonly known as a "gradient field".
+
+One thing to note is that the gradient points in the "direction of the steepest ascent" of the function.
+So if you were to walk along the surface of the function, you would be walking in the direction where the function increases the fastest.
+This is not immediately obvious, but will become more apparent in light of directional derivatives.
+
+## Gradient in Contour Plots
+
+It's important to understand how the gradient relates to contour plots.
+
+Consider the function $f(x, y) = xy/2$. The contour plot of this function is:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {range(-10, 10, 0.5).map(i => (
+        // Solve for f(x, y) = i
+        // Which is xy/2 = i ==> y = 2i/x
+        <Plot.OfX y={(x) => 2 * i / x} key={i} />
+    ))}
+</Mafs>
+
+The gradient of $f$ is:
+
+$$
+\begin{equation}
+\grad{f} = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} ] = \mqty[ \frac{y}{2} \\ \frac{x}{2} ]
+\end{equation}
+$$
+
+Like before, we can plot this as a gradient field along with the contour plot:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {range(-10, 10, 0.5).map(i => (
+        // Solve for f(x, y) = i
+        // Which is xy/2 = i ==> y = 2i/x
+        <Plot.OfX y={(x) => 2 * i / x} opacity={0.5} key={i} />
+    ))}
+    <Plot.VectorField
+        xy={([x, y]) => [y / 2, x / 2]}
+        step={0.5}
+    />
+</Mafs>
+
+The important thing to notice is that the vector appears to point perpendicular to the contour lines.
+To see why this is the case, zoom in on 2 contour lines:
+
+<Mafs
+    viewBox={{
+        x: [1, 2],
+        y: [1, 1.5]
+    }}
+>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => 2 * 1 / x} />
+    <LaTeX tex="f = 1" at={[2, 0.9]} />
+    <Plot.OfX y={(x) => 2 * 1.1 / x} />
+    <LaTeX tex="f = 1.1" at={[2, 1.25]} />
+    <Vector
+        tail={[2, 1]}
+        tip={[2.05, 2 * 1.1 / 2.05]}
+    />
+</Mafs>
+
+Recall that the gradient points in the direction of the steepest ascent.
+Instead of thinking of the steepest ascent, consider which direction the function increases from $1$ to $1.1$ in the shortest distance.
+This is essentially considering the shortest path between the two contour lines.
+Since the contour lines are almost parallel to each other, the gradient vector will be perpendicular to the contour lines.
+
+## Gradient in Cylindrical Coordinates
+
+Recall the definition of the gradient in Cartesian coordinates:
+
+$$
+\begin{equation}
+\grad{f(x, y, z)} = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} \\ \pdv{f}{z} ] = \pdv{f}{x} \vu{i} + \pdv{f}{y} \vu{j} + \pdv{f}{z} \vu{k}
+\end{equation}
+$$
+
+One would expect that the gradient in cylindrical coordinates would be similar:
+
+$$
+\begin{equation}
+\grad{f(r, \theta, z)} \overset{?}{=} \pdv{f}{r} \vu{e}_r + \pdv{f}{\theta} \vu{e}_\theta + \pdv{f}{z} \vu{e}_z
+\end{equation}
+$$
+
+Unfortunately, like everything else, things are not as simple as they seem.

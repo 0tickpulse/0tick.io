@@ -1,0 +1,5 @@
+position: 2
+description: |
+  We have seen how to differentiate functions of one variable, but what about functions of multiple variables?
+  We've already seen that functions can have multiple inputs and multiple outputs, and they appear frequently in the real world.
+  In this section, we will extend the concept of the derivative to functions of multiple variables.
