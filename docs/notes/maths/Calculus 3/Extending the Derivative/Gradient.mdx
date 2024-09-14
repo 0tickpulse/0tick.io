@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 import { useMovablePoint, useStopwatch, vec } from "mafs";
@@ -241,22 +241,16 @@ Instead of thinking of the steepest ascent, consider which direction the functio
 This is essentially considering the shortest path between the two contour lines.
 Since the contour lines are almost parallel to each other, the gradient vector will be perpendicular to the contour lines.
 
-## Gradient in Cylindrical Coordinates
+## Summary and Next Steps
 
-Recall the definition of the gradient in Cartesian coordinates:
+In this section, we introduced the concept of the gradient of a function.
 
-$$
-\begin{equation}
-\grad{f(x, y, z)} = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} \\ \pdv{f}{z} ] = \pdv{f}{x} \vu{i} + \pdv{f}{y} \vu{j} + \pdv{f}{z} \vu{k}
-\end{equation}
-$$
+Here are the key points to remember:
 
-One would expect that the gradient in cylindrical coordinates would be similar:
+- The gradient of a function is a vector of partial derivatives.
+- The gradient points in the direction of the steepest ascent of the function.
+- The gradient is perpendicular to the contour lines of the function.
+- The gradient can be thought of as the "full" derivative of a function of multiple variables.
 
-$$
-\begin{equation}
-\grad{f(r, \theta, z)} \overset{?}{=} \pdv{f}{r} \vu{e}_r + \pdv{f}{\theta} \vu{e}_\theta + \pdv{f}{z} \vu{e}_z
-\end{equation}
-$$
-
-Unfortunately, like everything else, things are not as simple as they seem.
+There is an optional section afterwards that explores the gradient in other coordinate systems, including cylindrical and spherical coordinates.
+Otherwise, the next section is on the directional derivative.

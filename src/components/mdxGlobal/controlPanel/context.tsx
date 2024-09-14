@@ -35,12 +35,12 @@ export namespace Label {
 
 export function Container({ label, latex, latexOptions, LabelComponent, children }: Container.Props) {
     return (
-        <div className="row row--no-gutters" style={Container.styles}>
-            <div className="col col--2">
+        <tr style={Container.styles}>
+            <td>
                 <Label label={LabelComponent ? <LabelComponent label={label} /> : label || ""} latex={latex} latexOptions={latexOptions} />
-            </div>
-            <div className="col col--10">{children}</div>
-        </div>
+            </td>
+            <td>{children}</td>
+        </tr>
     );
 }
 

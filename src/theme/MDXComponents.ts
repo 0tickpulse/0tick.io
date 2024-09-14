@@ -14,11 +14,12 @@ import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannAppr
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import MDXComponents from "@theme-original/MDXComponents";
 import NonlinearTransformationVisualizer from "../components/mdxGlobal/NonlinearTransformationVisualizer";
+import { Checkbox } from "../components/mdxGlobal/controlPanel/Checkbox";
 import { ControlPanel } from "../components/mdxGlobal/controlPanel/ControlPanel";
 import { Dropdown } from "../components/mdxGlobal/controlPanel/Dropdown";
-import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
 import { Pills } from "../components/mdxGlobal/controlPanel/Pills";
-import { Checkbox } from "../components/mdxGlobal/controlPanel/Checkbox";
+import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
+import { PolarCoordinateVisualizer } from "../components/mdxGlobal/PolarCoordinatePlayground";
 
 import * as mafs from "mafs";
 
@@ -35,6 +36,7 @@ export default {
     HoverableBox,
     RiemannApproximation,
     ThreeDTest,
+    PolarCoordinateVisualizer,
 
     ControlPanel,
     SliderInput,

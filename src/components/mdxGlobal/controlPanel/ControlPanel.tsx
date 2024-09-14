@@ -1,13 +1,17 @@
-import "./styles.module.scss";
+import styles from "./styles.module.scss";
 
 export function ControlPanel({ children, style, title = "Options" }: ControlPanel.Props) {
     return (
-        <div style={{ ...style, ...ControlPanel.style }} id="control-panel" className="control-panel container">
-            <div className="row">
-                <h3>{title}</h3>
-            </div>
-            {children}
-        </div>
+        <table style={{ ...style, ...ControlPanel.style }} id="control-panel" className={styles["control-panel"]}>
+            <tbody>
+                <tr>
+                    <th>
+                        <h3>{title}</h3>
+                    </th>
+                </tr>
+                {children}
+            </tbody>
+        </table>
     );
 }
 

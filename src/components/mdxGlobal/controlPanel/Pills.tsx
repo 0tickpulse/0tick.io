@@ -1,5 +1,6 @@
 import { ComponentProps, ReactNode, useState } from "react";
 import { withState } from "./context";
+import styles from "./styles.module.scss";
 
 type SNS = string | number | readonly string[];
 
@@ -17,7 +18,7 @@ const _Pills = withState(function <TKey extends SNS, TValue extends ReactNode>({
         onChange?.(value);
     }
     return (
-        <ul className="pills" style={{ zIndex: 1 }}>
+        <ul className={"pills pills--block " + styles["panel-pills"]} style={{ zIndex: 1 }}>
             {handleOptions(options).map(([k, v], i) => (
                 <li
                     key={i}

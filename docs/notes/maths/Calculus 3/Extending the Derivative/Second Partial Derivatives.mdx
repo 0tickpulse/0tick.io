@@ -41,16 +41,30 @@ For a second partial derivative:
 - If it's the same variable for both derivatives, we write $\pdv[2]{f}{x}$.
 - If it's different variables (say $x$ then $y$), we write it as sort of an expansion of $\pdv{y}(\pdv{f}{x})$, which is $\pdv{f}{y}{x}$.
 
+### Alternative Notations
+
+There are other notations for second partial derivatives. For example, we can write $\pdv[2]{f}{y}{x}$ using Euler's notation as $\partial_{y} \partial_{x} f$ or $\partial_{yx} f$.
+In my opinion, for higher-order derivatives, Euler's notation is more concise and easier to read.
+
+$$
+\begin{alignat}{3}
+\pdv{\posX}(\pdv{f}{\posX}) &= \pdv{f}{\posX}{\posX} = \pdv[2]{f}{\posX} &&= \partial_{\posX} \partial_{\posX} f &&= \partial_{\class{blue}{xx}} f = \partial_\posX^2 f \\
+\pdv{\posY}(\pdv{f}{\posY}) &= \pdv{f}{\posY}{\posY} = \pdv[2]{f}{\posY} &&= \partial_{\posY} \partial_{\posY} f &&= \partial_{\class{yellow}{yy}} f = \partial_\posY^2 f \\
+\pdv{\posY}(\pdv{f}{\posX}) &= \pdv{f}{\posY}{\posX} &&= \partial_{\posY} \partial_{\posX} f &&= \partial_{\posY\posX} f \\
+\pdv{\posX}(\pdv{f}{\posY}) &= \pdv{f}{\posX}{\posY} &&= \partial_{\posX} \partial_{\posY} f &&= \partial_{\posX\posY} f \\
+\end{alignat}
+$$
+
 We can show the different derivatives using a tree.
 
 ```mermaid
 graph LR
-    A["$$f(x, y) = x \cos(x) \sin(y)^2 $$"] --> B["$$\frac{\partial f}{\partial x}$$"]
-    A --> C["$$\frac{\partial f}{\partial y}$$"]
-    B --> D["$$\frac{\partial^2 f}{\partial x^2}$$"]
-    B --> E["$$\frac{\partial^2 f}{\partial x \partial y}$$"]
-    C --> F["$$\frac{\partial^2 f}{\partial y \partial x}$$"]
-    C --> G["$$\frac{\partial^2 f}{\partial y^2}$$"]
+    A["$$f(x, y) = x \cos(x) \sin(y)^2 $$"] --> B["$$\partial_x f$$"]
+    A --> C["$$\partial_y f$$"]
+    B --> D["$$\partial_x^2 f$$"]
+    B --> E["$$\partial_{yx} f$$"]
+    C --> F["$$\partial_{xy} f$$"]
+    C --> G["$$\partial_y^2 f$$"]
 ```
 
 Let's first compute the first partial derivatives of $f(x, y)$. The things kept constant are shown in different colors to help understand the computation.
@@ -87,5 +101,60 @@ Now, let's compute the second partial derivatives.
 
 Notice something interesting: $\pdv{f}{y}{x} = \pdv{f}{x}{y}$. This is a property that certain functions have, called the Symmetry of Second Derivatives.
 
+```mermaid
+graph LR
+    A["$$f(x, y) = x \cos(x) \sin(y)^2 $$"] --> |"∂/∂x"|B["$$\cos(x)\sin(y)^2 - x\sin(x)\sin(y)^2$$"]
+    A --> |"∂/∂y"|C["$$2x\cos(x)\sin(y)\cos(y)$$"]
+    B --> |"∂/∂x"|D["$$-2\sin(x)\sin(y)^2 - x\cos(x)\sin(y)^2$$"]
+    B --> |"∂/∂y"|E["$$2\cos(x)\sin(y)\cos(y)$$"]
+    C --> |"∂/∂x"|F["$$2\cos(x)\sin(y)\cos(y)$$"]
+    C --> |"∂/∂y"|G["$$2x\cos(x)(\cos(y)^2 - \sin(y)^2)$$"]
+```
+
 There's a formal definition for this property called Schwarz's Theorem, which states that if the second partial derivatives of a function are continuous in a region, then the mixed partial derivatives are equal.
 This theorem is discussed in the appendix.
+
+## Example Problem: Finding Higher-Order Derivatives:
+
+> The function $f(x, y)$ is given by the following expression:
+>
+> $$
+> \begin{equation}
+> f(x, y, z) = \sin(xy) e^{x + z}
+> \end{equation}
+> $$
+>
+> Find the following higher-order partial derivative: $\partial_{xyzyz} f$
+>
+> [(Source)](https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/partial-derivative-and-gradient-articles/a/second-partial-derivatives)
+
+This problem is a bit more complicated than the previous one, but the process is the same.
+
+First, make sure to do the partial derivatives in the correct order:
+
+$$
+\begin{equation}
+\pdv{\posX}\pdv{\posY}\pdv{\posZ}\pdv{\posY}\pdv{\posZ} f = \frac{\partial^5 f}{\underset{5}{\partial \posX} \underset{4}{\partial \posY} \underset{3}{\partial \posZ} \underset{2}{\partial \posY} \underset{1}{\partial \posZ}}
+\end{equation}
+$$
+
+Now, let's compute the partial derivatives:
+
+$$
+\begin{align}
+f(\posX, \posY, \posZ) &= \sin(\posX\posY) e^{\posX + \posZ} \\
+\partial_{\posZ} f &= \pdv{\posZ} (\sin(\posX\posY) e^{\posX + \posZ}) = \sin(\posX\posY) e^{\posX + \posZ} \\
+\partial_{\posY\posZ} f &= \pdv{\posY} (\sin(\posX\posY) e^{\posX + \posZ}) = \cos(\posX\posY)\posX e^{\posX + \posZ} \\
+\partial_{\posZ\posY\posZ} f &= \pdv{\posZ} (\cos(\posX\posY) e^{\posX + \posZ}) = \cos(\posX\posY)\posX e^{\posX + \posZ} \\
+\partial_{\posY\posZ\posY\posZ} f &= \pdv{\posY} (-\sin(\posX\posY) e^{\posX + \posZ}) = -\sin(\posX\posY)\posX^2 e^{\posX + \posZ} \\
+\partial_{\posX\posY\posZ\posY\posZ} f &= \pdv{\posX} (-\sin(\posX\posY) e^{\posX + \posZ}) = -\cos(\posX\posY)\posY\posX^2 e^{\posX + \posZ} - \sin(\posX\posY)2\posX e^{\posX + \posZ} - \sin(\posX\posY)\posX^2 e^{\posX + \posZ}
+\end{align}
+$$
+
+Thus, the fifth-order partial derivative is:
+
+$$
+\begin{equation}
+\partial_{\posX\posY\posZ\posY\posZ} f = -\cos(\posX\posY)\posY\posX^2 e^{\posX + \posZ} - \sin(\posX\posY)2\posX e^{\posX + \posZ} - \sin(\posX\posY)\posX^2 e^{\posX + \posZ}
+\end{equation}
+$$

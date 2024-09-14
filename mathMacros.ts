@@ -12,4 +12,11 @@ export const MATH_MACROS: Record<string, string | [string, number]> = {
     "arcsec": "\\operatorname{arcsec}",
     "arccsc": "\\operatorname{arccsc}",
     "arccot": "\\operatorname{arccot}",
+
+    // custom colors for convenience and consistency
+    "posX": "\\class{blue}{x}",
+    "posY": "\\class{yellow}{y}",
+    "posZ": "\\class{green}{z}",
+    "posR": "\\class{red}{r}",
+    "posT": "\\class{purple}{\\theta}",
 };

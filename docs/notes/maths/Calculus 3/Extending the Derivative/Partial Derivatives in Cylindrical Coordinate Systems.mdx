@@ -1,0 +1,171 @@
+---
+sidebar_position: 3
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# Partial Derivatives in Cylindrical Coordinate Systems
+
+Previously, we discussed the gradient of a function in the context of Cartesian coordinates.
+The gradient is actually quite different in other coordinate systems, so we will explore how the gradient changes in them.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Polar/Cylindrical Coordinate Review
+
+Before we delve into the gradient in polar/cylindrical coordinates, let's review what polar/cylindrical coordinates are.
+
+Cylindrical coordinates are a coordinate system that uses a distance from the origin, an angle from the $x$-axis, and a height from the $xy$-plane to describe a point in space.
+Those three values are denoted as $(r, \theta, z)$, respectively.
+
+On the $xy$-plane, the cylindrical coordinates $(r, \theta)$ are equivalent to polar coordinates (which only use $(r, \theta)$).
+We will use 2D diagrams to illustrate the concepts, but remember that cylindrical coordinates are 3D.
+
+For this text, we will use the following colors and notation to represent the different coordinates:
+
+- $\posX$, $\class{blue}{\vu{i}}$: The $x$-coordinate and unit vector
+- $\posY$, $\class{yellow}{\vu{j}}$: The $y$-coordinate and unit vector
+- $\class{red}{r}$, $\class{red}{\vu{r}}$: The distance from the origin
+- $\class{purple}{\theta}$, $\class{purple}{\vu{\theta}}$: The angle from the $x$-axis, and the tangent unit vector
+- $\posZ$, $\class{green}{\vu{k}}$: The height from the $xy$-plane, and the unit vector
+
+Consider one point in the $xy$-plane with Cartesian coordinates $(\posX, \posY)$:
+
+<PolarCoordinateVisualizer />
+
+
+Using some trigonometry, we can convert the Cartesian coordinates $(\posX, \posY)$ to cylindrical coordinates $(\class{red}{r}, \class{purple}{\theta})$:
+
+$$
+\begin{align}
+\class{red}{r} &= \sqrt{\posX^2 + \posY^2} \\
+\class{purple}{\theta} &= \arctan(\frac{\posY}{\posX}) \\
+\posZ &= \posZ
+\end{align}
+$$
+
+And to convert back to Cartesian coordinates:
+
+$$
+\begin{align}
+\posX &= \class{red}{r} \cos(\class{purple}{\theta}) \\
+\posY &= \class{red}{r} \sin(\class{purple}{\theta}) \\
+\posZ &= \posZ
+\end{align}
+$$
+
+We can compute the basis vectors for cylindrical coordinates in a similar way:
+
+$$
+\begin{align}
+\class{red}{\vu{r}} &= \cos(\theta) \class{blue}{\vu{i}} + \sin(\theta) \class{yellow}{\vu{j}} \\
+\class{purple}{\vu{\theta}} &= -\sin(\theta) \class{blue}{\vu{i}} + \cos(\theta) \class{yellow}{\vu{j}} \\
+\class{green}{\vu{k}} &= \class{green}{\vu{k}}
+\end{align}
+$$
+
+Likewise, the unit vectors in Cartesian coordinates can be expressed in terms of cylindrical coordinates:
+
+$$
+\begin{align}
+\class{blue}{\vu{i}} &= \cos(\theta) \class{red}{\vu{r}} - \sin(\theta) \class{purple}{\vu{\theta}} \label{eq:ihat-in-cylindrical} \\
+\class{yellow}{\vu{j}} &= \sin(\theta) \class{red}{\vu{r}} + \cos(\theta) \class{purple}{\vu{\theta}} \label{eq:jhat-in-cylindrical} \\
+\class{green}{\vu{k}} &= \class{green}{\vu{k}}
+\end{align}
+$$
+
+With this in mind, let's explore the gradient in polar/cylindrical coordinates.
+
+## Partial Derivatives in Cylindrical Coordinates
+
+### Partial Derivatives of r, θ, and z
+
+Consider the partial derivative of $\class{red}{r}$ with respect to $\class{yellow}{x}$:
+
+$$
+\begin{equation}
+\pdv{\class{red}{r}}{\posX} = \pdv{\sqrt{\posX^2 + \posY^2}}{\posX} = \frac{\posX}{\sqrt{\posX^2 + \posY^2}}
+\end{equation}
+$$
+
+Next, consider taking the cosine of $\class{purple}{\theta}$:
+
+$$
+\begin{equation}
+\cos(\class{purple}{\theta}) = \frac{\text{adjacent}}{\text{hypotenuse}} = \frac{\posX}{\sqrt{\posX^2 + \posY^2}}
+\end{equation}
+$$
+
+Therefore:
+
+$$
+\begin{equation}
+\pdv{\class{red}{r}}{\posX} = \cos(\class{purple}{\theta})
+\end{equation}
+$$
+
+We can do the same for the partial derivative of $\class{red}{r}$ with respect to $\posY$:
+
+$$
+\begin{equation}
+\pdv{\class{red}{r}}{\posY} = \pdv{\sqrt{\posX^2 + \posY^2}}{\posY} = \frac{\posY}{\sqrt{\posX^2 + \posY^2}} = \sin(\class{purple}{\theta})
+\end{equation}
+$$
+
+For the partial derivative of $\class{red}{r}$ with respect to $\posZ$, consider that the radius does not change no matter how high or low the point is.
+Therefore:
+
+$$
+\begin{equation}
+\pdv{\class{red}{r}}{\posZ} = 0
+\end{equation}
+$$
+
+We can also compute the partial derivatives of $\class{purple}{\theta}$ and $\posZ$ with respect to $\posX$, $\posY$, and $\posZ$.
+The results are:
+
+$$
+\begin{align}
+\pdv{\class{purple}{\theta}}{\posX} &= -\frac{\posY}{\posX^2 + \posY^2} = -\frac{\sin(\class{purple}{\theta})}{\class{red}{r}} \\
+\pdv{\class{purple}{\theta}}{\posY} &= \frac{\posX}{\posX^2 + \posY^2} = \frac{\cos(\class{purple}{\theta})}{\class{red}{r}} \\
+\pdv{\class{purple}{\theta}}{\posZ} &= 0 \\
+\pdv{\posZ}{\posX} &= 0 \\
+\pdv{\posZ}{\posY} &= 0 \\
+\pdv{\posZ}{\posZ} &= 1
+\end{align}
+$$
+
+### Partial Derivatives of f
+
+With that in mind, consider the partial derivative of a function $f$.
+First, consider the partial derivative of $f$ with respect to the Cartesian coordinates.
+By using the chain rule, we can express these as:
+
+$$
+\begin{align}
+\pdv{f}{\posX} &= \pdv{f}{\posR} \pdv{\posR}{\posX} + \pdv{f}{\posT} \pdv{\posT}{\posX} + \pdv{f}{\posZ} \pdv{\posZ}{\posX} \\
+\pdv{f}{\posY} &= \pdv{f}{\posR} \pdv{\posR}{\posY} + \pdv{f}{\posT} \pdv{\posT}{\posY} + \pdv{f}{\posZ} \pdv{\posZ}{\posY} \\
+\pdv{f}{\posZ} &= \pdv{f}{\posR} \pdv{\posR}{\posZ} + \pdv{f}{\posT} \pdv{\posT}{\posZ} + \pdv{f}{\posZ} \pdv{\posZ}{\posZ}
+\end{align}
+$$
+
+Since we have already computed the partial derivatives of $\class{red}{r}$, $\class{purple}{\theta}$, and $\posZ$ with respect to the Cartesian coordinates, we can substitute them in:
+
+$$
+\begin{align}
+\pdv{f}{\posX} &= \pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR} \label{eq:partial-x-in-cylindrical} \\
+\pdv{f}{\posY} &= \pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR} \label{eq:partial-y-in-cylindrical} \\
+\pdv{f}{\posZ} &= \pdv{f}{\posZ}
+\end{align}
+$$
