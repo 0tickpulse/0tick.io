@@ -34,11 +34,11 @@ We will use 2D diagrams to illustrate the concepts, but remember that cylindrica
 
 For this text, we will use the following colors and notation to represent the different coordinates:
 
-- $\posX$, $\class{blue}{\vu{i}}$: The $x$-coordinate and unit vector
-- $\posY$, $\class{yellow}{\vu{j}}$: The $y$-coordinate and unit vector
-- $\posR$, $\class{red}{\vu{r}}$: The distance from the origin
-- $\posT$, $\class{purple}{\vu{\theta}}$: The angle from the $x$-axis, and the tangent unit vector
-- $\posZ$, $\class{green}{\vu{k}}$: The height from the $xy$-plane, and the unit vector
+- $\posX$, $\ihatc$: The $x$-coordinate and unit vector
+- $\posY$, $\jhatc$: The $y$-coordinate and unit vector
+- $\posR$, $\rhatc$: The distance from the origin
+- $\posT$, $\thhatc$: The angle from the $x$-axis, and the tangent unit vector
+- $\posZ$, $\khatc$: The height from the $xy$-plane, and the unit vector
 
 Consider one point in the $xy$-plane with Cartesian coordinates $(\posX, \posY)$:
 
@@ -69,9 +69,9 @@ We can compute the basis vectors for cylindrical coordinates in a similar way:
 
 $$
 \begin{align}
-\class{red}{\vu{r}} &= \cos(\theta) \class{blue}{\vu{i}} + \sin(\theta) \class{yellow}{\vu{j}} \\
-\class{purple}{\vu{\theta}} &= -\sin(\theta) \class{blue}{\vu{i}} + \cos(\theta) \class{yellow}{\vu{j}} \\
-\class{green}{\vu{k}} &= \class{green}{\vu{k}}
+\rhatc &= \cos(\theta) \ihatc + \sin(\theta) \jhatc \\
+\thhatc &= -\sin(\theta) \ihatc + \cos(\theta) \jhatc \\
+\khatc &= \khatc
 \end{align}
 $$
 
@@ -79,9 +79,9 @@ Likewise, the unit vectors in Cartesian coordinates can be expressed in terms of
 
 $$
 \begin{align}
-\class{blue}{\vu{i}} &= \cos(\theta) \class{red}{\vu{r}} - \sin(\theta) \class{purple}{\vu{\theta}} \label{eq:ihat-in-cylindrical} \\
-\class{yellow}{\vu{j}} &= \sin(\theta) \class{red}{\vu{r}} + \cos(\theta) \class{purple}{\vu{\theta}} \label{eq:jhat-in-cylindrical} \\
-\class{green}{\vu{k}} &= \class{green}{\vu{k}}
+\ihatc &= \cos(\theta) \rhatc - \sin(\theta) \thhatc \label{eq:ihat-in-cylindrical} \\
+\jhatc &= \sin(\theta) \rhatc + \cos(\theta) \thhatc \label{eq:jhat-in-cylindrical} \\
+\khatc &= \khatc
 \end{align}
 $$
 

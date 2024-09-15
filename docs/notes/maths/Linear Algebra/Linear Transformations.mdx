@@ -34,14 +34,14 @@ A more formal way to define a linear transformation is to say that a function $T
 
 To understand linear transformations better, let's consider a simple example.
 
-Consider a 2D vector space, $\mathbb{R}^2$, with the standard basis vectors $\class{blue}{\vu{i}} = \mqty[ 1 \\ 0 ]$ and $\class{yellow}{\vu{j}} = \mqty[ 0 \\ 1 ]$.
+Consider a 2D vector space, $\mathbb{R}^2$, with the standard basis vectors $\ihatc = \mqty[ 1 \\ 0 ]$ and $\jhatc = \mqty[ 0 \\ 1 ]$.
 
 To describe a linear transformation, we can't possibly describe how it affects every single vector in the space.
 Instead, due to the linearity of the transformation, it suffices to describe how it affects the basis vectors.
 
-So, if you know how it affects $\class{blue}{\vu{i}}$ and $\class{yellow}{\vu{j}}$, you can figure out how it affects any vector in the space.
+So, if you know how it affects $\ihatc$ and $\jhatc$, you can figure out how it affects any vector in the space.
 
-Consider a transformation that maps $\class{blue}{\vu{i}}$ to $\mqty[ 1 \\ 1 ]$ and $\class{yellow}{\vu{j}}$ to $\mqty[ 1 \\ -1 ]$.
+Consider a transformation that maps $\ihatc$ to $\mqty[ 1 \\ 1 ]$ and $\jhatc$ to $\mqty[ 1 \\ -1 ]$.
 Let's first visualize this transformation:
 
 <LinearTransformationVisualizer
@@ -51,17 +51,17 @@ Let's first visualize this transformation:
     }}
 />
 
-Recall that a vector in $\mathbb{R}^2$ can be written as a linear combination of the basis vectors $\class{blue}{\vu{i}}$ and $\class{yellow}{\vu{j}}$.
-So, any vector $\va{v} = \mqty[ x \\ y ]$ can be written as $x\class{blue}{\vu{i}} + y\class{yellow}{\vu{j}}$.
+Recall that a vector in $\mathbb{R}^2$ can be written as a linear combination of the basis vectors $\ihatc$ and $\jhatc$.
+So, any vector $\va{v} = \mqty[ x \\ y ]$ can be written as $x\ihatc + y\jhatc$.
 
-To find how the transformation affects $\va{v}$, we can find how it affects $\class{blue}{\vu{i}}$ and $\class{yellow}{\vu{j}}$ and then combine the results.
+To find how the transformation affects $\va{v}$, we can find how it affects $\ihatc$ and $\jhatc$ and then combine the results.
 For example, if $\va{v} = \mqty[ 2 \\ 3 ]$, then:
 
 $$
 \begin{equation}
 \begin{split}
-\va{v} &= 2\class{blue}{\vu{i}} + 3\class{yellow}{\vu{j}} \\
-T(\va{v}) &= 2T(\class{blue}{\vu{i}}) + 3T(\class{yellow}{\vu{j}}) \\
+\va{v} &= 2\ihatc + 3\jhatc \\
+T(\va{v}) &= 2T(\ihatc) + 3T(\jhatc) \\
 &= 2\mqty[ 1 \\ 1 ] + 3\mqty[ 1 \\ -1 ] \\
 &= \mqty[ 2 \\ 2 ] + \mqty[ 3 \\ -3 ] \\
 &= \mqty[ 5 \\ -1 ]
@@ -204,7 +204,7 @@ The basis vectors can be represented as:
 
 $$
 \begin{equation}
-\vu{i} = \mqty[ 1 \\ 0 \\ \vdots \\ 0 ], \vu{j} = \mqty[ 0 \\ 1 \\ \vdots \\ 0 ], \ldots, \khat = \mqty[ 0 \\ 0 \\ \vdots \\ 1 ]
+\vu{i} = \mqty[ 1 \\ 0 \\ \vdots \\ 0 ], \vu{j} = \mqty[ 0 \\ 1 \\ \vdots \\ 0 ], \ldots, \vu{k} = \mqty[ 0 \\ 0 \\ \vdots \\ 1 ]
 \end{equation}
 $$
 
