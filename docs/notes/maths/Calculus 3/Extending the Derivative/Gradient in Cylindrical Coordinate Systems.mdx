@@ -16,7 +16,7 @@ import { easeInOutCubic } from "js-easing-functions";
 # Gradient of a Function in Cylindrical Coordinates
 
 The gradient in cylindrical coordinates is defined a bit differently than in Cartesian coordinates.
-Most notably, there is a $1/\class{red}{r}$ term in the $\class{purple}{\theta}$ component of the gradient.
+Most notably, there is a $1/\posR$ term in the $\posT$ component of the gradient.
 We can use two ways to show this. First, we will provide an intuitive/visual explanation, and then we will provide an explicit algebraic proof.
 
 ## Table of Contents
@@ -32,27 +32,27 @@ A prototype of the gradient in cylindrical coordinates could be:
 
 $$
 \begin{equation}
-\grad{f} \overset{?}{=} \pdv{f}{\class{red}{r}} \class{red}{\vu{r}} + \pdv{f}{\class{purple}{\theta}} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
+\grad{f} \overset{?}{=} \pdv{f}{\posR} \class{red}{\vu{r}} + \pdv{f}{\posT} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
 \end{equation}
 $$
 
 However this is not quite correct. Let's consider each term:
 
-1. $\pdv{f}{\class{red}{r}} \class{red}{\vu{r}}$: This term is the rate of change of $f$ with respect to the distance from the origin.
+1. $\pdv{f}{\posR} \class{red}{\vu{r}}$: This term is the rate of change of $f$ with respect to the distance from the origin.
 2. $\pdv{f}{\posZ} \class{green}{\vu{k}}$: This term is the rate of change of $f$ with respect to the height from the $xy$-plane.
-3. $\pdv{f}{\class{purple}{\theta}} \class{purple}{\vu{\theta}}$: This term is the rate of change of $f$ with respect to the angle from the $x$-axis.
-    But wait! $\class{purple}{\theta}$ is a circular coordinate, meaning it is not a linear distance.
+3. $\pdv{f}{\posT} \class{purple}{\vu{\theta}}$: This term is the rate of change of $f$ with respect to the angle from the $x$-axis.
+    But wait! $\posT$ is a circular coordinate, meaning it is not a linear distance.
     It works a bit differently than the other two coordinates. We can illustrate this with a visual explanation.
 
 Recall that we can interpret a derivative as the ratio of the change in the function to the change in the variable.
 
 Draw two circles, one with radius $r$ and another with radius $2r$, and a point on both.
-Let's change $\class{purple}{\theta}$ by a small amount $\Delta \class{purple}{\theta}$, and consider how it affects the output of both functions.
+Let's change $\posT$ by a small amount $\Delta \posT$, and consider how it affects the output of both functions.
 
 When we do this, take note:
 
-1. As $\Delta \class{purple}{\theta} \to 0$, the change in the output of the function is approximately the arc length of the sector formed by the change in $\class{purple}{\theta}$.
-2. As $\Delta \class{purple}{\theta} \to 0$, the direction of the change in the output of the function becomes tangent to the circle, i.e. $\class{purple}{\vu{\theta}}$.
+1. As $\Delta \posT \to 0$, the change in the output of the function is approximately the arc length of the sector formed by the change in $\posT$.
+2. As $\Delta \posT \to 0$, the direction of the change in the output of the function becomes tangent to the circle, i.e. $\class{purple}{\vu{\theta}}$.
 
 <Mafs viewBox={{ x: [-4, 4], y: [-4, 4] }}>
     <Coordinates.Cartesian xAxis={{ lines: false, labels: () => "" }} yAxis={{ lines: false, labels: () => "" }} />
@@ -79,7 +79,7 @@ Notice that the change in the point is proportional to the radius of the circle:
 
 $$
 \begin{equation}
-\Delta \va{v} = \class{red}{r} \Delta \class{purple}{\theta} \, \class{purple}{\vu{\theta}}
+\Delta \va{v} = \posR \Delta \posT \, \class{purple}{\vu{\theta}}
 \end{equation}
 $$
 
@@ -87,24 +87,41 @@ The output of the function of this point is proportional to this change;
 
 $$
 \begin{equation}
-\Delta f = \pdv{f}{\class{purple}{\theta}} \Delta \va{v} = \pdv{f}{\class{purple}{\theta}}\class{red}{r} \Delta \class{purple}{\theta} \, \class{purple}{\vu{\theta}}
+\Delta f = \pdv{f}{\posT} \Delta \va{v} = \pdv{f}{\posT}\posR \Delta \posT \, \class{purple}{\vu{\theta}}
 \end{equation}
 $$
 
-In other words, as the radius increases, the change in the output of the function increases proportionally with the same change in $\class{purple}{\theta}$.
+In other words, as the radius increases, the change in the output of the function increases proportionally with the same change in $\posT$.
 This is not the case for the other two coordinates, and is not captured by the gradient as we have defined it; it should be independent of the position on the space.
 
-Another way to think of it is, instead of using the rate of change with respect to $\Delta \class{purple}{\theta}$, we should use the rate of change with respect to the corrected change $\Delta \class{purple}{\theta} / \class{red}{r}$.
-
-Thus, we need to divide the rate of change of $f$ with respect to $\class{purple}{\theta}$ by the radius to account for this effect:
+Another way to think of it is, instead of using the rate of change with respect to $\Delta \posT$, we should use the rate of change with respect to the corrected change $\Delta \va{v}$:
 
 $$
 \begin{equation}
-\grad{f} = \pdv{f}{\class{red}{r}} \class{red}{\vu{r}} + \frac{1}{\class{red}{r}} \pdv{f}{\class{purple}{\theta}} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
+\frac{\Delta f}{\Delta \va{v}} = \frac{\Delta f}{\posR \Delta \posT}
+\end{equation}
+$$
+
+And then the limit as $\Delta \posT \to 0$ is the derivative with respect to $\posT$:
+
+$$
+\begin{equation}
+\lim_{\Delta \posT \to 0} \frac{\Delta f}{\Delta \va{v}} = \frac{1}{\posR} \pdv{f}{\posT}
+\end{equation}
+$$
+
+Thus, we need to divide the rate of change of $f$ with respect to $\posT$ by the radius to account for this effect:
+
+$$
+\begin{equation}
+\grad{f} = \pdv{f}{\posR} \class{red}{\vu{r}} + \frac{1}{\posR} \pdv{f}{\posT} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
 \end{equation}
 $$
 
 ## Explicit Proof
+
+Maybe the previous intuitive explanation, while helpful, was not enough to convince you.
+Below is an explicit algebraic proof of the gradient in cylindrical coordinates, that rigorously shows the equivalence of the gradient in Cartesian and cylindrical coordinates.
 
 First, recall that the gradient of a function $f$ in Cartesian coordinates is:
 
@@ -114,23 +131,23 @@ $$
 \end{equation}
 $$
 
-Substitute in the equations for $\pdv{f}{\posX}$, $\pdv{f}{\posY}$, $\class{blue}{\vu{i}}$, $\class{yellow}{\vu{j}}$, and $\class{green}{\vu{k}}$ in terms of spherical coordinates:
+Then, substitute in the equations for $\pdv{f}{\posX}$, $\pdv{f}{\posY}$, $\class{blue}{\vu{i}}$, $\class{yellow}{\vu{j}}$, and $\class{green}{\vu{k}}$ in terms of spherical coordinates:
 
 $$
 \begin{equation}
 \begin{split}
 \grad{f} &= \pdv{f}{\posX} \class{blue}{\vu{i}} + \pdv{f}{\posY} \class{yellow}{\vu{j}} + \pdv{f}{\posZ} \class{green}{\vu{k}} \\
-&= \qty(\pdv{f}{\class{red}{r}} \cos(\class{purple}{\theta}) - \pdv{f}{\class{purple}{\theta}} \frac{\sin(\class{purple}{\theta})}{\class{red}{r}})\class{blue}{\vu{i}} + \qty(\pdv{f}{\class{red}{r}} \sin(\class{purple}{\theta}) + \pdv{f}{\class{purple}{\theta}} \frac{\cos(\class{purple}{\theta})}{\class{red}{r}})\class{yellow}{\vu{j}} + \pdv{f}{\posZ} \class{green}{\vu{k}} \\
-&= \qty(\pdv{f}{\class{red}{r}} \cos(\class{purple}{\theta}) - \pdv{f}{\class{purple}{\theta}} \frac{\sin(\class{purple}{\theta})}{\class{red}{r}})\qty(\cos(\theta) \class{red}{\vu{r}} - \sin(\theta) \class{purple}{\vu{\theta}}) \\
-&\quad {}+ \qty(\pdv{f}{\class{red}{r}} \sin(\class{purple}{\theta}) + \pdv{f}{\class{purple}{\theta}} \frac{\cos(\class{purple}{\theta})}{\class{red}{r}})\qty(\sin(\theta) \class{red}{\vu{r}} + \cos(\theta) \class{purple}{\vu{\theta}}) \\
+&= \qty(\pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR})\class{blue}{\vu{i}} + \qty(\pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR})\class{yellow}{\vu{j}} + \pdv{f}{\posZ} \class{green}{\vu{k}} \\
+&= \qty(\pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR})\qty(\cos(\theta) \class{red}{\vu{r}} - \sin(\theta) \class{purple}{\vu{\theta}}) \\
+&\quad {}+ \qty(\pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR})\qty(\sin(\theta) \class{red}{\vu{r}} + \cos(\theta) \class{purple}{\vu{\theta}}) \\
 &\quad {}+ \pdv{f}{\posZ} \class{green}{\vu{k}} \\
-&= \qty(\pdv{f}{\class{red}{r}} \cos(\class{purple}{\theta}) - \pdv{f}{\class{purple}{\theta}} \frac{\sin(\class{purple}{\theta})}{\class{red}{r}})\cos(\theta) \class{red}{\vu{r}} - \qty(\pdv{f}{\class{red}{r}} \cos(\class{purple}{\theta}) - \pdv{f}{\class{purple}{\theta}} \frac{\sin(\class{purple}{\theta})}{\class{red}{r}})\sin(\theta) \class{purple}{\vu{\theta}} \\
-&\quad {}+ \qty(\pdv{f}{\class{red}{r}} \sin(\class{purple}{\theta}) + \pdv{f}{\class{purple}{\theta}} \frac{\cos(\class{purple}{\theta})}{\class{red}{r}})\sin(\theta) \class{red}{\vu{r}} + \qty(\pdv{f}{\class{red}{r}} \sin(\class{purple}{\theta}) + \pdv{f}{\class{purple}{\theta}} \frac{\cos(\class{purple}{\theta})}{\class{red}{r}})\cos(\theta) \class{purple}{\vu{\theta}} \\
+&= \qty(\pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR})\cos(\theta) \class{red}{\vu{r}} - \qty(\pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR})\sin(\theta) \class{purple}{\vu{\theta}} \\
+&\quad {}+ \qty(\pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR})\sin(\theta) \class{red}{\vu{r}} + \qty(\pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR})\cos(\theta) \class{purple}{\vu{\theta}} \\
 &\quad {}+ \pdv{f}{\posZ} \class{green}{\vu{k}} \\
-&= \qty(\pdv{f}{\class{red}{r}} \cos[2](\class{purple}{\theta}) \cancel{- \pdv{f}{\class{purple}{\theta}} \frac{\cos(\class{purple}{\theta}) \sin(\class{purple}{\theta})}{\class{red}{r}}} + \pdv{f}{\class{red}{r}} \sin[2](\class{purple}{\theta}) \cancel{ +\pdv{f}{\class{purple}{\theta}} \frac{\cos(\class{purple}{\theta}) \sin(\class{purple}{\theta})}{\class{red}{r}}})\class{red}{\vu{r}} \\
-&\quad {}+ \qty(\cancel{-\pdv{f}{\class{red}{r}} \sin(\class{purple}{\theta}) \cos(\class{purple}{\theta})} + \pdv{f}{\class{purple}{\theta}} \frac{\sin[2](\class{purple}{\theta})}{\class{red}{r}} \cancel{+ \pdv{f}{\class{red}{r}} \sin(\class{purple}{\theta}) \cos(\class{purple}{\theta})} + \pdv{f}{\class{purple}{\theta}} \frac{\cos[2](\class{purple}{\theta})}{\class{red}{r}})\class{purple}{\vu{\theta}} \\
+&= \qty(\pdv{f}{\posR} \cos[2](\posT) \cancel{- \pdv{f}{\posT} \frac{\cos(\posT) \sin(\posT)}{\posR}} + \pdv{f}{\posR} \sin[2](\posT) \cancel{ +\pdv{f}{\posT} \frac{\cos(\posT) \sin(\posT)}{\posR}})\class{red}{\vu{r}} \\
+&\quad {}+ \qty(\cancel{-\pdv{f}{\posR} \sin(\posT) \cos(\posT)} + \pdv{f}{\posT} \frac{\sin[2](\posT)}{\posR} \cancel{+ \pdv{f}{\posR} \sin(\posT) \cos(\posT)} + \pdv{f}{\posT} \frac{\cos[2](\posT)}{\posR})\class{purple}{\vu{\theta}} \\
 &\quad {}+ \pdv{f}{\posZ} \class{green}{\vu{k}} \\
-&= \pdv{f}{\class{red}{r}} \class{red}{\vu{r}} + \frac{1}{\class{red}{r}} \pdv{f}{\class{purple}{\theta}} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
+&= \pdv{f}{\posR} \class{red}{\vu{r}} + \frac{1}{\posR} \pdv{f}{\posT} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
 \end{split}
 \end{equation}
 $$
@@ -139,6 +156,6 @@ Thus, the gradient of a function $f$ in cylindrical coordinates is:
 
 $$
 \begin{equation}
-\grad{f} = \pdv{f}{\class{red}{r}} \class{red}{\vu{r}} + \frac{1}{\class{red}{r}} \pdv{f}{\class{purple}{\theta}} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
+\grad{f} = \pdv{f}{\posR} \class{red}{\vu{r}} + \frac{1}{\posR} \pdv{f}{\posT} \class{purple}{\vu{\theta}} + \pdv{f}{\posZ} \class{green}{\vu{k}}
 \end{equation}
 $$

@@ -36,8 +36,8 @@ For this text, we will use the following colors and notation to represent the di
 
 - $\posX$, $\class{blue}{\vu{i}}$: The $x$-coordinate and unit vector
 - $\posY$, $\class{yellow}{\vu{j}}$: The $y$-coordinate and unit vector
-- $\class{red}{r}$, $\class{red}{\vu{r}}$: The distance from the origin
-- $\class{purple}{\theta}$, $\class{purple}{\vu{\theta}}$: The angle from the $x$-axis, and the tangent unit vector
+- $\posR$, $\class{red}{\vu{r}}$: The distance from the origin
+- $\posT$, $\class{purple}{\vu{\theta}}$: The angle from the $x$-axis, and the tangent unit vector
 - $\posZ$, $\class{green}{\vu{k}}$: The height from the $xy$-plane, and the unit vector
 
 Consider one point in the $xy$-plane with Cartesian coordinates $(\posX, \posY)$:
@@ -45,12 +45,12 @@ Consider one point in the $xy$-plane with Cartesian coordinates $(\posX, \posY)$
 <PolarCoordinateVisualizer />
 
 
-Using some trigonometry, we can convert the Cartesian coordinates $(\posX, \posY)$ to cylindrical coordinates $(\class{red}{r}, \class{purple}{\theta})$:
+Using some trigonometry, we can convert the Cartesian coordinates $(\posX, \posY)$ to cylindrical coordinates $(\posR, \posT)$:
 
 $$
 \begin{align}
-\class{red}{r} &= \sqrt{\posX^2 + \posY^2} \\
-\class{purple}{\theta} &= \arctan(\frac{\posY}{\posX}) \\
+\posR &= \sqrt{\posX^2 + \posY^2} \\
+\posT &= \arctan(\frac{\posY}{\posX}) \\
 \posZ &= \posZ
 \end{align}
 $$
@@ -59,8 +59,8 @@ And to convert back to Cartesian coordinates:
 
 $$
 \begin{align}
-\posX &= \class{red}{r} \cos(\class{purple}{\theta}) \\
-\posY &= \class{red}{r} \sin(\class{purple}{\theta}) \\
+\posX &= \posR \cos(\posT) \\
+\posY &= \posR \sin(\posT) \\
 \posZ &= \posZ
 \end{align}
 $$
@@ -91,19 +91,19 @@ With this in mind, let's explore the gradient in polar/cylindrical coordinates.
 
 ### Partial Derivatives of r, θ, and z
 
-Consider the partial derivative of $\class{red}{r}$ with respect to $\class{yellow}{x}$:
+Consider the partial derivative of $\posR$ with respect to $\class{yellow}{x}$:
 
 $$
 \begin{equation}
-\pdv{\class{red}{r}}{\posX} = \pdv{\sqrt{\posX^2 + \posY^2}}{\posX} = \frac{\posX}{\sqrt{\posX^2 + \posY^2}}
+\pdv{\posR}{\posX} = \pdv{\sqrt{\posX^2 + \posY^2}}{\posX} = \frac{\posX}{\sqrt{\posX^2 + \posY^2}}
 \end{equation}
 $$
 
-Next, consider taking the cosine of $\class{purple}{\theta}$:
+Next, consider taking the cosine of $\posT$:
 
 $$
 \begin{equation}
-\cos(\class{purple}{\theta}) = \frac{\text{adjacent}}{\text{hypotenuse}} = \frac{\posX}{\sqrt{\posX^2 + \posY^2}}
+\cos(\posT) = \frac{\text{adjacent}}{\text{hypotenuse}} = \frac{\posX}{\sqrt{\posX^2 + \posY^2}}
 \end{equation}
 $$
 
@@ -111,35 +111,35 @@ Therefore:
 
 $$
 \begin{equation}
-\pdv{\class{red}{r}}{\posX} = \cos(\class{purple}{\theta})
+\pdv{\posR}{\posX} = \cos(\posT)
 \end{equation}
 $$
 
-We can do the same for the partial derivative of $\class{red}{r}$ with respect to $\posY$:
+We can do the same for the partial derivative of $\posR$ with respect to $\posY$:
 
 $$
 \begin{equation}
-\pdv{\class{red}{r}}{\posY} = \pdv{\sqrt{\posX^2 + \posY^2}}{\posY} = \frac{\posY}{\sqrt{\posX^2 + \posY^2}} = \sin(\class{purple}{\theta})
+\pdv{\posR}{\posY} = \pdv{\sqrt{\posX^2 + \posY^2}}{\posY} = \frac{\posY}{\sqrt{\posX^2 + \posY^2}} = \sin(\posT)
 \end{equation}
 $$
 
-For the partial derivative of $\class{red}{r}$ with respect to $\posZ$, consider that the radius does not change no matter how high or low the point is.
+For the partial derivative of $\posR$ with respect to $\posZ$, consider that the radius does not change no matter how high or low the point is.
 Therefore:
 
 $$
 \begin{equation}
-\pdv{\class{red}{r}}{\posZ} = 0
+\pdv{\posR}{\posZ} = 0
 \end{equation}
 $$
 
-We can also compute the partial derivatives of $\class{purple}{\theta}$ and $\posZ$ with respect to $\posX$, $\posY$, and $\posZ$.
+We can also compute the partial derivatives of $\posT$ and $\posZ$ with respect to $\posX$, $\posY$, and $\posZ$.
 The results are:
 
 $$
 \begin{align}
-\pdv{\class{purple}{\theta}}{\posX} &= -\frac{\posY}{\posX^2 + \posY^2} = -\frac{\sin(\class{purple}{\theta})}{\class{red}{r}} \\
-\pdv{\class{purple}{\theta}}{\posY} &= \frac{\posX}{\posX^2 + \posY^2} = \frac{\cos(\class{purple}{\theta})}{\class{red}{r}} \\
-\pdv{\class{purple}{\theta}}{\posZ} &= 0 \\
+\pdv{\posT}{\posX} &= -\frac{\posY}{\posX^2 + \posY^2} = -\frac{\sin(\posT)}{\posR} \\
+\pdv{\posT}{\posY} &= \frac{\posX}{\posX^2 + \posY^2} = \frac{\cos(\posT)}{\posR} \\
+\pdv{\posT}{\posZ} &= 0 \\
 \pdv{\posZ}{\posX} &= 0 \\
 \pdv{\posZ}{\posY} &= 0 \\
 \pdv{\posZ}{\posZ} &= 1
@@ -160,7 +160,7 @@ $$
 \end{align}
 $$
 
-Since we have already computed the partial derivatives of $\class{red}{r}$, $\class{purple}{\theta}$, and $\posZ$ with respect to the Cartesian coordinates, we can substitute them in:
+Since we have already computed the partial derivatives of $\posR$, $\posT$, and $\posZ$ with respect to the Cartesian coordinates, we can substitute them in:
 
 $$
 \begin{align}
