@@ -1,0 +1,435 @@
+---
+sidebar_position: 5
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# The Directional Derivative
+
+The directional derivative is somewhat of an extension or generalization of the partial derivative.
+
+Consider a function $f(x, y)$ that outputs a single value.
+It can be thought of as mapping a point in a 2D plane to a point in a number line.
+
+When we consider the partial derivative with respect to $x$, we consider a change in $x$, and likewise for $y$.
+
+<Mafs>
+    <Coordinates.Cartesian
+        xAxis={{ lines: false }}
+        yAxis={{ lines: false }}
+    />
+    <Transform translate={[1, 1]}>
+        <Point x={0} y={0} />
+        <Vector tail={[0, 0]} tip={[1, 0]} />
+        <LaTeX tex="\Delta x" at={[0.5, -0.5]} />
+
+        <Vector tail={[0, 0]} tip={[0, 1]} />
+        <LaTeX tex="\Delta y" at={[-0.5, 0.5]} />
+    </Transform>
+</Mafs>
+
+Now, instead of thinking of these individually, consider a change in both $x$ and $y$ at the same time.
+For instance, if $x$ and $y$ incremented by some vector $\va{v}$, how much would $f$ change?
+
+Recall that the derivative takes a limit as this change approaches $0$.
+So instead of thinking about an actual vector $\va{v}$, we're really thinking about some $h \va{v}$ where $h \to 0$.
+
+For instance, consider this vector:
+
+$$
+\begin{equation}
+\va{v} = \mqty[ 1 \\ -2 ]
+\end{equation}
+$$
+
+Since we're considering $h \va{v}$, we can think of this as:
+
+$$
+\begin{equation}
+h \va{v} = \mqty[ h \\ -2h ]
+\end{equation}
+$$
+
+It can be thought of as a nudge in the $x$ direction and negative two nudges in the $y$ direction.
+The notation for this includes:
+
+- $\grad_{\va{v}}{f}$
+- $D_{\va{v}} f$
+- $\pdv{f}{\va{v}}$
+- $\partial_{\va{v}} f$
+
+To evaluate this directional derivative, we can use a combination of partial derivatives based on the components of $\va{v}$:
+
+$$
+\begin{equation}
+\begin{split}
+\grad_{\va{v}}{f} &= \pdv{f}{x} v_x + \pdv{f}{y} v_y \\
+&= \pdv{f}{x} - 2\pdv{f}{y}
+\end{split}
+\end{equation}
+$$
+
+Notice that this resembles the dot product of the gradient and $\va{v}$:
+
+$$
+\begin{equation}
+\grad_{\va{v}}{f} = \grad{f} \cdot \va{v} = \mqty[ \pdv{f}{x} \\ \pdv{f}{y} ] \cdot \mqty[ v_x \\ v_y ]
+\end{equation}
+$$
+
+In order for the directional derivative to be the slope of the tangent line, then the vector $\va{v}$ must be a unit vector.
+Otherwise, it would be scaled by the magnitude of $\va{v}$.
+
+## Formalizing the Directional Derivative
+
+We can formalize the directional derivative as a limit.
+Recall that the partial derivative is defined as:
+
+$$
+\begin{equation}
+\pdv{f}{x}(x, y) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x, y) - f(x, y)}{\Delta x}
+\end{equation}
+$$
+
+We can switch up the notation a bit to make it more general.
+Instead of $x$ and $y$, we can use a vector $\va{w}$ as the input to $f$.
+Then, the partial derivative is:
+
+$$
+\begin{equation}
+\pdv{f}{x}(\va{w}) = \lim_{h \to 0} \frac{f(\va{w} + h\vu{i}) - f(\va{w})}{h}
+\end{equation}
+$$
+
+Notice that our change in $x$ is now $h\vu{i}$, where $\vu{i}$ is the unit vector in the $x$ direction.
+The reason we use this notation is to make it much easier to extend - all the information about the direction of the change is contained in $\vu{i}$, so we can easily change the direction of the derivative.
+
+So, the directional derivative is defined as:
+
+$$
+\begin{equation}
+\grad_{\va{v}}{f}(\va{w}) = \lim_{h \to 0} \frac{f(\va{w} + h\va{v}) - f(\va{w})}{h}
+\end{equation}
+$$
+
+To visualize a directional derivative, consider once again, the input space of $f(x, y)$, which is a 2D plane.
+Instead of the input being $(x, y)$, we can think of it as a vector $\va{w}$.
+Then, the directional derivative is the rate of change of $f$ at $\va{w}$ in the direction of $\va{v}$:
+
+<Mafs>
+    <Coordinates.Cartesian
+        xAxis={{ lines: false }}
+        yAxis={{ lines: false }}
+    />
+    <Vector tip={[1, 1]} />
+    <Transform translate={[1, 1]}>
+        <Point x={0} y={0} />
+        <LaTeX tex="\mathbf{\vec{w}}" at={[0, 0.5]} />
+        <Vector tail={[0, 0]} tip={[1, -2]} color={color("yellow")} />
+        <LaTeX tex="h\mathbf{\vec{v}}" at={lineLabel([0, 0], [1, -2], "left")} color={color("yellow")} />
+    </Transform>
+</Mafs>
+
+## The Directional Derivative in the Context of Graphs
+
+Recall that the partial derivative can be visualized as a slice of a surface in a 3D graph.
+This slice can take two directions, $x$ and $y$.
+
+In a similar way, the directional derivative can be visualized as a slice of the surface in a direction $\va{v}$.
+
+Consider the following function:
+
+$$
+\begin{equation}
+f(x, y) = xy^2
+\end{equation}
+$$
+
+Suppose we want to find the directional derivative of $f$ at the point $(1, 2)$ in the direction of $\va{v} = \mqty[ 1 \\ 1 ]$.
+
+Since derivatives are graphically represented as slopes, we need to make $\va{v}$ a unit vector. Hence:
+
+$$
+\begin{equation}
+\va{v} = \frac{1}{\sqrt{2}} \mqty[ 1 \\ 1 ] = \mqty[ \frac{1}{\sqrt{2}} \\ \frac{1}{\sqrt{2}} ] = \mqty[ \frac{\sqrt{2}}{2} \\ \frac{\sqrt{2}}{2} ]
+\end{equation}
+$$
+
+Let's slice the graph of $f(x, y) = xy^2$ at $x = 1, y = 2$, with the direction of $\va{v}$:
+
+<CustomMathbox>
+
+    <MB.Cartesian
+        scale={[
+            0.1, 0.1, 0.1
+        ]}
+    >
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+        <MB.Area
+            id="graph"
+            axes="xz"
+            expr={(emit, x, z, i, t) => {
+                // check if x/z are within the slice
+                // equation for slice line is x - y = -1
+                if (x - z < -1) {
+                    return;
+                }
+                emit(x, x * z ** 2, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Surface
+            points="#graph"
+            opacity={0.5}
+            color={color("blue")}
+            zBias={-1}
+            zIndex={-1}
+        />
+
+        <MB.Area
+            id="slice_d_input"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const w = [1, 2];
+                const distX = x - w[0];
+                const newY = w[1] + distX;
+                emit(x, x * newY ** 2, newY);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-10, 10]}
+        />
+        <MB.Line
+            points="#slice_d_input"
+            color={color("red")}
+            width={10}
+        />
+
+        <MB.Array
+            items={1}
+            id="point"
+            data={[[1, 4, 2]]}
+            channels={3}
+        />
+        <MB.Point
+            points="#point"
+            color={color("red")}
+            size={15}
+        />
+
+        <MB.Array
+            items={2}
+            id="d_input"
+            data={[[1, 4, 2], [1 + Math.sqrt(2) / 2, 12.51, 2 + Math.sqrt(2) / 2]]}
+            channels={3}
+        />
+        <MB.Vector
+            points="#d_input"
+            color={color("green")}
+            width={5}
+            end={true}
+            zBias={1}
+        />
+    </MB.Cartesian>
+</CustomMathbox>
+
+We can evaluate the directional derivative by first finding the gradient of $f$ at $(1, 2)$:
+
+$$
+\begin{equation}
+\begin{split}
+\grad{f} &= \mqty[ \pdv{f}{x} \\ \pdv{f}{y} ] \\
+&= \mqty[ y^2 \\ 2xy ]
+\end{split}
+\end{equation}
+$$
+
+Recall that the directional derivative is the dot product of the gradient and $\va{v}$:
+
+$$
+\begin{equation}
+\grad_{\va{v}}{f} = \grad{f} \cdot \va{v} = \mqty[ 4 \\ 4 ] \cdot \mqty[ \frac{\sqrt{2}}{2} \\ \frac{\sqrt{2}}{2} ] = 4\sqrt{2}
+\end{equation}
+$$
+
+To illustrate why the vector has to be a unit vector, consider the same directional derivative but with a different magnitude $\va{v} = [1, 1]$:
+
+$$
+\begin{equation}
+\grad_{\va{v}}{f} = \grad{f} \cdot \va{v} = \mqty[ 4 \\ 4 ] \cdot \mqty[ 1 \\ 1 ] = 8
+\end{equation}
+$$
+
+Therefore, the slope can be defined as the rate of change of the function in the direction of the _unit vector_ $\va{v}$:
+
+$$
+\begin{equation}
+\text{slope} = \frac{\grad_{\va{v}}{f}}{\norm{\va{v}}} = \frac{\grad{f} \cdot \va{v}}{\norm{\va{v}}}
+\end{equation}
+$$
+
+## The Gradient and the Directional Derivative
+
+Recall the definition for the directional derivative:
+
+$$
+\begin{equation}
+\grad_{\va{v}}{f} = \grad{f} \cdot \va{v}
+\end{equation}
+$$
+
+Let's assume $\va{v}$ is a unit vector.
+Then, consider the direction of the steepest ascent at some point $(x, y)$.
+This can be thought of as finding a $\va{v}$ that maximizes $\grad{f(x, y)} \cdot \va{v}$ for all $\norm{\va{v}} = 1$.
+
+Let's once again consider the input space of $f(x, y)$, which is a 2D plane.
+
+Recall that the dot product of two vectors $\va{a}$ and $\va{b}$ is equal to:
+
+$$
+\begin{equation}
+\va{a} \cdot \va{b} = \class{red}{\text{Projection of } \va{a} \text{ onto } \va{b}} \times \text{Magnitude of } \va{b}
+\end{equation}
+$$
+
+export function TheGradientAndTheDirectionalDerivative() {
+    const radius = 1;
+    const point = useMovablePoint([1, 0], {
+        constrain: ([x, y]) => {
+            const angle = Math.atan2(y, x);
+            return [radius * Math.cos(angle), radius * Math.sin(angle)];
+        },
+    });
+
+    const grad = [2, 3]; // arbitrary
+    const projected = vec.withMag(grad, vec.dot(grad, point.point) / vec.mag(grad));
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian
+                xAxis={{ lines: false }}
+                yAxis={{ lines: false }}
+            />
+            <Vector tip={point.point} />
+            <LaTeX tex="\mathbf{\vec{v}}" at={lineLabel([0, 0], point.point, "right")} />
+
+            <Vector tip={[2, 3]} />
+            <LaTeX tex="\boldsymbol{\nabla} f" at={lineLabel([0, 0], [2, 3], "right")} />
+            <Vector tip={projected} color={color("red")} />
+
+            <Line.Segment point1={point.point} point2={projected} style="dashed" />
+
+            {point.element}
+        </Mafs>
+    )
+}
+
+<TheGradientAndTheDirectionalDerivative />
+
+Therefore, to maximize the dot product, the projection of $\grad{f}$ onto $\va{v}$ must be maximized, which means that $\va{v}$ must be in the direction of $\grad{f}$.
+Hence:
+
+$$
+\begin{equation}
+\max_{\norm{\va{v}} = 1} \grad{f} \cdot \va{v} = \underbrace{\frac{\grad{f}}{\norm{\grad{f}}}}_{\va{w}}
+\end{equation}
+$$
+
+This means:
+
+$$
+\begin{equation}
+\grad_{\va{w}}{f} = \grad{f} \cdot \va{w} = \frac{\grad{f} \cdot \grad{f}}{\norm{\grad{f}}} = \frac{\norm{\grad{f}}^2}{\norm{\grad{f}}} = \norm{\grad{f}}
+\end{equation}
+$$
+
+One important takeaway is that the gradient is a tool that can be used in conjunction with other things to analyze the behavior of a function.
+
+## Example Problem: Temperature Distribution in a Room
+
+> You are an engineer tasked with optimizing the heat system in a rectangular room.
+> The temperature $T$ is a scalar field defined by the function $T(x, y) = 20 + 10\sin(\frac{\pi x}{10}) \cos(\frac{\pi y}{10})$ in degrees Celsius.
+> The coordinates $x$ and $y$ are taken in meters from the bottom left corner of the room.
+>
+> 1. A point $\va{w} = [5, 5]$ is located somewhere in the room.
+>    Find the direction in which the temperature increases most rapidly at this point.
+> 2. Compute the rate of change of the temperature at $\va{w}$ in that direction.
+
+To find the direction in which the temperature increases most rapidly, we need to find the gradient of $T$ at $\va{w}$.
+The gradient is:
+
+$$
+\begin{equation}
+\grad{T} = \mqty[ \pdv{T}{x} \\ \pdv{T}{y} ] = \mqty[ \frac{\pi}{10} \cdot 10 \cos(\frac{\pi x}{10}) \cos(\frac{\pi y}{10}) \\ -\frac{\pi}{10} \cdot 10 \sin(\frac{\pi x}{10}) \sin(\frac{\pi y}{10}) ]
+\end{equation}
+$$
+
+The direction in which the temperature increases most rapidly is the unit vector in the direction of the gradient.
+At point $\va{w} = [5, 5]$, the gradient is:
+
+$$
+\begin{equation}
+\grad{T} = \mqty[ \frac{\pi}{10} \cdot 10 \cos(\frac{\pi \cdot 5}{10}) \cos(\frac{\pi \cdot 5}{10}) \\ -\frac{\pi}{10} \cdot 10 \sin(\frac{\pi \cdot 5}{10}) \sin(\frac{\pi \cdot 5}{10}) ] = \mqty[ 0 \\ -\frac{\pi}{10} \cdot 10 ] = \mqty[ 0 \\ -\pi ]
+\end{equation}
+$$
+
+The unit vector in the direction of the gradient is the gradient divided by its magnitude:
+
+$$
+\begin{equation}
+\va{v} = \frac{\grad{T}}{\norm{\grad{T}}} = \frac{\mqty[ 0 \\ -\pi ]}{\sqrt{0^2 + (-\pi)^2}} = \mqty[ 0 \\ -1 ]
+\end{equation}
+$$
+
+To compute the rate of change of the temperature at $\va{w}$ in the direction of $\va{v}$, we need to find the directional derivative:
+
+$$
+\begin{equation}
+\grad_{\va{v}}{T} = \grad{T} \cdot \va{v} = \mqty[ 0 \\ -\pi ] \cdot \mqty[ 0 \\ -1 ] = \pi
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+The directional derivative is a generalization of the partial derivative that considers the rate of change of a function in a specific direction.
+It can be thought of as the dot product of the gradient and a unit vector in the direction of interest.
+
+Here are the key points to remember:
+
+- The directional derivative is the rate of change of a function in a specific direction.
+- The notation for the directional derivative includes $\grad_{\va{v}}{f}$, $D_{\va{v}} f$, $\pdv{f}{\va{v}}$, and $\partial_{\va{v}} f$.
+- The directional derivative is formally defined as:
+
+    $$
+    \begin{equation}
+    \grad_{\va{v}}{f} = \lim_{h \to 0} \frac{f(\va{w} + h\va{v}) - f(\va{w})}{h}
+    \end{equation}
+    $$
+
+- The directional derivative can also be written as a dot product:
+
+    $$
+    \begin{equation}
+    \grad_{\va{v}}{f} = \grad{f} \cdot \va{v}
+    \end{equation}
+    $$
+
+- Using the directional derivative we can show that the gradient points in the direction of the steepest ascent.
+
+In the next section, we will move on from scalar fields to vector-valued functions.

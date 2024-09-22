@@ -1,0 +1,317 @@
+---
+sidebar_position: 6
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# Differentiating Vector-Valued Functions
+
+So far, we've been dealing with functions that output a single value.
+Now, we consider functions that output a vector.
+
+Consider the following parametric function:
+
+$$
+\begin{equation}
+x = x(t), \quad y = y(t), a \leq t \leq b
+\end{equation}
+$$
+
+This can be written as a vector-valued function:
+
+$$
+\begin{equation}
+\va{r}(t) = x(t)\ihatc + y(t)\jhatc, \quad a \leq t \leq b
+\end{equation}
+$$
+
+Vector-valued functions, like many functions, can be thought of as a transformation.
+In this case, it transforms a point in a number line to a point in a 2D plane.
+
+Consider taking the derivative of this function. Recall that by taking the derivative, you increase the input by a small amount, and see how the output changes.
+A drawing of a parametric function can help illustrate this:
+
+export function DifferentiatingVectorValuedFunctions({ showComponents = false }) {
+    const x = (t) => Math.sqrt(t) * Math.cos(t);
+    const y = (t) => Math.sin(t) + Math.cos(t);
+    return (
+        <Mafs>
+            <Plot.Parametric
+                xy={(t) => [x(t), y(t)]}
+                t={[0, 2 * Math.PI]}
+            />
+
+            {/* t = 2 */}
+            <Vector
+                tip={[x(2), y(2)]}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{r}}(2)"
+                at={[x(2) - 0.4, y(2)]}
+            />
+
+            {/* t = 2 + \Delta t, let \Delta t = 1 for the illustration */}
+            <Vector
+                tip={[x(3), y(3)]}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{r}}(2 + \Delta t)"
+                at={[x(3) - 0.7, y(3)]}
+            />
+
+            {/* Difference vector */}
+            <Vector
+                tail={[x(2), y(2)]}
+                tip={[x(3), y(3)]}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\Delta \mathbf{\vec{r}}"
+                at={lineLabel(
+                    [x(2), y(2)],
+                    [x(3), y(3)],
+                    "right"
+                )}
+                color={color("red")}
+            />
+            {showComponents && (
+                <>
+                    <Vector
+                        tail={[x(2), y(2)]}
+                        tip={[x(2), y(3)]}
+                        color={color("yellow")}
+                    />
+                    <LaTeX
+                        tex="\Delta y"
+                        at={lineLabel(
+                            [x(2), y(2)],
+                            [x(2), y(3)],
+                            "left"
+                        )}
+                        color={color("yellow")}
+                    />
+
+                    <Vector
+                        tail={[x(2), y(3)]}
+                        tip={[x(3), y(3)]}
+                        color={color("blue")}
+                    />
+                    <LaTeX
+                        tex="\Delta x"
+                        at={lineLabel(
+                            [x(2), y(3)],
+                            [x(3), y(3)],
+                            "left"
+                        )}
+                        color={color("blue")}
+                    />
+                </>
+            )}
+        </Mafs>
+    )
+}
+
+<DifferentiatingVectorValuedFunctions />
+
+The change in the input is $\Delta t$ and the change in the output is $\Delta \va{r}$.
+
+Therefore, the derivative can be written as:
+
+$$
+\begin{equation}
+\dv{\va{r}}{t} = \lim_{\Delta t \to 0} \frac{\Delta \va{r}}{\Delta t} = \lim_{\Delta t \to 0} \frac{\va{r}(t + \Delta t) - \va{r}(t)}{\Delta t}
+\end{equation}
+$$
+
+Since $\va{r}(t) = x(t)\ihatc + y(t)\jhatc$, the derivative can be computed as:
+
+$$
+\begin{equation}
+\dv{\va{r}}{t} = \dv{}{t} (x(t)\ihatc + y(t)\jhatc) = \dv{x}{t}(t)\ihatc + \dv{y}{t}(t)\jhatc
+\end{equation}
+$$
+
+This is essentially the same as taking the derivative of a function that outputs a single value, but for each component of the vector.
+
+Another way to think about this is to consider the change in $\va{r}$ visually:
+
+<DifferentiatingVectorValuedFunctions showComponents={true} />
+
+Since $\Delta \va{r} = \Delta x \ihatc + \Delta y \jhatc$, as $\Delta t \to 0$, $\Delta \va{r} \to \dd{\va{r}}$, and:
+
+$$
+\begin{equation}
+\dd{\va{r}} = \dd{x}\ihatc + \dd{y}\jhatc
+\end{equation}
+$$
+
+This can be thought of as the implicit differentiation of vector-valued functions.
+
+## The Magnitude of the Parametric Derivative
+
+The magnitude of the parametric derivative is the rate of change of the vector-valued function.
+To illustrate this, consider two different vector-valued functions:
+
+$$
+\begin{equation}
+\va{r}_1(t) = \mqty[ \sin(t) \\ \cos(t) ], \quad \va{r}_2(t) = \mqty[ \sin(2t) \\ \cos(2t) ]
+\end{equation}
+$$
+
+First, let's graph $\va{r}_1(t)$:
+
+<Mafs>
+    <Plot.Parametric
+        xy={(t) => [Math.sin(t), Math.cos(t)]}
+        t={[0, Math.PI]}
+    />
+    {range(0, 3).map((i) => (
+        <>
+            <Point
+                key={i}
+                x={Math.sin(i * Math.PI / 2)}
+                y={Math.cos(i * Math.PI / 2)}
+            />
+            <LaTeX
+                key={i}
+                tex={`t = ${i / 2}\\pi`}
+                at={[Math.sin(i * Math.PI / 2) * 1.8, Math.cos(i * Math.PI / 2) * 1.3]}
+            />
+        </>
+    ))}
+</Mafs>
+
+Notice that, at $t = \pi/2$, the curve goes halfway around the unit circle.
+Now consider $\va{r}_2(t)$:
+
+<Mafs>
+    <Plot.Parametric
+        xy={(t) => [Math.sin(2 * t), Math.cos(2 * t)]}
+        t={[0, Math.PI / 2]}
+    />
+    {range(0, 2).map((i) => (
+        <>
+            <Point
+                key={i}
+                x={Math.sin(2 * i * Math.PI / 2)}
+                y={Math.cos(2 * i * Math.PI / 2)}
+            />
+            <LaTeX
+                key={i}
+                tex={`t = ${i / 2}\\pi`}
+                at={[Math.sin(2 * i * Math.PI / 2) * 1.8, Math.cos(2 * i * Math.PI / 2) * 1.3]}
+            />
+        </>
+    ))}
+</Mafs>
+
+In this case, at $t = \pi/4$, the curve goes halfway around the unit circle.
+So it's twice as fast as $\va{r}_1(t)$, if you consider $t$ as physical time.
+
+Let's consider the derivatives of these functions:
+
+$$
+\begin{align}
+\dv{\va{r}_1}{t} &= \mqty[ \cos(t) \\ -\sin(t) ] \\
+\dv{\va{r}_2}{t} &= \mqty[ 2\cos(2t) \\ -2\sin(2t) ]
+\end{align}
+$$
+
+Let's evaluate the derivatives at certain points and plot them:
+
+{(() => {
+    const point = useMovablePoint([1, 0], {
+        constrain: ([x, y]) => {
+            const angle = Math.atan2(y, Math.abs(x));
+            return [Math.cos(angle), Math.sin(angle)];
+        },
+    });
+
+    return (
+        <Mafs>
+            <Transform translate={[-3, 0]}>
+                <Plot.Parametric
+                    xy={(t) => [Math.sin(t) - 3, Math.cos(t)]}
+                    t={[0, Math.PI]}
+                />
+                {range(0, 3).map((i) => (
+                    <>
+                        <Point
+                            key={i}
+                            x={Math.sin(i * Math.PI / 2)}
+                            y={Math.cos(i * Math.PI / 2)}
+                        />
+                        <LaTeX
+                            key={i}
+                            tex={`t = ${i / 2}\\pi`}
+                            at={[Math.sin(i * Math.PI / 2) * 1.8, Math.cos(i * Math.PI / 2) * 1.3]}
+                        />
+                    </>
+                ))}
+                <LaTeX
+                    tex="\mathbf{\vec{r}}_1"
+                    at={[0, -2]}
+                />
+                {/* Velocity */}
+                <Vector
+                    tail={point.point}
+                    tip={[point.point[0] + point.point[1], point.point[1] - point.point[0]]}
+                />
+                {point.element}
+            </Transform>
+            <Transform translate={[3, 0]}>
+                <Plot.Parametric
+                    xy={(t) => [Math.sin(2 * t) + 3, Math.cos(2 * t)]}
+                    t={[0, Math.PI / 2]}
+                />
+                {range(0, 2).map((i) => (
+                    <>
+                        <Point
+                            key={i}
+                            x={Math.sin(2 * i * Math.PI / 2)}
+                            y={Math.cos(2 * i * Math.PI / 2)}
+                        />
+                        <LaTeX
+                            key={i}
+                            tex={`t = ${i / 2}\\pi`}
+                            at={[Math.sin(2 * i * Math.PI / 2) * 1.8, Math.cos(2 * i * Math.PI / 2) * 1.3]}
+                        />
+                    </>
+                ))}
+                <LaTeX
+                    tex="\mathbf{\vec{r}}_2"
+                    at={[0, -2]}
+                />
+                {/* Velocity */}
+                <Vector
+                    tail={point.point}
+                    tip={[point.point[0] + 2 * point.point[1], point.point[1] - 2 * point.point[0]]}
+                />
+                {point.element}
+            </Transform>
+        </Mafs>
+    )
+})()}
+
+The important takeaway is that even if the slope appears the same, the _rate of change_ of the vector-valued function can be different.
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of differentiating vector-valued functions.
+
+Here are the key points to remember:
+
+- The derivative of a vector-valued function is the rate of change of the function.
+- The derivative of a vector-valued function is also a vector.
+- The derivative of a vector-valued function can be thought of as the implicit differentiation of the components of the function.
+
+In the next section, we will introduce the multivariable chain rule, which is used to differentiate composite functions of multiple variables.

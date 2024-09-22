@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+# sidebar_position: 5
 ---
 
 import { useMovablePoint, useStopwatch, vec } from "mafs";
@@ -15,8 +15,9 @@ import { easeInOutCubic } from "js-easing-functions";
 
 # Partial Derivatives in Cylindrical Coordinate Systems
 
-Previously, we discussed the gradient of a function in the context of Cartesian coordinates.
-The gradient is actually quite different in other coordinate systems, so we will explore how the gradient changes in them.
+Previously, we discussed the partial derivative of a function in Cartesian coordinates.
+Sometimes, it is more convenient to work with other coordinate systems, such as polar or cylindrical coordinates.
+Hence it is important to understand how partial derivatives work between different coordinate systems.
 
 ## Table of Contents
 
@@ -24,7 +25,7 @@ The gradient is actually quite different in other coordinate systems, so we will
 
 ## Polar/Cylindrical Coordinate Review
 
-Before we delve into the gradient in polar/cylindrical coordinates, let's review what polar/cylindrical coordinates are.
+Before we delve into the partial derivative in polar/cylindrical coordinates, let's review what polar/cylindrical coordinates are.
 
 Cylindrical coordinates are a coordinate system that uses a distance from the origin, an angle from the $x$-axis, and a height from the $xy$-plane to describe a point in space.
 Those three values are denoted as $(r, \theta, z)$, respectively.
@@ -44,13 +45,12 @@ Consider one point in the $xy$-plane with Cartesian coordinates $(\posX, \posY)$
 
 <PolarCoordinateVisualizer />
 
-
 Using some trigonometry, we can convert the Cartesian coordinates $(\posX, \posY)$ to cylindrical coordinates $(\posR, \posT)$:
 
 $$
 \begin{align}
-\posR &= \sqrt{\posX^2 + \posY^2} \\
-\posT &= \arctan(\frac{\posY}{\posX}) \\
+\posR &= \sqrt{\posX^2 + \posY^2} \label{eq:r-cartesian} \\
+\posT &= \arctan(\frac{\posY}{\posX}) \label{eq:t-cartesian} \\
 \posZ &= \posZ
 \end{align}
 $$
@@ -59,8 +59,8 @@ And to convert back to Cartesian coordinates:
 
 $$
 \begin{align}
-\posX &= \posR \cos(\posT) \\
-\posY &= \posR \sin(\posT) \\
+\posX &= \posR \cos(\posT) \label{eq:x-cylindrical} \\
+\posY &= \posR \sin(\posT) \label{eq:y-cylindrical} \\
 \posZ &= \posZ
 \end{align}
 $$
@@ -79,17 +79,17 @@ Likewise, the unit vectors in Cartesian coordinates can be expressed in terms of
 
 $$
 \begin{align}
-\ihatc &= \cos(\theta) \rhatc - \sin(\theta) \thhatc \label{eq:ihat-in-cylindrical} \\
-\jhatc &= \sin(\theta) \rhatc + \cos(\theta) \thhatc \label{eq:jhat-in-cylindrical} \\
+\ihatc &= \cos(\theta) \rhatc - \sin(\theta) \thhatc \label{eq:ihat} \\
+\jhatc &= \sin(\theta) \rhatc + \cos(\theta) \thhatc \label{eq:jhat} \\
 \khatc &= \khatc
 \end{align}
 $$
 
-With this in mind, let's explore the gradient in polar/cylindrical coordinates.
+With this in mind, let's explore how to compute these partial derivatives in cylindrical coordinates.
 
 ## Partial Derivatives in Cylindrical Coordinates
 
-### Partial Derivatives of r, θ, and z
+### Partial Derivatives of r, θ, and z WRT x, y, and z
 
 Consider the partial derivative of $\posR$ with respect to $\class{yellow}{x}$:
 
@@ -146,6 +146,199 @@ $$
 \end{align}
 $$
 
+### Partial Derivatives of r, θ, and z WRT time
+
+Consider a point that moves in space. The position of the point can be expressed as a function of time, $\posR(t)$, $\posT(t)$, and $\posZ(t)$.
+We can compute the partial derivatives of $\posR$, $\posT$, and $\posZ$ with respect to time.
+
+First, consider the partial derivative of $\posR$ with respect to time:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{\posR}{t} &= \pdv{\posR}{\posX} \pdv{\posX}{t} + \pdv{\posR}{\posY} \pdv{\posY}{t} + \pdv{\posR}{\posZ} \pdv{\posZ}{t} \\
+&= \cos(\posT) \pdv{\posX}{t} + \sin(\posT) \pdv{\posY}{t}
+\end{split}
+\end{equation}
+$$
+
+Next, the partial derivative of $\posT$ with respect to time:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{\posT}{t} &= \pdv{\posT}{\posX} \pdv{\posX}{t} + \pdv{\posT}{\posY} \pdv{\posY}{t} + \pdv{\posT}{\posZ} \pdv{\posZ}{t} \\
+&= -\frac{\sin(\posT)}{\posR} \pdv{\posX}{t} + \frac{\cos(\posT)}{\posR} \pdv{\posY}{t}
+\end{split}
+\end{equation}
+$$
+
+### Derivatives of Cylindrical Unit Vectors WRT time
+
+The unit vectors $\rhatc$, $\thhatc$, and $\khatc$ can also be expressed as functions of time.
+Unlike Cartesian unit vectors, the cylindrical unit vectors are not constant, i.e., they change depending on where the point is in space.
+
+The derivative of $\rhatc$ with respect to time is:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{\rhatc}{t} &= \dv{(\cos(\posT) \ihatc + \sin(\posT) \jhatc)}{t} \\
+&= -\sin(\posT) \dv{\posT}{t} \ihatc + \cos(\posT) \dv{\posT}{t} \jhatc \\
+&= \dv{\posT}{t} (-\sin(\posT) \ihatc + \cos(\posT) \jhatc) \\
+&= \dv{\posT}{t} \thhatc
+\end{split}
+\end{equation}
+$$
+
+This result should make intuitive sense, as the derivative of $\rhatc$ is in the direction of $\thhatc$.
+Consider a point moving in a circle. Take two snapshots of the point at very close times, and draw the vector $\rhatc$ at both points:
+
+<Mafs viewBox={{ y: [0, 1] }}>
+    <Coordinates.Cartesian />
+    <Circle center={[0, 0]} radius={1} fillOpacity={0} />
+    <Vector
+        tip={[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)]}
+        color={color("red")}
+    />
+    <Vector
+        tip={[Math.cos(Math.PI / 4 + 0.5), Math.sin(Math.PI / 4 + 0.5)]}
+        color={color("red")}
+    />
+    <Vector
+        tail={[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)]}
+        tip={[Math.cos(Math.PI / 4 + 0.5), Math.sin(Math.PI / 4 + 0.5)]}
+    />
+</Mafs>
+
+Notice that the change in $\rhatc$, as this interval approaches zero, is almost perpendicular to $\rhatc$.
+Additionally, its magnitude gets closer to the length of the arc traced by the point in that time interval, which is just $\Delta \posT$.
+
+Hence we can say that:
+
+$$
+\begin{equation}
+\Delta \rhatc \approx \Delta \posT \, \thhatc
+\end{equation}
+$$
+
+Then, the derivative of $\rhatc$ with respect to time is:
+
+$$
+\begin{equation}
+\dv{\rhatc}{t} = \dv{\posT}{t} \thhatc
+\end{equation}
+$$
+
+Similarly, the derivative of $\thhatc$ with respect to time is:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{\thhatc}{t} &= \dv{(-\sin(\posT) \ihatc + \cos(\posT) \jhatc)}{t} \\
+&= -\cos(\posT) \dv{\posT}{t} \ihatc - \sin(\posT) \dv{\posT}{t} \jhatc \\
+&= \dv{\posT}{t} (-\cos(\posT) \ihatc - \sin(\posT) \jhatc) \\
+&= - \dv{\posT}{t} \rhatc
+\end{split}
+\end{equation}
+$$
+
+This should make sense as well, since the derivative of $\thhatc$ is in the direction of $-\rhatc$:
+
+<Mafs viewBox={{ y: [0, 1] }}>
+    <Coordinates.Cartesian />
+    <Circle center={[0, 0]} radius={1} fillOpacity={0} />
+    <Vector
+        tail={[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)]}
+        tip={[Math.cos(Math.PI / 4) - Math.sin(Math.PI / 4), Math.sin(Math.PI / 4) + Math.cos(Math.PI / 4)]}
+        color={color("purple")}
+    />
+    <Vector
+        tail={[Math.cos(Math.PI / 4 + 0.25), Math.sin(Math.PI / 4 + 0.25)]}
+        tip={[Math.cos(Math.PI / 4 + 0.25) - Math.sin(Math.PI / 4 + 0.25), Math.sin(Math.PI / 4 + 0.25) + Math.cos(Math.PI / 4 + 0.25)]}
+        color={color("purple")}
+    />
+</Mafs>
+
+If you place the two vectors such that their tails are at the same point, the change in $\thhatc$ is almost perpendicular to $\thhatc$:
+
+<Mafs viewBox={{ y: [0, 1] }}>
+    <Coordinates.Cartesian />
+    <Circle center={[0, 0]} radius={1} fillOpacity={0} />
+    <Vector
+        tail={[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)]}
+        tip={[Math.cos(Math.PI / 4) - Math.sin(Math.PI / 4), Math.sin(Math.PI / 4) + Math.cos(Math.PI / 4)]}
+        color={color("purple")}
+    />
+    <Vector
+        tail={[Math.cos(Math.PI / 4 + 0.25), Math.sin(Math.PI / 4 + 0.25)]}
+        tip={[Math.cos(Math.PI / 4) - Math.sin(Math.PI / 4 + 0.25), Math.sin(Math.PI / 4) + Math.cos(Math.PI / 4 + 0.25)]}
+        color={color("purple")}
+    />
+    <Vector
+        tail={[Math.cos(Math.PI / 4) - Math.sin(Math.PI / 4), Math.sin(Math.PI / 4) + Math.cos(Math.PI / 4)]}
+        tip={[Math.cos(Math.PI / 4) - Math.sin(Math.PI / 4 + 0.25), Math.sin(Math.PI / 4) + Math.cos(Math.PI / 4 + 0.25)]}
+        color={color("red")}
+    />
+    <Vector
+        tail={[Math.cos(Math.PI / 4), Math.sin(Math.PI / 4)]}
+        tip={[0, 0]}
+        color={color("red")}
+    />
+</Mafs>
+
+(Notice that the red vectors have almost identical directions.)
+
+Hence we can say that:
+
+$$
+\begin{equation}
+\Delta \thhatc \approx -\Delta \posT \, \rhatc
+\end{equation}
+$$
+
+Then, the derivative of $\thhatc$ with respect to time is:
+
+$$
+\begin{equation}
+\dv{\thhatc}{t} = -\dv{\posT}{t} \rhatc
+\end{equation}
+$$
+
+### Partial Derivatives of x, y, and z WRT r, θ, and z
+
+Just like how we computed the partial derivatives of $\posR$, $\posT$, and $\posZ$ with respect to $\posX$, $\posY$, and $\posZ$, we can do the same in reverse.
+
+First, consider the partial derivative of $\posX$ with respect to the cylindrical coordinates:
+
+$$
+\begin{align}
+\pdv{\posX}{\posR} &= \cos(\posT) \label{eq:partial-x-r} \\
+\pdv{\posX}{\posT} &= -\posR \sin(\posT) \label{eq:partial-x-t} \\
+\pdv{\posX}{\posZ} &= 0 \label{eq:partial-x-z}
+\end{align}
+$$
+
+Next, the partial derivative of $\posY$ with respect to the cylindrical coordinates:
+
+$$
+\begin{align}
+\pdv{\posY}{\posR} &= \sin(\posT) \label{eq:partial-y-r} \\
+\pdv{\posY}{\posT} &= \posR \cos(\posT) \label{eq:partial-y-t} \\
+\pdv{\posY}{\posZ} &= 0 \label{eq:partial-y-z}
+\end{align}
+$$
+
+Finally, the partial derivative of $\posZ$ with respect to the cylindrical coordinates:
+
+$$
+\begin{align}
+\pdv{\posZ}{\posR} &= 0 \label{eq:partial-z-r} \\
+\pdv{\posZ}{\posT} &= 0 \label{eq:partial-z-t} \\
+\pdv{\posZ}{\posZ} &= 1 \label{eq:partial-z-z}
+\end{align}
+$$
+
 ### Partial Derivatives of f
 
 With that in mind, consider the partial derivative of a function $f$.
@@ -164,8 +357,295 @@ Since we have already computed the partial derivatives of $\posR$, $\posT$, and 
 
 $$
 \begin{align}
-\pdv{f}{\posX} &= \pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR} \label{eq:partial-x-in-cylindrical} \\
-\pdv{f}{\posY} &= \pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR} \label{eq:partial-y-in-cylindrical} \\
-\pdv{f}{\posZ} &= \pdv{f}{\posZ}
+\pdv{f}{\posX} &= \pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR} \label{eq:partial-f-x} \\
+\pdv{f}{\posY} &= \pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR} \label{eq:partial-f-y} \\
+\pdv{f}{\posZ} &= \pdv{f}{\posZ} \label{eq:partial-f-z}
 \end{align}
 $$
+
+We can also compute the partial derivatives of $f$ with respect to the cylindrical coordinates.
+The partial derivatives of $f$ with respect to the $r$ can be computed using the chain rule and Equations $\eqref{eq:partial-x-r}$ and $\eqref{eq:partial-y-r}$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{\posR} &= \pdv{f}{\posX} \pdv{\posX}{\posR} + \pdv{f}{\posY} \pdv{\posY}{\posR} + \pdv{f}{\posZ} \pdv{\posZ}{\posR} \\
+&= \cos(\posT) \pdv{f}{\posX} + \sin(\posT) \pdv{f}{\posY} \label{eq:partial-f-r}
+\end{split}
+\end{equation}
+$$
+
+Doing the same for the partial derivatives of $f$ with respect to $\posT$:
+
+$$
+\begin{split}
+\pdv{f}{\posT} &= \pdv{f}{\posX} \pdv{\posX}{\posT} + \pdv{f}{\posY} \pdv{\posY}{\posT} + \pdv{f}{\posZ} \pdv{\posZ}{\posT} \\
+&= -\frac{\sin(\posT)}{\posR} \pdv{f}{\posX} + \frac{\cos(\posT)}{\posR} \pdv{f}{\posY} \label{eq:partial-f-t}
+\end{split}
+$$
+
+And finally, the partial derivatives of $f$ with respect to $\posZ$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{\posZ} &= \pdv{f}{\posX} \pdv{\posX}{\posZ} + \pdv{f}{\posY} \pdv{\posY}{\posZ} + \pdv{f}{\posZ} \pdv{\posZ}{\posZ} \\
+&= 0 \pdv{f}{\posX} + 0 \pdv{f}{\posY} + \pdv{f}{\posZ}
+\end{split}
+\end{equation}
+$$
+
+## Example Problem: Deriving Circular Motion
+
+> Consider a particle moving in a two-dimensional circle with radius $R$.
+> Let the angle $\theta$ be the angle from the $x$-axis counterclockwise.
+>
+> 1. Derive the $x$ and $y$ components of the position vector $\va{r}$.
+> 2. The position $\va{r}$ can also be expressed in terms of the cylindrical unit vector $\vu{r}$ in the form $\va{r} = R \vu{r}$.
+>    Suppose the particle moves at a constant speed $v$ around the circle. Derive an expression for the velocity vector $\va{v}$.
+
+To help visualize the problem, plot a circle once again:
+
+<PolarCoordinateVisualizer />
+
+1. This is simply the conversion from polar to Cartesian coordinates, as in Equations $\eqref{eq:x-cylindrical}$ and $\eqref{eq:y-cylindrical}$:
+
+    $$
+    \begin{align}
+    \posX &= R \cos(\posT) \\
+    \posY &= R \sin(\posT)
+    \end{align}
+    $$
+
+2. The velocity vector $\va{v}$ is the derivative of the position vector $\va{r}$ with respect to time.
+    Given that $\va{r} = R \rhatc$, we can express $\va{v}$ as:
+
+    $$
+    \begin{equation}
+    \va{v} = R \dv{\rhatc}{t} = R \dv{\posT}{t} \thhatc
+    \end{equation}
+    $$
+
+    In mechanics, there's a special symbol for the derivative of $\posT$ with respect to time: $\omega$, known as the angular velocity.
+    Hence we can write:
+
+    $$
+    \begin{equation}
+    \va{v} = R \omega \thhatc
+    \end{equation}
+    $$
+
+    The geometric interpretation of this result is similar to the interpretation of $\dv{\rhatc}{t}$, just scaled by $R$.
+
+## Summary
+
+That's a lot of partial derivatives, so we can summarize them into a tables:
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan={2}>
+                Partial Derivative of
+            </th>
+            <th colspan={3}>
+                With Respect to
+            </th>
+        </tr>
+        <tr>
+            <th>
+                $\posX$
+            </th>
+            <th>
+                $\posY$
+            </th>
+            <th>
+                $\posZ$
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                $\posR$
+            </td>
+            <td>
+                $$
+                \pdv{\posR}{\posX} = \cos(\posT)
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posR}{\posY} = \sin(\posT)
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posR}{\posZ} = 0
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $\posT$
+            </td>
+            <td>
+                $$
+                \pdv{\posT}{\posX} = -\frac{\sin(\posT)}{\posR}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posT}{\posY} = \frac{\cos(\posT)}{\posR}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posT}{\posZ} = 0
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $\posZ$
+            </td>
+            <td>
+                $$
+                \pdv{\posZ}{\posX} = 0
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posZ}{\posY} = 0
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posZ}{\posZ} = 1
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $f$
+            </td>
+            <td>
+                $$
+                \pdv{f}{\posX} = \pdv{f}{\posR} \cos(\posT) - \pdv{f}{\posT} \frac{\sin(\posT)}{\posR}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{f}{\posY} = \pdv{f}{\posR} \sin(\posT) + \pdv{f}{\posT} \frac{\cos(\posT)}{\posR}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{f}{\posZ} = \pdv{f}{\posZ}
+                $$
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th rowspan={2}>
+                Partial Derivative of
+            </th>
+            <th colspan={3}>
+                With Respect to
+            </th>
+        </tr>
+        <tr>
+            <th>
+                $\posR$
+            </th>
+            <th>
+                $\posT$
+            </th>
+            <th>
+                $\posZ$
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+                $\posX$
+            </td>
+            <td>
+                $$
+                \pdv{\posX}{\posR} = \cos(\posT)
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posX}{\posT} = -\frac{\sin(\posT)}{\posR}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posX}{\posZ} = 0
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $\posY$
+            </td>
+            <td>
+                $$
+                \pdv{\posY}{\posR} = \sin(\posT)
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posY}{\posT} = \frac{\cos(\posT)}{\posR}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posY}{\posZ} = 0
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $\posZ$
+            </td>
+            <td>
+                $$
+                \pdv{\posZ}{\posR} = 0
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posZ}{\posT} = 0
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{\posZ}{\posZ} = 1
+                $$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $f$
+            </td>
+            <td>
+                $$
+                \pdv{f}{\posR} = \cos(\posT) \pdv{f}{\posX} + \sin(\posT) \pdv{f}{\posY}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{f}{\posT} = -\frac{\sin(\posT)}{\posR} \pdv{f}{\posX} + \frac{\cos(\posT)}{\posR} \pdv{f}{\posY}
+                $$
+            </td>
+            <td>
+                $$
+                \pdv{f}{\posZ} = \pdv{f}{\posZ}
+                $$
+            </td>
+        </tr>
+    </tbody>
+</table>
