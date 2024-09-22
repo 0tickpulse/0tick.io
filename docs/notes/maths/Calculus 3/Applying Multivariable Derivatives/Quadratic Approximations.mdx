@@ -15,3 +15,285 @@ import { easeInOutCubic } from "js-easing-functions";
 
 # Quadratic Approximations
 
+Recall from the previous section that for a function, we can approximate it at a point by creating another function that is just a tangent plane at that point, known as a linear approximation.
+Sometimes that is not sufficient, so we introduce another order in the approximation, known as a quadratic approximation.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+By adding a quadratic term to the linear approximation, we can create a quadratic approximation.
+This is more accurate than a linear approximation due to the increased degree of freedom.
+
+A quadratic approximation looks graphically like a paraboloid.
+Essentially, if you slice the paraboloid along any line, you get a parabola.
+
+Recall that the linear approximation of a function has the form:
+
+$$
+\begin{equation}
+L(x, y) = a + bx + cy
+\end{equation}
+$$
+
+This is an affine function, which is a linear function with a constant term.
+For a quadratic approximation, we add quadratic terms to the linear approximation:
+
+$$
+\begin{equation}
+Q(x, y) = a + bx + cy + dx^2 + exy + fy^2
+\end{equation}
+$$
+
+## Preliminaries - From Linear to Quadratic
+
+In the previous section we computed the linear approximation of a function as:
+
+$$
+\begin{equation}
+L(x, y) = f(x_0, y_0) + \partial_x f(x_0, y_0)(x - x_0) + \partial_y f(x_0, y_0)(y - y_0)
+\end{equation}
+$$
+
+If we plug $(x, y) = (x_0, y_0)$ into the linear approximation, we get:
+
+$$
+\begin{equation}
+L(x_0, y_0) = f(x_0, y_0) \cancel{+ \partial_x f(x_0, y_0)(x_0 - x_0)} \cancel{+ \partial_y f(x_0, y_0)(y_0 - y_0)}
+\end{equation}
+$$
+
+This is an important fact, because it tells us that the linear approximation is tangent to the function at the point $(x_0, y_0)$.
+
+Recall that the next two terms ensure the rate of changes of the linear approximation match. This can be seen by taking the partial derivatives of the linear approximation:
+
+$$
+\begin{align}
+\partial_x L(x, y) &= 0 + \partial_x f(x_0, y_0) + 0 \\
+\partial_y L(x, y) &= 0 + 0 + \partial_y f(x_0, y_0)
+\end{align}
+$$
+
+With all of this in mind, we can set up an equation for the quadratic approximation:
+
+$$
+\begin{equation}
+\begin{split}
+Q(x, y) &= f(x_0, y_0) + \partial_x f(x_0, y_0)(x - x_0) + \partial_y f(x_0, y_0)(y - y_0) \\
+    &\quad {}+ a(x - x_0)^2 + b(x - x_0)(y - y_0) + c(y - y_0)^2
+\end{split}
+\end{equation}
+$$
+
+(The reason we use $x - x_0$ and $y - y_0$ is because when we plug in $(x, y) = (x_0, y_0)$, the terms with $x - x_0$ and $y - y_0$ will cancel out, making everything easier to deal with.)
+
+Now all we need to do is find the coefficients $a$, $b$, and $c$.
+
+## Finding the Coefficients
+
+For the purposes of this section, assume that the second partial derivatives of $f$ are continuous.
+This is a reasonable assumption, as most functions we deal with are continuous.
+This assumption fulfills Schwarz's theorem, meaning the mixed partial derivatives are equal.
+
+Let's establish what we want:
+
+$$
+\begin{align}
+{\pdv[2]{Q}{x}} (x_0, y_0) &= {\pdv[2]{f}{x}} (x_0, y_0) \\
+{\pdv[2]{Q}{y}} (x_0, y_0) &= {\pdv[2]{f}{y}} (x_0, y_0) \\
+{\pdv{Q}{x}{y}} (x_0, y_0) &= {\pdv{f}{x}{y}} (x_0, y_0)
+\end{align}
+$$
+
+Let's compute the second partial derivatives of $Q$:
+
+$$
+\begin{align}
+{\pdv[2]{Q}{x}} (x, y) &= \pdv{x}(\pdv{f}{x}(x_0, y_0)(x - x_0) + 2a(x - x_0) + b(y - y_0)) = 2a \\
+{\pdv[2]{Q}{y}} (x, y) &= \pdv{y}(\pdv{f}{y}(x_0, y_0)(y - y_0) + 2c(y - y_0) + b(x - x_0)) = 2c \\
+{\pdv{Q}{x}{y}} (x, y) &= \pdv{y}(\pdv{f}{x}(x_0, y_0)(x - x_0) + \pdv{f}{y}(x_0, y_0)(y - y_0) + b(x - x_0) + 2c(y - y_0)) = b
+\end{align}
+$$
+
+Therefore, we have:
+
+$$
+\begin{align}
+a &= \frac{1}{2} {\pdv[2]{f}{x}} (x_0, y_0) \\
+b &= {\pdv{f}{x}{y}} (x_0, y_0) \\
+c &= \frac{1}{2} {\pdv[2]{f}{y}} (x_0, y_0)
+\end{align}
+$$
+
+Substitute these values back into the equation for $Q(x, y)$ to get the quadratic approximation:
+
+$$
+\begin{equation}
+\begin{split}
+Q(x, y) &= f(x_0, y_0) + \partial_x f(x_0, y_0)(x - x_0) + \partial_y f(x_0, y_0)(y - y_0) \\
+    &\quad {}+ \frac{1}{2} \partial_{xx} f(x_0, y_0)(x - x_0)^2 + \partial_{xy} f(x_0, y_0)(x - x_0)(y - y_0) + \frac{1}{2} \partial_{yy} f(x_0, y_0)(y - y_0)^2
+\end{split} \label{eq:quadratic-approximation}
+\end{equation}
+$$
+
+## Example Problem: Constructing Quadratic Approximations
+
+> Construct the quadratic approximation of the function $f(x, y) = e^{x / 2} \sin(y)$ at the point $(0, \pi/2)$.
+>
+> [(Source)](https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives/quadratic-approximations/v/quadratic-approximation-example)
+
+The first step is to find the first partial derivatives of $f$:
+
+$$
+\begin{align}
+\partial_x f(x, y) &= \frac{1}{2} e^{x / 2} \sin(y) \\
+\partial_y f(x, y) &= e^{x / 2} \cos(y)
+\end{align}
+$$
+
+Next, find the second partial derivatives:
+
+$$
+\begin{align}
+\partial_{xx} f(x, y) &= \frac{1}{4} e^{x / 2} \sin(y) \\
+\partial_{yy} f(x, y) &= -e^{x / 2} \sin(y) \\
+\partial_{xy} f(x, y) &= \frac{1}{2} e^{x / 2} \cos(y)
+\end{align}
+$$
+
+Now, plug in the values at $(0, \pi/2)$:
+
+$$
+\begin{align}
+f \qty(0, \frac{\pi}{2}) &= e^{0 / 2} \sin(\frac{\pi}{2}) = 1 \\
+\partial_x f \qty(0, \frac{\pi}{2}) &= \frac{1}{2} e^{0 / 2} \sin(\frac{\pi}{2}) = \frac{1}{2} \\
+\partial_y f \qty(0, \frac{\pi}{2}) &= e^{0 / 2} \cos(\frac{\pi}{2}) = 0 \\
+\partial_{xx} f \qty(0, \frac{\pi}{2}) &= \frac{1}{4} e^{0 / 2} \sin(\frac{\pi}{2}) = \frac{1}{4} \\
+\partial_{yy} f \qty(0, \frac{\pi}{2}) &= -e^{0 / 2} \sin(\frac{\pi}{2}) = -1 \\
+\partial_{xy} f \qty(0, \frac{\pi}{2}) &= \frac{1}{2} e^{0 / 2} \cos(\frac{\pi}{2}) = 0
+\end{align}
+$$
+
+Finally, plug these values into Equation $\eqref{eq:quadratic-approximation}$:
+
+$$
+\begin{equation}
+\begin{split}
+Q(x, y) &= \overbrace{f \qty(0, \frac{\pi}{2})}^{1} + \overbrace{\partial_x f \qty(0, \frac{\pi}{2})}^{1/2}(x - 0) + \overbrace{\partial_y f \qty(0, \frac{\pi}{2})}^{0}\qty(y - \frac{\pi}{2}) \\
+    &\quad {}+ \frac{1}{2} \underbrace{\partial_{xx} f \qty(0, \frac{\pi}{2})}_{1/4}(x - 0)^2 + \underbrace{\partial_{xy} f \qty(0, \frac{\pi}{2})}_{0}(x - 0)\qty(y - \frac{\pi}{2}) + \frac{1}{2} \underbrace{\partial_{yy} f \qty(0, \frac{\pi}{2})}_{-1}\qty(y - \frac{\pi}{2})^2 \\
+    &= 1 + \frac{1}{2}x + \frac{1}{8}x^2 - \frac{1}{2}\qty(y - \frac{\pi}{2})^2
+\end{split}
+\end{equation}
+$$
+
+Thus, the quadratic approximation of $f(x, y)$ at $(0, \pi/2)$ is:
+
+$$
+\begin{equation}
+Q(x, y) = 1 + \frac{1}{2}x + \frac{1}{8}x^2 - \frac{1}{2}\qty(y - \frac{\pi}{2})^2
+\end{equation}
+$$
+
+A graph of the function and its quadratic approximation is shown below:
+
+{(() => {
+    const [approx, setApprox] = useState([0, Math.PI / 2]);
+    const [graphVisible, setGraphVisible] = useState(true);
+    const [approxVisible, setApproxVisible] = useState(true);
+    const f = (x, y) => Math.exp(x / 2) * Math.sin(y);
+    const dfdx = (x, y) => 0.5 * Math.exp(x / 2) * Math.sin(y);
+    const dfdy = (x, y) => Math.exp(x / 2) * Math.cos(y);
+    const d2fdxdx = (x, y) => 0.25 * Math.exp(x / 2) * Math.sin(y);
+    const d2fdydy = (x, y) => -Math.exp(x / 2) * Math.sin(y);
+    const d2fdxdy = (x, y) => 0.5 * Math.exp(x / 2) * Math.cos(y);
+    const Q = (x0, y0) => (x, y) => {
+        const a = 0.5 * d2fdxdx(x0, y0);
+        const b = d2fdxdy(x0, y0);
+        const c = 0.5 * d2fdydy(x0, y0);
+        return f(x0, y0) + dfdx(x0, y0) * (x - x0) + dfdy(x0, y0) * (y - y0) + a * (x - x0) ** 2 + b * (x - x0) * (y - y0) + c * (y - y0) ** 2;
+    };
+    console.log({ approx: approx, Q: Q(approx[0], approx[1]) });
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox>
+                    <MB.Cartesian scale={[
+                        0.5, 0.5, 0.5
+                    ]}>
+                        <MB.Axis axis="x" range={[-4, 4]} color={color("green")} />
+                        <MB.Axis axis="y" range={[-4, 4]} color={color("blue")} />
+                        <MB.Axis axis="z" range={[-4, 4]} color={color("yellow")} />
+                        <MB.Group visible={graphVisible}>
+                            <MB.Area
+                                id="graph"
+                                axes="xy"
+                                expr={(emit, y, x, i, t) => {
+                                    const z = f(x, y);
+                                    emit(x, z, y);
+                                }}
+                                width={64}
+                                height={64}
+                                channels={3}
+                                rangeX={[-4, 4]}
+                                rangeY={[-4, 4]}
+                            />
+                            <MB.Surface
+                                points="#graph"
+                                color={color("blue")}
+                                lineX={true}
+                                lineY={true}
+                                opacity={0.75}
+                                zBias={-1}
+                            />
+                        </MB.Group>
+                        <MB.Group visible={approxVisible}>
+                            <MB.Area
+                                id="approx"
+                                axes="xy"
+                                expr={(emit, y, x, i, t) => {
+                                    const z = Q(approx[0], approx[1])(x, y);
+                                    emit(x, z, y);
+                                }}
+                                width={64}
+                                height={64}
+                                channels={3}
+                                rangeX={[-4, 4]}
+                                rangeY={[-4, 4]}
+                            />
+                            <MB.Surface
+                                points="#approx"
+                                color={"#808080"}
+                                lineX={true}
+                                lineY={true}
+                                opacity={0.75}
+                                zBias={-1}
+                            />
+                            <MB.Array
+                                items={1}
+                                id="point"
+                                data={[[approx[0], Q(approx[0], approx[1])(approx[0], approx[1]), approx[1]]]}
+                                channels={3}
+                            />
+                            <MB.Point
+                                points="#point"
+                                color={color("red")}
+                                size={15}
+                            />
+                        </MB.Group>
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <Checkbox label="Show original graph" value={graphVisible} onChange={setGraphVisible} />
+                    <Checkbox label="Show quadratic approximation" value={approxVisible} onChange={setApproxVisible} />
+                    <SliderInput label="Approx point x" value={approx[0]} onChange={x => setApprox((approx) => [x, approx[1]])} min={-4} max={4} step={0.1} />
+                    <SliderInput label="Approx point y" value={approx[1]} onChange={y => setApprox((approx) => [approx[0], y])} min={-4} max={4} step={0.1} />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+})()}
+
