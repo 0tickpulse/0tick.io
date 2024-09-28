@@ -4,7 +4,7 @@ import BetterMafsVectorField from "@site/src/components/mdxGlobal/BetterMafsVect
 import Boxed from "@site/src/components/mdxGlobal/Boxed";
 import Citation from "@site/src/components/mdxGlobal/Citation";
 import Cite from "@site/src/components/mdxGlobal/Cite";
-import CustomMathbox from "@site/src/components/mdxGlobal/CustomMathbox";
+import CustomMathbox, { OldMathbox } from "@site/src/components/mdxGlobal/CustomMathbox";
 import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentiation";
 import DivergenceVisualization from "@site/src/components/mdxGlobal/DivergenceVisualization";
 import HoverableBox from "@site/src/components/mdxGlobal/HoverableBox";
@@ -22,6 +22,8 @@ import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
 import { PolarCoordinateVisualizer } from "../components/mdxGlobal/PolarCoordinatePlayground";
 
 import * as mafs from "mafs";
+import { ArcLengthVisualizer } from "../components/mdxGlobal/ArcLengthVisualizer";
+import { LineIntegralVisualizer3D } from "../components/mdxGlobal/LineIntegralVisualizer3D";
 
 export default {
     ...MDXComponents,
@@ -37,6 +39,8 @@ export default {
     RiemannApproximation,
     ThreeDTest,
     PolarCoordinateVisualizer,
+    ArcLengthVisualizer,
+    LineIntegralVisualizer3D,
 
     ControlPanel,
     SliderInput,
@@ -51,4 +55,5 @@ export default {
 
     MathEquation,
     CustomMathbox,
+    OldMathbox,
 };

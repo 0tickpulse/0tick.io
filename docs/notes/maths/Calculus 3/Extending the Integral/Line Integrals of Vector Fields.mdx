@@ -1,0 +1,120 @@
+---
+sidebar_position: 2
+description: Integrate a vector field along a curve.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Line Integrals of Vector Fields
+
+In this section, we will explore the concept of line integrals of vector fields.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction - Moving in a Force Field
+
+Imagine a carboard box in someone's driveway. It's sitting still when, suddenly, the wind picks up - it's a hurricane!
+The carboard box flies off the driveway and into the air, where gravity takes over and pulls it back down.
+When it goes back down, it doesn't just fall straight down, the wind still pushes it left and right.
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+    <Circle center={[-2, 4]} radius={0.25} />
+    <Circle center={[2, 1]} radius={0.25} />
+    <Plot.Parametric t={[-2, 2]} xy={(t) => [t + -(t ** 2 - 4) * Math.cos(t / 5), (t ** 2) + (t + 2) * (-3 / 4) + (t ** 2 - 4) * (Math.sin(2 * t) - 2.5) / 2]} />
+</Mafs>
+
+<details>
+    <summary>The curve in the visual</summary>
+
+    I used quite a complex curve in the visual above:
+
+    $$
+    \begin{equation}
+    \va{r}(t) = \mqty[ t - (t^2 - 4)\cos\qty(\frac{t}{5}) \\ t^2 + (t + 2)\qty(-\frac{3}{4}) + \frac{t^2 - 4}{2}\qty(\sin(2t) - 2.5) ]
+    \end{equation}
+    $$
+
+    It's actually quite difficult to create a curve like this, because it needs to satisfy a few conditions:
+
+    - It must start at a given point and end at a given point.
+    - It must look chaotic, but not too chaotic.
+    - It must not go off the screen.
+
+    The initial point is $(-2, 4)$ and the final point is $(2, 1)$.
+    I made $t$ range from $-2$ to $2$ to automatically satisfy the first condition in the $x$-direction.
+    I added $(t + 2)\qty(-\frac{3}{4})$ to make the final point correct.
+
+    Then, I just kept adding and subtracting terms until I got something that looked good.
+    Each term gets $(t^2 - 4)$ to make sure that at the boundaries they are $0$, hence the curve still starts and ends at the correct points.
+</details>
+
+The force we are considering is gravity (ignore forces from the wind, just note that it affects the box's motion).
+Recall that the work done due to a force is the dot product of the force and the distance moved:
+
+$$
+\begin{equation}
+W = \va{F} \cdot \va{s}
+\end{equation}
+$$
+
+(For a quick refresher on forces and work, see the appendix at the end of this page.)
+
+However, we aren't just moving in a straight line - we are moving along a curve, due to the wind pushing the box around.
+Instead, we can break the curve into small segments and sum the work done along each segment.
+
+## Appendix: Forces and Work
+
+When we talk about forces, we often talk about the work done by a force.
+Imagine a force $\va{F}$ pushing on a ball, and the ball moves a distance $\va{s}$.
+
+Let's say the force is gravity - $F = mg$, and it is pushing on a ball of mass $0.3 \, \text{kg}$.
+The work done is defined by the product of the force and the distance moved:
+
+$$
+\begin{equation}
+W = Fs = mgs
+\end{equation}
+$$
+
+**However!** This is not the complete picture.
+Gravity acts in the downward direction, but the ball is moving in a different direction:
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+    <Vector tail={[-2, 4]} tip={[2, 1]} />
+    <Polyline points={[[-2, 4], [-2, 1], [2, 1]]} strokeStyle="dashed" />
+    <LaTeX at={[-1.8, 2.5]} tex="3" />
+    <LaTeX at={[0, 1.2]} tex="4" />
+    <LaTeX at={[0, 3.5]} tex="4\hat{\mathbf{i}} - 3\hat{\mathbf{j}}" />
+    <Circle center={[-2, 4]} radius={0.25} />
+    <Circle center={[2, 1]} radius={0.25} />
+</Mafs>
+
+In that case, the work done considers only the distance moved in the **direction of the force**, in this case, $3$ units:
+
+$$
+\begin{equation}
+W = \class{red}{m}\class{green}{g}\class{yellow}{s_y} = \class{red}{0.3\, \text{kg}} \times \class{green}{9.8\, \text{m}\cdot\text{s}^{-2}} \times \class{yellow}{3\, \text{m}} = 8.82 \, \text{J}
+\end{equation}
+$$
+
+This is otherwise known as the **dot product** of the force and the distance moved.
+The complete formula for the work done in a straight line for a constant force is then:
+
+$$
+\begin{equation}
+W = \va{F} \cdot \va{s}
+\end{equation}
+$$
+
+

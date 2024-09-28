@@ -100,7 +100,7 @@ This means that $y$ is kept constant at $2$ while we nudge $x$. One way to think
 
 So first, here's the graph of $f(x, y) = x^2 + \sin(y)$:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[
             0.1, 0.1, 0.1
@@ -139,14 +139,14 @@ So first, here's the graph of $f(x, y) = x^2 + \sin(y)$:
             size={15}
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 If we slice the function at $y = 2$, we get a parabola:
 
 export function VisualizingPartialDerivatives({ variable }) {
     const f = (x, y) => x ** 2 + Math.sin(y);
     return (
-        <CustomMathbox
+        <OldMathbox
             options={{
                 plugins: ["core", "controls", "cursor"],
                 controls: {
@@ -250,7 +250,7 @@ export function VisualizingPartialDerivatives({ variable }) {
                     end={true}
                 />
             </MB.Cartesian>
-        </CustomMathbox>
+        </OldMathbox>
     )
 }
 

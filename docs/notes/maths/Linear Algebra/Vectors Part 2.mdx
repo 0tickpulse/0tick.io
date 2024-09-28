@@ -884,7 +884,7 @@ To answer this, the orientation of the cross product is determined by the right-
 
 If you curl your right hand from the first vector to the second vector, your thumb points in the direction of the cross product.
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[0.5, 0.5, 0.5]}
     >
@@ -998,7 +998,7 @@ If you curl your right hand from the first vector to the second vector, your thu
             text="#v_cross_w_vec_text"
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 ### The Magnitude of the Cross Product
 
@@ -1290,7 +1290,7 @@ Let $\vu{i} = [1, 0, 0]$, $\vu{j} = [0, 1, 0]$, and $\vu{k} = [0, 0, 1]$ be the 
 
 Recall that the cross product of two vectors is a vector that's orthogonal to both vectors. If we draw the basis vectors:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[0.5, 0.5, 0.5]}
     >
@@ -1316,7 +1316,7 @@ Recall that the cross product of two vectors is a vector that's orthogonal to bo
         <MB.Text id="k_text" expr={(emit) => { emit("\\vu{k}"); }} />
         <MB.Label points="#k" text="#k_text" />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 The magnitude of the cross product of two vectors is the area of the parallelogram formed by the two vectors.
 Since they all have length $1$ and are orthogonal to each other, the area of the parallelogram is $1$.
@@ -1697,7 +1697,7 @@ export function Plane3DGraph({ showPoint = false, showN = false, showV = false, 
     ];
 
     return (
-        <CustomMathbox>
+        <OldMathbox>
             <MB.Cartesian
                 scale={[
                     0.5, 0.5, 0.5
@@ -1807,7 +1807,7 @@ export function Plane3DGraph({ showPoint = false, showN = false, showV = false, 
                     </>
                 )}
             </MB.Cartesian>
-        </CustomMathbox>
+        </OldMathbox>
     )
 }
 

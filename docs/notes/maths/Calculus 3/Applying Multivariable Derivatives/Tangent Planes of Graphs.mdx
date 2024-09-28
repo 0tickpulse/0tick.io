@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: Approximating multivariable functions with a plane.
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
@@ -67,7 +68,7 @@ export function Plane3DGraph() {
     return (
         <div className="card">
             <div className="card__body">
-                <CustomMathbox>
+                <OldMathbox>
                     <MB.Cartesian
                         scale={[
                             0.5, 0.5, 0.5
@@ -145,7 +146,7 @@ export function Plane3DGraph() {
                             </>
                         )}
                     </MB.Cartesian>
-                </CustomMathbox>
+                </OldMathbox>
             </div>
             <div className="card__footer">
                 <ControlPanel>

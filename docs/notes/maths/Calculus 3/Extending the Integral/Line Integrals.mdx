@@ -1,0 +1,328 @@
+---
+sidebar_position: 1
+description: Integrate a function over some curve.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Line Integrals
+
+Recall that an integral is a way to "sum up" changes in a function over some interval.
+We add the input by some small amount, multiply it by the output, and sum up all of these products.
+How would we do this if we were to integrate a function with multiple inputs?
+
+One way to do this is called the **line integral**.
+Essentially, we draw a curve in the domain of the function, and we integrate the function over this curve.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Arc Lengths
+
+The first step to understanding line integrals is to understand arc lengths.
+First, let's consider a circle with radius $r$.
+The arc length of a circle is given by the $s = r \theta$.
+
+The arc length, however, can also be used to describe the length of any curve, not just circles.
+We shall first consider the special case of a curve that is a function of $x$.
+
+Consider a curve $C = (t, t^2)$ (i.e. just $y = x^2$), and we want to find the arc length of the curve from $t = 0$ to $t = 3$.
+
+We can approximate the arc length by breaking the curve into small segments.
+Increment $t$ by some small amount $\Delta t$, and calculate the distance between the two points.
+
+<ArcLengthVisualizer
+    xy={(t) => [t, t ** 2]}
+    t={[0, 3]}
+    mafsProps={{
+        viewBox: {
+            x: [0, 4],
+            y: [0, 10],
+        },
+        preserveAspectRatio: false
+    }}
+    segmentsRange={[0, 10]}
+>
+    <Coordinates.Cartesian />
+</ArcLengthVisualizer>
+
+The distance between the two points is given by the Pythagorean theorem;
+
+<Mafs
+    viewBox={{
+        x: [1, 2],
+        y: [1, 4],
+    }}
+    preserveAspectRatio={false}
+>
+    <Coordinates.Cartesian />
+    <Plot.Parametric xy={(t) => [t, t ** 2]} t={[0, 3]} />
+
+    <Vector tail={[1, 1]} tip={[2, 1]} color={color("blue")} />
+    <LaTeX tex="\Delta x" at={[1.5, 1.2]} />
+    <Vector tail={[2, 1]} tip={[2, 4]} color={color("yellow")} />
+    <LaTeX tex="\Delta y" at={[2.1, 2.5]} />
+
+    <Line.Segment
+        point1={[1, 1]}
+        point2={[2, 4]}
+        color={color("red")}
+    />
+    <LaTeX
+        tex="\Delta s"
+        at={[1.5, 2.8]}
+    />
+</Mafs>
+
+We can calculate the distance between the two points as $\sqrt{(\Delta x)^2 + (\Delta y)^2}$.
+Given that this curve is essentially just a function of $x$, treat $x$ as the independent variable.
+
+We can find what $\Delta y$ by multiplying the derivative with the change in $x$:
+
+$$
+\begin{equation}
+\Delta y = \dv{y}{x} \Delta x = 2x \Delta x
+\end{equation}
+$$
+
+Substitute this back into the arc length:
+
+$$
+\begin{equation}
+\begin{split}
+\Delta s &= \sqrt{(\Delta x)^2 + (2x \Delta x)^2} \\
+&= \sqrt{1 + 4x^2} \Delta x
+\end{split}
+\end{equation}
+$$
+
+The entire arc length can then be found by summing up all of these small segments:
+
+$$
+\begin{equation}
+s = \sum_{i=0}^{N} \sqrt{1 + 4x_i^2} \Delta x
+\end{equation}
+$$
+
+As $\Delta x \to 0$, this sum becomes an integral:
+
+$$
+\begin{equation}
+s = \int_{0}^{3} \sqrt{1 + 4x^2} \dd{x}
+\end{equation}
+$$
+
+The general steps to find the arc length of a function are:
+
+1. Find the derivative of the function.
+2. Write $\Delta y$ in terms of the derivative and $\Delta x$.
+3. Use the Pythagorean theorem to find the arc length of the curve. Plug in the value of $\Delta y$.
+4. Integrate the expression to find the arc length.
+
+Let's generalize this. Consider any $f(x)$, and we want to find the arc length of the curve $y = f(x)$ from $x = a$ to $x = b$.
+The arc length is given by:
+
+$$
+\begin{equation}
+\begin{split}
+s &= \int_{a}^{b} \sqrt{\dd{x}^2 + \dd{y}^2} \\
+&= \int_{a}^{b} \sqrt{\dd{x}^2 + \qty(\dv{y}{x} \dd{x})^2} \\
+&= \int_{a}^{b} \sqrt{1 + \qty(\dv{y}{x})^2} \dd{x}
+\end{split}
+\end{equation}
+$$
+
+## Arc Length of Any Parametric Curve
+
+Now that we have found the arc length of a curve that is a function of $x$, let's consider any parametric curve.
+Consider a curve $C$ that is defined by $C(t) = \va{r}(t)$ for $a \leq t \leq b$.
+
+Start with the same expression for the arc length:
+
+$$
+\begin{equation}
+\dd{s} = \sqrt{\dd{x}^2 + \dd{y}^2}
+\end{equation}
+$$
+
+We wrote $\dd{y}$ in terms of $\dd{x}$ earlier, but since $x$ is no longer the independent variable, we need to write the whole expression in terms of $\dd{t}$:
+
+$$
+\begin{equation}
+\dd{s} = \sqrt{\dd{x}^2 + \dd{y}^2} = \sqrt{\qty(\dv{x}{t} \dd{t})^2 + \qty(\dv{y}{t} \dd{t})^2} = \sqrt{\qty(\dv{x}{t})^2 + \qty(\dv{y}{t})^2} \dd{t}
+\end{equation}
+$$
+
+Recall that a parametric curve can be written as a vector-valued function $\va{r}(t) = \mqty[x(t) \\ y(t)]$.
+Then, the arc length of the curve is:
+
+$$
+\begin{equation}
+\dd{s} = \sqrt{\qty(\dv{x}{t})^2 + \qty(\dv{y}{t})^2} \dd{t} = \norm{\va{r}'(t)} \dd{t}
+\end{equation}
+$$
+
+This should make sense; an increment in $t$ changes the position of the point by $\va{r}'(t) \dd{t}$.
+The arc length is then the magnitude of this change.
+
+In order to define the boundary of the curve, we need to find the limits of $t$.
+However, defining the boundaries also defines the variable of integration.
+Instead, we can write a $C$ in the integral boundaries, meaning:
+
+> "Integrate ... along the curve $C$."
+
+$C$ encodes the curve and the limits of integration. Then, the arc length of the curve is:
+
+$$
+\begin{equation}
+s = \int_{C} \dd{s} = \int_{C} \norm{\va{r}'(t)} \dd{t} \label{eq:arc-length-parametric}
+\end{equation}
+$$
+
+## Line Integrals of Scalar Fields
+
+With the concept of arc lengths in mind, we can now define line integrals.
+
+Consider a curve $C(t) = \va{r}(t)$ that is defined for $a \leq t \leq b$.
+Recall from Equation $\eqref{eq:arc-length-parametric}$ that the arc length of the curve is:
+
+$$
+\begin{equation}
+s = \int_{C} \dd{s} \label{\ref{eq:arc-length-parametric}}
+\end{equation}
+$$
+
+Now, consider a scalar field $f(x, y)$. We can generalize the arc length integral and add the function $f$ to it:
+
+$$
+\begin{equation}
+\int_{C} f(x, y) \dd{s}
+\end{equation}
+$$
+
+This means, instead of adding the arc length, you first multiply the arc length by some function $f$ and then sum up all of these products.
+
+Let's now consider writing this in terms of $t$. Recall that $\dd{s}$ is the increment in the arc length:
+
+$$
+\begin{equation}
+\dd{s} = \sqrt{\qty(\dv{x}{t})^2 + \qty(\dv{y}{t})^2} \dd{t} = \norm{\va{r}'(t)} \dd{t}
+\end{equation}
+$$
+
+Substitute that into the line integral:
+
+$$
+\begin{equation}
+\int_{C} f(x, y) \class{blue}{\dd{s}} = \int_{C} f(x, y) \class{blue}{\norm{\va{r}'(t)} \dd{t}}
+\end{equation}
+$$
+
+Next, the terms $x$ and $y$ are just coordinates of the curve $C$. We can write them in terms of the position on the curve $\va{r}(t)$ instead:
+
+$$
+\begin{equation}
+\int_{C} f(\class{blue}{x, y}) \norm{\va{r}'(t)} \dd{t} = \int_{C} f(\class{blue}{\va{r}(t)}) \norm{\va{r}'(t)} \dd{t}
+\end{equation}
+$$
+
+Finally, consider the bounds of the integral. We wrote $C$ as the integral boundaries, but now that we have written the integrand in terms of $t$,
+we can write the limits of integration as the boundaries of $t$ itself. Since $C$ is defined for $a \leq t \leq b$, we get the general form of the line integral:
+
+$$
+\begin{equation}
+\int_{C} f(x, t) \dd{s} = \int_{a}^{b} f(\va{r}(t)) \norm{\va{r}'(t)} \dd{t}
+\end{equation}
+$$
+
+## Visualizing Scalar Field Line Integrals
+
+Let's visualize a line integral of a scalar field.
+Recall that the integral, in a single-variable case, can be thought of as the area under the curve.
+For a function $f(x)$, you take increments of $\Delta x$, multiply it by the output of the function, and sum up all of these products.
+
+In the single-variable case, we can see it in action like this:
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 6.25] }}>
+    <Coordinates.Cartesian />
+    <RiemannApproximation f={(x) => x * (5 - x)} n={20} />
+</Mafs>
+
+For a scalar field, we can visualize it in a similar way.
+Instead of incrementing along the $x$-axis, we increment along the curve $C$.
+Then, draw a line perpendicular to the curve at each point up to the function's surface, and draw a rectangle.
+If we do this over the entire curve, it will look like this:
+
+<LineIntegralVisualizer3D />
+
+## Example Problem: Arc Length of Different Functions
+
+> Find the arc length of the following functions:
+>
+> 1. $y = \sqrt{1 - x^2}$ from $x = -1$ to $x = 1$ (a semicircle)
+> 2. $y = \sin(x)$ from $x = 0$ to $x = \pi$
+
+1. First, write $\Delta y$ in terms of the derivative and $\Delta x$:
+
+    $$
+    \begin{equation}
+    \Delta y = \dv{y}{x} \Delta x = -\frac{x}{\sqrt{1 - x^2}} \Delta x
+    \end{equation}
+    $$
+
+    The arc length is then:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    s &= \int_{-1}^{1} \sqrt{1 + \qty(-\frac{x}{\sqrt{1 - x^2}})^2} \dd{x} \\
+    &= \int_{-1}^{1} \sqrt{1 + \frac{x^2}{1 - x^2}} \dd{x} \\
+    &= \int_{-1}^{1} \sqrt{\frac{1 - x^2 + x^2}{1 - x^2}} \dd{x} \\
+    &= \int_{-1}^{1} \sqrt{\frac{1}{1 - x^2}} \dd{x} \\
+    &= \int_{-1}^{1} \frac{1}{\sqrt{1 - x^2}} \dd{x}
+    \end{split}
+    \end{equation}
+    $$
+
+    This integral is the arc length of a semicircle, which is $\pi$.
+    The appendix contains a very cool interpretation of this integral.
+
+2. The derivative of $\sin(x)$ is $\cos(x)$.
+    The arc length is then:
+
+    $$
+    \begin{equation}
+    s = \int_{0}^{\pi} \sqrt{1 + \cos^2(x)} \dd{x}
+    \end{equation}
+    $$
+
+    This is a non-elementary integral.
+
+## Summary and Next Steps
+
+In this section, we introduced the first integral in multivariable calculus: the line integral.
+Specifically, we discussed line integrals of scalar fields.
+
+Here are the key points to remember:
+
+- The arc length of a curve can be found by integrating the magnitude of the derivative of the curve.
+- The line integral of a scalar field is the sum of the products of the function and the arc length of the curve.
+- The line integral has two forms: one in terms of $x$ and $y$, and one in terms of $t$:
+
+    $$
+    \begin{equation}
+    \int_{C} f(x, y) \dd{s} = \int_{a}^{b} f(\va{r}(t)) \norm{\va{r}'(t)} \dd{t}
+    \end{equation}
+    $$
+
+In the next section, we will discuss line integrals of vector fields, and its connection to forces, work, and all that fun stuff.
