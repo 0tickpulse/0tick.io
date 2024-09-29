@@ -1,0 +1,323 @@
+---
+sidebar_position: 1
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# The Partial Derivative
+
+The Partial Derivative is a way to think about the derivative of a function of multiple variables.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Recall that one way to conceptualize the derivative is to think: "If I nudge the input a little bit, how much does the output change?"
+So, for $f(x)$, you would change $x$ by a small amount $\Delta x$ and see how much $f(x)$ changes.
+
+For functions with multiple inputs, what we can do is nudge each input separately and see how much the output changes.
+So, for example, if we have a function $f(x, y)$, we can nudge $x$ by a small amount $\Delta x$ and see how much $f(x, y)$ changes.
+This means that we treat $y$ as a constant while we nudge $x$.
+
+This is known as the **partial derivative** of $f$ with respect to $x$, denoted in these ways:
+
+- Leibniz notation: $\pdv{f}{x}$
+- Lagrange notation: $f_x$
+- Euler notation: $\partial_x f$
+
+It's called a "partial" derivative because we're only considering one input at a time, so it's not a "complete" way to measure the rate of change.
+
+## Example Problem: Evaluating a Simple Partial Derivative
+
+> $f(x, y)$ is defined as follows:
+>
+> $$
+> \begin{equation}
+> f(x, y) = (x + y)^2
+> \end{equation}
+> $$
+>
+> Find $\pdv{f}{x}(2, 3)$.
+
+We want to evaluate the rate of change of $f$ with respect to $x$ when $x = 2$ and $y = 3$.
+So, keeping $y$ constant at $3$, we can differentiate $f(x, y)$ with respect to $x$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{x} &= \pdv{}{x} (x + 3)^2 \\
+&= 2(x + 3) |_{x = 2} \\
+&= 10
+\end{split}
+\end{equation}
+$$
+
+So, $\pdv{f}{x}(2, 3) = 10$.
+
+## Formalizing Partial Derivatives
+
+We can formally define the partial derivative so that it's mathematically rigorous.
+Recall the definition of the derivative for a single-variable function:
+
+$$
+\begin{equation}
+\dv{f}{x}(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x}
+\end{equation}
+$$
+
+This is essentially a fancy way of calculating the rise over run.
+
+Look at the $f(x + \Delta x)$ term - this is the output when we nudge the input by $\Delta x$.
+For a function of multiple variables, we can nudge each input separately.
+So, given a function $f(x, y)$, if we want to find the partial derivative with respect to $x$, we nudge $x$ by $\Delta x$ and keep $y$ constant; $f(x + \Delta x, y)$.
+
+Everything else in the definition of the derivative remains the same. So, the partial derivative of $f$ with respect to $x$ is defined as:
+
+$$
+\begin{equation}
+\pdv{f}{x}(x, y) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x, y) - f(x, y)}{\Delta x}
+\end{equation}
+$$
+
+# Visualizing Partial Derivatives
+
+Let's visualize the concept of partial derivatives with a simple example.
+Consider the function $f(x, y) = x^2 + \sin(y)$.
+
+Suppose we want to find the partial derivative of $f$ with respect to $x$ at the point $(1, 2)$.
+This means that $y$ is kept constant at $2$ while we nudge $x$. One way to think of this on a graph is to imagine a slice of the function where $y = 2$.
+
+So first, here's the graph of $f(x, y) = x^2 + \sin(y)$:
+
+<OldMathbox>
+    <MB.Cartesian
+        scale={[
+            0.1, 0.1, 0.1
+        ]}
+    >
+        <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+        <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+        <MB.Area
+            id="graph"
+            axes="xz"
+            expr={(emit, x, z, i, t) => {
+                emit(x, x ** 2 + Math.sin(z), z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+        />
+        <MB.Surface
+            points="#graph"
+            opacity={0.5}
+            color={color("blue")}
+        />
+
+        <MB.Array
+            items={1}
+            id="point"
+            data={[[1, 1 + Math.sin(2), 2]]}
+            channels={3}
+        />
+        <MB.Point
+            points="#point"
+            color={color("red")}
+            size={15}
+        />
+    </MB.Cartesian>
+</OldMathbox>
+
+If we slice the function at $y = 2$, we get a parabola:
+
+export function VisualizingPartialDerivatives({ variable }) {
+    const f = (x, y) => x ** 2 + Math.sin(y);
+    return (
+        <OldMathbox
+            options={{
+                plugins: ["core", "controls", "cursor"],
+                controls: {
+                    klass: OrbitControls,
+                },
+            }}
+            containerStyle={{
+                height: "500px"
+            }}
+        >
+            <MB.Cartesian
+                scale={[
+                    0.1, 0.1, 0.1
+                ]}
+            >
+                <MB.Axis axis="x" range={[-10, 10]} color={color("blue")} />
+                <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+                <MB.Axis axis="z" range={[-10, 10]} color={color("yellow")} />
+                <MB.Area
+                    id="graph"
+                    axes="xz"
+                    expr={(emit, x, z, i, t) => {
+                        {/* emit(x, x ** 2 + 2 ** 2, z); */}
+                        emit(x, f(x, z), z);
+                    }}
+                    width={64}
+                    height={64}
+                    channels={3}
+                    rangeX={variable === "x" ? [-10, 10] : [-10, 1]}
+                    rangeY={variable === "x" ? [-10, 2] : [-10, 10]}
+                />
+                <MB.Surface
+                    points="#graph"
+                    opacity={0.5}
+                    color={color("blue")}
+                    zBias={-1}
+                    zIndex={-1}
+                />
+
+                <MB.Area
+                    id="slice_d_input"
+                    axes={variable}
+                    expr={(emit, x, i, t) => {
+                        if (variable === "x") {
+                            emit(x, f(x, 2), 2);
+                        } else {
+                            emit(1, f(1, x), x);
+                        }
+                    }}
+                    width={64}
+                    height={64}
+                    channels={3}
+                    rangeX={[-10, 10]}
+                />
+                <MB.Line
+                    points="#slice_d_input"
+                    color={color("red")}
+                    width={10}
+                />
+
+                <MB.Array
+                    items={1}
+                    id="point"
+                    data={[[1, f(1, 2), 2]]}
+                    channels={3}
+                />
+                <MB.Point
+                    points="#point"
+                    color={color("red")}
+                    size={15}
+                />
+
+                <MB.Array
+                    items={2}
+                    id="d_input"
+                    data={variable === "x"
+                        ? [[1, f(1, 2), 2], [2, f(1, 2), 2]]
+                        : [[1, f(1, 2), 2], [1, f(1, 2), 3]]
+                    }
+                    channels={3}
+                />
+                <MB.Vector
+                    points="#d_input"
+                    color={color("green")}
+                    width={5}
+                    end={true}
+                />
+                <MB.Array
+                    items={2}
+                    id="dz"
+                    data={variable === "x"
+                        ? [[2, f(1, 2), 2], [2, f(2, 2), 2]]
+                        : [[1, f(1, 2), 3], [1, f(1, 3), 3]]
+                    }
+                    channels={3}
+                />
+                <MB.Vector
+                    points="#dz"
+                    color={color("green")}
+                    width={5}
+                    end={true}
+                />
+            </MB.Cartesian>
+        </OldMathbox>
+    )
+}
+
+<VisualizingPartialDerivatives variable="x" />
+
+Then, the nudge in $x$ can be represented by an arrow on the graph. We can compute the partial derivative by finding the derivative of this slice at the point $(1, 2)$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{x} &= \pdv{}{x} (x^2 + \sin(2)) \\
+&= 2x |_{x = 1} \\
+&= 2
+\end{split}
+\end{equation}
+$$
+
+
+Likewise, we can slice the function in the $y$-direction to find the partial derivative with respect to $y$:
+
+<VisualizingPartialDerivatives variable="y" />
+
+The partial derivative with respect to $y$ at $(1, 2)$ is:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{y} &= \pdv{}{y} (1^2 + \sin(y)) |_{y = 2} \\
+&= \cos(y) |_{y = 2} \\
+&= \cos(2)
+\end{split}
+\end{equation}
+$$
+
+## Partial Derivatives in Cylindrical Coordinates (Optional)
+
+In cylindrical coordinates, we have three variables: $r$, $\theta$, and $z$.
+
+The $r$ and $\theta$ variables are essentially polar coordinates that lie on the $xy$-plane, and $z$ stays the same.
+
+So, if we have a function $f(r, \theta, z)$, we can find the partial derivatives with respect to $r$ and $\theta$ by treating $z$ as a constant.
+For example, the partial derivative with respect to $r$ is:
+
+$$
+\begin{equation}
+\pdv{f}{r}(r, \theta, z) = \lim_{\Delta r \to 0} \frac{f(r + \Delta r, \theta, z) - f(r, \theta, z)}{\Delta r}
+\end{equation}
+$$
+
+This is similar to the partial derivatives in Cartesian coordinates, but we're nudging $r$ instead of $x$.
+
+## Summary and Next Steps
+
+We have introduced the concept of partial derivatives and some ways to visualize them.
+
+Here are the key points to remember:
+
+1. The partial derivative of a function with respect to one of its inputs measures the rate of change of the function when that input is nudged.
+2. The partial derivative is denoted by $\pdv{f}{x}$, where $x$ is the input we are differentiating with respect to.
+3. The partial derivative is calculated by treating all other inputs as constants and finding the derivative as usual.
+    The formal definition is:
+
+    $$
+    \begin{equation}
+    \pdv{f}{x}(x, y) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x, y) - f(x, y)}{\Delta x}
+    \end{equation}
+    $$
+4. Partial derivatives can be visualized by slicing the function in the direction of the input we are differentiating with respect to.
+
+Next, we shall consider second-order partial derivatives, similar to how we have second derivatives for single-variable functions.

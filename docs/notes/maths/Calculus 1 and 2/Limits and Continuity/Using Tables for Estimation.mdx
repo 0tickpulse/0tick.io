@@ -1,0 +1,92 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Using Tables for Estimation
+
+Previously, we discussed and practiced using graphs to estimate limits.
+However, graphs are not always available or easy to use.
+In such cases, one alternative is to construct a table of values and use it to estimate the limit.
+
+Consider some function $f(x)$ that you want to find the limit of as $x$ approaches $4$.
+We can sample the function at values of $x$ that are close to $4$ and use the values to estimate the limit.
+
+Our samples can be: $3.9$, $3.99$, $3.999$, $4.001$, $4.01$, $4.1$
+
+Let's say that we find the following values for $f(x)$:
+
+
+| $x$    | $3.9$   | $3.99$  | $3.999$ | $4.001$ | $4.01$  | $4.1$   |
+| ------ | ------- | ------- | ------- | ------- | ------- | ------- |
+| $f(x)$ | $11.21$ | $11.92$ | $11.99$ | $12.01$ | $12.08$ | $12.61$ |
+
+From this table, we can see that as $x$ gets closer to $4$, the value of $f(x)$ gets closer to $12$.
+Hence, we can say with reasonable confidence that:
+
+$$
+\begin{equation}
+\lim_{x \to 4} f(x) = 12
+\end{equation}
+$$
+
+This method is particularly useful when you have a function that is difficult to graph or when you need a more precise estimate than what a graph can provide.
+
+## Double-Sided Tables
+
+Recall that limits can sometimes be different depending on whether you approach from the left or the right.
+This can also be reflected in the table of values.
+Consider the following sample values for $f(x)$ as $x$ approaches $1$ from the left and the right:
+
+| $x$    | $0.9$  | $0.99$ | $0.999$ | $1.001$ | $1.01$ | $1.1$  |
+| ------ | ------ | ------ | ------- | ------- | ------ | ------ |
+| $g(x)$ | $9.21$ | $9.94$ | $9.99$  | $7.01$  | $7.05$ | $7.66$ |
+
+Notice that as $x$ approaches $1$ from the left, the value of $g(x)$ gets closer to $10$.
+
+On the other hand, as $x$ approaches $1$ from the right, the value of $g(x)$ gets closer to $7$.
+
+Hence, we can construct two one-sided limits from this table:
+
+$$
+\begin{align}
+\lim_{x \to 1^-} g(x) &= 10 \\
+\lim_{x \to 1^+} g(x) &= 7
+\end{align}
+$$
+
+## Precautions and Limitations
+
+With this method, there are some things to keep in mind to ensure accurate estimates:
+
+1. **Sampling** - we want to sample values that are close to the limit point but not exactly at the limit point.
+   This is because we are trying to estimate the limit as $x$ approaches a certain value, not the value of the function at that point (which may not even exist).
+2. **Accuracy** - the accuracy of the estimate depends on the number of samples and how close they are to the limit point.
+   More samples and closer samples will generally give a better estimate.
+
+When you get the results from the table;
+
+1. The values for $f(x)$ should get closer to a single value as $x$ approaches the limit point.
+2. If the limit is two-sided (i.e., same from both sides), the values from both sides should get closer to the same value.
+3. If the limit is different from both sides, the values from each side should get closer to their respective values.
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of using tables to estimate limits.
+
+Here are the key points to remember:
+
+1. Tables can be used to estimate limits when graphs are not available or not practical.
+2. Sampling values close to the limit point can help estimate the limit.
+3. Double-sided tables can be used to estimate one-sided limits.
+4. Accuracy of the estimate depends on the number of samples and how close they are to the limit point.
+
+We've now covered two methods for estimating limits: using graphs and using tables, but what about actually computing limits?
+In the next section, we will look at some techniques for computing limits analytically, starting with the various algebraic properties of limits.

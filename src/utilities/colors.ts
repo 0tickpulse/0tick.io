@@ -84,5 +84,5 @@ export function gradient(from: string, to: string, percent: number) {
     const g = fromColor[1] + (toColor[1] - fromColor[1]) * percent;
     const b = fromColor[2] + (toColor[2] - fromColor[2]) * percent;
 
-    return `rgb(${r}, ${g}, ${b})`;
+    return `rgb(${r.toFixed(0)}, ${g.toFixed(0)}, ${b.toFixed(0)})`;
 }

@@ -1,0 +1,532 @@
+---
+sidebar_position: 2
+description: Approximating multivariable functions with a plane.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Tangent Planes of Graphs
+
+Recall from single-variable calculus that we can use a tangent line to approximate the behavior of a function near a point.
+Given a point $x_0$ on a curve $f(x)$, the tangent line at $x_0$ is given by the following:
+
+$$
+\begin{equation}
+y = \dv{f}{x}(x_0)(x - x_0) + f(x_0)
+\end{equation}
+$$
+
+We can extend this idea to multivariable functions.
+Instead of a tangent line, we use a tangent *plane* to approximate the behavior of a function near a point.
+
+Before even attempting to find the tangent plane, let's explore 3D planes a bit more to build some intuition.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Understanding and Controlling 3D Planes in Space
+
+There are many ways to represent a plane in 3D space.
+We have [previously explored planes in the context of linear algebra](/notes/maths/Linear%20Algebra/Vectors%20Part%202#equation-of-a-plane-in-r3), where a plane is defined by a normal vector and a point, i.e. $\va{n} \cdot (\va{r} - \va{r}_0) = 0$.
+
+Let the plane be a function of $x$ and $y$:
+
+$$
+\begin{equation}
+L(x, y) = ?
+\end{equation}
+$$
+
+Consider a point in 3D space, $(1, 2, 3)$.
+Then, consider a plane $L(x, y)$ such that the plane passes through the point $(1, 2, 3)$.
+There could be many such planes, so we will need to specify more information to uniquely determine the plane.
+
+export function Plane3DGraph() {
+    const a = 3;
+    const b = 3;
+    const c = 3;
+    const d = 9;
+
+    const [slice, setSlice] = useState("x") // "x", "y", "none";
+    const [slicePoint, setSlicePoint] = useState(1);
+    const [showSlicedLine, setShowSlicedLine] = useState(true);
+
+    function z(x, y) {
+        return (d - a * x - b * y) / c;
+    }
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <OldMathbox>
+                    <MB.Cartesian
+                        scale={[
+                            0.5, 0.5, 0.5
+                        ]}
+                    >
+                        <MB.Grid axes="xz" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+                        <MB.Axis axis="x" range={[-10, 10]} color={color("yellow")} />
+                        <MB.Axis axis="y" range={[-10, 10]} color={color("green")} />
+                        <MB.Axis axis="z" range={[-10, 10]} color={color("blue")} />
+                        <MB.Area
+                            id="plane"
+                            axes="xz"
+                            expr={(emit, x, y, i, t) => {
+                                emit(x, z(x, y), y); // Note the order of the axes
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={[-5, 5]}
+                            rangeY={[-5, 5]}
+                        />
+                        <MB.Surface
+                            points="#plane"
+                            opacity={0.5}
+                            color={color("blue")}
+                            blending="additive"
+                        />
+                        <MB.Area
+                            id="plane_slice"
+                            axes="xz"
+                            expr={(emit, x, y, i, t) => {
+                                if (slice === "x") {
+                                    emit(x, y, slicePoint);
+                                }
+                                if (slice === "y") {
+                                    emit(slicePoint, x, y);
+                                }
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={[-20, 20]}
+                            rangeY={[-20, 20]}
+                        />
+
+                        <MB.Surface
+                            points="#plane_slice"
+                            opacity={0.5}
+                            color={"#a0a0a0"}
+                            blending="additive"
+                        />
+
+                        {showSlicedLine && slice !== "none" && (
+                            <>
+                                <MB.Interval
+                                    id="sliced_line"
+                                    expr={(emit, x, i, t) => {
+                                        if (slice === "x") {
+                                            emit(x, z(x, slicePoint), slicePoint);
+                                        }
+                                        if (slice === "y") {
+                                            emit(slicePoint, z(slicePoint, x), x);
+                                        }
+                                    }}
+                                    channels={3}
+                                    range={[-5, 5]}
+                                    width={64}
+                                />
+                                <MB.Line
+                                    points="#sliced_line"
+                                    color={color("red")}
+                                    width={10}
+                                    zIndex={100}
+                                />
+                            </>
+                        )}
+                    </MB.Cartesian>
+                </OldMathbox>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <Pills label="Slice" value={slice} options={{none: "None", x: <MathEquation inline={true}>x</MathEquation>, y: <MathEquation inline={true}>y</MathEquation>}} onChange={setSlice} />
+                    <Checkbox label="Show sliced line" value={showSlicedLine} onChange={setShowSlicedLine} />
+                    <SliderInput label="Slice point" value={slicePoint} min={-5} max={5} step={0.1} onChange={setSlicePoint} />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+}
+
+<Plane3DGraph />
+
+The first property of this plane function, is that it must pass through the point $(1, 2, 3)$. This can be expressed as:
+
+$$
+\begin{equation}
+L(1, 2) = 3
+\end{equation}
+$$
+
+Next, consider the slope of the plane. If we slice the plane along the $x$-axis, we will see a line, and likewise for the $y$-axis (check above for a visualization).
+This can then be expressed as:
+
+$$
+\begin{align}
+\dv{L}{x}(x, y) &= a \\
+\dv{L}{y}(x, y) &= b
+\end{align}
+$$
+
+Where $a$ is some arbitrary constant. We can use these equations to try to get the equation for the plane.
+
+First, consider the first equation $\dv{L}{x}(x, y) = a$. This means that $L$ is equal to $ax$ plus something that doesn't depend on $x$:
+
+$$
+\begin{equation}
+L(x, y) = ax + f(y)
+\end{equation}
+$$
+
+Likewise, the second equation $\dv{L}{y}(x, y) = b$ means that $L$ is equal to $by$ plus something that doesn't depend on $y$:
+
+$$
+\begin{equation}
+L(x, y) = by + g(x)
+\end{equation}
+$$
+
+Combining these two equations, we would get something like:
+
+$$
+\begin{equation}
+L(x, y) = ax + by + c
+\end{equation}
+$$
+
+What should $c$ be? We know that $L(1, 2) = 3$, so we can substitute these values in:
+
+$$
+\begin{equation}
+L(1, 2) = a + 2b + c = 3
+\end{equation}
+$$
+
+This gives us a system of equations that we can solve to find the values of $a$, $b$, and $c$. For example, given these following slopes:
+
+$$
+\begin{equation}
+\dv{L}{x}(x, y) = 2 \\
+\dv{L}{y}(x, y) = 1
+\end{equation}
+$$
+
+Then, we can find the equation of the plane:
+
+$$
+\begin{equation}
+L(x, y) = 2x + y + c
+\end{equation}
+$$
+
+Given that $L(1, 2) = 3$, we can plug in these values to find $c$:
+
+$$
+\begin{equation}
+L(1, 2) = 2 + 2 + c = 3 \implies c = -1
+\end{equation}
+$$
+
+Thus, the equation of the plane is:
+
+$$
+\begin{equation}
+L(x, y) = 2x + y - 1
+\end{equation}
+$$
+
+Another way to think about this is through some function transformation. Going back to what we had:
+
+$$
+\begin{equation}
+L(x, y) = ax + by + c, \quad L(1, 2) = 3
+\end{equation}
+$$
+
+Let's rewrite $L$ using the following:
+
+$$
+\begin{equation}
+L(x, y) = a(x - \class{blue}{1}) + b(y - \class{yellow}{2}) + k, \quad L(\class{blue}{1}, \class{yellow}{2}) = 3
+\end{equation}
+$$
+
+Where $k$ is a new constant. This is equivalent to the previous equation (the partial derivatives are the same), but once we plug in $(1, 2)$, we get:
+
+$$
+\begin{equation}
+L(1, 2) = a(1 - 1) + b(2 - 2) + k = k = 3
+\end{equation}
+$$
+
+Meaning that $k = 3$. We can generalize this. Given a point $(x_0, y_0, z_0)$, and the slopes $\dv{L}{x} = a$ and $\dv{L}{y} = b$, the equation of the plane is:
+
+$$
+\begin{equation}
+L(x, y) = a(x - x_0) + b(y - y_0) + z_0
+\end{equation}
+$$
+
+This is essentially the 3D equivalent of the slope-intercept form of a line, $y = mx + b$.
+
+## Computing the Tangent Plane
+
+Now that we have a better understanding of 3D planes, let's compute the tangent plane of a function $f(x, y)$ at a point $(\class{blue}{x_0}, \class{yellow}{y_0}, \class{green}{f(x_0, y_0)})$.
+
+The tangent plane can be defined using the slopes of the function at that point, and the point itself. Hence, the equation of the tangent plane is:
+
+$$
+\begin{equation}
+L(x, y) = \pdv{f(x_0, y_0)}{x}(x - \class{blue}{x_0}) + \pdv{f(x_0, y_0)}{y}(y - \class{yellow}{y_0}) + \class{green}{f(x_0, y_0)} \label{eq:computing_the_tangent_plane}
+\end{equation}
+$$
+
+This is the 3D equivalent of the tangent line in single-variable calculus.
+
+Notice that the first two terms resemble a dot product between the gradient of the function and the vector $(x - x_0, y - y_0)$.
+If we set $\va{r} = (x, y)$ and $\va{r}_0 = (x_0, y_0)$, then the equation of the tangent plane can be written as:
+
+$$
+\begin{equation}
+L(\va{r}) = \grad f(\va{r}_0) \cdot (\va{r} - \va{r}_0) + f(\va{r}_0) \label{eq:computing_the_tangent_plane-vector-form}
+\end{equation}
+$$
+
+Which is even closer to the slope-intercept form of a line:
+
+$$
+\begin{equation}
+\underbrace{L(\va{r})}_{y} = \underbrace{\grad f(\va{r}_0)}_{m} \cdot \underbrace{(\va{r} - \va{r}_0)}_{x} + \underbrace{f(\va{r}_0)}_{b}
+\end{equation}
+$$
+
+## Linearity of Tangent Planes
+
+A linear function, for this context, is a function that can be written in the form $f(x_1, x_2, \ldots, x_n) = a_1x_1 + a_2x_2 + \ldots + a_nx_n$.
+In other words, the output of the function is a linear combination of the inputs.
+
+Usually, the input of the function is collected into a vector like $\va{x} = \mqty[x_1 \\ x_2 \\ \vdots \\ x_n]$.
+The output is then written as a dot product of that vector with a coefficient vector:
+
+$$
+\begin{equation}
+f(\va{x}) = \va{a} \cdot \va{x}
+\end{equation}
+$$
+
+In a tangent plane, however, we add a constant term to the linear function.
+Now the output is a linear combination of the inputs plus a constant:
+
+$$
+\begin{equation}
+L(\va{x}) = \va{a} \cdot \va{x} + b
+\end{equation}
+$$
+
+This is no longer a linear function, but an **affine** function.
+
+## Local Linearization
+
+Recall, in single-variable calculus, that the tangent line is used to approximate the behavior of a function near a point.
+
+In this case, we can do the same.
+Suppose we have a nonlinear function $f(\va{x})$.
+We can approximate the function near a point $\va{x}_0$ using a tangent plane.
+
+Recall from Equation $\eqref{eq:computing_the_tangent_plane-vector-form}$ that the equation of the tangent plane is:
+
+$$
+\begin{equation}
+L(\va{x}) = \grad f(\va{x}_0) \cdot (\va{x} - \va{x}_0) + f(\va{x}_0)
+\end{equation}
+$$
+
+And as such, this can be used to approximate the function $f(\va{x})$ near the point $\va{x}_0$.
+
+## Example Problem: Tangent Plane of a Multivariable Function
+
+> The function $f(x, y) = x^2 + y^2$ is given. Find the equation of the tangent plane at the point $(1, 2, 5)$.
+
+To find the equation of the tangent plane, we need to find the partial derivatives of $f(x, y)$ at the point $(1, 2)$:
+
+$$
+\begin{align}
+\pdv{f}{x} &= 2x \\
+\pdv{f}{y} &= 2y
+\end{align}
+$$
+
+Plugging in the values $(1, 2)$, we get:
+
+$$
+\begin{equation}
+\pdv{f}{x}(1, 2) = \class{blue}{2} \quad \pdv{f}{y}(1, 2) = \class{yellow}{4}
+\end{equation}
+$$
+
+Thus, the equation of the tangent plane is as follows, using the point $(\class{green}{1}, \class{red}{2}, \class{purple}{5})$:
+
+$$
+\begin{equation}
+L(x, y) = \class{blue}{2}(x - \class{green}{1}) + \class{yellow}{4}(y - \class{red}{2}) + \class{purple}{5}
+\end{equation}
+$$
+
+## Example Problem: Approximating an Expression
+
+> Solve for an approximate value for the following expression:
+>
+> $$\sqrt{2.01 + \sqrt{0.99 + \sqrt{9.01}}}$$
+>
+> [(Source)](https://www.khanacademy.org/math/multivariable-calculus/applications-of-multivariable-derivatives/tangent-planes-and-local-linearization/a/local-linearization)
+
+To solve this problem, we need to find a function that approximates the given expression. Let's define the function as follows:
+
+$$
+\begin{equation}
+f(x, y, z) = \sqrt{x + \sqrt{y + \sqrt{z}}}
+\end{equation}
+$$
+
+Recall that, to find the local linearization of a function, we need:
+
+1. The value of $f(x_0, y_0, z_0)$
+2. The partial derivatives of $f(x, y, z)$ at $(x_0, y_0, z_0)$
+
+We can set $x_0 = 2$, $y_0 = 1$, and $z_0 = 9$, a close approximation to the values in the expression.
+Then, we can find the value of the function at $(2, 1, 9)$:
+
+$$
+\begin{equation}
+\begin{split}
+f(2, 1, 9) &= \sqrt{2 + \sqrt{1 + \sqrt{9}}} \\
+&= \sqrt{2 + \sqrt{1 + 3}} \\
+&= \sqrt{2 + \sqrt{4}} \\
+&= \sqrt{2 + 2} \\
+&= 2
+\end{split}
+\end{equation}
+$$
+
+This itself serves as a close approximation to the original expression, but we can get closer!
+Next, we need to find the partial derivatives of $f(x, y, z)$ at $(2, 1, 9)$, the easiest of which is $\pdv{f}{x}$:
+
+$$
+\begin{equation}
+\pdv{f}{x} = \frac{1}{2\sqrt{x + \sqrt{y + \sqrt{z}}}}
+\end{equation}
+$$
+
+For the other partial derivatives, we need to use the chain rule to find the derivatives of the inner functions:
+
+$$
+\begin{equation}
+\pdv{f}{y} = \frac{1}{2\sqrt{x + \sqrt{y + \sqrt{z}}}} \cdot \frac{1}{2\sqrt{y + \sqrt{z}}}
+\end{equation}
+$$
+
+Finally, for $\pdv{f}{z}$, another application of the chain rule is needed:
+
+$$
+\begin{equation}
+\pdv{f}{z} = \frac{1}{2\sqrt{x + \sqrt{y + \sqrt{z}}}} \cdot \frac{1}{2\sqrt{y + \sqrt{z}}} \cdot \frac{1}{2\sqrt{z}}
+\end{equation}
+$$
+
+We have three components in these partial derivatives. Evaluating them one by one at $(2, 1, 9)$:
+
+$$
+\begin{align}
+\frac{1}{2\sqrt{x + \sqrt{y + \sqrt{z}}}} &= \frac{1}{2\sqrt{2 + \sqrt{1 + \sqrt{9}}}} &&= \frac{1}{2\sqrt{2 + \sqrt{1 + 3}}} &= \frac{1}{4} \\
+\frac{1}{2\sqrt{y + \sqrt{z}}} &= \frac{1}{2\sqrt{1 + \sqrt{9}}} &&= \frac{1}{2\sqrt{1 + 3}} &= \frac{1}{4} \\
+\frac{1}{2\sqrt{z}} &= \frac{1}{2\sqrt{9}} &&= \frac{1}{6}
+\end{align}
+$$
+
+Hence the partial derivatives at $(2, 1, 9)$ are:
+
+$$
+\begin{align}
+\pdv{f}{x}(2, 1, 9) &= \frac{1}{4} \\
+\pdv{f}{y}(2, 1, 9) &= \frac{1}{4} \cdot \frac{1}{4} = \frac{1}{16} \\
+\pdv{f}{z}(2, 1, 9) &= \frac{1}{4} \cdot \frac{1}{4} \cdot \frac{1}{6} = \frac{1}{96}
+\end{align}
+$$
+
+Recall the equation of the tangent plane for local linearization:
+
+$$
+\begin{equation}
+L(\va{x}) = \pdv{f}{x}(\va{x_0})(x - x_0) + \pdv{f}{y}(\va{x_0})(y - y_0) + \pdv{f}{z}(\va{x_0})(z - z_0) + f(\va{x_0})
+\end{equation}
+$$
+
+Plugging in the values, we get:
+
+$$
+\begin{equation}
+L(\va{x}) = \frac{1}{4}(x - 2) + \frac{1}{16}(y - 1) + \frac{1}{96}(z - 9) + 2
+\end{equation}
+$$
+
+Finally, using the values $x = 2.01$, $y = 0.99$, and $z = 9.01$, we can find the approximate value of the expression:
+
+$$
+\begin{equation}
+\begin{split}
+L(2.01, 0.99, 9.01) &= \frac{1}{4}(2.01 - 2) + \frac{1}{16}(0.99 - 1) + \frac{1}{96}(9.01 - 9) + 2 \\
+&= \frac{1}{4}(0.01) + \frac{1}{16}(-0.01) + \frac{1}{96}(0.01) + 2 \\
+&= \frac{0.01}{4} - \frac{0.01}{16} + \frac{0.01}{96} + 2 \\
+&= 0.0025 - 0.000625 + 0.0001041667 + 2 \\
+&= 2.0019791667
+\end{split}
+\end{equation}
+$$
+
+Thus, the approximate value of the expression is $2.0019791667$.
+
+:::info The Actual Value
+
+The actual value for the expression is $2.0019778882$. The approximation is very close (within $0.0000012785$), showing the power of local linearization in approximating functions.
+
+:::
+
+## Summary
+
+We have explored the concept of tangent planes in 3D space, and how they can be used to approximate the behavior of a function near a point.
+
+- The equation of a plane in 3D space can be written as $L(x, y) = ax + by + c$.
+    - $a$ and $b$ are the slopes of the plane along the $x$ and $y$ axes respectively.
+    - $c$ is a constant that determines the height of the plane.
+- The equation of the tangent plane of a function $f(x, y)$ at a point $(x_0, y_0, f(x_0, y_0))$ is given by:
+
+    $$
+    \begin{equation}
+    L(x, y) = \pdv{f(x_0, y_0)}{x}(x - x_0) + \pdv{f(x_0, y_0)}{y}(y - y_0) + f(x_0, y_0)
+    \end{equation}
+    $$
+
+- The equation of the tangent plane can also be written in vector form as:
+
+    $$
+    \begin{equation}
+    L(\va{r}) = \grad f(\va{r}_0) \cdot (\va{r} - \va{r}_0) + f(\va{r}_0)
+    \end{equation}
+    $$
+
+- The tangent plane is an affine function, not a linear function.
+- The tangent plane can be used to approximate the behavior of a function near a point, a concept known as local linearization.
+
+Next, we will learn about quadratic approximations, another method to approximate functions near a point.
+Eventually, we will generalize even further to the Multivariable Taylor Series, which can approximate functions to any degree near a point.

@@ -2,7 +2,7 @@
 sidebar_position: 4
 ---
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
@@ -416,14 +416,9 @@ export function ExampleProblemLadderSlidingDownAWall() {
             </div>
             <div className="card__footer">
                 {/* Slider */}
-                <input
-                    type="range"
-                    min="0"
-                    max="2"
-                    step="0.01"
-                    value={time}
-                    onChange={(e) => setTime(parseFloat(e.target.value))}
-                />
+                <ControlPanel>
+                    <SliderInput latex label="t" min={0} max={2} step={0.01} value={time} onChange={(v) => setTime(v)} />
+                </ControlPanel>
             </div>
         </div>
     )

@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, Point } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState } from "react";
 import { DerivativeFromLimits } from "@site/src/components/mdxGlobal/Differentiation";
 import { color } from "@site/src/utilities/colors"
@@ -594,15 +594,9 @@ export function SimpleProducts() {
             />
         </Mafs>
         <div>
-            <input
-                type="range"
-                min={-10}
-                max={10}
-                step={0.1}
-                value={x}
-                onChange={(e) => setX(parseFloat(e.target.value))}
-            />
-            <span>{x}</span>
+            <ControlPanel>
+                <SliderInput latex label="x" value={x} min={0} max={7} step={0.1} onChange={setX} />
+            </ControlPanel>
         </div>
     </>)
 
@@ -621,94 +615,88 @@ export function DifferenceInArea({ split = false }) {
 
     const area = f(originalX) * g(originalX);
 
-    return (<>
-        <Mafs
-            viewBox={{
-                x: [0, 7],
-                y: [-3, 3],
-            }}
-        >
-            {/* x-axis is f(x), y-axis is g(x) */}
-            <Polygon
-                points={[
-                    [0, 0],
-                    [0, g(originalX)],
-                    [f(originalX), g(originalX)],
-                    [f(originalX), 0],
-                ]}
-                color={area > 0 ? color("green") : color("red")}
-            />
-            <LaTeX
-                tex={String.raw`f(x)`}
-                at={[f(originalX) / 2, Math.min(g(originalX), 0) - 0.5]}
-            />
-            <LaTeX
-                tex={String.raw`g(x)`}
-                at={[-0.5, g(originalX) / 2]}
-            />
-
-            {split ? <>
-                <Polygon
-                    points={[
-                        [0, g(originalX)],
-                        [0, g(x)],
-                        [f(originalX), g(x)],
-                        [f(originalX), g(originalX)],
-                    ]}
-                    color={color("red")}
-                />
-                <Polygon
-                    points={[
-                        [f(originalX), g(originalX)],
-                        [f(originalX), g(x)],
-                        [f(x), g(x)],
-                        [f(x), g(originalX)],
-                    ]}
-                    color={color("blue")}
-                />
-                <Polygon
-                    points={[
-                        [f(originalX), 0],
-                        [f(originalX), g(originalX)],
-                        [f(x), g(originalX)],
-                        [f(x), 0],
-                    ]}
-                    color={color("yellow")}
-                />
-
-                <LaTeX
-                    tex={String.raw`d(g(x))`}
-                    at={[-0.5, g(originalX) + (g(x) - g(originalX)) / 2]}
-                />
-                <LaTeX
-                    tex={String.raw`d(f(x))`}
-                    at={[f(originalX) + (f(x) - f(originalX)) / 2, -0.5]}
-                />
-            </> : <>
-                <Polygon
-                    points={[
-                        [0, 0],
-                        [0, g(x)],
-                        [f(x), g(x)],
-                        [f(x), 0],
-                    ]}
-                />
-            </>}
-
-        </Mafs>
-        <div>
-            <input
-                type="range"
-                min={3}
-                max={10}
-                step={0.1}
-                value={x}
-                onChange={(e) => setX(parseFloat(e.target.value))}
-            />
-            <span>{x}</span>
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs
+                    viewBox={{
+                        x: [0, 7],
+                        y: [-3, 3],
+                    }}
+                >
+                    {/* x-axis is f(x), y-axis is g(x) */}
+                    <Polygon
+                        points={[
+                            [0, 0],
+                            [0, g(originalX)],
+                            [f(originalX), g(originalX)],
+                            [f(originalX), 0],
+                        ]}
+                        color={area > 0 ? color("green") : color("red")}
+                    />
+                    <LaTeX
+                        tex={String.raw`f(x)`}
+                        at={[f(originalX) / 2, Math.min(g(originalX), 0) - 0.5]}
+                    />
+                    <LaTeX
+                        tex={String.raw`g(x)`}
+                        at={[-0.5, g(originalX) / 2]}
+                    />
+                    {split ? <>
+                        <Polygon
+                            points={[
+                                [0, g(originalX)],
+                                [0, g(x)],
+                                [f(originalX), g(x)],
+                                [f(originalX), g(originalX)],
+                            ]}
+                            color={color("red")}
+                        />
+                        <Polygon
+                            points={[
+                                [f(originalX), g(originalX)],
+                                [f(originalX), g(x)],
+                                [f(x), g(x)],
+                                [f(x), g(originalX)],
+                            ]}
+                            color={color("blue")}
+                        />
+                        <Polygon
+                            points={[
+                                [f(originalX), 0],
+                                [f(originalX), g(originalX)],
+                                [f(x), g(originalX)],
+                                [f(x), 0],
+                            ]}
+                            color={color("yellow")}
+                        />
+                        <LaTeX
+                            tex={String.raw`d(g(x))`}
+                            at={[-0.5, g(originalX) + (g(x) - g(originalX)) / 2]}
+                        />
+                        <LaTeX
+                            tex={String.raw`d(f(x))`}
+                            at={[f(originalX) + (f(x) - f(originalX)) / 2, -0.5]}
+                        />
+                    </> : <>
+                        <Polygon
+                            points={[
+                                [0, 0],
+                                [0, g(x)],
+                                [f(x), g(x)],
+                                [f(x), 0],
+                            ]}
+                        />
+                    </>}
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput latex label="x" value={x} min={3} max={7} step={0.1} onChange={setX} />
+                </ControlPanel>
+            </div>
         </div>
-    </>)
-
+    )
 }
 
 <DifferenceInArea />

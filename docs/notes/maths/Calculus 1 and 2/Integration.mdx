@@ -2,7 +2,7 @@
 sidebar_position: 5
 ---
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import { useState } from "react";
@@ -75,15 +75,9 @@ A visualization is shown below:
                     />
                 </Mafs>
                 {/* Slider */}
-                <input
-                    type="range"
-                    min={1}
-                    max={100}
-                    value={n}
-                    onChange={(e) => setN(parseInt(e.target.value))}
-                    style={{ width: "100%" }}
-                />
-                <p>Number of rectangles: {n}</p>
+                <ControlPanel>
+                    <SliderInput latex label="n" value={n} min={1} max={20} onChange={setN} />
+                </ControlPanel>
             </div>
         </div>
     )
@@ -1535,8 +1529,8 @@ $$
 \begin{equation}
 \begin{split}
 \int \class{red}{\overbrace{\ln(x)}^{f(x)}} \class{blue}{\underbrace{(1)}_{g'(x)}} \dd{x} &= \class{red}{f(x)}\class{blue}{g(x)} - \int \class{red}{f'(x)}\class{blue}{g(x)} \dd{x} \\
-&= \class{red}{\ln(x)}\class{blue}{x} - \int \class{red}{\frac{1}{x}}\class{blue}{x} \dd{x} \\
-&= \class{red}{\ln(x)}\class{blue}{x} - x + C \\
+&= \class{red}{\ln(x)}\posX - \int \class{red}{\frac{1}{x}}\posX \dd{x} \\
+&= \class{red}{\ln(x)}\posX - x + C \\
 &= x(\ln(x) - 1) + C
 \end{split}
 \end{equation}

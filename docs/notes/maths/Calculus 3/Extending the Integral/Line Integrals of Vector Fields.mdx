@@ -1,0 +1,324 @@
+---
+sidebar_position: 2
+description: Integrate a vector field along a curve.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Line Integrals of Vector Fields
+
+In this section, we will explore the concept of line integrals of vector fields.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction - Moving in a Force Field
+
+Imagine a carboard box in someone's driveway. It's sitting still when, suddenly, the wind picks up - it's a hurricane!
+The carboard box flies off the driveway and into the air, where gravity takes over and pulls it back down.
+When it goes back down, it doesn't just fall straight down, the wind still pushes it left and right.
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+    <Circle center={[-2, 4]} radius={0.25} />
+    <Circle center={[2, 1]} radius={0.25} />
+    <Plot.Parametric t={[-2, 2]} xy={(t) => [t + -(t ** 2 - 4) * Math.cos(t / 5), (t ** 2) + (t + 2) * (-3 / 4) + (t ** 2 - 4) * (Math.sin(2 * t) - 2.5) / 2]} />
+</Mafs>
+
+<details>
+    <summary>The curve in the visual</summary>
+
+    I used quite a complex curve in the visual above:
+
+    $$
+    \begin{equation}
+    \va{r}(t) = \mqty[ t - (t^2 - 4)\cos\qty(\frac{t}{5}) \\ t^2 + (t + 2)\qty(-\frac{3}{4}) + \frac{t^2 - 4}{2}\qty(\sin(2t) - 2.5) ]
+    \end{equation}
+    $$
+
+    It's actually quite difficult to create a curve like this, because it needs to satisfy a few conditions:
+
+    - It must start at a given point and end at a given point.
+    - It must look chaotic, but not too chaotic.
+    - It must not go off the screen.
+
+    The initial point is $(-2, 4)$ and the final point is $(2, 1)$.
+    I made $t$ range from $-2$ to $2$ to automatically satisfy the first condition in the $x$-direction.
+    I added $(t + 2)\qty(-\frac{3}{4})$ to make the final point correct.
+
+    Then, I just kept adding and subtracting terms until I got something that looked good.
+    Each term gets $(t^2 - 4)$ to make sure that at the boundaries they are $0$, hence the curve still starts and ends at the correct points.
+</details>
+
+The force we are considering is gravity (ignore forces from the wind, just note that it affects the box's motion).
+Recall that the work done due to a force is the dot product of the force and the distance moved:
+
+$$
+\begin{equation}
+W = \va{F} \cdot \va{r}
+\end{equation}
+$$
+
+(For a quick refresher on forces and work, see the appendix at the end of this page.)
+
+However, we aren't just moving in a straight line - we are moving along a curve, due to the wind pushing the box around.
+Instead, we can break the curve into small segments and sum the work done along each segment.
+
+<ArcLengthVisualizer
+    xy={(t) => [t + -(t ** 2 - 4) * Math.cos(t / 5), (t ** 2) + (t + 2) * (-3 / 4) + (t ** 2 - 4) * (Math.sin(2 * t) - 2.5) / 2]}
+    t={[-2, 2]}
+    mafsProps={{
+        viewBox: { x: [0, 5], y: [0, 5] }
+    }}
+/>
+
+Let's call each segment $\Delta \va{r}_i$, where $i$ is the segment number (starting from $1$ and going to $N$).
+For each segment, the work done is:
+
+$$
+\begin{equation}
+W_i = \va{F} \cdot \Delta \va{r}_i
+\end{equation}
+$$
+
+So the total work done is just the sum of these segmented works:
+
+$$
+\begin{equation}
+W = \sum_{i=1}^{N} W_i = \sum_{i=1}^{N} \va{F} \cdot \Delta \va{r}_i
+\end{equation}
+$$
+
+In calculus, we take these discrete concepts and take limits to make them continuous.
+As the segments get smaller and smaller, the work done becomes an infinitesimal work:
+
+$$
+\begin{equation}
+\dd{W} = \va{F} \cdot \dd{\va{r}}
+\end{equation}
+$$
+
+An infinitesimal change in the curve, $\dd{\va{r}}$ can be written as:
+
+$$
+\begin{equation}
+\dd{\va{r}} = \dv{\va{r}}{t} \dd{t} = \va{r}'(t) \dd{t}
+\end{equation}
+$$
+
+Substituting this back into the equation for the infinitesimal work, we get:
+
+$$
+\begin{equation}
+\dd{W} = \va{F} \cdot \va{r}'(t) \dd{t}
+\end{equation}
+$$
+
+Finally, the *total* work done along the curve is the integral of the infinitesimal work:
+
+$$
+\begin{equation}
+W = \int_C \dd{W} = \int_C \va{F} \cdot \dd{\va{r}} = \int_C \va{F} \cdot \va{r}'(t) \dd{t} \label{eq:line-integral-vector}
+\end{equation}
+$$
+
+## Example Problem: Work in Circular Motion
+
+> Suppose the cardboard box gets caught in a whirlwind and starts moving in a circle of radius $1$.
+> The force acting on the box is given by:
+>
+> $$
+> \begin{equation}
+> \va{F}(x, y) = -y\ihatc + x\jhatc
+> \end{equation}
+> $$
+>
+> If the circle is centered at $(2, 0)$ (check the figure below):
+>
+> 1. Construct a parametric equation for motion along the circle in both counterclockwise and clockwise directions.
+> 2. Find the work done as the box moves around the circle once in the counterclockwise direction.
+> 3. Find the work done as the box moves around the circle once in the clockwise direction.
+> 4. Observe the difference in the work done in the two cases.
+>
+> <Mafs>
+>     <Coordinates.Cartesian />
+>     <Plot.VectorField xy={([x, y]) => [-y, x]} step={0.5} />
+>     <Circle center={[2, 0]} radius={1} color={color("red")} />
+> </Mafs>
+>
+> [(Source)](https://www.khanacademy.org/math/multivariable-calculus/integrating-multivariable-functions/line-integrals-in-vector-fields-articles/a/line-integrals-in-a-vector-field)
+
+1. First, let's construct the parametric equation for motion along the circle.
+
+    For the counterclockwise direction, let's first start with a circle at the origin.
+    Let $t$ represent the angle from the positive $x$-axis.
+    The height is given by $y = \sin(t)$ and the width is given by $x = \cos(t)$.
+    Then, we can translate this circle to the center at $(2, 0)$. The parametric equation is then:
+
+    $$
+    \begin{equation}
+    \va{r}_1(t) = \mqty[2 + \cos(t) \\ \sin(t)], \quad t \in [0, 2\pi]
+    \end{equation}
+    $$
+
+    For the clockwise direction, we can just negate the $x$-component:
+
+    $$
+    \begin{equation}
+    \va{r}_2(t) = \mqty[2 - \cos(t) \\ \sin(t)], \quad t \in [0, 2\pi]
+    \end{equation}
+    $$
+
+2. To find the work done in the counterclockwise direction, we need to evaluate the integral:
+
+    $$
+    \begin{equation}
+    W_1 = \int_C \va{F} \cdot \va{r}_1'(t) \dd{t} = \int_0^{2\pi} \class{blue}{\va{F}(\va{r}_1(t))} \cdot \class{green}{\va{r}_1'(t)} \dd{t}
+    \end{equation}
+    $$
+
+    Based on the definitions for the force and the curve, we can evaluate the force as:
+
+    $$
+    \begin{equation}
+    \va{F}(\va{r}_1(t)) = \mqty[-y \\ x] = \mqty[-\sin(t) \\ \cos(t) + 2]
+    \end{equation}
+    $$
+
+    And the derivative of the curve as:
+
+    $$
+    \begin{equation}
+    \va{r}_1'(t) = \mqty[-\sin(t) \\ \cos(t)]
+    \end{equation}
+    $$
+
+    Thus, the integral becomes:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    W_1 = \int_C \va{F} \cdot \va{r}_1'(t) \dd{t} &= \int_0^{2\pi} \class{blue}{\va{F}(\va{r}_1(t))} \cdot \class{green}{\va{r}_1'(t)} \dd{t} \\
+    &= \int_0^{2\pi} \class{blue}{\mqty[-\sin(t) \\ \cos(t) + 2]} \cdot \class{green}{\mqty[-\sin(t) \\ \cos(t)]} \dd{t}
+    \end{split}
+    \end{equation}
+    $$
+
+    We can evaluate the dot product and integrate to find the work done:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    W_1 &= \int_0^{2\pi} \mqty[\class{blue}{-\sin(t)} \\ \class{yellow}{\cos(t) + 2}] \cdot \mqty[\class{blue}{-\sin(t)} \\ \class{yellow}{\cos(t)}] \dd{t} \\
+    &= \int_0^{2\pi} \qty(\class{blue}{\sin^2(t)} + \class{yellow}{(\cos(t) + 2)\cos(t)}) \dd{t} \\
+    &= \int_0^{2\pi} \qty(\underbrace{\sin^2(t) + \cos^2(t)}_{1} + 2\cos(t)) \dd{t} \\
+    &= \int_0^{2\pi} \qty(1 + 2\cos(t)) \dd{t} \\
+    &= \eval[t + 2\sin(t)|_{\class{red}{0}}^{\class{green}{2\pi}} \\
+    &= \class{green}{(2\pi + 2\sin(2\pi))} - \class{red}{(0 + 2\sin(0))} = 2\pi
+    \end{split}
+    \end{equation}
+    $$
+
+3. We can follow the same steps for the clockwise direction, but there's another way to do this.
+    Given that the clockwise direction is essentially just the negative of the counterclockwise direction, then the dot product would be negative.
+
+    To see this, take the infinitesimal vector $\dd{\va{r}}_2$ and compare it to $\dd{\va{r}}_1$:
+
+    $$
+    \begin{equation}
+    \dd{\va{r}}_2 = \va{r}_2'(t) \dd{t} = \mqty[\sin(t) \\ -\cos(t)] \dd{t} = -\mqty[-\sin(t) \\ \cos(t)] \dd{t} = -\dd{\va{r}}_1
+    \end{equation}
+    $$
+
+    Therefore:
+
+    $$
+    \begin{equation}
+    \dd{W}_2 = \va{F} \cdot \dd{\va{r}}_2 = -\va{F} \cdot \dd{\va{r}}_1 = -\dd{W}_1
+    \end{equation}
+    $$
+
+    Meaning, the total work done in the clockwise direction is just the negative of the work done in the counterclockwise direction:
+
+    $$
+    \begin{equation}
+    W_2 = -W_1 = -2\pi
+    \end{equation}
+    $$
+
+4. The difference in the work done in the two cases is $2\pi - (-2\pi) = 4\pi$.
+    The takeaway is that if you reverse the direction of the curve, the work done is the negative of the work done in the original direction.
+
+## Summary and Next Steps
+
+In this section, we explored the concept of line integrals of vector fields.
+
+Here are the key points to remember:
+
+- The line integral of a vector field along a curve is the integral of the dot product of the vector field and the derivative of the curve.
+
+    $$
+    \begin{equation}
+    \int_C \va{F} \cdot \dd{\va{r}} = \int_C \va{F} \cdot \va{r}'(t) \dd{t} \label{\ref{eq:line-integral-vector}}
+    \end{equation}
+    $$
+
+- The work done along a curve is the line integral of the force along the curve.
+- Reversing the direction of the curve results in the negative of the work done in the original direction.
+
+In the next section, we shall extend the Fundamental Theorem of Calculus to line integrals.
+
+## Appendix: Forces and Work
+
+When we talk about forces, we often talk about the work done by a force.
+Imagine a force $\va{F}$ pushing on a ball, and the ball moves a distance $\va{r}$ (magnitude $s$).
+
+Let's say the force is gravity - $F = mg$, and it is pushing on a ball of mass $0.3 \, \text{kg}$.
+The work done is defined by the product of the force and the distance moved:
+
+$$
+\begin{equation}
+W = Fs = mgs
+\end{equation}
+$$
+
+**However!** This is not the complete picture.
+Gravity acts in the downward direction, but the ball is moving in a different direction:
+
+<Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+    <Vector tail={[-2, 4]} tip={[2, 1]} />
+    <Polyline points={[[-2, 4], [-2, 1], [2, 1]]} strokeStyle="dashed" />
+    <LaTeX at={[-1.8, 2.5]} tex="3" />
+    <LaTeX at={[0, 1.2]} tex="4" />
+    <LaTeX at={[0, 3.5]} tex="4\hat{\mathbf{i}} - 3\hat{\mathbf{j}}" />
+    <Circle center={[-2, 4]} radius={0.25} />
+    <Circle center={[2, 1]} radius={0.25} />
+</Mafs>
+
+In that case, the work done considers only the distance moved in the **direction of the force**, in this case, $3$ units:
+
+$$
+\begin{equation}
+W = \class{red}{m}\class{green}{g}\class{yellow}{s_y} = \class{red}{0.3\, \text{kg}} \times \class{green}{9.8\, \text{m}\cdot\text{s}^{-2}} \times \class{yellow}{3\, \text{m}} = 8.82 \, \text{J}
+\end{equation}
+$$
+
+This is otherwise known as the **dot product** of the force and the distance moved.
+The complete formula for the work done in a straight line for a constant force is then:
+
+$$
+\begin{equation}
+W = \va{F} \cdot \va{r}
+\end{equation}
+$$
+
+

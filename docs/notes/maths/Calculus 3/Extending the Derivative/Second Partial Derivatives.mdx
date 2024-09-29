@@ -1,0 +1,173 @@
+---
+sidebar_position: 2
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# Second Partial Derivatives
+
+Just like how we can take second derivatives of functions of one variable, we can also take second derivatives of functions of two variables.
+However, it is much more complicated to visualize and understand second derivatives in two dimensions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+We can take multiple partial derivatives of a function.
+
+Consider the following function:
+
+$$
+\begin{equation}
+f(x, y) = x\cos(x)\sin(y)^2
+\end{equation}
+$$
+
+There are two partial derivatives, and for each of them, there are two more second partial derivatives.
+Recall that the notation for a second normal derivative, at least in Leibniz notation, is $\dv[2]{f}{x}$.
+For a second partial derivative:
+
+- If it's the same variable for both derivatives, we write $\pdv[2]{f}{x}$.
+- If it's different variables (say $x$ then $y$), we write it as sort of an expansion of $\pdv{y}(\pdv{f}{x})$, which is $\pdv{f}{y}{x}$.
+
+### Alternative Notations
+
+There are other notations for second partial derivatives. For example, we can write $\pdv[2]{f}{y}{x}$ using Euler's notation as $\partial_{y} \partial_{x} f$ or $\partial_{yx} f$.
+In my opinion, for higher-order derivatives, Euler's notation is more concise and easier to read.
+
+$$
+\begin{alignat}{3}
+\pdv{\posX}(\pdv{f}{\posX}) &= \pdv{f}{\posX}{\posX} = \pdv[2]{f}{\posX} &&= \partial_{\posX} \partial_{\posX} f &&= \partial_{\class{blue}{xx}} f = \partial_\posX^2 f \\
+\pdv{\posY}(\pdv{f}{\posY}) &= \pdv{f}{\posY}{\posY} = \pdv[2]{f}{\posY} &&= \partial_{\posY} \partial_{\posY} f &&= \partial_{\class{yellow}{yy}} f = \partial_\posY^2 f \\
+\pdv{\posY}(\pdv{f}{\posX}) &= \pdv{f}{\posY}{\posX} &&= \partial_{\posY} \partial_{\posX} f &&= \partial_{\posY\posX} f \\
+\pdv{\posX}(\pdv{f}{\posY}) &= \pdv{f}{\posX}{\posY} &&= \partial_{\posX} \partial_{\posY} f &&= \partial_{\posX\posY} f \\
+\end{alignat}
+$$
+
+We can show the different derivatives using a tree.
+
+```mermaid
+graph LR
+    A["$$f(x, y) = x \cos(x) \sin(y)^2 $$"] --> B["$$\partial_x f$$"]
+    A --> C["$$\partial_y f$$"]
+    B --> D["$$\partial_x^2 f$$"]
+    B --> E["$$\partial_{yx} f$$"]
+    C --> F["$$\partial_{xy} f$$"]
+    C --> G["$$\partial_y^2 f$$"]
+```
+
+Let's first compute the first partial derivatives of $f(x, y)$. The things kept constant are shown in different colors to help understand the computation.
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{x} &= \pdv{}{x} (x\cos(x)\class{yellow}{\sin(y)^2}) \\
+&= (\cos(x) - x\sin(x))\class{yellow}{\sin(y)^2} \\
+&= \cos(x)\class{yellow}{\sin(y)^2} - x\sin(x)\class{yellow}{\sin(y)^2}
+\end{split}
+\end{equation}
+$$
+
+And the partial derivative with respect to $y$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{y} &= \pdv{}{y} (\class{blue}{x\cos(x)}\sin(y)^2) \\
+&= 2\class{blue}{x\cos(x)}\sin(y)\cos(y)
+\end{split}
+\end{equation}
+$$
+
+Now, let's compute the second partial derivatives.
+
+| Derivative | Computation |
+|------------|-------------|
+| $\pdv[2]{f}{x}$ | $(-2\sin(x) - x\cos(x))\sin(y)^2$ |
+| $\pdv[2]{f}{y}$ | $2x\cos(x)(\cos(y)^2 - \sin(y)^2)$ |
+| $\pdv{f}{y}{x}$ | $2\cos(x)\sin(y)\cos(y)$ |
+| $\pdv{f}{x}{y}$ | $2\cos(x)\sin(y)\cos(y)$ |
+
+Notice something interesting: $\pdv{f}{y}{x} = \pdv{f}{x}{y}$. This is a property that certain functions have, called the Symmetry of Second Derivatives.
+
+```mermaid
+graph LR
+    A["$$f(x, y) = x \cos(x) \sin(y)^2 $$"] --> |"∂/∂x"|B["$$\cos(x)\sin(y)^2 - x\sin(x)\sin(y)^2$$"]
+    A --> |"∂/∂y"|C["$$2x\cos(x)\sin(y)\cos(y)$$"]
+    B --> |"∂/∂x"|D["$$-2\sin(x)\sin(y)^2 - x\cos(x)\sin(y)^2$$"]
+    B --> |"∂/∂y"|E["$$2\cos(x)\sin(y)\cos(y)$$"]
+    C --> |"∂/∂x"|F["$$2\cos(x)\sin(y)\cos(y)$$"]
+    C --> |"∂/∂y"|G["$$2x\cos(x)(\cos(y)^2 - \sin(y)^2)$$"]
+```
+
+There's a formal definition for this property called Schwarz's Theorem, which states that if the second partial derivatives of a function are continuous in a region, then the mixed partial derivatives are equal.
+This theorem is discussed in the appendix.
+
+## Example Problem: Finding Higher-Order Derivatives
+
+> The function $f(x, y)$ is given by the following expression:
+>
+> $$
+> \begin{equation}
+> f(x, y, z) = \sin(xy) e^{x + z}
+> \end{equation}
+> $$
+>
+> Find the following higher-order partial derivative: $\partial_{xyzyz} f$
+>
+> [(Source)](https://www.khanacademy.org/math/multivariable-calculus/multivariable-derivatives/partial-derivative-and-gradient-articles/a/second-partial-derivatives)
+
+This problem is a bit more complicated than the previous one, but the process is the same.
+
+First, make sure to do the partial derivatives in the correct order:
+
+$$
+\begin{equation}
+\pdv{\posX}\pdv{\posY}\pdv{\posZ}\pdv{\posY}\pdv{\posZ} f = \frac{\partial^5 f}{\underset{5}{\partial \posX} \underset{4}{\partial \posY} \underset{3}{\partial \posZ} \underset{2}{\partial \posY} \underset{1}{\partial \posZ}}
+\end{equation}
+$$
+
+Now, let's compute the partial derivatives:
+
+$$
+\begin{align}
+f(\posX, \posY, \posZ) &= \sin(\posX\posY) e^{\posX + \posZ} \\
+\partial_{\posZ} f &= \pdv{\posZ} (\sin(\posX\posY) e^{\posX + \posZ}) = \sin(\posX\posY) e^{\posX + \posZ} \\
+\partial_{\posY\posZ} f &= \pdv{\posY} (\sin(\posX\posY) e^{\posX + \posZ}) = \cos(\posX\posY)\posX e^{\posX + \posZ} \\
+\partial_{\posZ\posY\posZ} f &= \pdv{\posZ} (\cos(\posX\posY) e^{\posX + \posZ}) = \cos(\posX\posY)\posX e^{\posX + \posZ} \\
+\partial_{\posY\posZ\posY\posZ} f &= \pdv{\posY} (-\sin(\posX\posY) e^{\posX + \posZ}) = -\sin(\posX\posY)\posX^2 e^{\posX + \posZ} \\
+\partial_{\posX\posY\posZ\posY\posZ} f &= \pdv{\posX} (-\sin(\posX\posY) e^{\posX + \posZ}) = -\cos(\posX\posY)\posY\posX^2 e^{\posX + \posZ} - \sin(\posX\posY)2\posX e^{\posX + \posZ} - \sin(\posX\posY)\posX^2 e^{\posX + \posZ}
+\end{align}
+$$
+
+Thus, the fifth-order partial derivative is:
+
+$$
+\begin{equation}
+\partial_{\posX\posY\posZ\posY\posZ} f = -\cos(\posX\posY)\posY\posX^2 e^{\posX + \posZ} - \sin(\posX\posY)2\posX e^{\posX + \posZ} - \sin(\posX\posY)\posX^2 e^{\posX + \posZ}
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of second partial derivatives.
+
+Here are the key points to remember:
+
+- Second partial derivatives are the derivatives of the partial derivatives of a function.
+- There are multiple notations for second partial derivatives, including Leibniz, Euler, and subscript notation.
+- The symmetry of second derivatives is a property that certain functions have, where the mixed partial derivatives are equal.
+    This is formalized by Schwarz's Theorem.
+
+In the next section, we will introduce the gradient of a function, which is a vector of partial derivatives.

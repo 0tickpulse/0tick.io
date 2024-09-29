@@ -1,0 +1,323 @@
+---
+sidebar_position: 4
+description: A matrix of second partial derivatives.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# The Hessian Matrix
+
+Previously, we discussed the quadratic approximation of a function.
+We noticed how it is very useful, but can be complicated with a lot of terms.
+In this section, we will introduce the Hessian matrix, and how it can be used to create a vectorized version of the quadratic approximation.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Recall that the gradient of a function $f: \mathbb{R}^n \to \mathbb{R}$ is essentially just a vector of partial derivatives;
+
+$$
+\begin{equation}
+\grad{f} = \mqty[\pdv{f}{x_1} \\ \pdv{f}{x_2} \\ \vdots \\ \pdv{f}{x_n}]
+\end{equation}
+$$
+
+The Hessian matrix is just that, but with the *second* partial derivatives.
+For instance, for a two-variable function $f(x, y)$, the Hessian matrix would be a $2 \times 2$ matrix;
+
+$$
+\begin{equation}
+\vb{H}_{f} = \mqty[{\pdv[2]{f}{x}} & {\pdv{f}{x}{y}} \\ {\pdv{f}{y}{x}} & {\pdv[2]{f}{y}}]
+\end{equation}
+$$
+
+The Hessian matrix of a three-variable function $f(x, y, z)$ would be a $3 \times 3$ matrix;
+
+$$
+\begin{equation}
+\vb{H}_{f} = \mqty[{\pdv[2]{f}{x}} & {\pdv{f}{x}{y}} & {\pdv{f}{x}{z}} \\ {\pdv{f}{y}{x}} & {\pdv[2]{f}{y}} & {\pdv{f}{y}{z}} \\ {\pdv{f}{z}{x}} & {\pdv{f}{z}{y}} & {\pdv[2]{f}{z}}]
+\end{equation}
+$$
+
+Then, in any $n$-variable function, the Hessian matrix would be an $n \times n$ matrix:
+
+$$
+\begin{equation}
+\vb{H}_{f} = \mqty[{\pdv[2]{f}{x_1}} & {\pdv{f}{x_1}{x_2}} & \cdots & {\pdv{f}{x_1}{x_n}} \\ {\pdv{f}{x_2}{x_1}} & {\pdv[2]{f}{x_2}} & \cdots & {\pdv{f}{x_2}{x_n}} \\ \vdots & \vdots & \ddots & \vdots \\ {\pdv{f}{x_n}{x_1}} & {\pdv{f}{x_n}{x_2}} & \cdots & {\pdv[2]{f}{x_n}}] \label{eq:hessian-general}
+\end{equation}
+$$
+
+Where the $i, j$-th entry is:
+
+$$
+\begin{equation}
+(\vb{H}_{f})_{i, j} = \pdv{f}{x_i}{x_j} \label{eq:hessian-entry}
+\end{equation}
+$$
+
+Given that each element in the Hessian matrix is a function of the inputs, the Hessian matrix is a function of the inputs as well.
+In other words, the Hessian is sort of a "matrix-valued function".
+
+### Evaluating the Hessian Matrix
+
+For instance, consider this function:
+
+$$
+\begin{equation}
+f(x, y) = e^{x/2} \sin(y)
+\end{equation}
+$$
+
+The Hessian matrix of $f$ can be written as:
+
+First, calculate its first partial derivatives:
+
+$$
+\begin{align}
+\pdv{f}{x} &= \frac{1}{2} e^{x/2} \sin(y) \\
+\pdv{f}{y} &= e^{x/2} \cos(y)
+\end{align}
+$$
+
+Then the Hessian is:
+
+$$
+\begin{equation}
+\vb{H}_{f} = \mqty[\frac{1}{4} e^{x/2} \sin(y) & e^{x/2} \cos(y) \\ e^{x/2} \cos(y) & -e^{x/2} \sin(y)]
+\end{equation}
+$$
+
+## Properties of the Hessian Matrix
+
+The Hessian matrix has some interesting properties that can be useful in optimization problems.
+
+### Symmetry
+
+If the function $f$ is twice continuously differentiable, meaning its second derivatives exist and are continuous, then by Schwarz's theorem, all mixed partial derivatives are equal:
+
+$$
+\begin{equation}
+\pdv{f}{x_i}{x_j} = \pdv{f}{x_j}{x_i}
+\end{equation}
+$$
+
+Let's consider the Hessian matrix for some function $f$.
+Recall from Equation $\eqref{eq:hessian-general}$ that the $i, j$-th entry is $\pdv{f}{x_i}{x_j}$.
+Then, by Schwarz's theorem:
+
+$$
+\begin{equation}
+(\vb{H}_{f})_{i, j} = \pdv{f}{x_i}{x_j} = \pdv{f}{x_j}{x_i} = (\vb{H}_{f})_{j, i}
+\end{equation}
+$$
+
+This means that the Hessian matrix is symmetric.
+For instance, consider the Hessian matrix of a three-variable function $f(x, y, z)$:
+
+$$
+\begin{equation}
+\vb{H}_{f} = \mqty[{\pdv[2]{f}{x}} & \class{green}{\pdv{f}{x}{y}} & \class{yellow}{\pdv{f}{x}{z}} \\ \class{green}{\pdv{f}{y}{x}} & {\pdv[2]{f}{y}} & \class{blue}{\pdv{f}{y}{z}} \\ \class{yellow}{\pdv{f}{z}{x}} & \class{blue}{\pdv{f}{z}{y}} & {\pdv[2]{f}{z}}] = \vb{H}_{f}^T
+\end{equation}
+$$
+
+### Relationship with the Gradient and Jacobian
+
+Recall the gradient of a function $f: \mathbb{R}^n \to \mathbb{R}$ is a vector of partial derivatives, and the Jacobian of a function $f: \mathbb{R}^n \to \mathbb{R}^m$ is a matrix of partial derivatives.
+
+In other words, the gradient is used for scalar-valued functions, and the Jacobian is used for vector-valued functions.
+
+Write out the gradient of a function $f: \mathbb{R}^n \to \mathbb{R}$:
+
+$$
+\begin{equation}
+\grad{f} = \mqty[\pdv{f}{x_1} \\ \pdv{f}{x_2} \\ \vdots \\ \pdv{f}{x_n}]
+\end{equation}
+$$
+
+The Jacobian of this gradient is then:
+
+$$
+\begin{equation}
+\vb{J}_{\grad{f}} = \mqty[\pdv{\grad{f}_1}{\class{blue}{x_1}} & \pdv{\grad{f}_1}{\class{yellow}{x_2}} & \cdots & \pdv{\grad{f}_1}{\class{green}{x_n}} \\ \pdv{\grad{f}_2}{\class{blue}{x_1}} & \pdv{\grad{f}_2}{\class{yellow}{x_2}} & \cdots & \pdv{\grad{f}_2}{\class{green}{x_n}} \\ \vdots & \vdots & \ddots & \vdots \\ \pdv{\grad{f}_n}{\class{blue}{x_1}} & \pdv{\grad{f}_n}{\class{yellow}{x_2}} & \cdots & \pdv{\grad{f}_n}{\class{green}{x_n}}]
+= \mqty[{\pdv[2]{f}{x_1}} & {\pdv{f}{\class{yellow}{x_2}}{x_1}} & \cdots & {\pdv{f}{\class{green}{x_n}}{x_1}} \\ {\pdv{f}{\class{blue}{x_1}}{x_2}} & {\pdv[2]{f}{x_2}} & \cdots & {\pdv{f}{\class{green}{x_n}}{x_2}} \\ \vdots & \vdots & \ddots & \vdots \\ {\pdv{f}{\class{blue}{x_1}}{x_n}} & {\pdv{f}{\class{yellow}{x_2}}{x_n}} & \cdots & {\pdv[2]{f}{x_n}}]
+\end{equation}
+$$
+
+## Quadratic Approximations in Vector Form
+
+Recall that the quadratic approximation of a function $f: \mathbb{R}^n \to \mathbb{R}$ is:
+
+$$
+\begin{equation}
+\begin{split}
+Q(x, y) &= f(x_0, y_0) \\
+    &\quad {}+ \partial_x f(x_0, y_0)(x - x_0) + \partial_y f(x_0, y_0)(y - y_0) \\
+    &\quad {}+ \frac{1}{2} \partial_{xx} f(x_0, y_0)(x - x_0)^2 + \partial_{xy} f(x_0, y_0)(x - x_0)(y - y_0) + \frac{1}{2} \partial_{yy} f(x_0, y_0)(y - y_0)^2
+\end{split}
+\end{equation}
+$$
+
+In order to vectorize this, first, treat the input not as two scalars $x$ and $y$, but as a vector $\vb{x} = \mqty[x \\ y]$.
+Treat the point $x_0, y_0$ as a vector $\class{red}{\vb{x}_0} = \mqty[x_0 \\ y_0]$.
+
+The first constant can be written as:
+
+$$
+\begin{equation}
+f(x_0, y_0) = f(\class{red}{\vb{x}_0})
+\end{equation}
+$$
+
+The linear terms can be written as:
+
+$$
+\begin{equation}
+\partial_x f(x_0, y_0)(x - x_0) + \partial_y f(x_0, y_0)(y - y_0) = \grad{f}(\class{red}{\vb{x}_0}) \cdot (\vb{x} - \class{red}{\vb{x}_0})
+\end{equation}
+$$
+
+For the quadratic terms, things get a bit more complicated.
+First, recall how matrix multiplication works:
+
+$$
+\begin{equation}
+\mqty[a & b \\ c & d] \mqty[x \\ y] = \mqty[ax + by \\ cx + dy]
+\end{equation}
+$$
+
+We can first make the elements in the matrix the constants in the quadratic terms.
+The term involving $\partial_{xy} f(x_0, y_0)(x - x_0)(y - y_0)$ does not have a half since two of them are added together (recall $(a + b)^2 = a^2 + 2ab + b^2$).
+Hence, we split it into two and put them separately in the matrix.
+We can write this matrix as:
+
+$$
+\begin{equation}
+\mqty[\frac{1}{2} \partial_{xx} f(\class{red}{\vb{x}_0}) & \frac{1}{2} \partial_{xy} f(\class{red}{\vb{x}_0}) \\ \frac{1}{2} \partial_{xy} f(\class{red}{\vb{x}_0}) & \frac{1}{2} \partial_{yy} f(\class{red}{\vb{x}_0})]
+\end{equation}
+$$
+
+When we multiply this matrix with the vector $\mqty[x - x_0 \\ y - y_0]$, then apply its transpose to the vector, we get the quadratic terms:
+
+$$
+\begin{equation}
+\mqty[x - x_0 & y - y_0] \mqty[\frac{1}{2} \partial_{xx} f(\class{red}{\vb{x}_0}) & \frac{1}{2} \partial_{xy} f(\class{red}{\vb{x}_0}) \\ \frac{1}{2} \partial_{xy} f(\class{red}{\vb{x}_0}) & \frac{1}{2} \partial_{yy} f(\class{red}{\vb{x}_0})] \mqty[x - x_0 \\ y - y_0] = \frac{1}{2} \partial_{xx} f(\class{red}{\vb{x}_0})(x - x_0)^2 + \partial_{xy} f(\class{red}{\vb{x}_0})(x - x_0)(y - y_0) + \frac{1}{2} \partial_{yy} f(\class{red}{\vb{x}_0})(y - y_0)^2
+\end{equation}
+$$
+
+Simplify this as:
+
+$$
+\frac{1}{2} (\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0})
+$$
+
+(This matrix-vector calculation is elaborated on in the appendix.)
+
+Thus, the quadratic approximation in vector form is:
+
+$$
+\begin{equation}
+Q(\vb{x}) = f(\class{red}{\vb{x}_0}) + \grad{f}(\class{red}{\vb{x}_0}) \cdot (\vb{x} - \class{red}{\vb{x}_0}) + \frac{1}{2} (\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0})
+\end{equation}
+$$
+
+Notice that this is very similar to the 2nd-degree Taylor polynomial for a single-variable function;
+
+$$
+\begin{equation}
+P_2(x) = f(a) + f'(a)(x - a) + \frac{1}{2} f''(a)(x - a)^2
+\end{equation}
+$$
+
+## What about Higher-Degree Polynomials?
+
+Recall from single-variable calculus that we can use the Taylor polynomial as an approximation for a function.
+The quadratic approximation is essentially a 2nd-degree Taylor polynomial.
+
+Just like single-variable calculus, we can use higher-degree polynomials for multivariable functions.
+The problem is that we would need to construct something like a cubic Hessian matrix, which would be $n \times n \times n$.
+This is known as a tensor, and it is beyond the scope of this course.
+
+## Summary and Next Steps
+
+In this section, we introduced the Hessian matrix, a matrix of second partial derivatives.
+
+- The Hessian matrix is a matrix of second partial derivatives.
+- The Hessian is symmetric if the function is twice continuously differentiable.
+- The Hessian matrix can also be written as the transpose of the Jacobian of the gradient; $\vb{H}_{f} = \vb{J}_{\grad{f}}^T$.
+- The quadratic approximation of a function can be written in vector form using the Hessian matrix:
+
+    $$
+    \begin{equation}
+    Q(\vb{x}) = f(\class{red}{\vb{x}_0}) + \grad{f}(\class{red}{\vb{x}_0}) \cdot (\vb{x} - \class{red}{\vb{x}_0}) + \frac{1}{2} (\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0})
+    \end{equation}
+    $$
+
+In the next section, we will discuss how all of this can be used in optimization problems.
+
+## Appendix: Matrix-Vector Multiplication
+
+Given a matrix $\vb{A}$ and a vector $\vb{v}$:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[a & b \\ c & d] \quad \vb{v} = \mqty[x \\ y]
+\end{equation}
+$$
+
+The matrix-vector multiplication is:
+
+$$
+\begin{equation}
+\vb{A} \vb{v} = \mqty[a & b \\ c & d] \mqty[x \\ y] = \mqty[ax + by \\ cx + dy]
+\end{equation}
+$$
+
+Now consider that term in the quadratic approximation:
+
+$$
+\frac{1}{2} (\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0})
+$$
+
+First calculate the product $\vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0})$:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0}) &= \mqty[\partial_{xx} f(\class{red}{\vb{x}_0}) & \partial_{xy} f(\class{red}{\vb{x}_0}) \\ \partial_{xy} f(\class{red}{\vb{x}_0}) & \partial_{yy} f(\class{red}{\vb{x}_0})] \mqty[x - x_0 \\ y - y_0] \\
+&= \mqty[\partial_{xx} f(\class{red}{\vb{x}_0})(x - x_0) + \partial_{xy} f(\class{red}{\vb{x}_0})(y - y_0) \\ \partial_{xy} f(\class{red}{\vb{x}_0})(x - x_0) + \partial_{yy} f(\class{red}{\vb{x}_0})(y - y_0)]
+\end{split}
+\end{equation}
+$$
+
+Then, calculate the product $(\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0})(\vb{x} - \class{red}{\vb{x}_0})$:
+
+$$
+\begin{equation}
+\begin{split}
+(\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0}) &= \mqty[x - x_0 & y - y_0] \mqty[\partial_{xx} f(\class{red}{\vb{x}_0}) & \partial_{xy} f(\class{red}{\vb{x}_0}) \\ \partial_{xy} f(\class{red}{\vb{x}_0}) & \partial_{yy} f(\class{red}{\vb{x}_0})] \mqty[x - x_0 \\ y - y_0] \\
+&= \mqty[x - x_0 & y - y_0] \mqty[\partial_{xx} f(\class{red}{\vb{x}_0})(x - x_0) + \partial_{xy} f(\class{red}{\vb{x}_0})(y - y_0) \\ \partial_{xy} f(\class{red}{\vb{x}_0})(x - x_0) + \partial_{yy} f(\class{red}{\vb{x}_0})(y - y_0)] \\
+&= \partial_{xx} f(\class{red}{\vb{x}_0})(x - x_0)^2 + \partial_{xy} f(\class{red}{\vb{x}_0})(y - y_0)(x - x_0) + \partial_{xy} f(\class{red}{\vb{x}_0})(x - x_0)(y - y_0) + \partial_{yy} f(\class{red}{\vb{x}_0})(y - y_0)^2 \\
+&= \partial_{xx} f(\class{red}{\vb{x}_0})(x - x_0)^2 + 2 \partial_{xy} f(\class{red}{\vb{x}_0})(x - x_0)(y - y_0) + \partial_{yy} f(\class{red}{\vb{x}_0})(y - y_0)^2
+\end{split}
+\end{equation}
+$$
+
+Finally, multiply by $\frac{1}{2}$ to get the quadratic terms:
+
+$$
+\begin{equation}
+\frac{1}{2} (\vb{x} - \class{red}{\vb{x}_0})^T \vb{H}_{f}(\class{red}{\vb{x}_0}) (\vb{x} - \class{red}{\vb{x}_0}) = \frac{1}{2} \partial_{xx} f(\class{red}{\vb{x}_0})(x - x_0)^2 + \partial_{xy} f(\class{red}{\vb{x}_0})(x - x_0)(y - y_0) + \frac{1}{2} \partial_{yy} f(\class{red}{\vb{x}_0})(y - y_0)^2
+\end{equation}
+$$

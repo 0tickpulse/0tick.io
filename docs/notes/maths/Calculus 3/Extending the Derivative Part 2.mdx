@@ -3,7 +3,7 @@ sidebar_position: 4
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
@@ -14,7 +14,7 @@ import range from "lodash/range";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { easeInOutCubic } from "js-easing-functions";
 
-# Extending the Derivative: Part 2
+# Extending the Derivative: Part 2 (Old Notes)
 
 Previously, we discussed some fundamentals in Multivariable Calculus, including the concept of partial derivatives and the gradient.
 Now we will discuss some more advanced topics, and as a bonus, apply them to some real-world problems, including Maxwell's Equations.
@@ -383,6 +383,36 @@ Likewise, for a negative charge, the charge density would be negative, so the di
     );
 })()}
 
+### Divergence in Cylindrical and Spherical Coordinates
+
+We have discussed divergence in Cartesian coordinates as the sum of the partial derivatives of the components:
+
+$$
+\begin{equation}
+\operatorname{div} \va{F}(x, y, z) = \pdv{P}{x} + \pdv{Q}{y} + \pdv{R}{z}
+\end{equation}
+$$
+
+Consider a vector field in cylindrical coordinates:
+
+$$
+\begin{equation}
+\va{F}(r, \theta, z) = P(r, \theta, z) \vu{r} + Q(r, \theta, z) \vu{\theta} + R(r, \theta, z) \vu{z}
+\end{equation}
+$$
+
+The divergence of this vector field is then the sum of the partial derivatives of the components:
+
+$$
+\begin{equation}
+\operatorname{div} \va{F}(r, \theta, z) = \frac{1}{r} \pdv{r} (r P) + \frac{1}{r} \pdv{\theta} Q + \pdv{R}{z}
+\end{equation}
+$$
+
+Notice that it is similar to the Cartesian formula, but with some extra things to consider due to the cylindrical coordinates:
+
+- The $r$ component has an extra $\frac{1}{r}$ factor.
+
 ### The Second Maxwell Equation: Gauss's Law for Magnetism
 
 The second Maxwell equation describes how the magnetic field $\class{blue}{\va{B}}$ is related to the divergence of the magnetic field.
@@ -586,7 +616,7 @@ In 3D space, rotation is more complex:
 1. First we need to consider the axis of rotation. This is where the rotation occurs about.
 2. Next, we need to consider the magnitude and direction of the rotation - which is a vector. This is known as the **angular velocity**, denoted $\va{\omega}$.
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian>
         <MB.Matrix
             id="sphere"
@@ -645,7 +675,7 @@ In 3D space, rotation is more complex:
         />
         <MB.Vector end={true} points="#rot2_vec" color={color("green")} />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 The convention for the direction of the angular velocity vector is called the **right-hand rule**.
 Take your right hand and curl your fingers in the direction of the rotation. Your thumb then points in the direction of the angular velocity vector.
@@ -663,7 +693,7 @@ $$
 
 We have previously plotted the vector field in 2D space. Now, consider putting the same vector field in 3D space, on the $xy$ plane:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[
             0.3, 0.3, 0.3
@@ -716,7 +746,7 @@ We have previously plotted the vector field in 2D space. Now, consider putting t
             end={true}
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 Next, consider the 2D curl of this vector field. Recall that the curl is defined as:
 
@@ -728,7 +758,7 @@ $$
 
 The direction of the curl shall then be in the $z$ direction, defined via the right-hand rule. With this, we can plot some vectors representing the curl alongside the vector field:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[
             0.3, 0.3, 0.3
@@ -788,7 +818,7 @@ The direction of the curl shall then be in the $z$ direction, defined via the ri
             color={color("blue")}
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 Notice that in areas of clockwise rotation, the curl is negative (points in the $-z$ direction), and in areas of counterclockwise rotation, the curl is positive (points in the $z$ direction).
 
@@ -812,7 +842,7 @@ $$
 This results, as we've seen, in a vector field that lies on a plane.
 Consider "copying" this vector for every $z$ value:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[
             0.3, 0.3, 0.3
@@ -850,7 +880,7 @@ Consider "copying" this vector for every $z$ value:
             end={true}
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 Of course, only some of the vectors are visible. In reality, for every $z$ value, there is a plane in which the vector field exists.
 Thus, the vector field can be thought of as a volume in 3D space:
@@ -875,7 +905,7 @@ This means that if you take a column somewhere in the vector field, the curl wil
     return (
         <div className="card">
             <div className="card__body">
-                <CustomMathbox>
+                <OldMathbox>
                     <MB.Cartesian
                         scale={[
                             0.3, 0.3, 0.3
@@ -940,7 +970,7 @@ This means that if you take a column somewhere in the vector field, the curl wil
                             />
                         </MB.Group>
                     </MB.Cartesian>
-                </CustomMathbox>
+                </OldMathbox>
             </div>
             <div className="card__footer">
                 <button onClick={() => setFieldVisible(!fieldVisible)} className={`button button--block ${fieldVisible ? "button--primary" : "button--secondary"}`}>
@@ -1281,7 +1311,7 @@ $$
 
 We can plot this function as a surface in 3D space:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[
             0.1, 0.1, 0.1
@@ -1312,7 +1342,7 @@ We can plot this function as a surface in 3D space:
             zBias={-1}
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 First, we can plot the gradient as a vector field. The gradient points in the direction of the steepest ascent of the function:
 
@@ -1322,7 +1352,7 @@ First, we can plot the gradient as a vector field. The gradient points in the di
     return (
         <div className="card">
             <div className="card__body">
-                <CustomMathbox>
+                <OldMathbox>
                     <MB.Cartesian
                         scale={[
                             0.1, 0.1, 0.1
@@ -1395,7 +1425,7 @@ First, we can plot the gradient as a vector field. The gradient points in the di
                             />
                         </MB.Group>
                     </MB.Cartesian>
-                </CustomMathbox>
+                </OldMathbox>
             </div>
             <div className="card__footer">
                 <button onClick={() => setSurfaceVisible(!surfaceVisible)} className={`button button--block ${surfaceVisible ? "button--primary" : "button--secondary"}`}>
@@ -1526,7 +1556,7 @@ $$
 
 If we plot the scalar field $f(x, y) = e^x \sin(y)$, it doesn't look like a straight line, but it is a harmonic function:
 
-<CustomMathbox>
+<OldMathbox>
     <MB.Cartesian
         scale={[
             0.1, 0.1, 0.1
@@ -1557,7 +1587,7 @@ If we plot the scalar field $f(x, y) = e^x \sin(y)$, it doesn't look like a stra
             zBias={-1}
         />
     </MB.Cartesian>
-</CustomMathbox>
+</OldMathbox>
 
 To show why this is harmonic, consider the single-variable case again:
 

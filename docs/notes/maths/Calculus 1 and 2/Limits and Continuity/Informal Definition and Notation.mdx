@@ -1,0 +1,88 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Informal Definition and Notation
+
+The limit can be informally defined as the value that a function approaches as the input approaches a certain value.
+In other words, it is the value that the function gets closer and closer to as the input gets closer and closer to a certain value.
+
+Consider the function $f(x) = \frac{1}{x}$.
+This is a reciprocal function, and as you increase the value of $x$, the value of $f(x)$ gets closer and closer to $0$:
+
+$$
+\begin{align}
+    f(1) &= 1 \\
+    f(10) &= 0.1 \\
+    f(100) &= 0.01 \\
+    f(1000) &= 0.001 \\
+    f(10000) &= 0.0001 \\
+    f(100000) &= 0.00001 \\
+    \vdots
+\end{align}
+$$
+
+This can also be seen graphically by plotting the function. Let's plot $f(x) = \abs{\frac{1}{x}}$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => Math.abs(1 / x)} />
+</Mafs>
+
+When we use the graph to visualize the function, we can make an estimate for the limit.
+This is a good way to get an intuition for what the limit is.
+
+As you can see, as $x$ gets larger and larger, $f(x)$ gets closer and closer to $0$.
+While $f(x)$ never actually reaches $0$, it gets arbitrarily close to it. This is what we call a limit.
+
+In terms of words, we can say:
+
+> The limit of $f(x)$ as $x$ approaches infinity is $0$.
+
+This is written with notation as:
+
+$$
+\begin{equation}
+\lim_{x \to \infty} f(x) = 0
+\end{equation}
+$$
+
+Here, the $\lim$ symbol represents the limit, $x \to \infty$ means that $x$ is approaching infinity, and $f(x)$ is the function we are taking the limit of:
+
+$$
+\begin{equation}
+\mathclap{\overset{\class{blue}{\text{Limit of}}}{\overset{\class{blue}{\downarrow}}{\underset{\class{yellow}{\text{as} \ x \text{ approaches } \infty}}{\underset{\class{yellow}{\uparrow}}{\lim_{x \to \infty}}}}}} \phantom{\lim_{x \to \infty}} f(x) = 0
+\end{equation}
+$$
+
+Next, consider the limit of $f(x)$ as $x$ approaches $0$.
+This time, the value of $f(x)$ gets larger and larger as $x$ gets closer and closer to $0$.
+As such, we can say that the limit of $f(x)$ as $x$ approaches $0$ is **unbounded**.
+
+This is written as:
+
+$$
+\begin{equation}
+\lim_{x \to 0} f(x) = \infty
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+We have introduced the concept of limits and how they can be informally defined.
+Here are the key points to remember:
+
+1. The limit of a function is the value that the function approaches as the input approaches a certain value.
+2. The limit of a function as the input approaches some value $a$ is written as $\lim_{x \to a} f(x)$.
+3. If a limit is unbounded, it means that the function grows without bound as the input approaches the value.
+4. A limit can be estimated by looking at the graph of the function.
+
+Next, we will look at the concept of One-Sided Limits.

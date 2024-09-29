@@ -2,7 +2,7 @@
 sidebar_position: 9
 ---
 import { Mafs, Coordinates, Point, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
-import MathEquation from "@site/src/components/Math";
+
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import { useState } from "react";
@@ -686,7 +686,7 @@ Recall from Equation $\eqref{eq:the_geometric_series-partial_sum}$ that the $n$t
 
 $$
 \begin{equation}
-S_N = a \frac{1 - r^N}{1 - r}
+S_N = a \frac{1 - r^N}{1 - r} \label{\ref{eq:the_geometric_series-partial_sum}}
 \end{equation}
 $$
 

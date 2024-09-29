@@ -1,0 +1,419 @@
+---
+sidebar_position: 4
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Algebraic Properties of Limits
+
+In this section, we will discuss some algebraic properties of limits that can help us evaluate limits of more complex functions.
+
+:::warning No Proofs
+
+Note that we will not be providing formal proofs for these properties.
+The proofs are typically more involved and require a deeper understanding of the concepts involved.
+
+Generally, these properties can be proven using the formal definition of limits, which falls into the realm of real analysis.
+
+:::
+
+## Limit of a Sum
+
+The limit of a sum of two functions is the sum of their limits;
+
+$$
+\begin{equation}
+\lim_{x \to a} [f(x) + g(x)] = \lim_{x \to a} f(x) + \lim_{x \to a} g(x)
+\end{equation}
+$$
+
+This property can be extended to the sum of multiple functions:
+
+$$
+\begin{equation}
+\lim_{x \to a} [f_1(x) + f_2(x) + \ldots + f_n(x)] = \lim_{x \to a} f_1(x) + \lim_{x \to a} f_2(x) + \ldots + \lim_{x \to a} f_n(x)
+\end{equation}
+$$
+
+## Limit of Products
+
+The limit of a product of two functions is the product of their limits:
+
+$$
+\begin{equation}
+\lim_{x \to a} [f(x) \cdot g(x)] = \lim_{x \to a} f(x) \cdot \lim_{x \to a} g(x)
+\end{equation}
+$$
+
+Similarly, the limit of the product of a constant and a function is:
+
+$$
+\begin{equation}
+\lim_{x \to a} [c \cdot f(x)] = c \cdot \lim_{x \to a} f(x)
+\end{equation}
+$$
+
+## Limit of Powers
+
+The limit of a power of a function is the power of the limit of the function:
+
+$$
+\begin{equation}
+\lim_{x \to a} [f(x)^n] = [\lim_{x \to a} f(x)]^n
+\end{equation}
+$$
+
+## Limit of Composite Functions
+
+This is a bit more complex. Let's say we have $f(x)$ and $g(x)$, and we want to find the limit of $f(g(x))$ as $x$ approaches $a$.
+
+### Limit with Conditions Met
+
+Just like with the other properties, we can break this down into the limits of the individual functions:
+
+$$
+\begin{equation}
+\lim_{x \to a} f(g(x)) = f\left(\lim_{x \to a} g(x)\right)
+\end{equation}
+$$
+
+However, this relies on two conditions:
+
+1. $\lim_{x \to a} g(x)$ exists. Call this limit $L$. Otherwise, the inner limit on the right-hand side will not exist.
+2. $f(x)$ is continuous at $L$.
+
+### Limit with Conditions Not Met
+
+If either of these conditions is not met, we cannot use this property directly.
+However, just because this property doesn't work doesn't mean the limit doesn't exist.
+
+In such cases, we may need to use other methods to evaluate the limit.
+Usually, we would need to consider the limit from both sides and see if they agree.
+One example problem below will illustrate this.
+
+## Example Problem: Graphically Evaluating Composite Limits
+
+export function TwoGraphs({ fExtra, gExtra }) {
+    return (
+        <div className="container">
+            <div className="row">
+                <div className="col">
+                    <div className="card">
+                        <div className="card__header">
+                            <h3>Graph of <MathEquation inline>f(x)</MathEquation></h3>
+                            <Mafs pan={false} viewBox={{ x: [-4, 4] }}>
+                                <Coordinates.Cartesian />
+                                <Polyline points={[[-4, -1], [-2, 2], [-1, 3]]} /> {/* 0.071 = 0.1 sin(45º) */}
+                                <Circle center={[-1, 3]} radius={0.1} fillOpacity={1} strokeOpacity={0} color="black" />
+                                <Circle center={[-1, 3]} radius={0.1} fillOpacity={0} color="white" />
+                                {/* */}
+                                <Polyline points={[[-1, -3], [3, 1], [5, 5]]} />
+                                <Circle center={[-1, -3]} radius={0.1} fillOpacity={1} color="white" />
+                                <Circle center={[3, 1]} radius={0.1} fillOpacity={1} strokeOpacity={0} color="black" />
+                                <Circle center={[3, 1]} radius={0.1} fillOpacity={0} color="white" />
+                                <Circle center={[3, -3]} radius={0.1} fillOpacity={1} color="white" />
+                                {fExtra}
+                            </Mafs>
+                        </div>
+                    </div>
+                </div>
+                <div className="col">
+                    <div className="card">
+                        <div className="card__header">
+                            <h3>Graph of <MathEquation inline>g(x)</MathEquation></h3>
+                            <Mafs pan={false} viewBox={{ x: [-5, 3] }}>
+                                <Coordinates.Cartesian />
+                                <Plot.Parametric xy={(t) => [t, (t ** 2) / 4 + 2]} t={[-2, 5]} />
+                                <Polyline points={[[-10, -7], [-2, 1]]} />
+                                <Circle center={[0, 2]} radius={0.1} fillOpacity={1} strokeOpacity={0} color="black" />
+                                <Circle center={[0, 2]} radius={0.1} fillOpacity={0} color="white" />
+                                <Circle center={[-2, 3]} radius={0.1} fillOpacity={1} strokeOpacity={0} color="black" />
+                                <Circle center={[-2, 3]} radius={0.1} fillOpacity={0} color="white" />
+                                <Circle center={[-2, 1]} radius={0.1} fillOpacity={1} color="white" />
+                                {typeof gExtra === "function" ? gExtra((x) => {
+                                    if (x <= -2) return (x + 3);
+                                    return ((x ** 2) / 4 + 2);
+                                }) : gExtra}
+                            </Mafs>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+> Two functions, $f(x)$ and $g(x)$, are unknown. We are given the graphs of them:
+>
+> <TwoGraphs />
+>
+> Evaluate the following limit:
+>
+> $$
+> \begin{equation}
+> \lim_{x \to 0} (2f(g(x)) + 3)
+> \end{equation}
+> $$
+
+To evaluate this limit, we can use the properties of limits we have discussed.
+
+First, ignore the $f(g(x))$ term for now. Notice that there's a constant term $2$ multiplied by $f(g(x))$, and a $3$ added to the result.
+Through the properties of limits, we can extract these constants:
+
+$$
+\begin{equation}
+\lim_{x \to 0} (2f(g(x)) + 3) = 2 \qty[\lim_{x \to 0} f(g(x))] + 3
+\end{equation}
+$$
+
+Next, since we have a composite function $f(g(x))$, we can check if the conditions for the limit of composite functions are met:
+
+1. $\lim_{x \to 0} g(x)$ exists.
+
+    From the graph of $g(x)$, we can see that as $x$ approaches $0$, $g(x)$ approaches $2$. Even though there's a hole in the graph at $x = 0$, the limit still exists; from a graphical perspective, the curve approaches $2$ from both sides.
+
+2. $f(x)$ is continuous at $2$.
+
+    From the graph of $f(x)$, we can see that $f(2) = 0$. This means that $f(x)$ is continuous at $2$.
+
+Therefore, we can evaluate the limit of the composite function $f(g(x))$:
+
+$$
+\begin{equation}
+\lim_{x \to 0} f(g(x)) = f\qty(\lim_{x \to 0} g(x)) = f(2) = 0
+\end{equation}
+$$
+
+## Example Problem: Evaluating a Limit with a Discontinuous Function
+
+> Using the same functions $f(x)$ and $g(x)$ as in the previous example, evaluate the following limit:
+>
+> $$
+> \begin{equation}
+> \lim_{x \to 2} (f(g(x)))
+> \end{equation}
+> $$
+
+In this case, we have the same functions $f(x)$ and $g(x)$, but we are evaluating a different limit.
+Recall the conditions for the limit of composite functions:
+
+1. $\lim_{x \to 2} g(x)$ exists.
+
+    From the graph of $g(x)$, we can see that as $x$ approaches $2$, $g(x)$ approaches $3$.
+2. $f(x)$ is continuous at $3$.
+
+    From the graph of $f(x)$, we can see that $f(x)$ is **not continuous** at $3$ (there's a jump discontinuity).
+
+Therefore, we cannot directly use the property of composite functions to evaluate this limit.
+If there's a discontinuity in the function, we need to consider the limit from both sides.
+
+<TwoGraphs
+    fExtra={
+        <>
+            <Vector tail={[2.2, 0.5]} tip={[3, 1.3]} color={color("red")} />
+            <Vector tail={[3.8, 2.9]} tip={[3, 1.3]} color={color("green")} />
+        </>
+    }
+    gExtra={
+        <>
+            <Vector tail={[1.2, 1.9]} tip={[2, 2.7]} color={color("red")} /> {/* Using linear approximation */}
+            <Vector tail={[2.8, 3.5]} tip={[2, 2.7]} color={color("green")} />
+        </>
+    }
+/>
+
+1. From the left (<span className="red">red</span> arrows):
+    - As $x$ approaches $2$ from the left, $g(x)$ approaches $3$.
+    - Which direction do you evaluate the limit of $f$ from?
+        The input to $f$ is $g(x)$. This means that the $x$-axis of the $f$ graph *is* $g(x)$.
+
+        We evaluated $g(x)$ from the left. From the left, $g(x)$ is less than $g(2) = 3$.
+        A lower value of $g(x)$ corresponds to the *left* side of the $f$ graph.
+
+        Therefore, we evaluate the limit of $f(x)$ from the left side of the jump discontinuity, which is $1$.
+2. From the right (<span className="green">green</span> arrows):
+    - As $x$ approaches $2$ from the right, $g(x)$ approaches $3$.
+    - This $3$ is then the input to $f(x)$, which approaches $1$ from the right.
+
+To aid visualization for the directions, we can show different points on the $f$ and $g$ graphs that correspond to the various limits:
+
+<TwoGraphs
+    fExtra={
+        <>
+            <Point x={(1.5 ** 2) / 4 + 2} y={0} color={color("red")} />
+            <Point x={3} y={0} color={color("yellow")} />
+            <Point x={(2.5 ** 2) / 4 + 2} y={0} color={color("green")} />
+        </>
+    }
+    gExtra={(g) =>
+        <>
+            <Polyline points={[[0, g(1.5)], [1.5, g(1.5)], [1.5, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(1.5)} color={color("red")} />
+
+            <Polyline points={[[0, 3], [2, 3], [2, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={3} color={color("yellow")} />
+
+            <Polyline points={[[0, g(2.5)], [2.5, g(2.5)], [2.5, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(2.5)} color={color("green")} />
+        </>
+    }
+/>
+
+Since the limits from both sides agree, we can say that the limit of $f(g(x))$ as $x$ approaches $2$ is $1$:
+
+$$
+\begin{equation}
+\lim_{x \to 2} (f(g(x))) = 1
+\end{equation}
+$$
+
+## Example Problem: Limits with Undefined Internal Limits
+
+> Using the same functions $f(x)$ and $g(x)$, evaluate the following limit:
+>
+> $$
+> \begin{equation}
+> \lim_{x \to -2} f(g(x))
+> \end{equation}
+> $$
+
+In this case, we are evaluating the limit of $f(g(x))$ as $x$ approaches $-2$.
+Look at the graph for $g(x)$ - there is a discontinuity at $x = -2$, and the function approaches different values from the left and the right.
+
+Just like before, consider the limit from both sides:
+
+<TwoGraphs
+    fExtra={
+        <>
+            <Point x={-2.5 + 3} y={0} color={color("red")} />
+            <Point x={-2 + 3} y={0} color={color("yellow")} />
+            <Vector tail={[0.5, -1.8]} tip={[1, -1.3]} color={color("red")} />
+
+            <Point x={0 + 3} y={0} color={color("purple")} />
+            <Point x={((-1.5) ** 2) / 4 + 2} y={0} color={color("green")} />
+            <Vector tail={[2.5, 0.8]} tip={[3, 1.3]} color={color("green")} />
+        </>
+    }
+    gExtra={(g) =>
+        <>
+            <Polyline points={[[0, g(-2.5)], [-2.5, g(-2.5)], [-2.5, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(-2.5)} color={color("red")} />
+
+            <Polyline points={[[0, g(-2)], [-2, g(-2)], [-2, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(-2)} color={color("yellow")} />
+
+            <Vector tail={[-2.8, 0.5]} tip={[-2, 1.3]} color={color("red")} />
+
+            <Polyline points={[[0, 3], [-2, 3], [-2, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={3} color={color("purple")} />
+
+            <Polyline points={[[0, g(-1.5)], [-1.5, g(-1.5)], [-1.5, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(-1.5)} color={color("green")} />
+
+            <Vector tail={[-1.5, g(-1.5) + 0.3]} tip={[-2, 3.3]} color={color("green")} />
+        </>
+    }
+/>
+
+1. From the left:
+    - As $x$ approaches $-2$ from the left, $g(x)$ approaches $1$ (yellow point).
+    - Since $g(x)$ is lower to the left of $-2$, we evaluate the limit of $f(x)$ from the left side of the jump discontinuity, which is $-1$.
+2. From the right:
+    - As $x$ approaches $-2$ from the right, $g(x)$ approaches $3$ (purple point).
+    - As $g(x)$ is lower to the right of $-2$, we evaluate the limit of $f(x)$ from the **LEFT** side of the jump discontinuity!
+        Look at how the green and purple points correspond in the graph.
+    - Therefore, the limit of $f(g(x))$ as $x$ approaches $-2$ from the right is $1$.
+
+Since the limits from both sides are different, the limit of $f(g(x))$ as $x$ approaches $-2$ does not exist.
+However, we can write the one-sided limits:
+
+$$
+\begin{align}
+\lim_{x \to -2^-} f(g(x)) &= -1 \\
+\lim_{x \to -2^+} f(g(x)) &= 1
+\end{align}
+$$
+
+## Example Problem: Limits with Undefined External Limits
+
+> Using the same functions $f(x)$ and $g(x)$, evaluate the following limit:
+>
+> $$
+> \begin{equation}
+> \lim_{x \to -4} f(g(x))
+> \end{equation}
+> $$
+
+This time, $g(x)$ does have a limit as $x$ approaches $-4$; it approaches $-1$.
+However, $f(x)$ has a jump discontinuity at $-1$.
+As always, consider the limit from both sides:
+
+<TwoGraphs
+    fExtra={
+        <>
+            <Point x={-1.5} y={0} color={color("red")} />
+            <Point x={-1} y={0} color={color("yellow")} />
+            <Vector tail={[-1.5, 2.2]} tip={[-1, 2.7]} color={color("red")} />
+
+            <Point x={-0.5} y={0} color={color("green")} />
+            <Vector tail={[-0.5, -2.2]} tip={[-1, -2.7]} color={color("green")} />
+        </>
+    }
+    gExtra={(g) =>
+        <>
+            <Polyline points={[[0, g(-4.5)], [-4.5, g(-4.5)], [-4.5, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(-4.5)} color={color("red")} />
+
+            <Polyline points={[[0, g(-4)], [-4, g(-4)], [-4, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(-4)} color={color("yellow")} />
+
+            <Vector tail={[-4.5, -1.8]} tip={[-4, -1.3]} color={color("red")} />
+
+            <Polyline points={[[0, g(-3.5)], [-3.5, g(-3.5)], [-3.5, 0]]} strokeStyle="dashed" />
+            <Point x={0} y={g(-3.5)} color={color("green")} />
+
+            <Vector tail={[-3.5, g(-3.5) - 0.3]} tip={[-4, -1.3]} color={color("green")} />
+        </>
+    }
+/>
+
+1. From the left:
+    - As $x$ approaches $-4$ from the left, $g(x)$ approaches $-1$ (red arrow).
+    - Since $g(x)$ is lower to the left of $-4$, we evaluate the limit of $f(x)$ from the left side of the jump discontinuity, which is $3$.
+2. From the right:
+    - As $x$ approaches $-4$ from the right, $g(x)$ approaches $-1$ (green arrow).
+    - Since $g(x)$ is higher to the right of $-4$, we evaluate the limit of $f(x)$ from the right side of the jump discontinuity, which is $-3$.
+
+Since the limits from both sides are different, the limit of $f(g(x))$ as $x$ approaches $-4$ does not exist.
+We can write the one-sided limits:
+
+$$
+\begin{align}
+\lim_{x \to -4^-} f(g(x)) &= 3 \\
+\lim_{x \to -4^+} f(g(x)) &= -3
+\end{align}
+$$
+
+## Summary and Next Steps
+
+In this section, we discussed some algebraic properties of limits that can help us evaluate the combined limits of functions.
+
+Here are the key points to remember:
+
+1. The limit of a sum of functions is the sum of their limits.
+2. The limit of a product of functions is the product of their limits.
+3. The limit of a power of a function is the power of the limit of the function.
+4. The limit of a composite function can be evaluated by breaking it down into the limits of the individual functions, provided the conditions for the limit of composite functions are met:
+    - The limit of the inner function exists.
+    - The outer function is continuous at the limit of the inner function.
+5. If the conditions for the limit of composite functions are not met, we may need to consider the limit from both sides and see if they agree.
+
+These properties can be useful when evaluating limits of more complex functions that can be broken down into simpler functions.
+
+Next, now that the preliminaries are out of the way, we can start evaluating limits algebraically, first by direct substitution.

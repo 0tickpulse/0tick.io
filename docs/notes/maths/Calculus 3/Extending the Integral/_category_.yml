@@ -1,0 +1,7 @@
+position: 6
+description: |
+  Extending the integral to functions of multiple variables.
+
+  Previously, we have seen how to integrate functions of one variable, as the accumulation of infinitesimal changes in the function.
+  In this section, we will extend the concept of the integral to functions of multiple variables.
+  This includes functions with single or multiple inputs and single or multiple outputs.
