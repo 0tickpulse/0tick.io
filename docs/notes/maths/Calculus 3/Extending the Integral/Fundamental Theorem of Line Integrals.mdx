@@ -1,0 +1,223 @@
+---
+sidebar_position: 3
+description: An extension of the fundamental theorem of calculus to multivariable functions.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Fundamental Theorem of Line Integrals
+
+:::warning Todo
+
+- Add some examples to demonstrate its usefulness.
+
+:::
+
+Previously, we introduced the concept of line integrals, which are integrals of functions along curves.
+This is the first integral we have seen outside of single-variable calculus, so one natural question to ask is: how do we evaluate these integrals?
+
+In single-variable calculus, we primarily rely on the fundamental theorem of calculus to evaluate integrals:
+
+$$
+\begin{equation}
+\int_a^b f'(x) \, \dd{x} = f(b) - f(a)
+\end{equation}
+$$
+
+We will extend this theorem to line integrals in this section, a concept known as the fundamental theorem of line integrals, or the gradient theorem.
+Additionally, we will explore some implications of this theorem, especially as a building block to understand the concept of conservative vector fields.
+
+This section combines a lot of concepts like the fundamental theorem, line integrals, the gradient, the directional derivative, the multivariable chain rule, parametric curves, and more.
+It's a lot to take in, but it's a crucial step in understanding the broader context of calculus in higher dimensions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Fundamental Theorem of Calculus Review
+
+To get an intuition behind the gradient theorem, we need to get a better understanding of the fundamental theorem of calculus in single-variable calculus.
+
+Consider a function $f(x)$, which can represent anything.
+Let's think about moving along the $x$-axis from $a$ to $b$, and consider how much $f$ changes as we move from $a$ to $b$.
+
+1. Firstly, the change can simply be represented as $f(b) - f(a)$.
+
+2. Second, let's try to add up incremental changes as we move along the curve.
+    Each time we move a small distance $\dd{x}$, we can think of the change in $f$ as $f'(x) \, \dd{x}$.
+    If we add up all these changes from $a$ to $b$, we get the integral:
+
+    $$
+    \int_a^b f'(x) \, \dd{x}
+    $$
+
+    <Mafs viewBox={{ x: [0, 8], y: [0, 5] }}>
+        <Coordinates.Cartesian
+            xAxis={{
+                lines: false,
+                labels: () => ""
+            }}
+            yAxis={{
+                lines: false,
+                labels: () => ""
+            }}
+        />
+        <Plot.OfX y={(x) => Math.sin(x) + x} />
+
+        <Line.Segment point1={[4, 0]} point2={[4, 4 + Math.sin(4)]} />
+        <Line.Segment point1={[4.5, 0]} point2={[4.5, 4.5 + Math.sin(4.5)]} />
+        <Line.Segment point1={[4, 4 + Math.sin(4)]} point2={[4.5, 4 + Math.sin(4)]} />
+
+        <LaTeX tex="\text{d}x" at={[4.25, -0.2]} />
+        <LaTeX tex="f'(x)\, \text{d}x" at={[5.2, 4.25 + Math.sin(4)]} />
+    </Mafs>
+
+3. Both of these represent the same thing: the change in $f$ as we move from $a$ to $b$.
+    The first is a direct calculation, while the second sums up individual changes along the curve.
+    Since they are equivalent, we can say:
+
+    $$
+    \begin{equation}
+    \int_a^b f'(x) \, \dd{x} = f(b) - f(a)
+    \end{equation}
+    $$
+
+    This is the fundamental theorem of calculus.
+
+## Intuition for the Gradient Theorem
+
+Consider a scalar field $f: \mathbb{R}^n \to \mathbb{R}$.
+Just like in single-variable calculus, we can think of moving along a curve in $\mathbb{R}^n$.
+
+Denote the starting point as $\va{a}$ and the ending point as $\va{b}$, and the curve we move along as $C$.
+We can think of the curve as a parametric curve $\va{r}(t)$, where $t$ is the parameter that moves us along the curve.
+
+1. The change in $f$ as we move along the curve (from $\va{a}$ to $\va{b}$) can be represented as:
+
+    $$
+    f(\va{b}) - f(\va{a})
+    $$
+
+2. Alternatively, we can think of moving along the curve in small steps.
+
+    In each step, we increment $t$ by a small amount $\dd{t}$, resulting in a small change in $\va{r}$, denoted as $\dd{\va{r}}$.
+    The change in $f$ as we move along this small step can be represented as a directional derivative:
+
+    $$
+    \begin{equation}
+    \dd{f} = \grad{f} \cdot \dd{\va{r}}
+    \end{equation}
+    $$
+
+    Next, we sum up all these changes along the curve:
+
+    $$
+    \int_C \grad{f} \cdot \dd{\va{r}}
+    $$
+
+3. Finally, we can say that both of these represent the same thing: the change in $f$ as we move along the curve.
+    Since they are equivalent, we can say:
+
+    $$
+    \begin{equation}
+    \int_C \grad{f} \cdot \dd{\va{r}} = f(\va{b}) - f(\va{a})
+    \end{equation}
+    $$
+
+    This equation is known as the fundamental theorem of line integrals, or the gradient theorem.
+
+We can also express it in terms of $t$ instead of $\va{r}$.
+Denote $\va{a} = \va{r}(a)$ and $\va{b} = \va{r}(b)$.
+Then, we can write the integral as:
+
+$$
+\begin{equation}
+\int_a^b \grad{f} \cdot \va{r}'(t) \, \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
+\end{equation}
+$$
+
+## Proof By Multivariable Chain Rule
+
+To prove the gradient theorem, we will use the multivariable chain rule.
+
+Consider the derivative of the composition $f(\va{r}(t))$. By the chain rule, this is:
+
+$$
+\begin{equation}
+\dv{t} f(\va{r}(t)) = \grad{f} \cdot \va{r}'(t)
+\end{equation}
+$$
+
+Looks familiar? Plug this into the integral:
+
+$$
+\begin{equation}
+\int_a^b \class{blue}{\grad{f} \cdot \va{r}'(t)} \, \dd{t} = \int_a^b \class{blue}{\dv{t} f(\va{r}(t))} \, \dd{t}
+\end{equation}
+$$
+
+The right-hand side can be evaluated simply by the regular fundamental theorem:
+
+$$
+\begin{equation}
+\int_a^b \dv{t} f(\va{r}(t)) \, \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
+\end{equation}
+$$
+
+Thus, we have proven the gradient theorem.
+
+## Implications: Path Independence
+
+One of the most important implications of the gradient theorem is the concept of path independence.
+
+Consider two curves $C_1$ and $C_2$ that start and end at the same points $\va{a}$ and $\va{b}$.
+
+By the gradient theorem, we have:
+
+$$
+\begin{equation}
+\int_{C_1} \grad{f} \cdot \dd{\va{r}} = f(\va{b}) - f(\va{a}) = \int_{C_2} \grad{f} \cdot \dd{\va{r}}
+\end{equation}
+$$
+
+This means that the value of the line integral of $\grad{f}$ along any curve from $\va{a}$ to $\va{b}$ is the same.
+In other words, the line integral of $\grad{f}$ is **path independent**.
+
+This should be a surprising result - it means that no matter where you start and end, the total change in $f$ is always the same.
+
+This property is crucial in the study of conservative vector fields, which we will explore in the next section.
+
+## Summary and Next Steps
+
+In this section, we introduced the fundamental theorem of line integrals, also known as the gradient theorem:
+
+$$
+\begin{equation}
+\int_C \grad{f} \cdot \dd{\va{r}} = f(\va{b}) - f(\va{a})
+\end{equation}
+$$
+
+And in terms of $t$:
+
+$$
+\begin{equation}
+\int_a^b \grad{f} \cdot \va{r}'(t) \, \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
+\end{equation}
+$$
+
+Here are the key points to remember:
+
+- The gradient theorem extends the fundamental theorem of calculus to line integrals.
+- It states that the line integral of the gradient of a function is equal to the change in the function between the endpoints of the curve.
+- This theorem has important implications, such as path independence.
+
+In the next section, we will explore the concept of conservative vector fields, which are closely related to the gradient theorem.

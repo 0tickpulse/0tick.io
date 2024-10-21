@@ -170,7 +170,7 @@ $$
     \end{equation}
     $$
 
-    For the clockwise direction, we can just negate the $x$-component:
+    For the clockwise direction, we can just negate the $\cos(t)$ term in the $x$-coordinate:
 
     $$
     \begin{equation}
@@ -258,6 +258,259 @@ $$
 4. The difference in the work done in the two cases is $2\pi - (-2\pi) = 4\pi$.
     The takeaway is that if you reverse the direction of the curve, the work done is the negative of the work done in the original direction.
 
+## More on Path Directions
+
+We saw in the example problem that reversing the direction of the curve results in the negative of the work done in the original direction.
+Let's explore this concept further and see if it holds for any curve.
+
+First, let's consider a curve $C$ defined as $\va{r}(t) = x(t)\ihatc + y(t)\jhatc$, where $t \in [a, b]$.
+
+Next, consider the reverse of this curve, $-C$. In order to parameterize this reversed curve, we can think about reversing the direction of the input parameter.
+That is, instead of $\va{r}(t)$, we can consider $\va{r}(b + a - t)$. A quick check shows that this is indeed the reverse of the original curve:
+
+1. When $t = a$, the parameter for the reversed curve is $b + a - a = b$.
+2. When $t = b$, the parameter for the reversed curve is $b + a - b = a$.
+
+Therefore, the reverse of the curve is:
+
+$$
+\begin{equation}
+\va{r}(b + a - t) = x(b + a - t)\ihatc + y(b + a - t)\jhatc
+\end{equation}
+$$
+
+Now, let's consider how the line integral changes when we reverse the direction of the curve.
+
+### Scalar Line Integrals on Reversed Curves
+
+The line integral of a scalar field $f$ along a curve $C$, as previously defined, is:
+
+$$
+\begin{equation}
+\int_C f(x, y) \dd{s} = \int_a^b f(\va{r}(t)) \norm{\va{r}'(t)} \dd{t}
+\end{equation}
+$$
+
+For the reversed curve, for now we just write $-C$ instead of $C$:
+
+$$
+\begin{equation}
+\int_{-C} f(x, y) \dd{s} = ?
+\end{equation}
+$$
+
+Recall what this visually means. If we construct a 3D plot of the scalar field where $x$ and $y$ are the input parameters and $f(x, y)$ is the output, then the line integral is the area under the curve in this 3D plot:
+
+<LineIntegralVisualizer3D />
+
+Now think about it: even if we reverse the direction of the curve, the area under the curve in the 3D plot doesn't change.
+Therefore, the line integral of a scalar field along a reversed curve is the same as the line integral along the original curve:
+
+$$
+\begin{equation}
+\int_{-C} f(x, y) \dd{s} = \int_C f(x, y) \dd{s}
+\end{equation}
+$$
+
+<details>
+<summary>More rigorous, please!</summary>
+
+To show this more rigorously, we can substitute the parameterization of the reversed curve into the integral:
+
+$$
+\begin{equation}
+\begin{split}
+\int_{-C} f(x, y) \dd{s} &= \int_{a}^{b} f(\va{r}(b + a - t)) \norm{\va{r}'(b + a - t)} \dd{t} \\
+&= \int_{a}^{b} f(x(b + a - t), y(b + a - t)) \norm{\va{r}'(b + a - t)} \dd{t}
+\end{split}
+\end{equation}
+$$
+
+(Notice that the boundaries of the integral do not swap, since we already accounted for the reversal in the parameterization.)
+
+Make the substitution $u = b + a - t$:
+
+$$
+\begin{align}
+u &= b + a - t \\
+\dd{u} &= -\dd{t}
+\end{align}
+$$
+
+The boundaries of the integral change as well:
+
+$$
+\begin{align}
+t = b &\implies u = a \\
+t = a &\implies u = b
+\end{align}
+$$
+
+(This should start to look like a reverse in the integral limits.)
+
+Substitute these into the integral:
+
+$$
+\begin{equation}
+\begin{split}
+\int_{-C} f(x, y) \dd{s} &= \int_{a}^{b} f(x(b + a - t), y(b + a - t)) \norm{\va{r}'(b + a - t)} \class{green}{\dd{t}} \\
+&= \class{green}{-}\int_{b}^{a} f(x(u), y(u)) \norm{\va{r}'(u)} \class{green}{\dd{u}} \\
+&= \int_{a}^{b} f(x(u), y(u)) \norm{\va{r}'(u)} \dd{u} \\
+\end{split}
+\end{equation}
+$$
+
+This is the exact same integral as the un-reversed curve, just with a different name for the integration variable;
+
+$$
+\begin{equation}
+\int_{-C} f(x, y) \dd{s} = \int_C f(x, y) \dd{s}
+\end{equation}
+$$
+
+</details>
+
+### Vector Line Integrals on Reversed Curves
+
+We have already seen that the line integral of a vector field reverses when the curve is reversed.
+
+Just like before, start by writing expressions for the line integral of a vector field along a curve.:
+
+$$
+\begin{equation}
+\int_C \va{F} \cdot \dd{\va{r}} = \int_C \va{F} \cdot \va{r}'(t) \dd{t}
+\end{equation}
+$$
+
+For the reversed curve, we can write the line integral as:
+
+$$
+\begin{equation}
+\int_{-C} \va{F} \cdot \dd{\va{r}} = \int_{-C} \va{F} \cdot \va{r}'(t) \dd{t}
+\end{equation}
+$$
+
+In the line integral, every infinitesimal step of the way, we are taking the dot product of the vector field and the derivative of the curve.
+If we reverse the direction of the curve, the derivative of the curve also reverses, meaning the dot product is negated.
+Thus, reversing the curve negates the line integral of a vector field along the curve:
+
+<div className="card">
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+                    <Plot.Parametric t={[-2, 2]} xy={(t) => [t + -(t ** 2 - 4) * Math.cos(t / 5), (t ** 2) + (t + 2) * (-3 / 4) + (t ** 2 - 4) * (Math.sin(2 * t) - 2.5) / 2]} />
+                    {/* t = 0.2. below is calculated numerically */}
+                    <Transform translate={[4.16, 2.52]}>
+                        <Circle center={[0, 0]} />
+                        <Vector
+                            tail={[0, 0]}
+                            tip={vec.normalize([0.57, -4.41]) /* Artifically scaled down */}
+                            color={color("yellow")}
+                        />
+                        <LaTeX
+                            at={vec.add(vec.normalize([0.57, -4.41]), [0.2, -0.2])}
+                            tex="\text{d}\mathbf{\vec{r}}"
+                            color={color("yellow")}
+                        />
+                        <Vector
+                            tail={[0, 0]}
+                            tip={[1, 1]}
+                            color={color("red")}
+                        />
+                        <LaTeX
+                            at={[1, 1.2]}
+                            tex="\mathbf{\vec{F}}"
+                            color={color("red")}
+                        />
+                    </Transform>
+                </Mafs>
+            </div>
+            <div className="col">
+                <Mafs viewBox={{ x: [0, 5], y: [0, 5] }}>
+                    <Plot.Parametric t={[-2, 2]} xy={(t) => [t + -(t ** 2 - 4) * Math.cos(t / 5), (t ** 2) + (t + 2) * (-3 / 4) + (t ** 2 - 4) * (Math.sin(2 * t) - 2.5) / 2]} />
+                    {/* t = 0.2. below is calculated numerically */}
+                    <Transform translate={[4.16, 2.52]}>
+                        <Circle center={[0, 0]} />
+                        <Vector
+                            tail={[0, 0]}
+                            tip={vec.normalize([0.57, 4.41]) /* Artifically scaled down */}
+                            color={color("yellow")}
+                        />
+                        <LaTeX
+                            at={vec.withMag([0.57, 4.41], 1.2)}
+                            tex="\text{d}\mathbf{\vec{r}}"
+                            color={color("yellow")}
+                        />
+                        <Vector
+                            tail={[0, 0]}
+                            tip={[1, 1]}
+                            color={color("red")}
+                        />
+                        <LaTeX
+                            at={[1, 1.2]}
+                            tex="\mathbf{\vec{F}}"
+                            color={color("red")}
+                        />
+                    </Transform>
+                </Mafs>
+            </div>
+        </div>
+    </div>
+</div>
+
+Thus:
+
+$$
+\begin{equation}
+\int_{-C} \va{F} \cdot \dd{\va{r}} = -\int_C \va{F} \cdot \dd{\va{r}}
+\end{equation}
+$$
+
+<details>
+<summary>More rigorous, please!</summary>
+
+To show this more rigorously, we can substitute the parameterization of the reversed curve into the integral.
+
+Recall that the parameterization of the reversed curve is $\va{r}(b + a - t) = x(b + a - t)\ihatc + y(b + a - t)\jhatc$.
+The infinitesimal vector $\dd{\va{r}}$ is then $\va{r}'(b + a - t) \dd{t}$:
+
+$$
+\begin{equation}
+\dd{\va{r}} = \va{r}'(b + a - t) \dd{t} = \dv{t} \mqty[x(b + a - t) \\ y(b + a - t)] \dd{t} = \mqty[-x'(b + a - t) \\ -y'(b + a - t)] \dd{t}
+\end{equation}
+$$
+
+Since our vector field now acts on the reversed curve, we must evaluate it at the reversed curve:
+
+$$
+\begin{equation}
+\va{F}(\va{r}(b + a - t)) = \va{F}(x(b + a - t), y(b + a - t))
+\end{equation}
+$$
+
+Finally, let's put this all together in the integral:
+
+$$
+\begin{equation}
+\int_{-C} \va{F} \cdot \dd{\va{r}} = \int_{b}^{a} \va{F}(x(b + a - t), y(b + a - t)) \cdot \mqty[-x'(b + a - t) \\ -y'(b + a - t)] \dd{t}
+\end{equation}
+$$
+
+Now, we can make the substitution $u = b + a - t$. As seen previously, this swaps the limits of the integral and the sign of the differential:
+
+$$
+\begin{equation}
+\begin{split}
+\int_{-C} \va{F} \cdot \dd{\va{r}} &= \int_{b}^{a} \va{F}(x(u), y(u)) \cdot \mqty[-x'(u) \\ -y'(u)] \dd{u} \\
+&= -\int_{a}^{b} \va{F}(x(u), y(u)) \cdot \mqty[x'(u) \\ y'(u)] \dd{u} \\
+&= -\int_{a}^{b} \va{F} \cdot \dd{\va{r}}
+\end{split}
+\end{equation}
+$$
+
+</details>
+
 ## Summary and Next Steps
 
 In this section, we explored the concept of line integrals of vector fields.
@@ -273,7 +526,7 @@ Here are the key points to remember:
     $$
 
 - The work done along a curve is the line integral of the force along the curve.
-- Reversing the direction of the curve results in the negative of the work done in the original direction.
+- If the curve is reversed, the line integral of a scalar field remains the same, while the line integral of a vector field is negated.
 
 In the next section, we shall extend the Fundamental Theorem of Calculus to line integrals.
 

@@ -1,0 +1,340 @@
+---
+sidebar_position: 4
+description: A special type of vector field that has a unique property.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Conservative Vector Fields
+
+Consider a vector field $\va{F}$.
+This vector field is said to be **conservative** if it can be written as the gradient of a scalar function $f$.
+Conservative vector fields have quite a few unique properties that make them interesting to study.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Path Independence of Conservative Vector Fields
+
+Previously, we discussed the gradient theorem, an extension of the fundamental theorem of calculus to line integrals.
+One of the key takeaways from the gradient theorem is that the line integral of a gradient field is path-independent:
+
+$$
+\begin{equation}
+\int_{C_1} \grad{f} \cdot \dd{\va{r}} = f(\va{b}) - f(\va{a}) = \int_{C_2} \grad{f} \cdot \dd{\va{r}}
+\end{equation}
+$$
+
+This property is a direct consequence of the fundamental theorem of calculus.
+It should also make intuitive sense (even though it initially appears very surprising):
+imagine the function $f$ as a hill. Wouldn't it make sense that the total change in height as you walk from point $A$ to point $B$ is the same regardless of the path you take?
+
+Let's shift our focus by redefining some things. Define $\va{F} = \grad{f}$.
+Then, the line integral of $\va{F}$ along a curve $C$ is path-independent, which makes $\va{F}$ a **conservative** vector field.
+
+<Boxed>
+A vector field $\va{F}$ is conservative if there exists a scalar function $f$ such that $\va{F} = \grad{f}$.
+</Boxed>
+
+## All Conservative Fields are Gradient Fields (Optional Section)
+
+One important question one would start wondering is: all gradient fields are conservative, but can *all* conservative fields be represented as gradient fields?
+
+Start with the gradient theorem:
+
+$$
+\begin{equation}
+\int_{C} \grad{f} \cdot \dd{\va{r}} = f(\va{b}) - f(\va{a})
+\end{equation}
+$$
+
+Suppose we choose an arbitrary $\va{a}$ such that $f(\va{a}) = 0$.
+Then, the line integral simplifies to:
+
+$$
+\begin{equation}
+\int_{C} \grad{f} \cdot \dd{\va{r}} = f(\va{b})
+\end{equation}
+$$
+
+Meaning, for any point $\va{b}$, the value of the function $f$ at that point is the line integral of the gradient field from the $\va{a}$ to that point.
+
+If we then denote $\va{F} = \grad{f}$, we can write the line integral as:
+
+$$
+\begin{equation}
+\int_{C} \va{F} \cdot \dd{\va{r}} = f(\va{b}) \label{eq:all-conservative-fields-are-gradient-fields-f-def}
+\end{equation}
+$$
+
+Before doing the proof, let's try to understand this from a high-level perspective:
+
+- We are trying to show that all conservative fields are gradient fields.
+- We know that the line integral of a gradient field is path-independent.
+- From Equation $\eqref{eq:all-conservative-fields-are-gradient-fields-f-def}$, we know that the line integral of a conservative field is the value of the function at the end point.
+- By the gradient theorem on $f$, we can set the following:
+
+    $$
+    \begin{equation}
+    \int_{C} \va{F} \cdot \dd{\va{r}} = f(\va{b}) = \int_{C} \grad{f} \cdot \dd{\va{r}}
+    \end{equation}
+    $$
+
+- This implies that $\va{F} = \grad{f}$.
+
+### The Actual Proof
+
+The following proof is a bit more rigorous, and it will look a bit similar to how we consider accumulation functions in single-variable calculus.
+In this proof, the above is the premise which defines the function $f$.
+
+Next, consider any nonzero vector $\va{v}$ in the same space as $\va{F}$. If we take the directional derivative of $f(\va{b})$ in the above equation with respect to $\va{v}$, we get, by the definition of the directional derivative:
+
+$$
+\begin{equation}
+\pdv{f}{\va{v}}(\va{b}) = \lim_{h \to 0} \frac{f(\va{b} + h\va{v}) - f(\va{b})}{h}
+\end{equation}
+$$
+
+Plug in Equation $\eqref{eq:all-conservative-fields-are-gradient-fields-f-def}$ into this equation:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{\va{v}}(\va{b}) &= \lim_{h \to 0} \frac{f(\va{b} + h\va{v}) - f(\va{b})}{h} \\
+&= \lim_{h \to 0} \frac{1}{h}\qty[\int_{\va{a}}^{\va{b} + h \va{v}} \va{F} \cdot \dd{\va{r}} - \int_{\va{a}}^{\va{b}} \va{F} \cdot \dd{\va{r}}] \\
+&= \lim_{h \to 0} \frac{1}{h}\qty[\int_{\va{b}}^{\va{b} + h \va{v}} \va{F} \cdot \dd{\va{r}}]
+\end{split}
+\end{equation}
+$$
+
+Let's digest this equation a bit.
+After plugging in the definition of $f(\va{b})$ into the directional derivative, we get an expression that looks like a difference of two integrals.
+
+We end up with a limit of a single integral over a path from $\va{b}$ to $\va{b} + h\va{v}$.
+As $h$ approaches $0$, the length of the path approaches $0$.
+
+One consequence of this is that the path from $\va{b}$ to $\va{b} + h\va{v}$ becomes arbitrarily close to a straight line.
+Thus, we can parameterize this path as a straight line, i.e. $\va{r}(t) = \va{b} + t\va{v}$ for $t \in [0, h]$.
+
+Rewrite the integral in terms of $t$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{\va{v}}(\va{b}) &= \lim_{h \to 0} \frac{1}{h}\qty[\int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{r}'(t) \, \dd{t}] \\
+&= \lim_{h \to 0} \frac{1}{h}\qty[\int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \, \dd{t}]
+\end{split}
+\end{equation}
+$$
+
+We need to use a clever trick to simplify this expression.
+Consider the line integral inside this limit. At $h = 0$, the path is a single point, and the integral evaluates to $0$.
+To help with this, let's define a new function $g(h)$ as follows:
+
+$$
+\begin{equation}
+g(h) = \int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \, \dd{t}
+\end{equation}
+$$
+
+The limit we are interested in is then:
+
+$$
+\begin{equation}
+\pdv{f}{\va{v}}(\va{b}) = \lim_{h \to 0} \frac{1}{h} g(h) \equiv \lim_{h \to 0} \frac{g(h) - g(0)}{h}
+\end{equation}
+$$
+
+Which is just the definition of the derivative of $g$ at $0$:
+
+$$
+\begin{equation}
+\pdv{f}{\va{v}}(\va{b}) = g'(0) = \eval{\dv{h} \int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \, \dd{t}}_{h = 0}
+\end{equation}
+$$
+
+By the fundamental theorem of calculus, the derivative of an integral is the integrand evaluated at the upper limit.
+Thus, this becomes:
+
+$$
+\begin{equation}
+\pdv{f}{\va{v}}(\va{b}) = \eval{\va{F}(\va{b} + t\va{v}) \cdot \va{v}}_{t = 0} = \va{F}(\va{b}) \cdot \va{v} \label{eq:all-conservative-fields-are-gradient-fields-dfdv}
+\end{equation}
+$$
+
+Finally (and this is the key step), since $\va{v}$ was arbitrary, this equation holds for all vectors $\va{v}$.
+
+Recall the definition of the directional derivative (which is what we did):
+
+$$
+\begin{equation}
+\pdv{f}{\va{v}}(\va{b}) = \grad{f}(\va{b}) \cdot \va{v} \label{eq:all-conservative-fields-are-gradient-fields-dfdv-grad}
+\end{equation}
+$$
+
+Equating Equations $\eqref{eq:all-conservative-fields-are-gradient-fields-dfdv}$ and $\eqref{eq:all-conservative-fields-are-gradient-fields-dfdv-grad}$, we get:
+
+$$
+\begin{equation}
+\va{F}(\va{b}) = \grad{f}(\va{b})
+\end{equation}
+$$
+
+Thus, we have shown that all conservative fields are gradient fields.
+
+## Conservative Fields in Closed Paths
+
+A closed path is a path that starts and ends at the same point.
+For a conservative field, the line integral along a closed path is always $0$:
+
+$$
+\begin{equation}
+\oint_C \va{F} \cdot \dd{\va{r}} = 0
+\end{equation}
+$$
+
+This little circle on the integral sign denotes a closed path.
+
+There are two ways to show this, both of which are quite interesting.
+
+1. **Using the Gradient Theorem** - Since $\va{F}$ is conservative, we can write it as $\va{F} = \grad{f}$.
+    Then, by the gradient theorem, the line integral of $\va{F}$ along a closed path is $f(\va{a}) - f(\va{a}) = 0$.
+2. **Using properties of line integrals** - The left hand side is a line integral for a vector field.
+    Consider a closed path $C$ and its reverse path $-C$.
+    Recall that a line integral over a reversed path is the negative of the original path:
+
+    $$
+    \begin{equation}
+    \oint_C \va{F} \cdot \dd{\va{r}} = -\oint_{-C} \va{F} \cdot \dd{\va{r}}
+    \end{equation}
+    $$
+
+    However, we also know that the line integral of $\va{F}$ is path independent:
+
+    $$
+    \begin{equation}
+    \oint_{-C} \va{F} \cdot \dd{\va{r}} = \oint_{C} \va{F} \cdot \dd{\va{r}}
+    \end{equation}
+    $$
+
+    Combining these two equations, we get:
+
+    $$
+    \begin{equation}
+    \oint_C \va{F} \cdot \dd{\va{r}} = -\oint_C \va{F} \cdot \dd{\va{r}}
+    \end{equation}
+    $$
+
+    Which implies that the line integral is $0$.
+
+## Potential Functions
+
+Previously, we discussed work done by forces as a line integral:
+
+$$
+\begin{equation}
+W = \int_{C} \va{F} \cdot \dd{\va{r}}
+\end{equation}
+$$
+
+A force is **conservative** if the work done by the force is path-independent.
+This means that the work done by the force is only dependent on the initial and final positions, not the path taken.
+The gravitational force, electric force, and spring force are all examples of conservative forces, while friction and air resistance are non-conservative forces.
+
+If $\va{F}$ is conservative, by definition, there exists a scalar function $U$ such that $\va{F} = \grad{U}'$.
+
+This function $U'$ is called the **potential function** of the vector $\va{F}$.
+
+<details>
+<summary>Why the $'$?</summary>
+
+One might hear "potential function" and think of the function $U'$ as the potential energy.
+In reality, the actual definition of the potential energy is $U = -U'$.
+
+The work done by a force is equivalent to a change in the kinetic energy of the system:
+
+$$
+\begin{equation}
+W = \Delta K
+\end{equation}
+$$
+
+By the conservation of energy, the total kinetic and potential energy of the system is constant (assuming all forces are conservative):
+
+$$
+\begin{equation}
+K + U = \text{constant}
+\end{equation}
+$$
+
+This means that a change in potential energy is equal to the *negative* of the work done by the force to uphold the conservation law.
+
+</details>
+
+### Example Problem: Electric Potential Energy
+
+> A point charge $Q$ is placed somewhere in space.
+> Another test charge $q$ is placed at a distance $r$ from the charge.
+> The electric force between the two charges is given by Coulomb's law:
+>
+> $$
+> \begin{equation}
+> \va{F} = \frac{1}{4\pi\epsilon_0} \frac{Qq}{r^2} \rhatc
+> \end{equation}
+> $$
+>
+> The electric force is conservative.
+> Write an expression for the potential energy of the test charge $q$, $U$.
+
+Before doing anything, notice that there is only one dimension in this problem, the radial direction.
+So any vector can be written as a scalar times the unit vector in the radial direction.
+
+Sine $\va{F} = -\grad{U}$ (from the definition of potential energy), we can write:
+
+$$
+\begin{equation}
+\va{F} = -\grad{U} = -\pdv{U}{r} \rhatc
+\end{equation}
+$$
+
+This implies that:
+
+$$
+\begin{equation}
+\pdv{U}{r} = -\frac{1}{4\pi\epsilon_0} \frac{Qq}{r^2}
+\end{equation}
+$$
+
+By the fundamental theorem of calculus, we can integrate this to find $U$:
+
+$$
+\begin{equation}
+U = \int_{a}^{r} -\frac{1}{4\pi\epsilon_0} \frac{Qq}{r^2} \, \dd{r} = \frac{1}{4\pi\epsilon_0} Qq \qty(\frac{1}{r} - \frac{1}{a})
+\end{equation}
+$$
+
+Here, we have introduced a constant $a$ to account for the fact that potential energy is defined up to an arbitrary constant.
+By convention, we set the potential energy to be $0$ at infinity to eliminate the $1/a$ term. Then;
+
+$$
+\begin{equation}
+U = \frac{1}{4\pi\epsilon_0} \frac{Qq}{r}
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+This was a large section, and we covered a lot of content.
+We introduced the concept of conservative vector fields, as well as their properties and implications.
+
+Here are the key points to remember:
