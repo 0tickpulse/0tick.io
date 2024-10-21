@@ -252,8 +252,11 @@ This means that the work done by the force is only dependent on the initial and 
 The gravitational force, electric force, and spring force are all examples of conservative forces, while friction and air resistance are non-conservative forces.
 
 If $\va{F}$ is conservative, by definition, there exists a scalar function $U$ such that $\va{F} = \grad{U}'$.
-
 This function $U'$ is called the **potential function** of the vector $\va{F}$.
+
+Conservative forces get its name from the fact that they "conserve" mechanical energy (kinetic and potential energy).
+Since they're path-independent, simply going back to the initial position will result in the same energy as the initial position.
+Thus, all processes involving conservative forces are *reversible*.
 
 <details>
 <summary>Why the $'$?</summary>
@@ -338,3 +341,12 @@ This was a large section, and we covered a lot of content.
 We introduced the concept of conservative vector fields, as well as their properties and implications.
 
 Here are the key points to remember:
+
+- A vector field $\va{F}$ is conservative if it can be written as the gradient of a scalar function $f$.
+- The converse is also true: all conservative fields are gradient fields.
+- Conservative fields have the property that the line integral of the field along any path is path-independent.
+- The line integral of a conservative field along a closed path is always $0$.
+- The potential function of a conservative field is a scalar function $U'$ such that $\va{F} = \grad{U'}$.
+- The potential energy of a system is defined as $U = -U'$.
+
+In the next section, we will introduce the concept of flux, briefly mentioning Gauss's law.
