@@ -14,7 +14,7 @@ import range from "lodash/range";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { easeInOutCubic } from "js-easing-functions";
 
-# Fundamental Theorem of Line Integrals
+# Gradient Theorem
 
 :::warning Todo
 
@@ -29,7 +29,7 @@ In single-variable calculus, we primarily rely on the fundamental theorem of cal
 
 $$
 \begin{equation}
-\int_a^b f'(x) \, \dd{x} = f(b) - f(a)
+\int_a^b f'(x) \dd{x} = f(b) - f(a)
 \end{equation}
 $$
 
@@ -53,11 +53,11 @@ Let's think about moving along the $x$-axis from $a$ to $b$, and consider how mu
 1. Firstly, the change can simply be represented as $f(b) - f(a)$.
 
 2. Second, let's try to add up incremental changes as we move along the curve.
-    Each time we move a small distance $\dd{x}$, we can think of the change in $f$ as $f'(x) \, \dd{x}$.
+    Each time we move a small distance $\dd{x}$, we can think of the change in $f$ as $f'(x) \dd{x}$.
     If we add up all these changes from $a$ to $b$, we get the integral:
 
     $$
-    \int_a^b f'(x) \, \dd{x}
+    \int_a^b f'(x) \dd{x}
     $$
 
     <Mafs viewBox={{ x: [0, 8], y: [0, 5] }}>
@@ -87,7 +87,7 @@ Let's think about moving along the $x$-axis from $a$ to $b$, and consider how mu
 
     $$
     \begin{equation}
-    \int_a^b f'(x) \, \dd{x} = f(b) - f(a)
+    \int_a^b f'(x) \dd{x} = f(b) - f(a)
     \end{equation}
     $$
 
@@ -141,7 +141,7 @@ Then, we can write the integral as:
 
 $$
 \begin{equation}
-\int_a^b \grad{f} \cdot \va{r}'(t) \, \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
+\int_a^b \grad{f} \cdot \va{r}'(t) \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
 \end{equation}
 $$
 
@@ -161,7 +161,7 @@ Looks familiar? Plug this into the integral:
 
 $$
 \begin{equation}
-\int_a^b \class{blue}{\grad{f} \cdot \va{r}'(t)} \, \dd{t} = \int_a^b \class{blue}{\dv{t} f(\va{r}(t))} \, \dd{t}
+\int_a^b \class{blue}{\grad{f} \cdot \va{r}'(t)} \dd{t} = \int_a^b \class{blue}{\dv{t} f(\va{r}(t))} \dd{t}
 \end{equation}
 $$
 
@@ -169,7 +169,7 @@ The right-hand side can be evaluated simply by the regular fundamental theorem:
 
 $$
 \begin{equation}
-\int_a^b \dv{t} f(\va{r}(t)) \, \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
+\int_a^b \dv{t} f(\va{r}(t)) \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
 \end{equation}
 $$
 
@@ -210,7 +210,7 @@ And in terms of $t$:
 
 $$
 \begin{equation}
-\int_a^b \grad{f} \cdot \va{r}'(t) \, \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
+\int_a^b \grad{f} \cdot \va{r}'(t) \dd{t} = f(\va{r}(b)) - f(\va{r}(a))
 \end{equation}
 $$
 

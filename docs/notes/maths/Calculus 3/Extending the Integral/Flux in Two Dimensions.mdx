@@ -1,0 +1,625 @@
+---
+sidebar_position: 5
+description: A new concept that describes the flow of a vector field through a surface.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Flux in Two Dimensions
+
+Flux is a new concept that describes the flow of a vector field through a surface.
+It's really powerful, and its mathematical definition is quite simple and elegant.
+
+We shall introduce the concept of flux in two dimensions (3D will be covered in the future).
+We will discuss its physical interpretation, computations, and also explore the integral form of Gauss's law.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction - Fluid Analogy
+
+Imagine you have a fluid placed in a partially permeable container, meaning the fluid will slowly seep through the container and leak out.
+Let's say you place this fluid in another liquid, and you want to know how much fluid is leaking out of the container.
+You could do this by measuring the mass inside the container over time. If you set $m(t)$ as the mass, you could measure the rate of change of mass, $\dv{m}{t}$, to determine how much fluid is leaking out.
+
+Now, let's consider a vector field $\va{v}$ that represents the flow of a fluid.
+The vector field $\va{v}$ could represent the velocity of the fluid at any point in space.
+If we have a closed curve $C$ in space, can we predict how much fluid is flowing outwards through the curve?
+
+This quantity is known as the **flux** of the vector field $\va{v}$ through the curve $C$. Denoted as $\Phi$, the flux is a scalar quantity that represents the flow of the vector field through the curve.
+In our fluid analogy, the flux would represent the amount of fluid that flows out of the container:
+
+$$
+\begin{equation}
+\Phi = -\dv{m}{t}
+\end{equation}
+$$
+
+Suppose we have this vector field $\va{v}$ and a curve $C$ in the plane.
+Below is a visual representation of both, along with some unit normal vectors to the curve, $\vu{n}$, which are unit vectors that are perpendicular to the curve.
+
+export function Main({ other = () => null, mafsProps, curveProps, showNs = true }) {
+    const r = (t) => [3 * Math.cos(t) + 1/3 * Math.sin(4 * t), 3 * Math.sin(t - 1/2)];
+    const n = (t) => vec.normalize([3 * Math.cos(t - 1/2), 3 * Math.sin(t) - 4/3 * Math.cos(4 * t)]);
+    const tangent = (t) => vec.rotate(n(t), Math.PI / 2);
+    const F = ([x, y]) => [x * y, -2 * x + y];
+    return (
+        <Mafs {...mafsProps}>
+            <Plot.VectorField xy={F} step={0.5} xyOpacity={() => 0.5} />
+            <Plot.Parametric
+                xy={r}
+                t={[-Math.PI, Math.PI]}
+                color={color("red")}
+                {...curveProps}
+            />
+            {showNs && range(-Math.PI, Math.PI).map((t) => (
+                <Transform key={t} translate={r(t)}>
+                    <Vector tip={n(t)} />
+                </Transform>
+            ))}
+            {other({r, n, F, tangent})}
+        </Mafs>
+    );
+}
+
+<Main />
+
+<details>
+<summary>The actual functions</summary>
+
+$$
+\begin{equation}
+\va{r}(t) = \mqty[ 3\cos(t) + \frac{1}{3}\sin(4t) \\ 3\sin(t - \frac{1}{2}) ], \, t \in [-\pi, \pi]
+\end{equation}
+$$
+
+</details>
+
+Let's split the curve $C$ into $n$ small line segments, each with a unit normal vector $\vu{n}$.
+Imagine that we take a small time interval $\Delta t$ and want to measure the flow of the vector field through the curve in that time.
+
+In the figure below, we have a very zoomed in view of a small segment of the curve highlighted in red.
+All vectors drawn here are artificially scaled down for visualization purposes.
+
+<Main
+    mafsProps={{
+        viewBox: {
+            x: [0.95, 1.15],
+            y: [1.62, 1.82],
+            padding: 0
+        }
+    }}
+    curveProps={{
+        color: "white"
+    }}
+    showNs={false}
+    other={({r, n, F, tangent}) => (
+        <>
+            <Polygon
+                points={[
+                    r(1.090),
+                    r(1.125),
+                    vec.add(r(1.125), vec.withMag(F(r(1.090)), 0.075)),
+                    vec.add(r(1.090), vec.withMag(F(r(1.090)), 0.075))
+                ]}
+                color={color("blue")}
+                fillOpacity={0.3}
+                strokeOpacity={0}
+            />
+            <Line.Segment
+                point1={r(1.090)}
+                point2={r(1.125)}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\Delta s"
+                at={lineLabel(r(1.090), r(1.125), "left", { sideOffset: 0.01 })}
+                color={color("red")}
+            />
+            {[1.090, 1.125].map((t) => (
+                <Transform key={t} translate={r(t)}>
+                    <Vector tip={vec.withMag(F(r(1.090)), 0.075)} color={color("blue")} />
+                    <LaTeX
+                        tex="\mathbf{\vec{v}} \Delta t"
+                        at={lineLabel([0, 0], vec.withMag(F(r(1.090)), 0.075), "left", { sideOffset: 0.01, forwardOffset: 0.03 })}
+                        color={color("blue")}
+                    />
+                </Transform>
+            ))}
+            <Transform translate={r(1.125)}>
+                <Vector tip={vec.withMag(n(1.125), 0.075)} color={color("green")} />
+                <LaTeX
+                    tex="\mathbf{\hat{n}}"
+                    at={lineLabel([0, 0], vec.withMag(n(1.125), 0.075), "right", { sideOffset: 0.01, forwardOffset: 0.02 })}
+                    color={color("green")}
+                />
+            </Transform>
+        </>
+    )}
+/>
+
+- The magnitue of the flow vector represents the displacement of the fluid in that time - $\class{blue}{\va{v}} \Delta t$.
+- Notice that the two flow blue vectors and the curve form a parallelogram. This represents the area of fluid that flows through the curve in $\Delta t$.
+    For a fluid with density $1\, \text{kg}\cdot\text{m}^{-3}$, the mass of the fluid that flows through the curve is equivalent to the area of the parallelogram.
+
+The area of the parallelogram is the base times the height.
+
+- The base is the length of the curve segment, $\class{red}{\Delta s}$.
+- The height is the projection of the flow vector onto the normal vector, $(\class{blue}{\va{v}} \Delta t) \cdot \class{green}{\vu{n}}$.
+
+Thus:
+
+$$
+\begin{equation}
+\Delta m = \class{red}{\Delta s} (\class{blue}{\va{v}} \Delta t) \cdot \class{green}{\vu{n}} = \class{blue}{\va{v}} \cdot \class{green}{\vu{n}} \class{red}{\Delta s} \Delta t
+\end{equation}
+$$
+
+Dividing by $\Delta t$ gives us how much this mass changes *per unit time* for this segment of the curve:
+
+$$
+\begin{equation}
+\qty(\frac{\Delta m}{\Delta t})_i = \class{blue}{\va{v}} \cdot \class{green}{\vu{n}} \class{red}{\Delta s}
+\end{equation}
+$$
+
+Finally, we can sum up all the small segments of the curve to get the total mass that flows through the curve in $\Delta t$:
+
+$$
+\begin{equation}
+\frac{\Delta m}{\Delta t} = \sum_{i=1}^n \class{blue}{\va{v}} \cdot \class{green}{\vu{n}} \class{red}{\Delta s}
+\end{equation}
+$$
+
+We can take the limit as $\Delta t \to 0$, where the right-hand side becomes a line integral:
+
+$$
+\begin{equation}
+\dv{m}{t} = \oint_C \class{blue}{\va{v}} \cdot \class{green}{\vu{n}} \class{red}{\dd{s}}
+\end{equation}
+$$
+
+This quantity is known as the **flux** of the vector field $\va{v}$ through the curve $C$:
+
+<Boxed>
+$$
+\begin{equation}
+\Phi = \oint_C \va{v} \cdot \vu{n} \dd{s} \label{eq:flux}
+\end{equation}
+$$
+</Boxed>
+
+## Computing Flux
+
+We have an elegant formula for the flux, but currently we don't really have a way to compute it.
+Generally, we would need to:
+
+1. Parameterize the curve $C$.
+2. Compute the unit normal vector $\vu{n}$ to the curve.
+3. Compute the infinitesimal displacement $\dd{s} = \norm{\va{r}'(t)} \dd{t}$.
+4. Combine these to compute the flux.
+
+Let's go through an example to see how we can compute the flux:
+
+> Consider a vector field defined as follows:
+>
+> $$
+> \begin{equation}
+> \va{v}(x, y) = \mqty[ x^2 \\ y^2 ]
+> \end{equation}
+> $$
+>
+> What is the flux of $\va{v}$ through the curve $C$ defined by the equation $x^2 + y^2 = R$ (a circle of radius $R$)?
+
+### Parameterizing the Curve
+
+A circle of radius $R$ can be parameterized as follows:
+
+$$
+\begin{equation}
+\va{r}(t) = \mqty[ R\cos(t) \\ R\sin(t) ], \, t \in [0, 2\pi]
+\end{equation}
+$$
+
+Since $t$ acts as an angle, we can denote it as $\theta$ to make it more intuitive:
+
+$$
+\begin{equation}
+\va{r}(\theta) = \mqty[ R\cos(\theta) \\ R\sin(\theta) ], \, \theta \in [0, 2\pi]
+\end{equation}
+$$
+
+### Computing the Unit Normal Vector
+
+Recall that the unit normal vector to a curve is a vector that is perpendicular to the curve.
+For a circle, that is simply the radial unit vector $\vu{r}$:
+
+$$
+\begin{equation}
+\vu{n} = \vu{r} = \mqty[ \cos(\theta) \\ \sin(\theta) ]
+\end{equation}
+$$
+
+### Computing the Length Element
+
+The length element $\dd{s}$ is the magnitude of the derivative of the parameterization:
+
+$$
+\begin{equation}
+\dd{s} = \norm{\va{r}'(\theta)} \dd{\theta} = \norm{R\mqty[ -\sin(\theta) \\ \cos(\theta) ]} \dd{\theta} = R \dd{\theta}
+\end{equation}
+$$
+
+This should be intuitive given how this is just the arc length of the circle.
+
+### Computing the Flux
+
+The flux of $\va{v}$ through the curve $C$ is:
+
+$$
+\begin{equation}
+\Phi = \oint_C \class{blue}{\va{v}} \cdot \class{green}{\vu{n}} \class{red}{\dd{s}} \tag{\ref{eq:flux}}
+\end{equation}
+$$
+
+Substituting in the parameterization of the curve, the unit normal vector, and the length element, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\Phi &= \oint_C \class{blue}{\va{v}} \cdot \class{green}{\vu{n}} \class{red}{\dd{s}} \\
+&= \int_0^{2\pi} \class{blue}{\va{v}\qty(\mqty[ R\cos(\theta) \\ R\sin(\theta) ])} \cdot \class{green}{\mqty[ \cos(\theta) \\ \sin(\theta) ]} \class{red}{R \dd{\theta}} \\
+&= \class{red}{R} \int_0^{2\pi} \class{blue}{\mqty[ R^2\cos^2(\theta) \\ R^2\sin^2(\theta) ]} \cdot \class{green}{\mqty[ \cos(\theta) \\ \sin(\theta) ]} \dd{\theta} \\
+&= R^3 \int_0^{2\pi} \cos^3(\theta) + \sin^3(\theta) \dd{\theta}
+\end{split}
+\end{equation}
+$$
+
+Without going into the details, the integral evaluates to:
+
+$$
+\begin{equation}
+\Phi = R^3 \eval{\qty[\sin(\theta) - \frac{1}{3}\sin^3(\theta) - \cos(\theta) + \frac{1}{3}\cos^3(\theta)]}_0^{2\pi} = 0
+\end{equation}
+$$
+
+This means that *no fluid flows in or out of the circle* - the flux is zero.
+
+This is not initially clear when looking at the vector field and the circle, but it should still look like a plausible result; it seems an equal amount of fluid flows in as it flows out.
+
+<Mafs>
+    <Plot.VectorField xy={([x, y]) => [x ** 2, y ** 2]} step={0.5} />
+    <Plot.Parametric
+        xy={(t) => [3 * Math.cos(t), 3 * Math.sin(t)]}
+        t={[-Math.PI, Math.PI]}
+        color={color("red")}
+    />
+</Mafs>
+
+## Generalizing the Normal Vector
+
+Through the example with the circle, we saw that the normal vector to the circle was simply the radial unit vector.
+Obviously, this is not always the case, and we need a more general way to compute the normal vector.
+
+Given a curve $C$ parameterized by $\va{r}(t) = \mqty[x(t) \\ y(t)]$, the unit normal vector $\vu{n}$ is given by the **unit vector perpendicular to the curve's tangent vector**.
+
+{(() => {
+    const [t, setT] = useState(0);
+    const [movableT, setMovableT] = useState(0); // this changes ONLY when the movable point is moved, in which the slider will rerender
+    const r = (t) => [3 * Math.cos(t) + 1/3 * Math.sin(4 * t), 3 * Math.sin(t - 1/2)];
+    // list of cached points
+    const points = range(0, 2 * Math.PI, 0.025).map((t) => {
+        return [t, ...r(t)];
+    }); // [t, x, y]
+    const closest = ([x0, y0]) => {
+        let minDist = Infinity;
+        let closest = points[0];
+        for (const point of points) {
+            const [t, x, y] = point;
+            const dist = Math.hypot(x - x0, y - y0);
+            if (dist < minDist) {
+                minDist = dist;
+                closest = point;
+            }
+        }
+        return closest;
+    };
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Main
+                    showNs={false}
+                    other={({r, n, F, tangent}) => (
+                        <>
+                            <Transform translate={r(t)}>
+                                <Vector tip={tangent(t)} color={color("blue")} />
+                                <LaTeX
+                                    tex="\mathbf{\hat{T}}"
+                                    at={lineLabel([0, 0], tangent(t), "right", { sideOffset: 0, forwardOffset: 0.7 })}
+                                    color={color("blue")}
+                                />
+                            </Transform>
+                            <Transform translate={r(t)}>
+                                <Vector tip={n(t)} color={color("green")} />
+                                <LaTeX
+                                    tex="\mathbf{\hat{n}}"
+                                    at={lineLabel([0, 0], n(t), "right", { sideOffset: 0, forwardOffset: 0.7 })}
+                                    color={color("green")}
+                                />
+                            </Transform>
+                            <MovablePoint
+                                point={r(t)}
+                                constrain={(p) => {
+                                    const [t, x0, y0] = closest(p);
+                                    return [x0, y0];
+                                }}
+                                onMove={(p) => {
+                                    const [t, x0, y0] = closest(p);
+                                    setT(t);
+                                    setMovableT(t);
+                                }}
+                            />
+                        </>
+                    )}
+                />
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput latex label="t" value={t} onChange={setT} min={0} max={2 * Math.PI} step={0.01} key={movableT} />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+})()}
+
+The unit tangent vector $\vu{T}$ is given by the normalized derivative of the parameterization.
+However, we will hold off on the normalization for now - we will do that at the end.
+The tangent vector is then:
+
+$$
+\begin{equation}
+\va{T} = \dv{\va{r}}{t} = \mqty[ x'(t) \\ y'(t) ]
+\end{equation}
+$$
+
+Next, we need to find a vector that is perpendicular to $\va{T}$.
+In 2D, there are two vectors that are perpendicular to a given vector - one in the positive direction and one in the negative direction:
+
+$$
+\begin{align}
+\mqty[x \\ y] &\xrightarrow{+90^\circ} \mqty[-y \\ x] \\
+\mqty[x \\ y] &\xrightarrow{-90^\circ} \mqty[y \\ -x]
+\end{align}
+$$
+
+Hence:
+
+$$
+\begin{equation}
+\va{n} = \pm\mqty[ -y'(t) \\ x'(t) ]
+\end{equation}
+$$
+
+Finally, we need to normalize the vector to get the unit normal vector:
+
+$$
+\begin{equation}
+\vu{n} = \pm\frac{\va{n}}{\norm{\va{n}}} = \pm\frac{1}{\sqrt{x'(t)^2 + y'(t)^2}} \mqty[ -y'(t) \\ x'(t) ]
+\end{equation}
+$$
+
+### Using Differentials
+
+Another way to think about this is in terms of differentials.
+Instead of thinking about the tangent vector, consider a small change in the curve $\dd{\va{r}} = \mqty[ \dd{x} \\ \dd{y} ]$ whose magnitude is $\dd{s}$.
+
+Then, the unit normal vector is given by:
+
+$$
+\begin{equation}
+\vu{n} = \pm\frac{1}{\dd{s}} \mqty[ -\dd{y} \\ \dd{x} ]
+\end{equation}
+$$
+
+## Integral Form of Gauss's Law (Optional Section)
+
+[Previously, we introduced the concept of divergence](/notes/maths/Calculus%203/Extending%20the%20Derivative%20Part%202#divergence), which measures the flow of a vector field through a point.
+We considered Gauss's Law in the context of the divergence of the electric field.
+
+Gauss's Law actually has two different forms, and the one we looked at was the **differential form**.
+There is another form of Gauss's Law, known as the **integral form**, which is expressed via the flux of the electric field.
+
+This makes use of the three-dimensional flux, which is not covered yet, but I have nowhere to put this information, so I'll just leave it here.
+
+Consider the simplest case, that of a point charge $q$ at the origin.
+Let the surface $S$ be a sphere of radius $r$ centered at the origin.
+
+### Flux Through a Sphere
+
+The electric field of a point charge is given by (using Coulomb's Law and dividing by the test charge):
+
+$$
+\begin{equation}
+\class{yellow}{\va{E}} = \frac{1}{4\pi\epsilon_0} \frac{q}{r^2} \rhatc
+\end{equation}
+$$
+
+The good thing about spheres is that they have exceedingly good symmetries.
+Since every patch of area on the sphere is the same as every other patch (rotationally symmetric), and since the electric field is also radially symmetric, the flux of the electric field through the sphere is the same at every point on the sphere.
+Therefore, we do not even need to integrate - we can just multiply the electric field by the area of the sphere to get the flux:
+
+$$
+\begin{equation}
+\Phi = \class{yellow}{\va{E}} \cdot \text{Area}\, \class{green}{\class{green}{\vu{n}}}
+\end{equation}
+$$
+
+The area is simply the surface area of the sphere, $4\pi r^2$. Plugging in the electric field and the area, we get:
+
+$$
+\begin{equation}
+\Phi = \frac{1}{4\pi\epsilon_0} \frac{q}{r^2} \rhatc \cdot 4\pi r^2 \rhatc = \frac{q}{\epsilon_0}
+\end{equation}
+$$
+
+Notice that this is independent of the radius of the sphere.
+
+### Introducing a Deformed Surface
+
+:::warning Todo
+
+- [ ] Add visualizations for this section
+
+:::
+
+Next, consider another surface $S'$ with some random shape. You could imagine a balloon that has been inflated and deformed.
+For each patch of area on the sphere, we can find a corresponding patch on $S'$ by projecting it onto the new surface.
+Think of it as placing a light at the origin, a cover over the area, and seeing where the shadow falls on $S'$.
+
+If we let this new patch be $R$ away from the origin, we can consider how the area scales.
+Since the patch is an area, it scales as the square of the distance from the origin. Therefore:
+
+$$
+\begin{equation}
+\frac{A'}{A} \overset{?}{=} \frac{R^2}{r^2}
+\end{equation}
+$$
+
+This is not quite right, as the area also changes based on how you tilt $S'$.
+Using the shadow analogy, if you tilt $S'$, the shadow could be elongated or squished.
+To account for that, we need to divide by the cosine of the angle between the normal vector of the sphere and the normal vector of $S'$:
+
+$$
+\begin{equation}
+\frac{A'}{A} = \frac{R^2}{r^2} \frac{1}{\cos(\theta)}
+\end{equation}
+$$
+
+Next, consider the electric fields at the two areas. Since they scale as $1/r^2$, the ratio of the electric fields is:
+
+$$
+\begin{equation}
+\frac{E'}{E} = \frac{r^2}{R^2}
+\end{equation}
+$$
+
+Therefore:
+
+$$
+\begin{align}
+\Phi' &= \va{E'} \cdot \text{Area}\, \class{green}{\vu{n}} = E' A' \cos(\theta) \\
+\Phi &= \va{E} \cdot \text{Area}\, \class{green}{\vu{n}} = E A
+\end{align}
+$$
+
+Finally, let's plug in the ratios for $E'$ and $A'$:
+
+$$
+\begin{equation}
+\begin{split}
+\Phi' = E' A' \cos(\theta) &= \qty(E \frac{r^2}{R^2}) \qty(A \frac{R^2}{r^2} \frac{1}{\cos(\theta)}) \cos(\theta) \\
+&= E A = \Phi
+\end{split}
+\end{equation}
+$$
+
+This is a surprising result - the flux through the sphere is the same as the flux through the deformed surface $S'$.
+One way to conceptualize this is just based on scaling. If you, once again, think of the point charge as a light source, if it emits light rays at steady rates, as the distance increases, the flux would decrease by an inverse square law, but the area would increase by the square of the distance, meaning they cancel out.
+
+Hence: **For any surface enclosing a point charge of $q$, the flux of the electric field through the surface is $\frac{q}{\epsilon_0}$**.
+
+For a surface that does not enclose the charge, the flux is zero. (I have a fun visualization for this, but I'll leave it for another time.)
+
+### Arriving at Gauss's Law
+
+Electric fields are additive;
+
+$$
+\begin{equation}
+\class{yellow}{\va{E}} = \sum_i \va{E}_i = \frac{1}{4\pi\epsilon_0} \sum_i \frac{q_i}{r_i^2} \rhatc
+\end{equation}
+$$
+
+The flux can be expressed as:
+
+$$
+\begin{equation}
+\Phi = \iint_S \class{yellow}{\va{E}} \cdot \class{green}{\vu{n}} \dd{A} = \iint_S (\va{E}_1 + \va{E}_2 + \ldots) \cdot \class{green}{\vu{n}} \dd{A}
+\end{equation}
+$$
+
+Thus, we have arrived at Gauss's Law in integral form:
+
+<Boxed>
+$$
+\begin{equation}
+\Phi = \iint_S \class{yellow}{\va{E}} \cdot \class{green}{\vu{n}} \dd{A} = \frac{1}{\epsilon_0} \sum_i q_i \label{eq:gauss-integral}
+\end{equation}
+$$
+</Boxed>
+
+Now we have two forms of Gauss's Law:
+
+$$
+\begin{align}
+\text{Differential Form:} &\quad \div{\class{yellow}{\va{E}}} = \frac{\rho}{\epsilon_0} \\
+\text{Integral Form:} &\quad \iint_S \class{yellow}{\va{E}} \cdot \class{green}{\vu{n}} \dd{A} = \frac{1}{\epsilon_0} \sum_i q_i
+\end{align}
+$$
+
+Both have their uses, but are they equivalent?
+This question will be answered once we delve into a concept known as the *Divergence Theorem*.
+Just as a teaser, first rewrite the total charge as a volume integral:
+
+$$
+\begin{equation}
+\iint_S \class{yellow}{\va{E}} \cdot \class{green}{\vu{n}} \dd{A} = \iiint_V \div{\class{yellow}{\va{E}}} \dd{V}
+\end{equation}
+$$
+
+Then, rewrite the left using the Divergence Theorem, and you'll see that the two forms are indeed equivalent.
+
+## Summary and Next Steps
+
+I was going to write more, but this file already has 594 lines (until this point), so I'll just leave it here.
+
+We introduced the concept of flux in two dimensions, which is a powerful concept that describes the flow of a vector field through a surface.
+
+Here are the key points to remember:
+
+- The flux is given by:
+
+    $$
+    \begin{equation}
+    \Phi = \oint_C \va{v} \cdot \vu{n} \dd{s} \tag{\ref{eq:flux}}
+    \end{equation}
+    $$
+
+- The flux represents how much of a vector field flows outwards through a curve.
+- To compute the flux, we need to parameterize the curve, compute the unit normal vector, and compute the infinitesimal displacement.
+- To compute the normal vector for any curve, we can use the derivative of the parameterization or the differentials of the curve:
+
+    $$
+    \begin{equation}
+    \vu{n} = \pm\frac{1}{\sqrt{x'(t)^2 + y'(t)^2}} \mqty[ -y'(t) \\ x'(t) ] = \pm\frac{1}{\dd{s}} \mqty[ -\dd{y} \\ \dd{x} ]
+    \end{equation}
+    $$
+- We also discussed the integral form of Gauss's Law, which relates the flux of the electric field to the total charge enclosed by the surface:
+
+    $$
+    \begin{equation}
+    \iint_S \va{E} \cdot \vu{n} \dd{A} = \frac{1}{\epsilon_0} \sum_i q_i \tag{\ref{eq:gauss-integral}}
+    \end{equation}
+    $$
+
+In the next section, we will introduce the double integral.

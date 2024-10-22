@@ -228,6 +228,22 @@ In reality, vector fields can be in any direction. The formula for divergence st
 To use the intuitive example, you could consider a box around the origin, and consider the flow of water in and out of the box.
 Then, the flow can be decomposed into the $x$ (left and right of the box) and $y$ (up and down of the box) directions.
 
+:::info A small caveat
+
+This isn't actually the formal definition of divergence.
+The formal definition looks a bit more complicated:
+
+$$
+\begin{equation}
+\operatorname{div} \va{F}(x, y) = \lim_{{\Delta V \to 0}} \frac{1}{\Delta V} \iint_S \va{F} \cdot \vu{n} \dd{\Sigma}
+\end{equation}
+$$
+
+Don't worry about this for now. This is just to show that the concept of divergence is more general than what we've discussed;
+it is a universal definition for all coordinate systems and dimensions.
+
+:::
+
 ### Example Problem: Evaluating Divergence
 
 > The vector field $\va{F}(x, y)$ is given by:

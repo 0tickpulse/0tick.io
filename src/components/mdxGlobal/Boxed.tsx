@@ -1,3 +1,5 @@
+import styles from "./Boxed.module.scss";
+
 export type BoxedProps = {
     color?: string;
     fillOpacity?: number;
@@ -23,6 +25,7 @@ export default function Boxed({
                 // set background color to {color} with {fillOpacity}
                 backgroundColor: `rgba(${color}, ${fillOpacity})`,
             }}
+            className={styles.boxed}
             {...props}
         >
             {children}

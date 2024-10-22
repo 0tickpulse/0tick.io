@@ -24,7 +24,7 @@ Conservative vector fields have quite a few unique properties that make them int
 
 <TOCInline toc={toc} />
 
-## Path Independence of Conservative Vector Fields
+## All Gradient Fields are Conservative Fields
 
 Previously, we discussed the gradient theorem, an extension of the fundamental theorem of calculus to line integrals.
 One of the key takeaways from the gradient theorem is that the line integral of a gradient field is path-independent:
@@ -42,13 +42,19 @@ imagine the function $f$ as a hill. Wouldn't it make sense that the total change
 Let's shift our focus by redefining some things. Define $\va{F} = \grad{f}$.
 Then, the line integral of $\va{F}$ along a curve $C$ is path-independent, which makes $\va{F}$ a **conservative** vector field.
 
-<Boxed>
-A vector field $\va{F}$ is conservative if there exists a scalar function $f$ such that $\va{F} = \grad{f}$.
-</Boxed>
+Generally, a vector field $\va{F}$ is conservative if one of the following conditions is met:
 
-## All Conservative Fields are Gradient Fields (Optional Section)
+1. $\va{F}$ is the gradient of a scalar function $f$; $\va{F} = \grad{f}$.
+2. The line integral of $\va{F}$ along any closed path is $0$.
+3. The line integral of $\va{F}$ along any path is path-independent.
+4. The curl of $\va{F}$ is $0$ if it is continuously differentiable. We will discuss this in more detail in the future.
+
+We will see that these conditions are logically equivalent to each other, and they all define the same fundamental property of a vector field.
+
+## All Conservative Fields are Gradient Fields
 
 One important question one would start wondering is: all gradient fields are conservative, but can *all* conservative fields be represented as gradient fields?
+We can't just assume this to be true, or else we would be succumbing to a logical fallacy (the fancy term for this is *affirming the consequent*).
 
 Start with the gradient theorem:
 
@@ -92,10 +98,26 @@ Before doing the proof, let's try to understand this from a high-level perspecti
 
 - This implies that $\va{F} = \grad{f}$.
 
-### The Actual Proof
+We did it, right?
+This is a good way to understand gradient fields and conservative fields, but it's not a rigorous proof.
+Below is a more rigorous proof that all conservative fields are gradient fields.
+
+### The Actual Proof (Optional Section)
 
 The following proof is a bit more rigorous, and it will look a bit similar to how we consider accumulation functions in single-variable calculus.
-In this proof, the above is the premise which defines the function $f$.
+In this proof, the following is an assumption:
+
+$$
+\begin{equation}
+f(\va{b}) = \int_{C} \va{F} \cdot \dd{\va{r}} \tag{\ref{eq:all-conservative-fields-are-gradient-fields-f-def}}
+\end{equation}
+$$
+
+The statement we want to prove is:
+
+<Boxed>
+For any $\va{F}: \mathbb{R}^n \to \mathbb{R}^n$ that is conservative, there exists a scalar function $f: \mathbb{R}^n \to \mathbb{R}$ such that $\va{F} = \grad{f}$.
+</Boxed>
 
 Next, consider any nonzero vector $\va{v}$ in the same space as $\va{F}$. If we take the directional derivative of $f(\va{b})$ in the above equation with respect to $\va{v}$, we get, by the definition of the directional derivative:
 
@@ -131,8 +153,8 @@ Rewrite the integral in terms of $t$:
 $$
 \begin{equation}
 \begin{split}
-\pdv{f}{\va{v}}(\va{b}) &= \lim_{h \to 0} \frac{1}{h}\qty[\int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{r}'(t) \, \dd{t}] \\
-&= \lim_{h \to 0} \frac{1}{h}\qty[\int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \, \dd{t}]
+\pdv{f}{\va{v}}(\va{b}) &= \lim_{h \to 0} \frac{1}{h}\qty[\int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{r}'(t) \dd{t}] \\
+&= \lim_{h \to 0} \frac{1}{h}\qty[\int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \dd{t}]
 \end{split}
 \end{equation}
 $$
@@ -143,7 +165,7 @@ To help with this, let's define a new function $g(h)$ as follows:
 
 $$
 \begin{equation}
-g(h) = \int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \, \dd{t}
+g(h) = \int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \dd{t}
 \end{equation}
 $$
 
@@ -151,7 +173,7 @@ The limit we are interested in is then:
 
 $$
 \begin{equation}
-\pdv{f}{\va{v}}(\va{b}) = \lim_{h \to 0} \frac{1}{h} g(h) \equiv \lim_{h \to 0} \frac{g(h) - g(0)}{h}
+\pdv{f}{\va{v}}(\va{b}) = \lim_{h \to 0} \frac{1}{h} g(h) \equiv \lim_{h \to 0} \frac{g(0 + h) - g(0)}{h}
 \end{equation}
 $$
 
@@ -159,7 +181,7 @@ Which is just the definition of the derivative of $g$ at $0$:
 
 $$
 \begin{equation}
-\pdv{f}{\va{v}}(\va{b}) = g'(0) = \eval{\dv{h} \int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \, \dd{t}}_{h = 0}
+\pdv{f}{\va{v}}(\va{b}) = g'(0) = \eval{\dv{h} \int_{0}^{h} \va{F}(\va{b} + t\va{v}) \cdot \va{v} \dd{t}}_{h = 0}
 \end{equation}
 $$
 
@@ -251,18 +273,15 @@ A force is **conservative** if the work done by the force is path-independent.
 This means that the work done by the force is only dependent on the initial and final positions, not the path taken.
 The gravitational force, electric force, and spring force are all examples of conservative forces, while friction and air resistance are non-conservative forces.
 
-If $\va{F}$ is conservative, by definition, there exists a scalar function $U$ such that $\va{F} = \grad{U}'$.
-This function $U'$ is called the **potential function** of the vector $\va{F}$.
+If $\va{F}$ is conservative, by definition, there exists a scalar function $f$ such that $\va{F} = \grad{f}$.
+This function $f$ is called the **potential function** of the vector $\va{F}$.
 
 Conservative forces get its name from the fact that they "conserve" mechanical energy (kinetic and potential energy).
 Since they're path-independent, simply going back to the initial position will result in the same energy as the initial position.
 Thus, all processes involving conservative forces are *reversible*.
 
-<details>
-<summary>Why the $'$?</summary>
-
-One might hear "potential function" and think of the function $U'$ as the potential energy.
-In reality, the actual definition of the potential energy is $U = -U'$.
+One might hear "potential function" and think of the function $f$ as the potential energy.
+In reality, the actual definition of the potential energy is the negative of the potential function; $U = -f$.
 
 The work done by a force is equivalent to a change in the kinetic energy of the system:
 
@@ -280,9 +299,13 @@ K + U = \text{constant}
 \end{equation}
 $$
 
-This means that a change in potential energy is equal to the *negative* of the work done by the force to uphold the conservation law.
+This means that a change in potential energy is equal to the *negative* of the work done by the force to uphold the conservation law:
 
-</details>
+$$
+\begin{equation}
+\Delta U = -W = -\int_{C} \va{F} \cdot \dd{\va{r}}
+\end{equation}
+$$
 
 ### Example Problem: Electric Potential Energy
 
@@ -322,7 +345,7 @@ By the fundamental theorem of calculus, we can integrate this to find $U$:
 
 $$
 \begin{equation}
-U = \int_{a}^{r} -\frac{1}{4\pi\epsilon_0} \frac{Qq}{r^2} \, \dd{r} = \frac{1}{4\pi\epsilon_0} Qq \qty(\frac{1}{r} - \frac{1}{a})
+U = \int_{a}^{r} -\frac{1}{4\pi\epsilon_0} \frac{Qq}{r^2} \dd{r} = \frac{1}{4\pi\epsilon_0} Qq \qty(\frac{1}{r} - \frac{1}{a})
 \end{equation}
 $$
 
