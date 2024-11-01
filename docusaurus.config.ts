@@ -65,8 +65,18 @@ const config = {
         },
     ],
 
-    plugins: ["docusaurus-plugin-sass", "@aldridged/docusaurus-plugin-lunr"],
-    themes: ["@docusaurus/theme-mermaid"],
+    plugins: ["docusaurus-plugin-sass"],
+    themes: [
+        "@docusaurus/theme-mermaid",
+        [
+            "@easyops-cn/docusaurus-search-local",
+            /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
+            {
+                hashed: true,
+                docsRouteBasePath: ["notes"]
+            },
+        ],
+    ],
 
     presets: [
         [
