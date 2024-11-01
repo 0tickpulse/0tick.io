@@ -284,6 +284,7 @@ The last equation is the general form of a matrix-vector product. Let's write it
 $$
 \begin{equation}
 \vb{A}\va{v} = \mqty[\class{blue}{a} & \class{yellow}{b} \\ \class{blue}{c} & \class{yellow}{d}] \mqty[x \\ y] = x \class{blue}{\mqty[a \\ c]} + y \class{yellow}{\mqty[b \\ d]} = \mqty[\class{blue}{a}x + \class{yellow}{b}y \\ \class{blue}{c}x + \class{yellow}{d}y]
+\label{eq:matrix-vector-product}
 \end{equation}
 $$
 </Boxed>
@@ -402,6 +403,14 @@ $$
 \end{align}
 $$
 
+More generally, a shearing transformation that shifts the $y$-axis by a factor of $s$ along the $x$-axis can be represented by the matrix:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[1 & s \\ 0 & 1]
+\end{equation}
+$$
+
 ### No Transformation (Identity Matrix)
 
 Finally, let's consider a transformation that doesn't do anything.
@@ -432,3 +441,31 @@ $$
 \vb{I}_n = \mqty[1 & 0 & \cdots & 0 \\ 0 & 1 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & 1]
 \end{equation}
 $$
+
+## Summary and Next Steps
+
+In this section, we introduced the fundamental concept of linear transformations and how they can be represented using matrices.
+
+Here are the key points to remember:
+
+- A linear transformation is a function that maps vectors to vectors in a way that preserves the structure of the vector space.
+- Linear transformations have the visual property that every line remains a line, the origin remains fixed, and the gridlines remain parallel and evenly spaced.
+- Linear transformations can be represented by specifying where they send the basis vectors.
+- These specifications can be organized into a matrix, which can be used to transform vectors using matrix-vector multiplication:
+
+    $$
+    \begin{equation}
+    \vb{A}\va{v} = \mqty[\class{blue}{a} & \class{yellow}{b} \\ \class{blue}{c} & \class{yellow}{d}] \mqty[x \\ y] = x \class{blue}{\mqty[a \\ c]} + y \class{yellow}{\mqty[b \\ d]} = \mqty[\class{blue}{a}x + \class{yellow}{b}y \\ \class{blue}{c}x + \class{yellow}{d}y]
+    \tag{\ref{eq:matrix-vector-product}}
+    \end{equation}
+    $$
+
+- Common geometric transformations like scaling, rotation, and shearing can be represented by specific matrices:
+    - Scaling: $\mqty[s & 0 \\ 0 & t]$
+    - Rotation: $\mqty[\cos{\theta} & -\sin{\theta} \\ \sin{\theta} & \cos{\theta}]$
+    - Shearing: $\mqty[1 & s \\ 0 & 1]$
+    - Identity: $\mqty[1 & 0 \\ 0 & 1]$
+
+- The identity matrix $\vb{I}_n$ represents a transformation that doesn't do anything.
+
+In the next section, we will explore how linear transformations can be composed and inverted, which will allow us to build more complex transformations from simpler ones.
