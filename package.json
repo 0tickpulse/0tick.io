@@ -15,11 +15,14 @@
         "typecheck": "tsc"
     },
     "dependencies": {
+        "@aldridged/docusaurus-plugin-lunr": "1.0.0-alpha.10",
         "@docusaurus/core": "3.5.2",
         "@docusaurus/preset-classic": "3.5.2",
         "@docusaurus/theme-mermaid": "^3.5.2",
         "@mdx-js/react": "^3.0.0",
+        "classnames": "^2.5.1",
         "clsx": "^1.2.1",
+        "color-convert": "^2.0.1",
         "color-parse": "^2.0.2",
         "color-rgba": "^3.0.0",
         "docusaurus-plugin-sass": "^0.2.5",
@@ -48,6 +51,7 @@
         "@docusaurus/tsconfig": "^3.5.2",
         "@docusaurus/types": "^3.5.2",
         "@tsconfig/docusaurus": "^2.0.2",
+        "@types/color-convert": "^2.0.4",
         "@types/color-rgba": "^2.1.3",
         "@types/katex": "^0.16.7",
         "@types/lodash": "^4.17.5",

@@ -1,0 +1,325 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { mathboxLatexElement } from "@site/src/utilities/mathbox";
+
+# Thinking about Vectors
+
+Vectors are the fundamental building blocks of linear algebra.
+They actually have a lot of different interpretations, which can be confusing at first.
+Here, we will discuss some of the different ways to think about vectors, and how they are all related.
+
+This page will be quite lengthy, but it's important to get a really solid and intuitive understanding of vectors before moving on to more advanced topics.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What Even is a Vector?
+
+This is surprisingly a difficult question to answer.
+However, we can start by positing these three interpretations of vectors:
+
+1. To a physicist, a vector is a quantity with both magnitude and direction.
+    It can represent something's position, velocity, or some force acting on it.
+
+    This is the most intuitive interpretation of a vector.
+    These vectors are often represented as arrows in space, where the length of the arrow represents the magnitude of the vector, and the direction of the arrow represents the direction of the vector:
+
+    <Mafs>
+        <Coordinates.Cartesian />
+        <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} />
+    </Mafs>
+
+2. To a programmer, a vector is just a list of numbers.
+    It could be used to represent a point in space, but it could also represent other things.
+    For example, very commonly, we can represent a color as a vector.
+    All colors can be represented as a combination of red, green, and blue, so a color can be represented as a vector with three components.
+    We hence call this vector three-dimensional.
+
+    Vectors can also be used to represent other things that do not have to do with space.
+    You could have a three-dimensional vector representing a person's age, height, and weight for example.
+
+    These also apply in scientific studies. For instance, given a chemical reaction, we can represent each reactant and product as a separate component in a vector.
+    In a reaction with 3 reactants and 2 products, we can represent the reaction as a 5-dimensional vector.
+    Another example is in mathematics itself, where we can represent a polynomial as a list of its coefficients.
+3. To a mathematician, a vector is a member of a vector space.
+    This is a more abstract definition, but it is the most general.
+    A vector can be anything that has the notion of addition and multiplication defined on it.
+    We will go into detail about this later.
+
+Vectors, as variables, can be notated in a few ways as well:
+
+1. As a bold lowercase letter, like $\vb{v}$.
+    This is the most common way to notate vectors in digital text.
+2. As a lowercase letter with an arrow on top, like $\vec{v}$.
+    This is the most common way to notate vectors in handwritten text, and older digital publications.
+3. Both of the above, like $\va{v}$.
+    This is a compromise between the two, and is most commonly used in educational materials.
+    We will use this notation.
+
+## From Arrows to Lists
+
+Let's start by taking the perspective of a physicist.
+We have a vector $\va{v}$ which can represent anything.
+We can begin by drawing a coordinate system, and placing the vector in it:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} />
+</Mafs>
+
+The point where it starts is called the tail of the vector, and the point where it ends is called the tip of the vector.
+However, note that the starting point of the vector is arbitrary.
+
+It can be more helpful to think of the vector as an "instruction" to move from the tail to the tip.
+If you imagine the $x$-axis as east and the $y$-axis as north, then the vector $\va{v}$ is an instruction to move 2 units east and 1 unit north.
+It will have the same meaning no matter where you place it in the coordinate system.
+
+To represent this vector as a list of numbers, we can look at the coordinates of the tip of the vector. In this case, the tip is at $(2, 1)$.
+Hence, we can represent the vector as:
+
+$$
+\begin{equation}
+\va{v} = \mqty[2 \\ 1]
+\end{equation}
+$$
+
+We use square brackets and separate the components vertically to distinguish vectors from regular points in space.
+Sometimes, especially in physics, vectors are written horizontally with commas separating the components, and angled brackets around them:
+
+$$
+\begin{equation}
+\va{v} = \langle 2, 1 \rangle
+\end{equation}
+$$
+
+As previously stated, this vector can be thought of as an instruction to move 2 units right and 1 unit up. If we do so, we will find ourselves at the tip of the vector:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} />
+    <Vector tail={[0, 0]} tip={[2, 0]} color={color("blue")} />
+    <Vector tail={[2, 0]} tip={[2, 1]} color={color("yellow")} />
+    <LaTeX tex="\mathbf{\vec{v}} = \begin{bmatrix} 2 \\ 1 \end{bmatrix}" at={[2.5, 1.5]} />
+</Mafs>
+
+### 3D Example
+
+Let's look at a vector in three dimensions. Consider the vector $\va{v} = \mqty[\class{blue}{1} \\ \class{yellow}{2} \\ \class{green}{3}]$.
+This vector can be thought of as an instruction to move 1 unit in the $\class{blue}{x}$-direction, 2 units in the $\class{yellow}{y}$-direction, and 3 units in the $\class{green}{z}$-direction.
+
+<CustomMathbox>
+    <MB.Camera proxy={true} position={[2, -3, 5]} />
+    <MB.Cartesian>
+        <MB.Axis axis="x" range={[-5, 5]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-5, 5]} color={color("yellow")} />
+        <MB.Axis axis="z" range={[-5, 5]} color={color("green")} />
+
+        <MB.Array
+            items={2}
+            id="point_vec"
+            data={[[0, 0, 0], [1, 2, 3]]}
+            channels={3}
+        />
+        <MB.Vector
+            points="#point_vec"
+            color={color("red")}
+            width={10}
+            end={true}
+        />
+        <MB.Array items={1} id="points" data={[[1, 2, 3]]} channels={3} />
+
+        <MB.Array items={2} id="point_x" data={[[0, 0, 0], [1, 0, 0]]} channels={3} />
+        <MB.Vector points="#point_x" color={color("blue")} width={10} end={true} />
+
+        <MB.Array items={2} id="point_y" data={[[1, 0, 0], [1, 2, 0]]} channels={3} />
+        <MB.Vector points="#point_y" color={color("yellow")} width={10} end={true} />
+
+        <MB.Array items={2} id="point_z" data={[[1, 2, 0], [1, 2, 3]]} channels={3} />
+        <MB.Vector points="#point_z" color={color("green")} width={10} end={true} />
+
+        <MB.Html width={8} height={3} depth={2} id="label" expr={(emit, el) => emit(mathboxLatexElement(el, "a + b = c"))} />
+        <MB.Dom points="#points" html="#label" />
+    </MB.Cartesian>
+</CustomMathbox>
+
+### Vectors and Spaces
+
+Each unique pair of numbers in the coordinate system corresponds to a unique vector.
+For example, the vector $\mqty[2 \\ 1]$ is different from the vector $\mqty[1 \\ 2]$.
+
+These vectors live in a two-dimensional space, hence they have two components, each of which describing how much the vector moves in each direction.
+We call this space $\mathbb{R}^2$.
+
+In general, a vector with $n$ components lives in an $n$-dimensional space, which we call $\mathbb{R}^n$.
+
+Any space that vectors can live in is called a **vector space**.
+This is a very abstract concept, but we will see that as long as certain rules are followed, anything can be a vector space no matter how crazy they are.
+
+These rules are centered around the operations of **addition** and **scalar multiplication**, which we will discuss in a bit.
+
+## Magnitude of a Vector
+
+The magnitude of a vector is the length of the arrow representing the vector. It is also known as the norm or the length of the vector.
+
+The magnitude is denoted as $\norm{\va{v}}$, and can be calculated using the Pythagorean theorem.
+For a vector $\va{v} = \mqty[x \\ y]$, the magnitude is:
+
+$$
+\begin{equation}
+\norm{\va{v}} = \sqrt{x^2 + y^2} \label{eq:magnitude}
+\end{equation}
+$$
+
+<Mafs
+    viewBox={{
+        x: [0, 2],
+        y: [0, 2]
+    }}
+>
+    <Line.Segment
+        point1={[0, 0]}
+        point2={[1, 0]}
+        style="dashed"
+    />
+    <Line.Segment
+        point1={[1, 0]}
+        point2={[1, 2]}
+        style="dashed"
+    />
+
+    <Vector
+        tail={[0, 0]}
+        tip={[1, 2]}
+        color={color("red")}
+    />
+
+    <LaTeX
+        tex="\mathbf{\vec{v}}"
+        at={lineLabel([0, 0], [1, 2], "left", { sideOffset: 0.1 })}
+    />
+    <LaTeX
+        tex="x"
+        at={lineLabel([0, 0], [1, 0], "right", { sideOffset: 0.1 })}
+    />
+    <LaTeX
+        tex="y"
+        at={lineLabel([1, 0], [1, 2], "right", { sideOffset: 0.1 })}
+    />
+
+    <Angle
+        at={[1, 0]}
+        fromRad={Math.PI / 2}
+        toRad={Math.PI}
+        forceStraightAngle={true}
+        radius={0.2}
+    />
+</Mafs>
+
+## Direction of a Vector
+
+The direction of a vector is the angle it makes with the positive $x$-axis.
+
+For a vector $\va{v} = \mqty[x \\ y]$, the angle it makes with the positive $x$-axis can be calculated with trigonometry.
+The angle is:
+
+$$
+\begin{equation}
+\theta = \arctan\qty(\frac{y}{x}) \label{eq:direction}
+\end{equation}
+$$
+
+<Mafs
+    viewBox={{
+        x: [0, 2],
+        y: [0, 2]
+    }}
+>
+    <Line.Segment
+        point1={[0, 0]}
+        point2={[1, 0]}
+        style="dashed"
+    />
+    <Line.Segment
+        point1={[1, 0]}
+        point2={[1, 2]}
+        style="dashed"
+    />
+
+    <Vector
+        tail={[0, 0]}
+        tip={[1, 2]}
+        color={color("red")}
+    />
+
+    <LaTeX
+        tex="\mathbf{\vec{v}}"
+        at={lineLabel([0, 0], [1, 2], "left", { sideOffset: 0.1 })}
+    />
+    <LaTeX
+        tex="x"
+        at={lineLabel([0, 0], [1, 0], "right", { sideOffset: 0.1 })}
+    />
+    <LaTeX
+        tex="y"
+        at={lineLabel([1, 0], [1, 2], "right", { sideOffset: 0.1 })}
+    />
+
+    <Angle
+        at={[1, 0]}
+        fromRad={Math.PI / 2}
+        toRad={Math.PI}
+        forceStraightAngle={true}
+        radius={0.2}
+    />
+
+    <LaTeX
+        tex="\theta"
+        at={[0.25, 0.2]}
+    />
+    <Angle
+        at={[0, 0]}
+        fromRad={0}
+        toRad={Math.atan(2)}
+        radius={0.2}
+    />
+</Mafs>
+
+## Sumamry and Next Steps
+
+In this page, we introduced the concept of vectors, and discussed how they can be thought of in different ways.
+
+Here are the key points to remember:
+
+- Vectors can be thought of as arrows in space, lists of numbers, or members of a vector space.
+- They can be thought of as instructions to move from one point to another.
+- The magnitude of a vector is the length of the arrow representing the vector. This can be calculated using the Pythagorean theorem:
+
+    $$
+    \begin{equation}
+    \norm{\va{v}} = \sqrt{x^2 + y^2} \tag{\ref{eq:magnitude}}
+    \end{equation}
+    $$
+
+- The direction of a vector is the angle it makes with the positive $x$-axis:
+
+    $$
+    \begin{equation}
+    \theta = \arctan\qty(\frac{y}{x}) \tag{\ref{eq:direction}}
+    \end{equation}
+    $$
+
+- Vectors with $n$ components live in an $n$-dimensional space, which we call $\mathbb{R}^n$. Any space that vectors can live in is called a vector space.
+
+Next, we will introduce the two fundamental operations on vectors: addition and scalar multiplication.

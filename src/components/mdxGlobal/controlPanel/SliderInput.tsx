@@ -19,8 +19,10 @@ const _SliderInput = withState(function ({ latexOptions, value, min, max, step, 
     const [inputValue, setInputValue] = useState((value ?? min + (max - min) / 2) || 0);
     const handleChange = (e: React.ChangeEvent<HTMLInputElement> | string) => {
         const s = typeof e === "string" ? e : e.target.value;
-        const v = parseFloat(s);
+        let v = Number(s);
         if (isNaN(v)) return;
+        if (v < min) v = min;
+        if (v > max) v = max;
         setInputValue(v);
         onChange && onChange(v);
     };

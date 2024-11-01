@@ -1,0 +1,504 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Linear Combinations and Related Concepts
+
+Previously, we introduced the two fundamental operations of vectors: addition and scalar multiplication.
+
+In this page, we will discuss the concept of a linear combination, which is a way to combine vectors using scalar multiplication and addition.
+Additionally, we will touch on the concepts of span, linear independence, and basis, which are all related to linear combinations.
+
+At first, these terms might seem abstract, disconnected, or even intimidating, but we will show that we've actually been using these concepts under the hood all along.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Basis Vectors
+
+Previously, we discussed how vectors can be represented as arrows in a coordinate system.
+For example, in 2D space, we can represent a vector $\va{v}$ as an arrow from the origin to the point $(v_x, v_y)$, where $v_x$ is the $x$-component of the vector and $v_y$ is the $y$-component.
+Then:
+
+$$
+\begin{equation}
+\va{v} = \mqty[v_x \\ v_y]
+\end{equation}
+$$
+
+If a vector $\va{v}$ is equal to, say, $\mqty[3 \\ 4]$, we can represent it as an arrow from the origin to the point $(3, 4)$.
+This means "go 3 units to the right and 4 units up".
+
+However, there's another way to interpret this vector.
+Imagine that we have a vector $\ihatc$ that points 1 unit in the $+x$ direction and a vector $\jhatc$ that points 1 unit in the $+y$ direction.
+Then, a vector $\mqty[3 \\ 4]$ can be represented as adding 3 copies of $\ihatc$ and 4 copies of $\jhatc$:
+
+<Mafs viewBox={{
+    x: [-1, 4],
+    y: [-1, 5]
+}}>
+    <Coordinates.Cartesian />
+    <Vector tail={[0, 0]} tip={[3, 4]} color={color("red")} />
+    <Vector tail={[0, 0]} tip={[3, 0]} color={color("blue")} />
+    <LaTeX tex="3\mathbf{\hat{i}}" at={[1.5, -0.3]} />
+    <Vector tail={[3, 0]} tip={[3, 4]} color={color("yellow")} />
+    <LaTeX tex="4\mathbf{\hat{j}}" at={[3.3, 2]} />
+</Mafs>
+
+The vectors $\ihatc$ and $\jhatc$ are called **basis vectors**.
+
+$$
+\begin{equation}
+\mqty[\class{blue}{3} \\ \class{yellow}{4}] = 3\ihatc + 4\jhatc
+\end{equation}
+$$
+
+### Changing the Basis
+
+It's important to note that our choice of basis vectors is arbitrary.
+We can actually choose any two vectors to be our basis vectors*.
+For example, let $\va{a}$ and $\va{b}$ be the basis vectors of some space.
+We can still represent any vector by scaling and adding these basis vectors:
+
+export function LinearCombinationVisualizer({ a = [2, -1], b = [-1, 2] }) {
+    const point = useMovablePoint([2, -1]);
+    // give a vector with the usual basis and return a list of the coefficients in the new basis
+    const coordinateToNewBases = (v) => {
+        const det = a[0] * b[1] - a[1] * b[0];
+        const p = (v[0] * b[1] - v[1] * b[0]) / det;
+        const q = (a[0] * v[1] - a[1] * v[0]) / det;
+
+        return [p, q];
+    }
+    const newBases = coordinateToNewBases(point.point);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Vector tail={[0, 0]} tip={vec.scale(a, newBases[0])} color={color("blue")} />
+            <LaTeX tex={`${newBases[0].toFixed(2)}\\mathbf{\\vec{a}}`} at={lineLabel([0, 0], vec.scale(a, newBases[0]))} color={color("blue")} />
+            <Vector tail={vec.scale(a, newBases[0])} tip={point.point} color={color("yellow")} />
+            <LaTeX tex={`${newBases[1].toFixed(2)}\\mathbf{\\vec{b}}`} at={lineLabel(vec.scale(a, newBases[0]), point.point)} color={color("yellow")} />
+
+            <Vector tail={[0, 0]} tip={a} color={color("blue")} opacity={0.5} />
+            <Vector tail={[0, 0]} tip={b} color={color("yellow")} opacity={0.5} />
+
+            {point.element}
+        </Mafs>
+    );
+}
+
+<LinearCombinationVisualizer />
+
+In our case, we had a vector $3\ihatc + 4\jhatc$. In the new basis, this vector is represented as $\frac{10}{3}\va{a} + \frac{11}{3}\va{b}$.
+In other words:
+
+$$
+\begin{equation}
+3\ihatc + 4\jhatc = \frac{10}{3}\va{a} + \frac{11}{3}\va{b}
+\end{equation}
+$$
+
+The important takeaway is that **when we represent vectors as these lists of numbers, we are implicitly choosing some basis vectors.**
+
+### Generalized Notation
+
+In higher dimensions, we will need more basis vectors. Of course, we will eventually run out of letters in the alphabet, so we use a more generalized notation.
+
+Sometimes, we use $\va{e}_1, \va{e}_2, \dots, \va{e}_n$ to represent the basis vectors for an $n$-dimensional space.
+For example, in 3D space, we can represent a vector $\va{v}$ as:
+
+$$
+\begin{equation}
+\va{v} = v_x\va{e}_1 + v_y\va{e}_2 + v_z\va{e}_3
+\end{equation}
+$$
+
+In $n$-dimensional space, we can then represent a vector $\va{v}$ as a sum:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} = v_1\va{e}_1 + v_2\va{e}_2 + \cdots + v_n\va{e}_n = \sum_{i=1}^n v_i\va{e}_i
+\end{equation}
+$$
+</Boxed>
+
+These will not be used as often as the $\ihatc, \jhatc, \khatc$ notation, but they are useful for more abstract discussions regarding vector spaces and related concepts.
+
+## Linear Combinations
+
+Let's summarize what we've discussed so far.
+
+A basis is a set of vectors that can be used to represent any vector in a space.
+We can represent any vector by scaling and adding these basis vectors.
+We can say that a vector $\va{v}$ can be represented as $\va{v} = v_x\ihatc + v_y\jhatc$.
+
+The process of scaling and adding vectors is called a **linear combination**.
+A linear combination of the vectors $\class{red}{\va{v}_1}, \class{green}{\va{v}_2}, \class{blue}{\va{v}_3}$ would be a vector of the form:
+
+$$
+\underset{\mathclap{\text{Scalar}}}{\underset{\uparrow}{c_1}} \overset{\mathclap{\text{Vector}}}{\overset{\downarrow}{\class{red}{\va{v}_1}}} + c_2\class{green}{\va{v}_2} + c_3\class{blue}{\va{v}_3}
+$$
+
+By changing the scalars $c_1, c_2, c_3$, we can create different vectors.
+
+## Span of Vectors
+
+Consider two vectors $\va{a}$ and $\va{b}$ in the $xy$-plane.
+How many vectors can we create by scaling and adding these two vectors?
+
+- For most pairs of vectors, linear combinations of them will fill up the entire plane (check out the interactive in [the previous section](#the-basis-vectors)).
+- If the two vectors are parallel, then the linear combinations will only fill up a line.
+
+    <Mafs>
+        <Coordinates.Cartesian />
+        <Plot.OfX y={(x) => x / 2} />
+        <Vector tail={[0, 0]} tip={[2, 1]} color={color("blue")} />
+        <Vector tail={[0, 0]} tip={[-1, -0.5]} color={color("yellow")} />
+    </Mafs>
+
+- If both vectors are zero, then the linear combinations will only fill up the origin.
+
+Generally, the set of all possible linear combinations of a set of vectors is called the **span** of those vectors.
+Denoted as $\text{span}(\va{v}_1, \va{v}_2, \dots)$, it is the set of all vectors that can be represented as linear combinations of $\va{v}_1, \va{v}_2, \dots$.
+
+For example, the span of the vectors $\mqty[1 \\ 0]$ and $\mqty[0 \\ 1]$ is the entire 2-dimensional $xy$-plane, so we can write:
+
+$$
+\begin{equation}
+\operatorname{span}\qty(\mqty[1 \\ 0], \mqty[0 \\ 1]) = \mathbb{R}^2
+\end{equation}
+$$
+
+### Example Problem: Computing the Span
+
+> Determine the span of the vectors $\mqty[1 \\ 2]$ and $\mqty[3 \\ 4]$.
+
+To determine the span of these vectors, we need to find all possible linear combinations of these vectors.
+This means that we want to find all vectors of the form $c_1\mqty[1 \\ 2] + c_2\mqty[3 \\ 4]$.
+Set this to be equal to any vector $\mqty[x \\ y]$:
+
+$$
+\begin{equation}
+c_1\mqty[1 \\ 2] + c_2\mqty[3 \\ 4] = \mqty[x \\ y]
+\end{equation}
+$$
+
+This creates a system of equations:
+
+$$
+\begin{align}
+c_1 + 3c_2 &= x \\
+2c_1 + 4c_2 &= y
+\end{align}
+$$
+
+We can use any method to solve this system of equations. For instance, we can multiply the first equation by 2 and subtract the second equation:
+
+$$
+\begin{equation}
+\begin{split}
+\quad 2(c_1 + 3c_2 &= x) \\
+-\quad (2c_1 + 4c_2 &= y) \\
+\hline
+2c_2 &= 2x - y
+\end{split}
+\end{equation}
+$$
+
+Then, we can substitute this back into the first equation to get $c_1$:
+
+$$
+\begin{equation}
+c_1 + 3(2x - y) = x \implies c_1 = x - 6x + 3y = -5x + 3y
+\end{equation}
+$$
+
+Hence we have:
+
+$$
+\begin{align}
+c_1 &= -5x + 3y \\
+c_2 &= 2x - y
+\end{align}
+$$
+
+What this means is that for any vector $\mqty[x \\ y]$, we have valid values for $c_1$ and $c_2$.
+Hence, the span of the vectors $\mqty[1 \\ 2]$ and $\mqty[3 \\ 4]$ is the entire 2D plane $\mathbb{R}^2$.
+
+## 3D Spaces
+
+In 3D space, we can represent vectors as a linear combination of three basis vectors: $\ihatc, \jhatc, \khatc$.
+For example, the vector $\mqty[3 \\ 4 \\ 5]$ can be represented as $3\ihatc + 4\jhatc + 5\khatc$.
+
+The span of two vectors in 3D space (if they are not parallel) will fill up a plane.
+
+export function Span3DVisualizer({ showv3 = false }) {
+    const [coefficients, setCoefficients] = useState([1, 1, 1]);
+    const v1 = [2, 1, 1];
+    const v2 = [1, 0, 2];
+    const v3 = [1.5, 0.5, 1.5];
+    const [a, b, c] = coefficients;
+    const av1 = [v1[0] * a, v1[1] * a, v1[2] * a];
+    const bv2 = [v2[0] * b, v2[1] * b, v2[2] * b];
+    const cv3 = [v3[0] * c, v3[1] * c, v3[2] * c];
+    const av1_bv2 = [av1[0] + bv2[0], av1[1] + bv2[1], av1[2] + bv2[2]];
+    const sum = [av1_bv2[0] + cv3[0], av1_bv2[1] + cv3[1], av1_bv2[2] + cv3[2]];
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox>
+                    <MB.Cartesian scale={[0.3, 0.3, 0.3]}>
+                        <MB.Axis axis="x" range={[-5, 5]} />
+                        <MB.Axis axis="y" range={[-5, 5]} />
+                        <MB.Axis axis="z" range={[-5, 5]} />
+                        <MB.Array
+                            id="av1_vec"
+                            items={2}
+                            channels={3}
+                            data={[
+                                [0, 0, 0],
+                                av1
+                            ]}
+                        />
+                        <MB.Vector points="#av1_vec" color={color("red")} width={5} end={true} />
+                        <MB.Array
+                            id="av1_bv2_vec"
+                            items={2}
+                            channels={3}
+                            data={[
+                                av1,
+                                av1_bv2
+                            ]}
+                        />
+                        <MB.Vector points="#av1_bv2_vec" color={color("blue")} width={5} end={true} />
+                        <MB.Area
+                            id="plane"
+                            axes="xy"
+                            expr={(emit, x, y) => {
+                                const av1 = [x * v1[0], x * v1[1], x * v1[2]];
+                                const bv2 = [y * v2[0], y * v2[1], y * v2[2]];
+                                const sum = [av1[0] + bv2[0], av1[1] + bv2[1], av1[2] + bv2[2]];
+                                emit(...sum);
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={[-5, 5]}
+                            rangeY={[-5, 5]}
+                        />
+
+                        {showv3 && (
+                            <>
+                                <MB.Array
+                                    id="cv3_vec"
+                                    items={2}
+                                    channels={3}
+                                    data={[
+                                        av1_bv2,
+                                        sum
+                                    ]}
+                                />
+                                <MB.Vector points="#cv3_vec" color={color("green")} width={5} end={true} />
+                            </>
+                        )}
+
+                        <MB.Surface points="#plane" zBias={-1} zIndex={-1} zOrder={24} opacity={3/4} shaded={true} />
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+            <div className="card__footer">
+                <div className="row">
+                    <div className="col">
+                        <ControlPanel>
+                            <SliderInput latex label="a" value={coefficients[0]} min={-5} max={5} step={0.1} onChange={(value) => setCoefficients(c => [value, c[1], c[2]])} />
+                            <SliderInput latex label="b" value={coefficients[1]} min={-5} max={5} step={0.1} onChange={(value) => setCoefficients(c => [c[0], value, c[2]])} />
+                            {showv3 && <SliderInput latex label="c" value={coefficients[2]} min={-5} max={5} step={0.1} onChange={(value) => setCoefficients(c => [c[0], c[1], value])} />}
+                        </ControlPanel>
+                    </div>
+                    <div className="col">
+                        <MathEquation>
+                            {showv3
+                                ? String.raw`${a.toFixed(1)}\class{red}{\mqty[${v1[0]} \\ ${v1[1]} \\ ${v1[2]}]} + ${b.toFixed(1)}\class{blue}{\mqty[${v2[0]} \\ ${v2[1]} \\ ${v2[2]}]} + ${c.toFixed(1)}\class{green}{\mqty[${v3[0]} \\ ${v3[1]} \\ ${v3[2]}]} = \mqty[${sum[0].toFixed(2)} \\ ${sum[1].toFixed(2)} \\ ${sum[2].toFixed(2)}]`
+                                : String.raw`${a.toFixed(1)}\class{red}{\mqty[${v1[0]} \\ ${v1[1]} \\ ${v1[2]}]} + ${b.toFixed(1)}\class{blue}{\mqty[${v2[0]} \\ ${v2[1]} \\ ${v2[2]}]} = \mqty[${av1_bv2[0].toFixed(2)} \\ ${av1_bv2[1].toFixed(2)} \\ ${av1_bv2[2].toFixed(2)}]`}
+                        </MathEquation>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+<Span3DVisualizer />
+
+Using the sliders above, you can see how the linear combination of two vectors fills up a plane in 3D space.
+If you keep one of the coefficients constant (i.e. only one vector moves), it traces out a line.
+
+If we have *three* vectors in 3D space, the span of these vectors could fill up all of 3D space.
+Imagine the first two vectors tracing out a plane, and the third vector moving outside of the plane, allowing it to fill up all of 3D space.
+However, if the third vector already lies in the plane, it doesn't add any new directions, and the span of the three vectors will only fill up the plane:
+
+<Span3DVisualizer showv3 />
+
+In the visualization above, notice that the green vector already lies in the plane formed by the red and blue vectors, so it doesn't add any new directions.
+
+## Linear Independence
+
+Recall what we discussed about the span of vectors in 3D space: if the third vector lies in the plane formed by the first two vectors, it doesn't add any new directions.
+This means that the third vector is inside the span of the first two vectors; it can be represented as a linear combination of the first two vectors.
+
+Another example is if we have two vectors that are parallel (**collinear**).
+In this case, the span of the two vectors will only fill up a line, and the second vector can be written as a scalar multiple of the first vector.
+
+In other words, removing one vector does not change the span of the vectors - we call this set of vectors **linearly dependent**.
+
+On the other hand, if the third vector is outside the plane formed by the first two vectors, it adds a new direction to the span.
+In this case, the third vector is not a linear combination of the first two vectors, and removing it will change the span of the vectors - we call this set of vectors **linearly independent**.
+
+For example, given two vectors $\va{v}$ and $\va{w}$, they are linearly dependent if $\va{w}$ can be written as $c\va{v}$ for some scalar $c$.
+If, however, $\va{w}$ cannot be written as $c\va{v}$ for any scalar $c$, then the vectors are linearly independent.
+
+For three vectors, it's the same thing. Given $\va{v}, \va{w}, \va{u}$, they are linearly dependent if $\va{u}$ can be written as a linear combination of $\va{v}$ and $\va{w}$, and the same for the other two pairs.
+
+### Example Problem: Linear Independence and the Zero Vector
+
+> Consider the set of vectors $\va{v}, \va{w}, \va{u}$, and assume them to be linearly independent.
+> Is there a linear combination of these vectors that gives the zero vector?
+
+If the vectors are linearly independent, then no vector can be written as a linear combination of the other two.
+Consider the linear combination $c\va{v} + d\va{w} + e\va{u} = \va{0}$.
+If we rearrange, we get $c\va{v} + d\va{w} = -e\va{u}$, which means that $\va{u}$ can be written as a linear combination of $\va{v}$ and $\va{w}$, which contradicts our assumption.
+
+Thus:
+
+<Boxed>
+**If a set of vectors are linearly independent, the only linear combination that gives the zero vector is the trivial one, where all the coefficients are zero.**
+</Boxed>
+
+### Example Problem: Determining Linear Independence
+
+> Determine the linear independence of the vectors $\mqty[1 \\ 2], \mqty[3 \\ 4], \mqty[5 \\ 6]$.
+
+As discussed in the previous example, if the vectors are linearly dependent, that means we can make a linear combination of the vectors that gives the zero vector:
+
+$$
+\begin{equation}
+c_1\mqty[1 \\ 2] + c_2\mqty[3 \\ 4] + c_3\mqty[5 \\ 6] = \mqty[0 \\ 0]
+\end{equation}
+$$
+
+This creates a system of equations:
+
+$$
+\begin{align}
+c_1 + 3c_2 + 5c_3 &= 0 \\
+2c_1 + 4c_2 + 6c_3 &= 0
+\end{align}
+$$
+
+We have two equations and three unknowns, but since we just want to find nonzero solutions, we can simply set a value for one of the coefficients.
+Let $c_1 = 1$:
+
+$$
+\begin{equation}
+\begin{split}
+4(1 + 3c_2 + 5c_3 &= 0) \\
+-\quad 3(2 + 4c_2 + 6c_3 &= 0) \\
+\hline
+-2 \phantom{+5c_2} + 2c_3 &= 0 \\
+c_3 &= 1
+\end{split}
+\end{equation}
+$$
+
+Think about what this means.
+If we set $c_1 = 1$, we have a valid solution where $c_3 = 1$.
+This means that we have a valid linear combination of the vectors (with nonzero coefficients) that gives the zero vector, which means that the vectors are linearly dependent.
+
+### Example Problem: Determining Linear Independence (Logical Approach)
+
+> Determine the linear independence of the vectors $\mqty[1 \\ 2], \mqty[3 \\ 4], \mqty[5 \\ 6]$.
+> Do not calculate it out, just think about it logically.
+
+We can use some logical reasoning to show that this set of vectors cannot be linearly independent.
+
+Let's assume the first two vectors are linearly independent.
+That means that they span the entire 2D plane $\mathbb{R}^2$.
+
+However, notice that the third vector lives in $\mathbb{R}^2$, meaning the third vector is within the span of the first two vectors.
+Hence, the set of vectors is linearly dependent.
+
+## Formal Definition of Basis
+
+Previously, we discussed how a basis is a set of vectors that can be used to represent any vector in a space.
+We can represent any vector by scaling and adding these basis vectors.
+This should remind us of the concept of a linear combination. We can say that a vector $\va{v}$ can be represented as $\va{v} = v_x\ihatc + v_y\jhatc$.
+
+Hence, for a set of vectors to be a basis, if we want to represent any vector $\va{v}$ as a linear combination of the basis vectors, they must span the entire space.
+
+Additionally, we want only one way to represent a vector. This means that they must be linearly independent.
+
+Therefore, we can make a more formal definition of a basis:
+
+<Boxed>
+A set of vectors $\va{v}_1, \va{v}_2, \dots, \va{v}_n$ is a **basis** for a vector space $V$ if they are linearly independent and $\operatorname{span}(\va{v}_1, \va{v}_2, \dots, \va{v}_n) = V$.
+</Boxed>
+
+As previously stated, we will not delve much into abstract vector spaces, but this definition is crucial for understanding the concept of a basis.
+
+## Summary and Next Steps
+
+In this page, we discussed the concept of a linear combination, which is a way to combine vectors using scalar multiplication and addition.
+Additionally, we touched on the concepts of span, linear independence, and basis, which are all related to linear combinations.
+
+Here are the key points to remember:
+
+- A basis is a set of vectors that can be used to represent any vector in a space.
+    Formally, a set of vectors is a basis if they are linearly independent and span the entire space.
+- A linear combination of vectors is a way to combine vectors using scalar multiplication and addition.
+- The span of a set of vectors is the set of all possible linear combinations of those vectors.
+- A set of vectors is linearly independent if no vector can be written as a linear combination of the other vectors.
+- If a set of vectors is linearly independent, the only linear combination that gives the zero vector is the trivial one, where all the coefficients are zero.
+
+Previously, we discussed the two fundamental operations of vectors: addition and scalar multiplication.
+Have you ever wondered how we can multiply two vectors together?
+In the next section, we will introduce a new vector operation known as the **dot product**.
+
+## Appendix
+
+### Why Do n Linearly Independent Vectors Span n-Dimensional Space?
+
+In the main text, we mentioned that if we have $n$ linearly independent vectors in an $n$-dimensional space, they will span the entire space.
+For example, in 2D space, if we have two linearly independent vectors $\va{v}$ and $\va{w}$, then $\operatorname{span}(\va{v}, \va{w}) = \mathbb{R}^2$.
+
+Can we prove this statement?
+
+Begin by writing the theorem in a more formal way:
+
+<Boxed>
+**Theorem:** If $V$ is an $n$-dimensional vector space and $\va{v}_1, \va{v}_2, \dots, \va{v}_n$ are $n$ linearly independent vectors in $V$, then $\operatorname{span}(\va{v}_1, \va{v}_2, \dots, \va{v}_n) = V$.
+</Boxed>
+
+We can prove this theorem by **contradiction**.
+
+1. Let's first assume the opposite: that the span of the vectors *does not* fill up the entire space.
+    This means that $\operatorname{span}(\va{v}_1, \va{v}_2, \dots, \va{v}_n) \neq V$, meaning there is some vector $\va{w} \in V$ that cannot be written as a linear combination of $\va{v}_1, \va{v}_2, \dots, \va{v}_n$.
+2. Next, consider adding $\va{w}$ to the set of vectors: $\va{v}_1, \va{v}_2, \dots, \va{v}_n, \va{w}$, and call this set $S'$.
+    Remember, $\va{w}$ cannot be written as a linear combination of the other vectors.
+    Thus, the set $S'$ is linearly independent.
+3. However, we have $n + 1$ vectors in an $n$-dimensional space, which is a contradiction.
+    This is because we cannot have more than $n$ linearly independent vectors in an $n$-dimensional space.
+    Therefore, our assumption that the span of the vectors does not fill up the entire space is false.
+4. Hence, the span of the vectors $\va{v}_1, \va{v}_2, \dots, \va{v}_n$ must fill up the entire space.

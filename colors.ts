@@ -6,4 +6,5 @@ export const COLORS = {
     green: "#7EF84A",
     aqua: "#00D39D",
     purple: "#B467F5",
+    pink: "#FF9999"
 };

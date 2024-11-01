@@ -1,0 +1,224 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Formalizing Vector Spaces
+
+Previously, we discussed what vectors are and how they can be represented in different ways.
+We looked at the operations that define vectors, such as addition and scalar multiplication, as well as some concepts related to vector spaces, such as linear independence and basis vectors.
+
+In this section, we will formalize the concept of a vector space.
+We will define what a vector space is, and discuss some of its properties.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What Even is a Vector?
+
+We need to start by defining what a vector even is.
+This is surprisingly difficult, as vectors can be defined in many different ways - so which one is the "right" one, or the most fundamental one?
+
+It seems that our current interpretations of vectors do not capture the essence of what a vector truly is:
+
+1. **Arrows in Space**: This representation provides a geometric intuition for vectors, but it is not the most general definition.
+    They cannot represent vectors in higher dimensions, or vectors in more abstract spaces.
+2. **Ordered Lists of Numbers**: This representation seems more general, as it can represent vectors in any dimension.
+    However, when we define vectors this way, we are implicitly assuming a set of basis vectors.
+    This is a problem, since vectors themselves should be independent of any coordinate system or basis.
+
+The most general definition of a vector is as an **element of a vector space**.
+
+## Vector Spaces
+
+A **vector space** is a set of objects, called **vectors**, that can be added together and multiplied by scalars.
+These operations must satisfy a set of properties. These properties are definitions of what it means to be a vector space, and as such, are known as the **axioms** that define a vector space.
+
+<details>
+<summary>Axioms of a Vector Space</summary>
+
+These axioms are put in this dropdown to emphasize that they are not important to memorize at all.
+
+Here is a list of these properties, assuming that $\va{u}$, $\va{v}$, and $\va{w}$ are vectors, and $a$ and $b$ are scalars:
+
+| Property | Statement |
+|----------|-----------|
+| **Addition Associativity** | $\va{u} + (\va{v} + \va{w}) = (\va{u} + \va{v}) + \va{w}$ |
+| **Addition Commutativity** | $\va{u} + \va{v} = \va{v} + \va{u}$ |
+| **Additive Identity** | There exists a vector $\va{0}$ such that $\va{u} + \va{0} = \va{u}$ |
+| **Additive Inverse** | For every vector $\va{u}$, there exists a vector $-\va{u}$ such that $\va{u} + (-\va{u}) = \va{0}$ |
+| **Scalar Multiplication Associativity** | $a(b\va{u}) = (ab)\va{u}$ |
+| **Scalar Multiplication Identity** | $1\va{u} = \va{u}$ |
+| **Distributivity of Scalar Multiplication over Vector Addition** | $a(\va{u} + \va{v}) = a\va{u} + a\va{v}$ |
+| **Distributivity of Scalar Multiplication over Scalar Addition** | $(a + b)\va{u} = a\va{u} + b\va{u}$ |
+
+Think of these properties as the "rules" that vectors must follow in order to be considered vectors.
+
+As an exercise, consider our previous definitions of vectors, whether as arrows or as lists of numbers, and check if they satisfy these properties.
+Additionally, consider why these properties make sense to be used as the axioms of a vector space.
+
+Of course, do not memorize these properties - they are not meant to be memorized, but rather *understood* at a fundamental level.
+</details>
+
+### Real Coordinate System
+
+In our visualizations, we deal with vectors in a real coordinate system.
+This coordinate system is a vector space, as it allows for addition and scalar multiplication.
+
+Consider how we can define a real coordinate system more formally.
+In an $n$-dimensional real coordinate system, a vector is an ordered list of $n$ real numbers.
+Thus, we can use the set of all $n$-tuples of real numbers as our vector space:
+
+$$
+\begin{equation}
+\mathbb{R}^n = \qty{ \mqty[x_1 \\ x_2 \\ \vdots \\ x_n] \mid x_1, x_2, \dots, x_n \in \mathbb{R} }
+\end{equation}
+$$
+
+## Linear Subspaces
+
+Consider a set $V$ that is a vector space. That is, it allows for addition and scalar multiplication, and satisfies the properties of a vector space.
+For the sake of simplicity, let's visualize this $V$ as a coordinate plane:
+
+<Mafs>
+    <Coordinates.Cartesian />
+</Mafs>
+
+Now, imagine taking a chunk of this plane so that you have a smaller group of vectors within it.
+For example, let's consider the vectors that lie on a line passing through the origin:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => 0.4 * x} color={color("blue")} />
+</Mafs>
+
+Assume we have some set of vectors that lie on this line.
+If we perform operations on these vectors, such as addition and scalar multiplication, will the resulting vectors still lie on the line?
+In other words, will operating on these vectors cause them to "leak out" of the line?
+
+If the resulting vectors still line on the line, then we say that the line is a **linear subspace** of the vector space.
+To assess whether our line is a linear subspace, let's think about it from a visual context:
+
+1. If you add two vectors on the line, the resulting vector will still lie on the line.
+2. If you multiply a vector on the line by a scalar, the resulting vector will still lie on the line, since the direction of the vector does not change.
+
+Therefore, we can say that this line is a linear subspace of the vector space.
+
+A consequence of something being a linear subspace is that it itself is also a vector space.
+In a sense, a linear subspace is a "mini" vector space within a larger vector space.
+
+### The Formal Definition
+
+As we said, a linear subspace has the property that if you take any two vectors in the subspace and add them together, the resulting vector will still be in the subspace.
+Whenever we have an operation that keeps an object within its own set, we call that operation **closed**.
+In this case, the operations of addition and scalar multiplication are closed on the subspace.
+
+Think about scalar multiplication for a moment. If you multiply a vector by a scalar, the resulting vector will still lie in the subspace.
+This scalar can be $0$, which means that all subspaces *must* contain the zero vector.
+
+This leads us to the formal definition of a linear subspace:
+
+<Boxed>
+The set $W$ is a **linear subspace** of the vector space $V$ if it satisfies the following properties:
+
+1. **Closure under Addition**: For any vectors $\va{u}$ and $\va{v}$ in $W$, the vector $\va{u} + \va{v}$ is also in $W$.
+2. **Closure under Scalar Multiplication**: For any vector $\va{u}$ in $W$ and any scalar $a$, the vector $a\va{u}$ is also in $W$.
+3. (Implicit) **Contains the Zero Vector**: The zero vector $\va{0}$ is in $W$.
+
+</Boxed>
+
+### Defining Linear Subspaces with a Basis
+
+Suppose we have a set of vectors - any set of vectors will do - and we want to determine if their *span* form a linear subspace.
+Recall that the span of a set of vectors is the set of all possible linear combinations of those vectors.
+
+Let's consider a set of vectors $S = { \va{v}_1, \va{v}_2, \dots, \va{v}_n }$ and consider their span.
+If the span of $S$ forms a linear subspace, then it must satisfy the properties of a linear subspace.
+We can go through the properties of a linear subspace and check if the span satisfies them:
+
+1. **Closure under Addition**: If we take any two vectors in the span and add them together, the resulting vector must still be in the span.
+    This is true, since the span contains *all possible* linear combinations of the vectors.
+    When we add two linear combinations, we simply get another linear combination.
+
+2. **Closure under Scalar Multiplication**: If we take any vector in the span and multiply it by a scalar, the resulting vector must still be in the span.
+    This is also true, since the span contains all possible linear combinations.
+    When we multiply a linear combination by a scalar, we get another linear combination.
+
+3. **Contains the Zero Vector**: The span of any set of vectors *must* contain the zero vector.
+    This is because the zero vector is itself a linear combination of the vectors in the set.
+
+Therefore, we can say that:
+
+<Boxed>
+For any set of vectors $S = { \va{v}_1, \va{v}_2, \dots, \va{v}_n }$, the span of $S$ forms a linear subspace.
+</Boxed>
+
+This means that we can define a linear subspace simply by specifying a set of vectors that span it.
+In order for it to not have any redundant vectors, we can choose a set of vectors that are linearly independent.
+This set of vectors has a special name - it is called a **basis** for the subspace.
+Then, we can define the subspace as the set of all possible linear combinations of the basis vectors.
+
+<Boxed>
+A set of vectors $S$ is a **basis** for a linear subspace $W$ if:
+
+1. The vectors in $S$ are linearly independent.
+2. The span of $S$ is $W$.
+</Boxed>
+
+### Why Bother with Linear Subspaces?
+
+Unfortunately, with a concept as abstract as linear subspaces, it can be difficult to see why they are important.
+This is a valid concern and should not be ignored, as it is crucial to understand the motivation behind learning these concepts.
+
+Previously, we stated that linear subspaces are in a sense "mini" vector spaces.
+This means that they also have the properties of vector spaces, meaning that we can perform operations on them just like we can on vector spaces.
+
+When we define and formulate things in linear algebra, a lot of things are related to linear subspaces.
+For instance, when we solve a system of linear equations, we get a subspace as the solution set.
+This also includes topics we haven't covered yet, such as eigenspaces, the images of linear transformations, and a lot of other things, all of which *are* linear subspaces.
+
+## Summary and Next Steps
+
+In this section, we took what we know about vectors and formalized it into the concept of a vector space.
+
+Here are the key points to remember:
+
+- A vector space is a set of objects that can be added together and multiplied by scalars.
+- More formally speaking, a vector space is a set of vectors that satisfies a set of properties, known as the axioms of a vector space.
+- A linear subspace is a subset of a vector space that is itself a vector space.
+- Linear subspaces allow you to perform operations on a subset of vectors without them "leaking out" of the subset.
+- Linear subspaces can be defined by specifying a set of vectors that span them, known as a basis.
+
+In the next section, we will temporary leave the world of vectors and dive into the world of matrices.
+This will allow us to understand a very fundamental concept in linear algebra - linear transformations.
+With a solid grasp of linear transformations, we will then return to vectors and explore more topics, such as dot products, cross products, and more.
+Armed with the knowledge of these transformations, these topics have a much deeper meaning and significance.
+
+## Appendix
+
+### Proof that Linear Subspaces are Vector Spaces
+
+We stated that linear subspaces are themselves vector spaces.
+Here's a short proof to show why this is the case; we will check the axioms of a vector space one by one.
+
+In a linear subspace, the algebraic properties of addition and scalar multiplication are inherited from the parent vector space.
+Thus, we only need to check the axioms that are less obvious.
+
+1. **Additive Identity**: All linear subspaces, by definition, contain the zero vector. ✅
+2. **Additive Inverse**: For any vector $\va{u}$ in the subspace, (since subspaces are closed under scalar multiplication) $-1 \cdot \va{u}$ is also in the subspace. ✅
+
+Next, consider whether the operations of addition and scalar multiplication are defined on the subspace.
+Since subspaces are closed under these operations, any time you add two vectors or multiply a vector by a scalar, the resulting vector will still be in the subspace.
+Thus, these operations are perfectly valid and defined on the subspace.
+
+In conclusion, linear subspaces are indeed vector spaces.

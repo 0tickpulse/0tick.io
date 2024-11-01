@@ -1,0 +1,341 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Basic Vector Operations
+
+Now that we have a good understanding of what vectors are, we can start talking about some basic operations we can perform on vectors.
+These operations, in addition to being quite intuitive, are also the building blocks for defining vector spaces and more advanced concepts in linear algebra.
+
+## Vector Addition
+
+The first operation we will discuss is vector addition.
+Given two vectors $\va{v}$ and $\va{w}$, we can add them together to get a new vector $\va{v} + \va{w}$.
+
+### Addition: Geometric Interpretation
+
+To add two vectors, we can place the tail of the second vector at the tip of the first vector.
+Then, draw a new vector from the tail of the first vector to the tip of the second vector.
+This is best seen visually. Consider the two vectors $\va{v}$ and $\va{w}$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} />
+    <Vector tail={[0, 0]} tip={[-1, 2]} color={color("blue")} />
+
+    <LaTeX at={lineLabel([0, 0], [2, 1])} tex="\mathbf{\vec{v}}" />
+    <LaTeX at={lineLabel([0, 0], [-1, 2], "left")} tex="\mathbf{\vec{w}}" />
+</Mafs>
+
+Place the tail of $\va{w}$ at the tip of $\va{v}$, and draw a new vector from the tail of $\va{v}$ to the tip of $\va{w}$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} />
+    <Vector tail={[2, 1]} tip={[1, 3]} color={color("blue")} />
+    <Vector tail={[0, 0]} tip={[1, 3]} color={color("green")} />
+
+    <LaTeX at={lineLabel([0, 0], [2, 1])} tex="\mathbf{\vec{v}}" />
+    <LaTeX at={lineLabel([2, 1], [1, 3], "left")} tex="\mathbf{\vec{w}}" />
+    <LaTeX at={lineLabel([0, 0], [1, 3], "left", { sideOffset: 0.5 })} tex="\mathbf{\vec{v} + \vec{w}}" />
+</Mafs>
+
+This should make sense if you, again, think of vectors as instructions to move from one point to another.
+This is also very similar to how we would add two normal numbers together.
+For instance, if we have the numbers $3$ and $-2$, we would move 3 units to the right and then 2 units to the left, ending up at $1$.
+
+### Addition: Algebraic Interpretation
+
+To add two vectors together, we can simply add their components together.
+For example, if we have the vectors $\mqty[2 \\ 1]$ and $\mqty[-1 \\ 2]$, we can add them together to get:
+
+$$
+\begin{equation}
+\mqty[2 \\ 1] + \mqty[-1 \\ 2] = \mqty[2 - 1 \\ 1 + 2] = \mqty[1 \\ 3]
+\end{equation}
+$$
+
+This should make sense with the instructions analogy; going 2 units right and 1 unit up, and then going 1 unit left and 2 units up, will result in going 1 unit right and 3 units up.
+We can actually see this visually as well by decomposing each vector into its components:
+
+<div className="card">
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} />
+                    <Vector tail={[2, 1]} tip={[1, 3]} color={color("blue")} />
+                    <Vector tail={[0, 0]} tip={[1, 3]} color={color("green")} />
+                </Mafs>
+            </div>
+            <div className="col">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} opacity={0.5} />
+                    <Vector tail={[0, 0]} tip={[2, 0]} />
+                    <Vector tail={[2, 0]} tip={[2, 1]} />
+                    <Vector tail={[2, 1]} tip={[1, 3]} color={color("blue")} opacity={0.5} />
+                    <Vector tail={[2, 1]} tip={[1, 1]} />
+                    <Vector tail={[1, 1]} tip={[1, 3]} />
+                    <Vector tail={[0, 0]} tip={[1, 3]} color={color("green")} opacity={0.5} />
+                </Mafs>
+            </div>
+        </div>
+    </div>
+</div>
+
+### Properties of Vector Addition
+
+Vector addition has a few properties that are worth noting.
+
+1. **Commutativity**: The order in which we add vectors does not matter.
+    If we think geometrically, this is because the order in which we move does not matter.
+
+    $$
+    \begin{equation}
+    \va{v} + \va{w} = \va{w} + \va{v}
+    \end{equation}
+    $$
+
+    <Mafs>
+        <Coordinates.Cartesian />
+        <Vector
+            tail={[0, 0]}
+            tip={[1, 2]}
+            color={color("red")}
+        />
+        <LaTeX
+            tex="\mathbf{\vec{a}}"
+            at={lineLabel([0, 0], [1, 2], "left")}
+        />
+
+        <Vector
+            tail={[1, 2]}
+            tip={[4, 3]}
+            color={color("blue")}
+        />
+        <LaTeX
+            tex="\mathbf{\vec{b}}"
+            at={lineLabel([1, 2], [4, 3], "left")}
+        />
+
+        <Vector
+            tail={[0, 0]}
+            tip={[3, 1]}
+            color={color("blue")}
+        />
+        <LaTeX
+            tex="\mathbf{\vec{b}}"
+            at={lineLabel([0, 0], [3, 1], "right")}
+        />
+
+        <Vector
+            tail={[3, 1]}
+            tip={[4, 3]}
+            color={color("red")}
+        />
+        <LaTeX
+            tex="\mathbf{\vec{a}}"
+            at={lineLabel([3, 1], [4, 3], "right")}
+        />
+
+        <Vector
+            tail={[0, 0]}
+            tip={[4, 3]}
+            color={color("green")}
+        />
+        <LaTeX
+            tex="\mathbf{\vec{a} + \vec{b}}"
+            at={lineLabel([0, 0], [4, 3], "right")}
+        />
+    </Mafs>
+
+2. **Associativity**: The way we group vectors when adding them does not matter.
+    This is because we can think of adding vectors as moving from one point to another, and the order in which we move does not matter.
+
+    $$
+    \begin{equation}
+    (\va{v} + \va{w}) + \va{u} = \va{v} + (\va{w} + \va{u})
+    \end{equation}
+    $$
+
+## Scalar Multiplication
+
+The second operation we will discuss is scalar multiplication.
+
+Given a vector $\va{v}$ and a scalar $c$, we can multiply the vector by the scalar to get a new vector $c\va{v}$.
+
+### Multiplication: Geometric Interpretation
+
+To multiply a vector by a scalar, we can simply stretch or shrink the vector by the scalar.
+This has the effect of changing the magnitude of the vector, but not the direction.
+
+Let's scale a vector $\va{v}$ by a factor of $2$. This has the effect of *doubling its length*:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tail={[0, 0]} tip={[4, 2]} color={color("blue")} />
+    <Vector tail={[0, 0]} tip={[2, 1]} color={color("red")} opacity={0.5} />
+
+    <LaTeX at={lineLabel([0, 0], [2, 1])} tex="\mathbf{\vec{v}}" color={color("red")} />
+    <LaTeX at={lineLabel([0, 0], [4, 2], "left", { forwardOffset: 1 })} tex="2\mathbf{\vec{v}}" color={color("blue")} />
+</Mafs>
+
+Multiplying a vector by a negative scalar has the effect of *reversing the direction* of the vector.
+Here's a playground where you can experiment with scalar multiplication:
+
+{(() => {
+    const [scale, setScale] = useState(2);
+    const vecTip = useMovablePoint([1, 2]);
+    const scaledVecTip = [vecTip.point[0] * scale, vecTip.point[1] * scale];
+
+    return (
+        <div className="card">
+            <div className="card card__header">
+                <h3>Scalar Multiplication Playground</h3>
+            </div>
+            <div className="card__body">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Vector
+                        tail={[0, 0]}
+                        tip={scaledVecTip}
+                        color={color("blue")}
+                    />
+                    <LaTeX
+                        tex={`${scale}\\mathbf{\\vec{v}}`}
+                        at={lineLabel([0, 0], scaledVecTip, "right")}
+                        color={color("blue")}
+                    />
+
+                    <Vector
+                        tail={[0, 0]}
+                        tip={vecTip.point}
+                        color={color("red")}
+                        opacity={0.5}
+                    />
+                    <LaTeX
+                        tex="\mathbf{\vec{v}}"
+                        at={lineLabel([0, 0], vecTip.point, "left")}
+                        color={color("red")}
+                    />
+                    {vecTip.element}
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput
+                        label="Scale"
+                        value={scale}
+                        onChange={setScale}
+                        min={-5}
+                        max={5}
+                        step={0.1}
+                    />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+})()}
+
+### Multiplication: Algebraic Interpretation
+
+To multiply a vector by a scalar, we can simply multiply each component of the vector by the scalar.
+
+For example, if we have the vector $\mqty[2 \\ 1]$ and we multiply it by $2$, we get:
+
+$$
+\begin{equation}
+2 \mqty[2 \\ 1] = \mqty[2 \cdot 2 \\ 2 \cdot 1] = \mqty[4 \\ 2]
+\end{equation}
+$$
+
+This should make sense with the instructions analogy; going 2 units right and 1 unit up, and then doubling that, will result in each direction being doubled.
+
+### Properties of Scalar Multiplication
+
+Scalar multiplication also has a few properties that are worth noting:
+
+1. **Distributivity over Vector Addition**: Multiplying a vector by a scalar and then adding another vector is the same as adding the vectors first and then multiplying by the scalar.
+
+    $$
+    \begin{equation}
+    c(\va{v} + \va{w}) = c\va{v} + c\va{w}
+    \end{equation}
+    $$
+
+2. **Distributivity over Scalar Addition**: Multiplying a vector by the sum of two scalars is the same as multiplying the vector by each scalar separately and then adding the results.
+
+    $$
+    \begin{equation}
+    (c + d)\va{v} = c\va{v} + d\va{v}
+    \end{equation}
+    $$
+
+3. **Associativity with Scalar Multiplication**: Multiplying a vector by the product of two scalars is the same as multiplying the vector by each scalar separately and then multiplying the results.
+
+    $$
+    \begin{equation}
+    (cd)\va{v} = c(d\va{v})
+    \end{equation}
+    $$
+
+A good exercise would be to show why each property makes sense geometrically.
+
+## Unit Vectors
+
+Sometimes, we use a vector to describe just the direction of a vector, without the magnitude.
+It's very useful to have a vector with a certain direction we want to describe, but with a magnitude of 1.
+These vectors are called **unit vectors**.
+
+A unit vector in the direction of a vector $\va{a}$ is denoted by $\vu{a}$.
+
+These are very useful - for instance, let's say we want to describe a vector $\va{v}$ with a length of $5$ but with the same direction as a unit vector $\vu{u}$.
+We can simply multiply $\vu{u}$ by $5$ to get $\va{v} = 5\vu{u}$.
+
+To make a unit vector from another vector, we can simply divide the vector by its magnitude:
+
+$$
+\begin{equation}
+\vu{v} = \frac{\va{v}}{\norm{\va{v}}} \label{eq:unit-vector}
+\end{equation}
+$$
+
+Doing this has the result of scaling a vector down by whatever its magnitude is, resulting in a vector with a magnitude of $1$.
+We will see the importance of unit vectors in the few pages.
+
+## Summary and Next Steps
+
+In this page, we discussed two basic operations we can perform on vectors: addition and scalar multiplication.
+These operations are quite intuitive and are the building blocks for defining more advanced concepts in linear algebra.
+
+Here are the key points to remember:
+
+- Vector addition involves adding two vectors together to get a new vector:
+    - Geometrically, this is like placing the tail of the second vector at the tip of the first vector and drawing a new vector from the tail of the first vector to the tip of the second vector.
+    - Algebraically, this is like adding the components of the vectors together.
+- Scalar multiplication involves multiplying a vector by a scalar to get a new vector:
+    - Geometrically, this is like stretching or shrinking the vector by the scalar.
+    - Algebraically, this is like multiplying each component of the vector by the scalar.
+- Unit vectors are vectors with a magnitude of $1$ that describe a certain direction. They can be made from other vectors by dividing the vector by its magnitude:
+
+    $$
+    \begin{equation}
+    \vu{v} = \frac{\va{v}}{\norm{\va{v}}} \tag{\ref{eq:unit-vector}}
+    \end{equation}
+    $$
+
+With the most fundamental operations out of the way, we can now start discussing some more advanced concepts surrounding vectors.
+In the next page, we will discuss linear combinations, span, subspaces, the basis vectors, and linear independence.
+A lot of these concepts will build on what we have discussed here, so make sure you have a good understanding of these basic operations before moving on.

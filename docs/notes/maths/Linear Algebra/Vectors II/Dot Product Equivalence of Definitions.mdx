@@ -1,0 +1,149 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Dot Product: Equivalence of Definitions
+
+We have operated with the dot product as an operation with two different definitions.
+In this section, we will show, in multiple different ways, that these definitions are equivalent.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Definitions to Equate
+
+The dot product of two vectors $\va{v}$ and $\va{w}$ can be defined in two ways, as we have previously seen:
+
+$$
+\begin{align}
+\va{v} \cdot \va{w} &= \norm{\va{v}} \norm{\va{w}} \cos \theta \\
+\va{v} \cdot \va{w} &= v_1 w_1 + v_2 w_2 + \cdots + v_n w_n
+\end{align}
+$$
+
+We will show that these two definitions are equivalent. That is:
+
+<Boxed>
+$$
+\begin{equation}
+\norm{\va{v}} \norm{\va{w}} \cos \theta = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n \label{eq:dot-product-equivalence}
+\end{equation}
+$$
+</Boxed>
+
+## By the Cosine Rule
+
+:::info Brief Overview
+
+This proof assumes the component definition of the dot product ($\va{v} \cdot \va{w} = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n$) and uses the cosine rule to derive the geometric definition of the dot product ($\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos \theta$).
+
+Additionally, it uses the corollary that the square of the magnitude of a vector is the dot product of the vector with itself; $\norm{\va{v}}^2 = \va{v} \cdot \va{v}$.
+
+:::
+
+For any triangle with sides $a$, $b$, and $c$, and angles $A$, $B$, and $C$, the cosine rule states:
+
+$$
+\begin{equation}
+c^2 = a^2 + b^2 - 2ab \cos C \label{eq:cosine-rule}
+\end{equation}
+$$
+
+We can apply this rule to the triangle formed by the vectors $\va{v}$ and $\va{w}$, and their difference $\va{v} - \va{w}$.
+Below is a diagram of the triangle:
+
+<Mafs
+    viewBox={{
+        x: [0, 3],
+        y: [0, 3]
+    }}
+>
+    <Vector
+        tail={[0, 0]}
+        tip={[2, 3]}
+        color={color("red")}
+    />
+    <LaTeX
+        tex="\mathbf{\vec{v}}"
+        at={lineLabel([0, 0], [2, 3], "left")}
+        color={color("red")}
+    />
+
+    <Vector
+        tail={[0, 0]}
+        tip={[3, 1]}
+        color={color("blue")}
+    />
+    <LaTeX
+        tex="\mathbf{\vec{w}}"
+        at={lineLabel([0, 0], [3, 1], "right")}
+        color={color("blue")}
+    />
+
+    <Angle
+        at={[0, 0]}
+        fromRad={Math.atan2(3, 2)}
+        toRad={Math.atan2(1, 3)}
+        label="\theta"
+    />
+
+    <Line.Segment
+        point1={[3, 1]}
+        point2={[2, 3]}
+        style="dashed"
+    />
+    <LaTeX
+        tex="\mathbf{\vec{v}} - \mathbf{\vec{w}}"
+        at={lineLabel([3, 1], [2, 3], "right")}
+    />
+</Mafs>
+
+If we let $a = \norm{\va{v}}$, $b = \norm{\va{w}}$, and $c = \norm{\va{v} - \va{w}}$, we can apply the cosine rule to the triangle:
+
+$$
+\begin{align}
+c^2 &= \class{red}{a}^2 + \class{blue}{b}^2 - 2\class{red}{a}\class{blue}{b} \cos C \tag{\ref{eq:cosine-rule}} \\
+\norm{\va{v} - \va{w}}^2 &= \class{red}{\norm{\va{v}}}^2 + \class{blue}{\norm{\va{w}}}^2 - 2\class{red}{\norm{\va{v}}}\class{blue}{\norm{\va{w}}} \cos \theta
+\end{align}
+$$
+
+Recall that the square of the magnitude of a vector is the dot product of the vector with itself:
+
+$$
+\begin{split}
+\norm{\va{v} - \va{w}}^2 &= (\va{v} - \va{w}) \cdot (\va{v} - \va{w}) \\
+&= \va{v} \cdot \va{v} - 2\va{v} \cdot \va{w} + \va{w} \cdot \va{w} \\
+&= \norm{\va{v}}^2 - 2\va{v} \cdot \va{w} + \norm{\va{w}}^2
+\end{split}
+$$
+
+Substituting this back into the cosine rule equation, we get:
+
+$$
+\begin{equation}
+\norm{\va{v}}^2 - 2\va{v} \cdot \va{w} + \norm{\va{w}}^2 = \norm{\va{v}}^2 + \norm{\va{w}}^2 - 2\norm{\va{v}}\norm{\va{w}} \cos \theta
+\end{equation}
+$$
+
+Finally, we can cancel out the $\norm{\va{v}}^2$ and $\norm{\va{w}}^2$ terms to get the equivalence of the dot product definitions:
+
+$$
+\begin{align}
+- 2\va{v} \cdot \va{w} &= - 2\norm{\va{v}}\norm{\va{w}} \cos \theta \\
+\va{v} \cdot \va{w} &= \norm{\va{v}}\norm{\va{w}} \cos \theta \\
+v_1 w_1 + v_2 w_2 + \cdots + v_n w_n &= \norm{\va{v}}\norm{\va{w}} \cos \theta \tag{\ref{eq:dot-product-equivalence}}
+\end{align}
+$$
+
+## By Vector Decomposition

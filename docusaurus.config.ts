@@ -65,7 +65,7 @@ const config = {
         },
     ],
 
-    plugins: ["docusaurus-plugin-sass"],
+    plugins: ["docusaurus-plugin-sass", "@aldridged/docusaurus-plugin-lunr"],
     themes: ["@docusaurus/theme-mermaid"],
 
     presets: [
@@ -155,8 +155,8 @@ const config = {
         mermaid: {
             options: {
                 fontFamily: "var(--ifm-font-family-base)",
-            }
-        }
+            },
+        },
     } satisfies Preset.ThemeConfig,
 } satisfies Config;
 

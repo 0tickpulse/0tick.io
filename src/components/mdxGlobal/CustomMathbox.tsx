@@ -1,8 +1,8 @@
-import React, { useState, forwardRef, useEffect, useImperativeHandle, useCallback } from "react";
-import { RootProps, MathBoxOptions, MathboxSelection } from "mathbox";
-import { Cartesian, Mathbox, Swizzle } from "mathbox-react";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { MathBoxOptions, MathboxSelection, RootProps } from "mathbox";
+import { Mathbox } from "mathbox-react";
+import React, { useCallback, useState } from "react";
 import { Color, Vector3 } from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 type Props = {
     containerId?: string;
@@ -67,6 +67,8 @@ const OldMathbox = (props: Props) => {
             console.log("Setting selection");
             mathbox.three.renderer.setClearColor(new Color(0x000000), 1.0);
             mathbox.three.camera.position.set(1, 1, 2);
+
+
             onInitialized?.(mathbox);
         }
     }, []);

@@ -1,0 +1,544 @@
+---
+sidebar_position: 5
+description: Finding maxima, minima, and saddle points of multivariable functions.
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, MovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point, Text } from "mafs";
+import { useState, useEffect, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import range from "lodash/range";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { easeInOutCubic } from "js-easing-functions";
+
+# Multivariable Optimization
+
+Optimization refers to the process of finding the maximum or minimum value of a function.
+It's super important in many fields, including those not directly related to the natural sciences:
+
+- In economics, you might formulate a function to represent the profit of a company based on things like the price, quantities, and costs.
+    You would want to find the maximum values for those parameters to maximize the profit.
+- In engineering, you might have a cylindrical tank with a fixed volume and want to minimize the cost of the material used to build it.
+    You would want to find the minimum surface area of the tank to minimize the cost.
+- In computer science, you might have a function that represents the time complexity of an algorithm.
+    You would want to find the minimum value to optimize the algorithm's performance.
+- In physics, you might have a function that represents the potential energy of a system.
+    You would want to find the minimum value to find the equilibrium position of the system.
+
+Previously, we learned how to find minima and maxima of functions in single-variable calculus with techniques like the first and second derivative tests.
+However, in many real-world problems, we often deal with functions of multiple variables.
+In this section, we will extend these concepts to multivariable functions and learn how to find maxima, minima, and saddle points of these functions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Refresher on Single-Variable Optimization
+
+When optimizing a function, we typically look for points where the function "flattens" out.
+In a parabola, that would be the vertex.
+
+Such points are called **critical points**, stable points, or stationary points.
+When optimizing, the first step is to find these critical points.
+How do we do that?
+
+Consider an arbitrary function $f(x)$.
+We would want to find the points where the **derivative of the function is zero**.
+These points are the critical points of the function:
+
+<Mafs>
+    <Coordinates.Cartesian
+        xAxis={{ labels: () => "" }}
+        yAxis={{ labels: () => "" }}
+    />
+    <Plot.OfX y={(x) => 0.5 * (x - 2) ** 2 + 1} color={color("blue")} />
+    <Plot.OfX y={(x) => 1} style="dashed" />
+    <Point x={2} y={1} />
+</Mafs>
+
+However, **these points are not always maxima or minima, and additionally, some maxima and minima might not have a derivative of zero**.
+
+1. At an inflection point, the derivative is zero, but it's not a maximum or minimum:
+
+    <Mafs>
+        <Coordinates.Cartesian
+            xAxis={{ labels: () => "" }}
+            yAxis={{ labels: () => "" }}
+        />
+        <Plot.OfX y={(x) => x ** 3 + 1} color={color("blue")} />
+        <Plot.OfX y={(x) => 1} style="dashed" />
+        <Point x={0} y={1} />
+    </Mafs>
+
+2. Checking the derivative requires the function to be differentiable.
+    However, maxima and minima can also occur at points where the function is not differentiable, where we can't use the derivative test.
+    Take this example of the an absolute value function:
+
+    <Mafs>
+        <Coordinates.Cartesian
+            xAxis={{ labels: () => "" }}
+            yAxis={{ labels: () => "" }}
+        />
+        <Plot.OfX y={(x) => -Math.abs(x - 2) + 2} color={color("blue")} />
+        <Plot.OfX y={(x) => 2} style="dashed" />
+        <Point x={2} y={2} />
+    </Mafs>
+
+Hence, instead of just checking the derivative to be zero, we add on points where the function is not differentiable; the derivative is not defined.
+
+### Second Derivative Test
+
+To sum up the previous section:
+
+- Critical points are points where the derivative is zero or undefined.
+- They can be maxima, minima, or neither.
+
+To determine whether a critical point is a maximum or minimum, we use the **second derivative test**.
+Consider this:
+
+- Imagine the maximum point of a function.
+    Consider its slope - on the left, it's negative (and goes up), and on the right, it's positive (and goes down).
+    In other words, the slope changes from negative to positive.
+- Now, consider the minimum point of a function.
+    The slope changes from positive to negative.
+
+Using the second derivative, we can check its sign to determine whether the slope is increasing or decreasing:
+
+- $f''(x) > 0$: The function is **concave up**, and the point is a **minimum**.
+- $f''(x) < 0$: The function is **concave down**, and the point is a **maximum**.
+
+### Local and Global Extrema
+
+In single-variable calculus, we classify maxima and minima as follows:
+
+- If the point is a peak, it is a **local maximum**.
+    We use "local" because it's only the maximum in a small neighborhood.
+- If the point is the highest point the function reaches, it is an **absolute maximum** or **global maximum**.
+    It's the maximum over the entire domain of the function.
+- Similarly, we have **local minimum** and **absolute minimum**.
+
+## What Extrema Look Like
+
+Before discussing the computation of maxima and minima, let's talk about what they look like.
+
+Maxima in a function are points where the function is at its highest value.
+In a graph, they look like peaks or "hills", where every point within a small neighborhood is lower than the peak.
+
+This also applies to multivariable functions. Consider the following function:
+
+$$
+\begin{equation}
+f(x, y) = 5\cos(x)\cos(y)e^{-((x/4)^2 + (y/4)^2)}
+\end{equation}
+$$
+
+Here's a 3D plot of the function:
+
+<CustomMathbox>
+    <MB.Cartesian scale={[0.3, 0.3, 0.3]}>
+        <MB.Grid axes="xy" rangeX={[-5, 5]} rangeY={[-5, 5]} />
+        <MB.Axis axis="x" range={[-5, 5]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-5, 5]} color={color("yellow")} />
+        <MB.Axis axis="z" range={[-5, 5]} color={color("green")} />
+        <MB.Area
+            id="graph"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = 5 * Math.cos(x) * Math.cos(y) * Math.exp(-((x / 4) ** 2 + (y / 4) ** 2));
+                emit(x, y, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-5, 5]}
+            rangeY={[-5, 5]}
+        />
+        <MB.Area
+            id="graph_colors"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = 5 * Math.cos(x) * Math.cos(y) * Math.exp(-((x / 4) ** 2 + (y / 4) ** 2));
+                const [r, g, b] = getColorFromMagnitude(z, -2, 4);
+                emit(r, g, b, 1.0);
+            }}
+            width={64}
+            height={64}
+            channels={4}
+            rangeX={[-5, 5]}
+            rangeY={[-5, 5]}
+        />
+        <MB.Surface points="#graph" colors="#graph_colors" zOrder={25} opacity={3/4} zIndex={0} zBias={0} shaded={true} />
+    </MB.Cartesian>
+</CustomMathbox>
+
+Using this surface as a reference, we can see 5 peaks and 4 valleys.
+These correspond to the local maxima and minima of the function.
+
+The peak in red is the global maximum, meaning it's the highest point that the function can ever reach over its entire domain.
+
+## Critical Points in Multivariable Functions
+
+Let's begin by extending the concept of critical points to multivariable functions.
+
+In single-variable calculus, we found critical points by setting the derivative of the function to zero.
+The extension to multivariable functions is similar.
+You could imagine that if you slice the function through any plane that intersects the critical point, you would get a single-variable function, and the slope of that function would be zero at the critical points.
+In other words, all of its directional derivatives are zero.
+
+Using the critical point at the origin, here's a visualization of the function sliced at a certain angle:
+
+export function CriticalPointAngleVisualizer() {
+    const [theta, setTheta] = useState(0); // 0 to 2pi
+    const f = (x, y) => 5 * Math.cos(x) * Math.cos(y) * Math.exp(-((x / 4) ** 2 + (y / 4) ** 2));
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox>
+                    <MB.Cartesian scale={[0.3, 0.3, 0.3]}>
+                        <MB.Grid axes="xy" rangeX={[-5, 5]} rangeY={[-5, 5]} />
+                        <MB.Axis axis="x" range={[-5, 5]} color={color("blue")} />
+                        <MB.Axis axis="y" range={[-5, 5]} color={color("yellow")} />
+                        <MB.Axis axis="z" range={[-5, 5]} color={color("green")} />
+                        <MB.Area
+                            id="graph"
+                            axes="xy"
+                            expr={(emit, x, y, i, t) => {
+                                const z = f(x, y);
+                                emit(x, y, z);
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={[-5, 5]}
+                            rangeY={[-5, 5]}
+                        />
+                        <MB.Area
+                            id="graph_colors"
+                            axes="xy"
+                            expr={(emit, x, y, i, t) => {
+                                const z = f(x, y);
+                                const [r, g, b] = getColorFromMagnitude(z, -2, 4);
+                                emit(r, g, b, 1.0);
+                            }}
+                            width={64}
+                            height={64}
+                            channels={4}
+                            rangeX={[-5, 5]}
+                            rangeY={[-5, 5]}
+                        />
+                        <MB.Area
+                            id="plane"
+                            axes="xy"
+                            expr={(emit, x, y, i, t) => {
+                                const r = x, z = y;
+                                // we have the cylindrical coordinates (r, theta, z). convert to cartesian
+                                emit(
+                                    r * Math.cos(theta),
+                                    r * Math.sin(theta),
+                                    z
+                                )
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={[-5, 5]}
+                            rangeY={[-5, 5]}
+                        />
+                        <MB.Interval
+                            id="sliced_fn"
+                            expr={(emit, x, t) => {
+                                const r = x;
+                                const input = [
+                                    r * Math.cos(theta),
+                                    r * Math.sin(theta),
+                                ];
+                                const z = f(input[0], input[1]);
+                                emit(input[0], input[1], z);
+                            }}
+                            width={64}
+                            range={[-5, 5]}
+                        />
+                        <MB.Surface points="#graph" colors="#graph_colors" zOrder={25} opacity={3/4} zIndex={0} zBias={0} shaded={true} />
+                        <MB.Surface points="#plane" zBias={-1} zIndex={-1} zOrder={24} opacity={3/4} />
+                        <MB.Line points="#sliced_fn" color={color("red")} width={5} zOrder={26} zIndex={1} />
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput latex label="\theta" value={theta} onChange={setTheta} min={0} max={2 * Math.PI} step={0.01} />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+}
+
+<CriticalPointAngleVisualizer />
+
+Given that all directional derivatives are zero at the critical point, the gradient of the function at the critical point is zero:
+
+$$
+\begin{equation}
+\grad{f} = \va{0}
+\end{equation}
+$$
+
+Note that the gradient is a vector, and the zero vector is a vector where all components are zero.
+
+### Tangent Planes
+
+If we draw a tangent plane at the critical point, it would be flat.
+This is similar to the tangent line in single-variable calculus, where the tangent line (who has a slope equivalent to the derivative) is flat (i.e. slope is $0$) at the critical point.
+
+Note that in higher dimensions, the tangent isn't really a plane, but something known as a **hyperplane**.
+For a function whose graph sits in $\mathbb{R}^n$, the tangent is an $n-1$ dimensional hyperplane.
+
+For instance, in $\mathbb{R}^2$ (single-variable calculus), the tangent is a line (1D).
+In $\mathbb{R}^3$, the tangent is a plane (2D). In $\mathbb{R}^4$, the tangent is a 3D hyperplane, and so on.
+
+## Inflection Points in Multivariable Functions
+
+Recall that critical points can occur at inflection points, where the function is flat but not a maximum or minimum.
+There is a similar concept in multivariable functions.
+
+For example, consider the following function:
+
+$$
+\begin{equation}
+f(x, y) = (x - y)^3 + 4
+\end{equation}
+$$
+
+This function has infinitely many critical points along the line $x = y$.
+
+<details>
+<summary>Why?</summary>
+
+To show this, we need to find the gradient of the function and set it to zero.
+
+The gradient of the function is:
+
+$$
+\begin{equation}
+\grad{f} = \mqty[3(x - y)^2 \\ -3(x - y)^2]
+\end{equation}
+$$
+
+Setting this to zero, we get a system of equations:
+
+$$
+\begin{align}
+3(x - y)^2 &= 0 \\
+-3(x - y)^2 &= 0
+\end{align}
+$$
+
+Consider any of the equations. We have $3$ multiplied by something squared equals zero.
+This implies that the something squared is zero, which means that the something is zero; $x - y = 0$.
+
+Hence, for the gradient to be zero, we must have $x = y$.
+
+</details>
+
+However, once we look at the graph, it becomes clear that these points are not maxima or minima, but inflection points:
+
+<CustomMathbox>
+    <MB.Camera proxy={true} position={[-8, -5, 6]} />
+    <MB.Cartesian>
+        <MB.Grid axes="xy" rangeX={[-5, 5]} rangeY={[-5, 5]} />
+        <MB.Axis axis="x" range={[-5, 5]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-5, 5]} color={color("yellow")} />
+        <MB.Axis axis="z" range={[-5, 5]} color={color("green")} />
+        <MB.Area
+            id="graph"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = (x - y) ** 3 + 4;
+                emit(x, y, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-5, 5]}
+            rangeY={[-5, 5]}
+        />
+        <MB.Area
+            id="graph_colors"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = (x - y) ** 3 + 4;
+                const [r, g, b] = getColorFromMagnitude(z, 0, 8);
+                emit(r, g, b, 1.0);
+            }}
+            width={64}
+            height={64}
+            channels={4}
+            rangeX={[-5, 5]}
+            rangeY={[-5, 5]}
+        />
+        <MB.Area
+            id="plane"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = 4
+                emit(x, y, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-5, 5]}
+            rangeY={[-5, 5]}
+        />
+        <MB.Surface points="#graph" colors="#graph_colors" zOrder={25} opacity={3/4} zIndex={0} zBias={0} shaded={true} />
+        <MB.Surface points="#plane" zBias={-1} zIndex={-1} zOrder={24} opacity={3/4} />
+    </MB.Cartesian>
+</CustomMathbox>
+
+In the graph, the function is flat along the line $x = y$, but it's not a maximum or minimum.
+
+## Saddle Points
+
+In single-variable calculus, we learned that a function can have a maximum, minimum, or neither.
+In multivariable calculus, we have another type of critical point: the **saddle point**.
+These do not occur in single-variable functions, and are the result of different behavior in different directions.
+
+Consider the function:
+
+$$
+\begin{equation}
+f(x, y) = x^2 - y^2
+\end{equation}
+$$
+
+Its gradient at $(0, 0)$ is $\va{0}$:
+
+$$
+\begin{equation}
+\grad{f}(0, 0) = \mqty[2x \\ -2y] = \mqty[0 \\ 0]
+\end{equation}
+$$
+
+So there is a critical point at $(0, 0)$. However, consider slicing the function along the $x$-axis and $y$-axis:
+
+1. Along the $x$-axis, the function looks like $f(x, 0) = x^2$.
+    This is a parabola that opens upwards, so $(0, 0)$ is a minimum.
+2. Along the $y$-axis, the function looks like $f(0, y) = -y^2$.
+    This is a parabola that opens downwards, so $(0, 0)$ is a maximum.
+
+When a function's behavior conflicts in different directions, it results in a saddle point.
+Saddle points are not maxima or minima, and they are not inflection points.
+
+
+<CustomMathbox>
+    <MB.Camera proxy={true} position={[1, 6, 2]} />
+    <MB.Cartesian>
+        <MB.Grid axes="xy" rangeX={[-2, 2]} rangeY={[-2, 2]} />
+        <MB.Axis axis="x" range={[-2, 2]} color={color("blue")} />
+        <MB.Axis axis="y" range={[-2, 2]} color={color("yellow")} />
+        <MB.Axis axis="z" range={[-2, 2]} color={color("green")} />
+        <MB.Area
+            id="graph"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = x ** 2 - y ** 2;
+                emit(x, y, z);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+            rangeX={[-2, 2]}
+            rangeY={[-2, 2]}
+        />
+        <MB.Area
+            id="graph_colors"
+            axes="xy"
+            expr={(emit, x, y, i, t) => {
+                const z = x ** 2 - y ** 2;
+                const [r, g, b] = getColorFromMagnitude(z, -4, 4);
+                emit(r, g, b, 1.0);
+            }}
+            width={64}
+            height={64}
+            channels={4}
+            rangeX={[-2, 2]}
+            rangeY={[-2, 2]}
+        />
+        <MB.Surface points="#graph" colors="#graph_colors" zOrder={25} opacity={3/4} zIndex={0} zBias={0} shaded={true} />
+        <MB.Surface points="#plane" zBias={-1} zIndex={-1} zOrder={24} opacity={3/4} />
+
+        <MB.Interval
+            id="x_axis"
+            expr={(emit, x, t) => {
+                emit(x, 0, x ** 2);
+            }}
+            width={64}
+            range={[-2, 2]}
+        />
+        <MB.Line points="#x_axis" color={color("red")} width={5} zOrder={26} zIndex={1} />
+
+        <MB.Interval
+            id="y_axis"
+            expr={(emit, y, t) => {
+                emit(0, y, -(y ** 2));
+            }}
+            width={64}
+            range={[-2, 2]}
+        />
+        <MB.Line points="#y_axis" color={color("red")} width={5} zOrder={26} zIndex={1} />
+    </MB.Cartesian>
+</CustomMathbox>
+
+In the graph, the function is a saddle point at $(0, 0)$.
+
+Saddle points get their name from the shape of a saddle, where the function curves upwards in one direction and downwards in another.
+
+## Formal Definition of Extrema
+
+While we have an intuitive understanding of maxima and minima, we need a formal definition to determine these points in multivariable functions.
+
+Recall one interpretation we had for maxima and minima: the function is at its highest or lowest point in a small neighborhood.
+
+Let the point $\va{x}_0$ be a **local maximum** of a function $f(\va{x})$.
+We can denote this "neighborhood" as a ball $B(\va{x}_0, r)$ centered at $\va{x}_0$ with radius $r$.
+In this ball, the function is at its highest point at $\va{x}_0$.
+
+Hence, for any $\va{x}$ within $r$ of $\va{x}_0$, $f(\va{x}) \leq f(\va{x}_0)$. In other words:
+
+<Boxed>
+For a function $f: \mathbb{R}^n \to \mathbb{R}$, the point $\va{x}_0 \in \mathbb{R}^n$ is a **local maximum** if:
+
+$$
+\begin{equation}
+\exists r > 0 \text{ such that } \forall \va{x} \text{ where } \norm{\va{x} - \va{x}_0} < r, f(\va{x}) \leq f(\va{x}_0)
+\end{equation}
+$$
+</Boxed>
+
+Similarly, we can define a **local minimum**:
+
+<Boxed>
+For a function $f: \mathbb{R}^n \to \mathbb{R}$, the point $\va{x}_0 \in \mathbb{R}^n$ is a **local minimum** if:
+
+$$
+\begin{equation}
+\exists r > 0 \text{ such that } \forall \va{x} \text{ where } \norm{\va{x} - \va{x}_0} < r, f(\va{x}) \geq f(\va{x}_0)
+\end{equation}
+$$
+</Boxed>
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of optimization in multivariable functions.
+
+Here are the key things to remember:
+
+- Critical points are points where the gradient of the function is zero or undefined.
+- In single-variable calculus, critical points can be maxima, minima, inflection points, or none of these.
+- In multivariable calculus, we have the new concept of saddle points, which are neither maxima nor minima.
+- Maxima look like peaks, minima look like valleys, and saddle points look like... saddles.
+- We can define local extrema formally as points where the function is at its highest or lowest in a small neighborhood around the point.
+
+In the next section, we will continue our discussion on optimization and learn about the second derivative test for multivariable functions.

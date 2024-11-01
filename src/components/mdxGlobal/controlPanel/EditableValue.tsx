@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 
-export function EditableValue({ style, value, onSubmit, width }: EditableValue.Props) {
+export function EditableValue({ style, defaultValue, value, onSubmit, width }: EditableValue.Props) {
     const inputRef = useRef<HTMLInputElement>(null);
     return (
         <input
             ref={inputRef}
             style={{ ...style, ...EditableValue.style, width }}
             type="text"
+            defaultValue={defaultValue}
             value={value}
             onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -24,6 +25,7 @@ export function EditableValue({ style, value, onSubmit, width }: EditableValue.P
 export namespace EditableValue {
     export type Props = {
         style?: React.CSSProperties;
+        defaultValue?: string;
         value?: string;
         onSubmit?: (value: string) => void;
         width?: string;

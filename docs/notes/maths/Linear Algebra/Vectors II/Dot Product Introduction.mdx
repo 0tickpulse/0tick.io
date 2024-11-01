@@ -1,0 +1,495 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Dot Product: Introduction
+
+Previously, we have introduced two operations on vectors: addition and scalar multiplication.
+These operations allow us to combine vectors, but we still have no operation for multiplying two vectors together, like $2 \times 3 = 6$.
+
+Put yourself in the position of a mathematician trying to come up with a way to multiply two vectors.
+The first question would be: should the product of two vectors be a scalar or a vector?
+
+Turns out, there are actually two ways to multiply two vectors together; one of them results in a scalar, and the other results in a vector.
+Today, we will discuss the first of these two operations: the **dot product** (also known as the **scalar product**).
+
+There is a really cool insight into the dot product that can only be seen when one understands linear transformations.
+Thus, in the future, we shall revisit the dot product - this page will only be an introduction.
+
+Lastly, because dot products have so many interpretations, we will use multiple pages to discuss them.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Definition of the Dot Product
+
+Before proceeding with the definition, we will first consider a more intuitive interpretation of the dot product.
+
+Consider two vectors $\va{v}$ and $\va{w}$.
+The **dot product** of them is denoted by $\va{v} \cdot \va{w}$.
+It outputs a scalar value, which is why it is also known as the **scalar product**.
+
+To think of the dot product geometrically, do the following:
+
+1. Place both vectors so that their tails are at the origin.
+2. Project $\va{v}$ onto $\va{w}$.
+3. Multiply the length of the projection by the length of $\va{w}$.
+4. The result is the dot product of $\va{v}$ and $\va{w}$.
+
+One way to think about the projection is to physicall hold a pencil and observe its shadow on the table/ground.
+As you rotate the pencil, the shadow changes in length.
+The length of that shadow is the projection of the pencil onto the table.
+
+
+{(() => {
+    const vMovable = useMovablePoint([2, 3]);
+    const wMovable = useMovablePoint([5, 2]);
+    const v = vMovable.point;
+    const w = wMovable.point;
+    const dot = vec.dot(v, w);
+    const projected = vec.withMag(w, dot / vec.mag(w));
+
+    const vAngle = Math.atan2(v[1], v[0]);
+    const wAngle = Math.atan2(w[1], w[0]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Vector
+                tail={[0, 0]}
+                tip={v}
+                color={color("red")}
+            />
+            <Vector
+                tail={[0, 0]}
+                tip={w}
+                color={color("blue")}
+            />
+            <Vector
+                tail={[0, -0.03]}
+                tip={vec.sub(projected, [0, 0.03])}
+                color={color("green")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v, "left")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel([0, 0], w, "right", { forwardOffset: 2 })}
+            />
+
+            <Line.Segment
+                point1={v}
+                point2={projected}
+                style="dashed"
+            />
+
+            <Angle
+                at={projected}
+                fromRad={Math.PI / 2 + wAngle}
+                toRad={Math.PI + wAngle}
+                forceStraightAngle={true}
+            />
+            <Angle
+                at={[0, 0]}
+                fromRad={wAngle}
+                toRad={vAngle}
+                label="\theta"
+            />
+
+            {vMovable.element}
+            {wMovable.element}
+        </Mafs>
+    );
+})()}
+
+In the diagram above, the green arrow represents the projection of $\va{v}$ onto $\va{w}$.
+In a word equation, the dot product can be written as:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \class{green}{\text{length of the projection of } \va{v} \text{ onto } \va{w}} \times \class{blue}{\text{length of } \va{w}} \label{eq:dot-product-word}
+\end{equation}
+$$
+
+The length of the projection (let's denote it as $v_w$) can be calculated through trigonometry:
+
+$$
+\begin{equation}
+v_w = \norm{\va{v}} \cos(\theta)
+\end{equation}
+$$
+
+And therefore, the dot product can also be calculated as:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos(\theta) \label{eq:dot-product}
+\end{equation}
+$$
+</Boxed>
+
+The dot product, due to this projection property, is helpful to measure the "similarity" between two vectors.
+
+When $\va{v}$ and $\va{w}$ are pointing in the same direction, the dot product is positive.
+
+When they are perpendicular, the dot product is zero, since the projection of one vector onto the other is zero. It's like holding the pencil perpendicular to the table, you get no shadow.
+
+When they are pointing in opposite directions, the dot product is negative.
+
+### Example Problem: Interpreting Directions
+
+> Consider two vectors $\va{v}$ and $\va{w}$.
+>
+> Predict the sign of the dot product of $\va{v}$ and $\va{w}$ in the following cases:
+>
+> 1. $\va{v}$ and $\va{w}$ are pointing roughly in the same direction.
+> 2. $\va{v}$ and $\va{w}$ are perpendicular.
+> 3. $\va{v}$ and $\va{w}$ are pointing roughly in opposite directions.
+
+1. When $\va{v}$ and $\va{w}$ are pointing roughly in the same direction, the projection of $\va{v}$ onto $\va{w}$ is positive, and so is the dot product.
+2. When $\va{v}$ and $\va{w}$ are perpendicular, the projection of $\va{v}$ onto $\va{w}$ is zero, and so is the dot product.
+3. When $\va{v}$ and $\va{w}$ are pointing roughly in opposite directions, the projection of $\va{v}$ onto $\va{w}$ is negative, and so is the dot product.
+
+These insights can also be gained looking at the $\cos(\theta)$ term in our expression for the dot product.
+
+## Commutativity and Associativity
+
+The dot product is commutative, meaning that $\va{v} \cdot \va{w} = \va{w} \cdot \va{v}$.
+
+Additionally, the dot product is associative, meaning that $(c_1\va{v}) \cdot (c_2\va{w}) = c_1 (c_2 \va{v} \cdot \va{w})$.
+
+This should be a surprising result.
+In our geometric interpretation, we projected one specific vector onto another specific vector.
+In other words, each vector had a specific role - so why should the dot product have these properties?
+
+### Interpretation By Definition
+
+Recall that the dot product is defined as (Equation $\eqref{eq:dot-product}$):
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos(\theta) \tag{\ref{eq:dot-product}}
+\end{equation}
+$$
+
+If we switch the order of $\va{v}$ and $\va{w}$, we get:
+
+$$
+\begin{equation}
+\va{w} \cdot \va{v} = \norm{\va{w}} \norm{\va{v}} \cos(\theta) = \norm{\va{v}} \norm{\va{w}} \cos(\theta) = \va{v} \cdot \va{w}
+\end{equation}
+$$
+
+Hence, the dot product is commutative.
+
+If we scale $\va{v}$ by $c_1$ and $\va{w}$ by $c_2$, we get:
+
+$$
+\begin{equation}
+(c_1\va{v}) \cdot (c_2\va{w}) = \norm{c_1\va{v}} \norm{c_2\va{w}} \cos(\theta) = c_1c_2 \norm{\va{v}} \norm{\va{w}} \cos(\theta) = c_1c_2 (\va{v} \cdot \va{w})
+\end{equation}
+$$
+
+When scaling vectors, their directions do not change, only their magnitudes; hence, $\theta$ remains the same.
+
+With these observations, we can conclude that the dot product is both commutative and associative.
+However, this is not the only way to interpret these properties. There is a geometric interpretation as well, and it stems from the symmetry of the dot product.
+
+### Interpretation By Symmetry
+
+Consider a case where $\va{v}$ and $\va{w}$ have the same magnitude.
+Draw a bisecting line between the two vectors so that they have a reflective symmetry:
+
+export function DotProductVisualizer({ vLenDefault = 1, wLenDefault = 1, /** @type {"v" | "w" | null} */ projectOnDefault = null, interactive = true }) {
+    const [vLen, setVLen] = useState(vLenDefault);
+    const [wLen, setWLen] = useState(wLenDefault);
+    const [projectOn, setProjectOn] = useState(projectOnDefault);
+    const v = vec.withMag([1, 3], vLen);
+    const w = vec.withMag([3, 1], wLen);
+    const v_projOn_w = vec.withMag(w, vec.dot(v, w) / vec.mag(w));
+    const w_projOn_v = vec.withMag(v, vec.dot(w, v) / vec.mag(v));
+    const bisectorSlope = (v[1] + w[1]) / (v[0] + w[0]);
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs viewBox={{ x: [0, 1], y: [0, 1] }}>
+                    <Coordinates.Cartesian xAxis={{ labels: (n) => "" }} yAxis={{ labels: (n) => "" }} />
+                    <Vector tip={v} color={color("red")} />
+                    <LaTeX tex={String.raw`${vLen !== 1 ? vLen : ""}\mathbf{\vec{v}}`} at={vec.withMag(v, 1.1)} />
+                    <Vector tip={w} color={color("pink")} />
+                    <LaTeX tex={String.raw`${wLen !== 1 ? wLen : ""}\mathbf{\vec{w}}`} at={vec.withMag(w, 1.1)} />
+                    {wLen === vLen && <Plot.OfX y={(x) => bisectorSlope * x} style="dashed" />}
+                    <Vector tip={v_projOn_w} color={color("red")} opacity={2 / 3} />
+                    <Vector tip={w_projOn_v} color={color("pink")} opacity={2 / 3} />
+                    <Line.Segment point1={v} point2={v_projOn_w} style="dashed" />
+                    <Line.Segment point1={w} point2={w_projOn_v} style="dashed" />
+                </Mafs>
+            </div>
+                <div class="card__footer">
+                    <ControlPanel>
+                        <SliderInput latex label="\norm{\va{v}}" value={vLen} onChange={setVLen} min={0} max={3} step={0.1} />
+                        <SliderInput latex label="\norm{\va{w}}" value={wLen} onChange={setWLen} min={0} max={3} step={0.1} />
+                    </ControlPanel>
+                </div>
+        </div>
+    )
+}
+
+<DotProductVisualizer />
+
+Recall the geometric interpretation of the dot product:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \text{length of the projection of } \va{v} \text{ onto } \va{w} \times \text{length of } \va{w} \tag{\ref{eq:dot-product-word}}
+\end{equation}
+$$
+
+With this in mind, we can make the following observations:
+
+1. In this specific case, it should be clear that the projection of $\va{v}$ onto $\va{w}$ is the same as the projection of $\va{w}$ onto $\va{v}$.
+    Then, $\va{v} \cdot \va{w} = \va{w} \cdot \va{v}$ in this case.
+
+2. Next, consider scaling $\va{v}$ into $2\va{v}$ and consider how that changes the dot product.
+
+    <DotProductVisualizer vLenDefault={2} />
+
+    - $(2\va{v}) \cdot \va{w}$: If you scale $\va{v}$ by $2$, the projection of $\va{v}$ onto $\va{w}$ will also be scaled by $2$, but $\va{w}$ remains the same.
+        Thus, the dot product will be scaled by $2$: $(2\va{v}) \cdot \va{w} = 2(\va{v} \cdot \va{w})$.
+    - $\va{v} \cdot (2\va{w})$: If you scale $\va{w}$ by $2$, the projection of $\va{v}$ onto $\va{w}$ will remain the same, but $\va{w}$ will be scaled by $2$.
+        Thus, the dot product will be scaled by $2$: $\va{v} \cdot (2\va{w}) = 2(\va{v} \cdot \va{w})$.
+
+3. We picked $2$ as an arbitrary scaling factor, but this property holds for any scalar $c_1$.
+    Thus: $(c_1\va{v}) \cdot \va{w} = c_1(\va{v} \cdot \va{w})$ and $\va{v} \cdot (c_1\va{w}) = c_1(\va{v} \cdot \va{w})$.
+
+4. If we scale $\va{w}$ as well, into $c_2\va{w}$, the dot product will be scaled by $c_1c_2$.
+    Thus: $(c_1\va{v}) \cdot (c_2\va{w}) = c_1c_2(\va{v} \cdot \va{w})$.
+
+5. $c_1$ and $c_2$ can be any scalars, and this property holds for any two vectors $\va{v}$ and $\va{w}$.
+    As such, $c_1\va{v}$ and $c_2\va{w}$ can be any two vectors, and our observations hence hold for any two vectors.
+
+With all these observations, we can conclude that the dot product is commutative:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \va{w} \cdot \va{v}
+\end{equation}
+$$
+
+Additionally, we can also conclude based on the above observations that the dot product is associative:
+
+$$
+\begin{equation}
+(c_1\va{v}) \cdot (c_2\va{w}) = c_1 (c_2 \va{v} \cdot \va{w})
+\end{equation}
+$$
+
+## Distributive Property
+
+The dot product also satisfies the distributive property. That is, for any three vectors $\class{red}{\va{u}}$, $\class{pink}{\va{v}}$, and $\va{w}$:
+
+$$
+\begin{equation}
+(\class{red}{\va{u}} + \class{pink}{\va{v}}) \cdot \va{w} = \class{red}{\va{u}} \cdot \va{w} + \class{pink}{\va{v}} \cdot \va{w}
+\end{equation}
+$$
+
+There is a beautiful geometric interpretation of this property.
+Begin by considering what each side of the above equation represents.
+We shall use the notation $\class{red}{\va{u}}_w$ to denote the projection of $\class{red}{\va{u}}$ onto $\va{w}$, and similarly for $\class{pink}{\va{v}}_w$.
+With this in mind, rewrite both sides of the equation as follows:
+
+$$
+\begin{equation}
+(\class{red}{\va{u}} + \class{pink}{\va{v}})_w \norm{\va{w}} = \class{red}{\va{u}}_w \norm{\va{w}} + \class{pink}{\va{v}}_w \norm{\va{w}}
+\end{equation}
+$$
+
+On the left side, we project the entire sum of $\class{red}{\va{u}}$ and $\class{pink}{\va{v}}$ onto $\va{w}$, while on the right side, we project $\class{red}{\va{u}}$ and $\class{pink}{\va{v}}$ onto $\va{w}$ separately and then add the results.
+Then, we multiply each of these projections by the magnitude of $\va{w}$.
+
+To show why these projections are equivalent, consider placing $\class{red}{\va{u}}$ and $\class{pink}{\va{v}}$ head-to-tail, and then projecting each of them onto $\va{w}$.
+Then, draw another vector $\class{red}{\va{u}} + \class{pink}{\va{v}}$ and project it onto $\va{w}$:
+
+<div className="card">
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <Mafs viewBox={{ x: [0, 5], y: [-1, 3] }}>
+                    <Vector tip={[5, 0]} />
+                    <LaTeX tex="\mathbf{\vec{w}}" at={[5.3, 0]} />
+
+                    <Vector tip={[2, 1.5]} color={color("red")} />
+                    <Line.Segment point1={[2, 1.5]} point2={[2, 0]} style="dashed" />
+                    <LaTeX tex="\mathbf{\vec{u}}" at={lineLabel([0, 0], [2, 1.5], "left")} color={color("red")} />
+                    <Transform translate={[0, -0.2]}>
+                        <Vector tail={[0, 0]} tip={[2, 0]} />
+                        <Vector tail={[2, 0]} tip={[0, 0]} />
+                        <LaTeX tex="\mathbf{\vec{u}}_w" at={lineLabel([0, 0], [2, 0], "right")} />
+                    </Transform>
+
+                    <Vector tail={[2, 1.5]} tip={[3, 1]} color={color("pink")} />
+                    <Line.Segment point1={[3, 1]} point2={[3, 0]} style="dashed" />
+                    <LaTeX tex="\mathbf{\vec{v}}" at={lineLabel([2, 1.5], [3, 1], "left")} color={color("pink")} />
+                    <Transform translate={[0, -0.2]}>
+                        <Vector tail={[2, 0]} tip={[3, 0]} />
+                        <Vector tail={[3, 0]} tip={[2, 0]} />
+                        <LaTeX tex="\mathbf{\vec{v}}_w" at={lineLabel([2, 0], [3, 0], "right")} />
+                    </Transform>
+                </Mafs>
+            </div>
+            <div className="col">
+                <Mafs viewBox={{ x: [0, 5], y: [-1, 3] }}>
+                    <Vector tip={[5, 0]} />
+                    <LaTeX tex="\mathbf{\vec{w}}" at={[5.3, 0]} />
+
+                    <Vector tip={[2, 1.5]} />
+                    <LaTeX tex="\mathbf{\vec{u}}" at={lineLabel([0, 0], [2, 1.5], "left")} />
+
+                    <Vector tail={[2, 1.5]} tip={[3, 1]} />
+                    <LaTeX tex="\mathbf{\vec{v}}" at={lineLabel([2, 1.5], [3, 1], "left")} />
+
+                    <Vector tail={[0, 0]} tip={[3, 1]} color={color("blue")} />
+                    <Line.Segment point1={[3, 1]} point2={[3, 0]} style="dashed" />
+                    <LaTeX tex="\mathbf{\vec{u}} + \mathbf{\vec{w}}" at={lineLabel([0, 0], [3, 1], "right", { forwardOffset: 0.5 })} color={color("blue")} />
+
+                    <Transform translate={[0, -0.2]}>
+                        <Vector tail={[0, 0]} tip={[3, 0]} />
+                        <Vector tail={[3, 0]} tip={[0, 0]} />
+                        <LaTeX tex="\mathbf{\vec{v}}_w" at={lineLabel([0, 0], [3, 0], "right")} />
+                    </Transform>
+                </Mafs>
+            </div>
+        </div>
+    </div>
+</div>
+
+In the diagram above, the blue vector represents the sum of $\class{red}{\va{u}}$ and $\class{pink}{\va{v}}$.
+
+As such, the distributive property of the dot product can be understood geometrically as the projection of the sum of two vectors onto a third vector being the same as the sum of the projections of the two vectors onto the third vector.
+
+## A Better Definition
+
+Our dot product is defined as (Equation $\eqref{eq:dot-product}$):
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos(\theta) \tag{\ref{eq:dot-product}}
+\end{equation}
+$$
+
+This definition is great for understanding the geometric interpretation of the dot product, but it is quite tedious to calculate, with the trigonometric function and the magnitudes of the vectors.
+
+There's actually a very simple way to calculate the dot product of the two vectors, which can seem absolutely magical.
+Given two vectors $\va{v} = \mqty[v_1 \\ v_2 \\ v_3]$ and $\va{w} = \mqty[w_1 \\ w_2 \\ w_3]$, the dot product can be calculated as:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \mqty[\class{blue}{v_1} \\ \class{yellow}{v_2} \\ \class{green}{v_3}] \cdot \mqty[\class{blue}{w_1} \\ \class{yellow}{w_2} \\ \class{green}{w_3}] = \class{blue}{v_1w_1} + \class{yellow}{v_2w_2} + \class{green}{v_3w_3} \label{eq:dot-product-definition}
+\end{equation}
+$$
+
+In other words, the dot product of two vectors is simply the sum of the products of their corresponding components.
+
+While this definition is easier to calculate, it does not have an obvious geometric interpretation.
+However, it's a great way to use the dot product in practice, and can also be used to show many properties of the dot product very easily.
+
+In the future, we will show in multiple ways why this definition is equivalent to the geometric definition.
+
+## Summary and Next Steps
+
+In this page, we introduced the dot product of two vectors.
+
+Here are the key points to remember:
+
+- The dot product is a way to measure the "similarity" between two vectors.
+- The dot product can be defined geometrically as the product of the magnitudes of the vectors and the cosine of the angle between them:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos(\theta) \tag{\ref{eq:dot-product}}
+    \end{equation}
+    $$
+
+- The dot product is commutative: $\va{v} \cdot \va{w} = \va{w} \cdot \va{v}$.
+- The dot product is distributive: $(\va{u} + \va{v}) \cdot \va{w} = \va{u} \cdot \va{w} + \va{v} \cdot \va{w}$.
+- The dot product can also be defined as the sum of the products of the corresponding components of the vectors:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{w} = v_1w_1 + v_2w_2 + v_3w_3 \tag{\ref{eq:dot-product-definition}}
+    \end{equation}
+    $$
+
+In the next section, we will discuss some corollaries of the dot product.
+
+## Appendix
+
+### Generalizing the Dot Product: Inner Products
+
+This is a more abstract concept, hence it is placed in the appendix as an optional read.
+The dot product is only one way to multiply two vectors together.
+There might be other ways to multiply vectors that are not the dot product, especially in spaces that are not just Euclidean.
+
+One such generalization is the **inner product**; the dot product is simply a specific case of the inner product.
+
+An inner product, denoted by $\langle \va{v}, \va{w} \rangle$, can refer to any operation that takes two vectors and returns a scalar, satisfying the following properties:
+
+1. **Symmetry**: $\langle \va{v}, \va{w} \rangle = \langle \va{w}, \va{v} \rangle$.
+
+    (Side note: to be more precise, the inner product is actually **conjugate-symmetric** in complex spaces, meaning that if you invert the order of the vectors, you get the complex conjugate of the original inner product.)
+2. **Linearity** in the **FIRST** argument: $\langle c_1\va{v} + c_2\va{u}, \va{w} \rangle = c_1\langle \va{v}, \va{w} \rangle + c_2\langle \va{u}, \va{w} \rangle$.
+3. **Positive Definiteness**: $\langle \va{v}, \va{v} \rangle \geq 0$ and $\langle \va{v}, \va{v} \rangle = 0$ if and only if $\va{v} = \va{0}$.
+
+A good exercise would be to:
+
+1. Show that the dot product satisfies these properties.
+2. Think about why these properties would make sense for a product-like operation.
+
+If you have a vector space $V$ with an inner product $\langle \cdot, \cdot \rangle$, then $V$ is called an **inner product space**.
+
+### Cauchy Sequences and Hilbert Spaces
+
+Next, we need to discuss something known as a **Cauchy sequence**.
+This is really abstract; it really should be in a separate page, or an Appendix-Appendix, but it's still somewhat related to the dot product.
+Just know that it is completely normal to not understand this section.
+
+Suppose you have a sequence of vectors $\va{v}_1, \va{v}_2, \ldots$.
+If they are getting closer and closer to each other, then they are a Cauchy sequence.
+
+Conceptually, this is similar to the idea of a convergent sequence in calculus.
+A Cauchy sequence looks like ${1.1, 0.9, 1.01, 0.99, \ldots}$, where the terms are getting closer and closer to each other.
+A non-Cauchy sequence would be something like ${1, 2, 3, 4, \ldots}$, where the terms are not getting closer to each other.
+
+Cauchy sequences also include vector sequences. In order to formalize a Cauchy sequence, consider this:
+If terms get closer and closer to each other, you would be able to find two terms in the sequence that are arbitrarily close to each other.
+So, if you choose any distance, you get to a point in the sequence where all the terms after that point are within that distance of each other.
+
+Let's put it mathematically in a manner similar to how limits are defined in analysis:
+
+<Boxed>
+A sequence $\va{v}_1, \va{v}_2, \ldots$ is a Cauchy sequence if, for any $\epsilon > 0$, there exists an $N$ such that for all $n, m > N$, $\norm{\va{v}_n - \va{v}_m} < \epsilon$.
+</Boxed>
+
+Cauchy sequences approach a limit. If you have a set $M$, and every Cauchy sequence in $M$ converges to a point in $M$, then $M$ is called a **complete space**.
+An example of an incomplete space is the set of rational numbers $\mathbb{Q}$, where you can have a Cauchy sequence that converges to an irrational number like $\sqrt{2}$.
+Intuitively, a complete space like $M$ is a "continuous" space where you can't find any "holes"/missing points.
+There are ways to complete an incomplete space (similar to how you can remove discontinuities in a function with a limit), but that's a topic for another day.
+
+Let's put what we have learned together. If you have a vector space $V$ with an inner product $\langle \cdot, \cdot \rangle$, and $V$ is a complete space (every Cauchy sequence converges to a value inside $V$), then $V$ is called a **Hilbert space**.
+
+The basis of quantum mechanics is the Hilbert space, where vectors are wavefunctions and the inner product is the probability amplitude.

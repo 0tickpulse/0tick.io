@@ -1,0 +1,466 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Dot Product: Corollaries
+
+As we have previously seen, the dot product of two vectors has two main interpretations: the geometric interpretation and the algebraic interpretation.
+In this note, we will explore some things that can be derived from the dot product.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What is a Corollary?
+
+Before proceeding, let's define what a corollary is.
+
+Suppose we prove some theorem to be true.
+A corollary is a statement that can be derived from this theorem without much additional proof.
+
+In a sense, a corollary is essentially a "bonus" that comes with the theorem.
+
+A simple example is the Cosine rule.
+The Cosine rule states that for a triangle with sides $a$, $b$, and $c$, and angles $A$, $B$, and $C$, the following holds:
+
+$$
+\begin{equation}
+c^2 = a^2 + b^2 - 2ab\cos(C)
+\end{equation}
+$$
+
+From this, we can derive the Pythagorean theorem as a corollary by setting $C = 90^\circ$.
+
+## Orthogonality
+
+Recall the geometric interpretation of the dot product:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \class{green}{\text{length of the projection of } \va{v} \text{ onto } \va{w}} \times \class{blue}{\text{length of } \va{w}} \label{eq:dot-product-word}
+\end{equation}
+$$
+
+You can visualize this projection in real life by shining a light on top of the table, and then holding a pencil at an angle to the table.
+From this, you will see a shadow of the pencil on the table, which is the projection of the pencil onto the table.
+
+Two vectors are **orthogonal** if they are perpendicular to each other; that is, the angle between them is $90^\circ$.
+
+From the geometric interpretation of the dot product, we can see that if two vectors are orthogonal, then the projection of one vector onto the other is $0$.
+Try it in real life - hold a pencil directly perpendicular to the table, and shine a light on top of the table.
+You will see that there's no shadow of the pencil on the table.
+
+:::info Interesting Fact
+
+In certain places in the world, the sun is directly overhead at noon - this is called the **zenith**.
+When this happens, the day is known as a Lāhainā Noon, or a zero-shadow day.
+
+<figure>
+![Lāhainā Noon](https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Lahaina_Noon.jpg/340px-Lahaina_Noon.jpg)
+<figcaption>A level photographed during Lāhainā Noon in Hawaii. Image by [Wikipedia](https://en.wikipedia.org/wiki/Lahaina_Noon)</figcaption>
+</figure>
+
+This is just like how the dot product's projection works.
+
+:::
+
+Since this projection is $0$, the dot product of two orthogonal vectors is $0$.
+Thus, we have the following corollary:
+
+<Boxed>
+If $\va{v} \cdot \va{w} = 0$, then $\va{v}$ and $\va{w}$ are orthogonal.
+</Boxed>
+
+## Identifying Angle Between Vectors
+
+From the geometric interpretation of the dot product, we have the following formula:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos(\theta) \label{eq:dot-product}
+\end{equation}
+$$
+
+where $\theta$ is the angle between the two vectors.
+We can rearrange this formula to isolate $\theta$:
+
+$$
+\begin{equation}
+\cos(\theta) = \frac{\va{v} \cdot \va{w}}{\norm{\va{v}} \norm{\va{w}}}
+\end{equation}
+$$
+
+Recall that the dot product has a definition in terms of the components of the vectors:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n
+\end{equation}
+$$
+
+Thus, with all of this in mind, we can derive the following corollary:
+
+<Boxed>
+The angle $\theta$ between two vectors $\va{v}$ and $\va{w}$ is given by:
+
+$$
+\begin{equation}
+\cos(\theta) = \frac{\va{v} \cdot \va{w}}{\norm{\va{v}} \norm{\va{w}}} = \frac{v_1 w_1 + v_2 w_2 + \cdots + v_n w_n}{\sqrt{v_1^2 + v_2^2 + \cdots + v_n^2} \sqrt{w_1^2 + w_2^2 + \cdots + w_n^2}} \label{eq:angle-between-vectors}
+\end{equation}
+$$
+</Boxed>
+
+This is very useful when finding the angle between two vectors, especially in higher dimensions.
+
+## Dot Product of Two Identical Vectors
+
+Consider the dot product of a vector with itself:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{v} = ?
+\end{equation}
+$$
+
+We can interpret this in three ways:
+
+1. The dot product is the product of the magnitudes of the vectors and the cosine of the angle between them.
+    Since the angle between a vector and itself is $0$, the cosine of the angle is $1$.
+    Thus, the dot product of a vector with itself is the square of the magnitude of the vector:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{v} = \norm{\va{v}} \norm{\va{v}} \cos(0) = \norm{\va{v}}^2
+    \end{equation}
+    $$
+
+2. The dot product is the product of the projection of one vector onto the other and the magnitude of the other vector.
+    Since the projection of a vector onto itself is the vector itself (imagine projecting a pencil onto itself), the projection is the magnitude of the vector.
+    Thus, the dot product of a vector with itself is the square of the magnitude of the vector:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{v} = \text{length of the projection of } \va{v} \text{ onto } \va{v} \times \norm{\va{v}} = \norm{\va{v}}^2
+    \end{equation}
+    $$
+
+3. The dot product is the sum of the products of the components of the vectors.
+    Simply plugging in the components of the vector into the dot product formula, we have:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{v} = \mqty[\class{blue}{v_1} \\ \class{yellow}{v_2} \\ \vdots] \cdot \mqty[\class{blue}{v_1} \\ \class{yellow}{v_2} \\ \vdots] = \class{blue}{v_1^2} + \class{yellow}{v_2^2} + \cdots = \norm{\va{v}}^2
+    \end{equation}
+    $$
+
+From these three interpretations, we have the following corollary:
+
+<Boxed>
+The dot product of a vector with itself is the square of the magnitude of the vector:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{v} = \norm{\va{v}}^2 \label{eq:dot-product-identical}
+\end{equation}
+$$
+</Boxed>
+
+## Basis Vectors and the Kronecker Delta
+
+In 3D space, we can represent any vector as a linear combination of three unit vectors: $\ihatc$, $\jhatc$, and $\khatc$.
+Since they are linearly independent and span the space, they are valid basis vectors.
+
+These three basis vectors are *orthogonal* to each other, meaning they have an angle of $90^\circ$ between them.
+
+<CustomMathbox>
+    <MB.Cartesian>
+        <MB.Array id="ihat" items={2} channels={3} data={[[0, 0, 0], [1, 0, 0]]} />
+        <MB.Vector points="#ihat" color={color("blue")} end={true} />
+
+        <MB.Array id="jhat" items={2} channels={3} data={[[0, 0, 0], [0, 1, 0]]} />
+        <MB.Vector points="#jhat" color={color("yellow")} end={true} />
+
+        <MB.Array id="khat" items={2} channels={3} data={[[0, 0, 0], [0, 0, 1]]} />
+        <MB.Vector points="#khat" color={color("green")} end={true} />
+    </MB.Cartesian>
+</CustomMathbox>
+
+For the purposes of this discussion, let's rewrite the basis vectors $\ihatc$, $\jhatc$, and $\khatc$ as $\va{e}_1$, $\va{e}_2$, and $\va{e}_3$ respectively.
+This allows us to easily generalize to higher dimensions.
+We can make the following observations:
+
+1. The dot product of a basis vector with itself is the square of its magnitude, i.e. $1^2 = 1$.
+    Thus:
+
+    $$
+    \begin{equation}
+    \va{e}_i \cdot \va{e}_i = 1 \qfor i \in \mathbb{N}
+    \end{equation}
+    $$
+
+2. The dot product of two different basis vectors is $0$, since they are orthogonal to each other.
+    Thus:
+
+    $$
+    \begin{equation}
+    \va{e}_i \cdot \va{e}_j = 0 \qfor i \neq j
+    \end{equation}
+    $$
+
+Let's think about how we can combine these two observations.
+We can say, given two basis vectors $\va{e}_i$ and $\va{e}_j$:
+
+$$
+\begin{equation}
+\va{e}_i \cdot \va{e}_j = \begin{cases}
+1 & \qif i = j \\
+0 & \qif i \neq j
+\end{cases}
+\end{equation}
+$$
+
+There is a special symbol that represents the right-hand side of this equation: the **Kronecker Delta**, denoted by $\delta_{ij}$:
+
+<Boxed>
+$$
+\begin{equation}
+\va{e}_i \cdot \va{e}_j = \delta_{ij}
+\end{equation}
+$$
+</Boxed>
+
+This is a very useful tool when working with basis vectors and the dot product, and we will use this in the future.
+
+There are some very interesting properties of the Kronecker Delta, such as it being a **symmetric tensor**, which we will explore in the future.
+
+## Cauchy-Schwarz Inequality
+
+Hold the pencil at an angle to the table again, and shine a light on top of the table.
+
+Notice that the shadow (the projection) of the pencil is always shorter than the pencil itself.
+At best, the shadow is the same length as the pencil when the pencil is flat on the table (they are parallel).
+
+Let's see how we can write this more formally.
+Our observation has two parts:
+
+1. The shadow of the pencil is always less than or equal to the length of the pencil.
+    Turning this into a logical statement, we have:
+
+    $$
+    \begin{equation}
+    \text{length of the projection of } \va{v} \text{ onto } \va{w} \leq \norm{\va{v}}
+    \end{equation}
+    $$
+
+    This means that the *dot product* of two vectors is less than or equal to the product of their magnitudes:
+
+    $$
+    \begin{equation}
+    \abs{\va{v} \cdot \va{w}} \leq \norm{\va{v}} \norm{\va{w}} \label{eq:cauchy-schwarz-1}
+    \end{equation}
+    $$
+
+    Notice that we have taken the absolute value of the dot product, since we are only interested in the length of the projection, which is always positive.
+
+2. The shadow of the pencil is at most the length of the pencil when the pencil is flat on the table.
+    This means that the *dot product* of two vectors is equal to the product of their magnitudes when the vectors are parallel:
+
+    $$
+    \begin{equation}
+    \text{length of the projection of } \va{v} \text{ onto } \va{w} = \norm{\va{v}} \iff \va{v} \parallel \va{w}
+    \end{equation}
+    $$
+
+    This means that the *dot product* of two vectors is equal to the product of their magnitudes when the vectors are parallel.
+    In order for two vectors to be parallel, they must have the same direction. In other words, one vector must be a scalar multiple of the other.
+
+    Thus:
+
+    $$
+    \begin{equation}
+    \abs{\va{v} \cdot \va{w}} = \norm{\va{v}} \norm{\va{w}} \iff \va{v} = k\va{w} \text{ for some } k \in \mathbb{R} \label{eq:cauchy-schwarz-2}
+    \end{equation}
+    $$
+
+From Equations $\eqref{eq:cauchy-schwarz-1}$ and $\eqref{eq:cauchy-schwarz-2}$, we have the following corollary, known as the **Cauchy-Schwarz Inequality**:
+
+<Boxed>
+For any two vectors $\va{v}$ and $\va{w}$:
+
+$$
+\begin{align}
+\abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \tag{\ref{eq:cauchy-schwarz-1}} \\
+\abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = k\va{w} \text{ for some } k \in \mathbb{R} \tag{\ref{eq:cauchy-schwarz-2}}
+\end{align}
+$$
+
+</Boxed>
+
+Another way to interpret this theorem is that it is a description of how the cosine of an angle behaves.
+We have:
+
+1. $\abs{\cos(\theta)} \leq 1$ for any angle $\theta$.
+2. $\cos(\theta) = 1$ if and only if $\va{v}$ and $\va{w}$ are parallel, that is, $\theta = 0$.
+
+Then, if we just multiply both sides by the magnitudes of the vectors, we get the Cauchy-Schwarz Inequality:
+
+$$
+\begin{align}
+\abs{\cos(\theta)} \leq 1 &\implies& \abs{\cos(\theta)} \norm{\va{v}} \norm{\va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \nonumber \\
+&\implies& \abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \tag{\ref{eq:cauchy-schwarz-1}} \\
+\cos(0) = 1 &\implies& \cos(0) \norm{\va{v}} \norm{\va{w}} & = \norm{\va{v}} \norm{\va{w}} \nonumber \\
+&\implies& \text{(Second part of the Inequality)} \tag{\ref{eq:cauchy-schwarz-2}}
+\end{align}
+$$
+
+Beyond introductory linear algebra, the Cauchy-Schwarz Inequality can be further generalized to inner product spaces (some info is included in the Appendix of the previous page), and it has many applications in various fields.
+For instance, it is actually used to prove the Uncertainty Principle in quantum mechanics.
+
+## Vector Triangle Inequality
+
+This is a corollary of the Cauchy-Schwarz Inequality.
+Before proceeding, let's recall the triangle inequality for real numbers - the sum of the lengths of any two sides of a triangle is greater than the length of the third side.
+
+This is trivial when we think about it geometrically.
+Now, let's see how this can be extended to vectors.
+
+Suppose two vectors $\va{v}$ and $\va{w}$ are placed head-to-tail.
+Consider their sum $\va{v} + \va{w}$. If we draw all three vectors, we will get a triangle:
+
+<Mafs
+    viewBox={{
+        x: [0, 4],
+        y: [0, 4]
+    }}
+>
+    <Vector tail={[0, 0]} tip={[1, 2]} color={color("blue")} />
+    <LaTeX tex="\mathbf{\vec{v}}" at={lineLabel([0, 0], [1, 2], "left")} color={color("blue")} />
+    <Vector tail={[1, 2]} tip={[4, 3]} color={color("yellow")} />
+    <LaTeX tex="\mathbf{\vec{w}}" at={lineLabel([1, 2], [4, 3], "left")} color={color("yellow")} />
+    <Vector tail={[0, 0]} tip={[4, 3]} color={color("red")} />
+    <LaTeX tex="\mathbf{\vec{v} + \vec{w}}" at={lineLabel([0, 0], [4, 3], "right")} color={color("red")} />
+</Mafs>
+
+From the triangle inequality for real numbers, we have:
+
+<Boxed>
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}} \leq \norm{\va{v}} + \norm{\va{w}} \label{eq:vector-triangle-inequality}
+\end{equation}
+$$
+</Boxed>
+
+This is known as the **Vector Triangle Inequality**.
+
+### Proof from Cauchy-Schwarz Inequality
+
+To prove the Vector Triangle Inequality, we can start with the square of the magnitude of the sum of two vectors (which is the longer side of the triangle):
+
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}}^2 = (\va{v} + \va{w}) \cdot (\va{v} + \va{w})
+\end{equation}
+$$
+
+We can expand the right-hand side using the distributive property:
+
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}}^2 = \va{v} \cdot \va{v} + 2(\va{v} \cdot \va{w}) + \va{w} \cdot \va{w}
+\end{equation}
+$$
+
+Notice that we have a $2(\va{v} \cdot \va{w})$ term. By the Cauchy-Schwarz Inequality, we know that:
+
+$$
+\begin{equation}
+\abs{\va{v} \cdot \va{w}} \leq \norm{\va{v}} \norm{\va{w}} \tag{\ref{eq:cauchy-schwarz-1}}
+\end{equation}
+$$
+
+If we substitute this into the equation, we get that:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{v} + 2(\class{red}{\va{v} \cdot \va{w}}) + \va{w} \cdot \va{w} \leq \va{v} \cdot \va{v} + 2\class{red}{\norm{\va{v}} \norm{\va{w}}} + \va{w} \cdot \va{w}
+\end{equation}
+$$
+
+The right-hand side simplifies to:
+
+$$
+\begin{equation}
+\norm{\va{v}}^2 + 2\norm{\va{v}} \norm{\va{w}} + \norm{\va{w}}^2 = (\norm{\va{v}} + \norm{\va{w}})^2
+\end{equation}
+$$
+
+Thus, we have:
+
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}}^2 \leq (\norm{\va{v}} + \norm{\va{w}})^2
+\end{equation}
+$$
+
+Taking the principal square root of both sides, we get the Vector Triangle Inequality:
+
+$$
+\begin{equation}
+\norm{\va{v} + \va{w}} \leq \norm{\va{v}} + \norm{\va{w}}
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+In this page, we explored some corollaries of the dot product.
+We derived these corollaries from the geometric interpretation of the dot product, and they are very useful in various applications.
+
+Here are the key things to remember:
+
+1. If the dot product of two vectors is $0$, then the vectors are **orthogonal**.
+2. The angle between two vectors can be found using the dot product:
+
+    $$
+    \begin{equation}
+    \cos(\theta) = \frac{\va{v} \cdot \va{w}}{\norm{\va{v}} \norm{\va{w}}} \tag{\ref{eq:angle-between-vectors}}
+    \end{equation}
+    $$
+
+3. The dot product of a vector with itself is the square of the magnitude of the vector:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{v} = \norm{\va{v}}^2 \tag{\ref{eq:dot-product-identical}}
+    \end{equation}
+    $$
+
+4. The dot product of two vectors is less than or equal to the product of their magnitudes, and is equal to the product of their magnitudes when the vectors are parallel.
+    This is known as the **Cauchy-Schwarz Inequality**:
+
+    $$
+    \begin{align}
+    \abs{\va{v} \cdot \va{w}} &\leq \norm{\va{v}} \norm{\va{w}} \tag{\ref{eq:cauchy-schwarz-1}} \\
+    \abs{\va{v} \cdot \va{w}} &= \norm{\va{v}} \norm{\va{w}} \iff \va{v} = k\va{w} \text{ for some } k \in \mathbb{R} \tag{\ref{eq:cauchy-schwarz-2}}
+    \end{align}
+    $$
+
+5. The sum of the lengths of any two sides of a triangle is greater than the length of the third side:
+
+    $$
+    \begin{equation}
+    \norm{\va{v} + \va{w}} \leq \norm{\va{v}} + \norm{\va{w}} \tag{\ref{eq:vector-triangle-inequality}}
+    \end{equation}
+    $$
+
+In the next page, we will finally explain why the two definitions of the dot product are equivalent.

@@ -13,6 +13,8 @@ export type NonlinearTransformVisualizerProps = {
     xGridRange?: number[];
     yGridRange?: number[];
 
+    showGrid?: boolean;
+
     lerpedItems?: (lerpedFn: (x: number, y: number) => vec.Vector2) => React.ReactNode;
 
     onTChange?: (T: number) => void;
@@ -28,6 +30,8 @@ export default function NonlinearTransformationVisualizer({
 
     xGridRange = range(-10, 11, 1),
     yGridRange = range(-10, 11, 1),
+
+    showGrid = true,
 
     lerpedItems,
 
@@ -74,7 +78,7 @@ export default function NonlinearTransformationVisualizer({
             <div className="card__body">
                 <Mafs {...mafsProps}>
                     <Coordinates.Cartesian />
-                    {xGridRange.map((x) => {
+                    {showGrid && xGridRange.map((x) => {
                         return (
                             <Fragment key={x}>
                                 <Plot.Parametric
@@ -89,7 +93,7 @@ export default function NonlinearTransformationVisualizer({
                             </Fragment>
                         );
                     })}
-                    {yGridRange.map((y) => {
+                    {showGrid && yGridRange.map((y) => {
                         return (
                             <Fragment key={y}>
                                 <Plot.Parametric

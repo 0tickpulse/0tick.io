@@ -1,0 +1,434 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import range from "lodash/range"
+
+# Linear Transformations
+
+Linear transformations are the bread and butter of linear algebra.
+They are functions that map vectors to vectors in a way that preserves the structure of the vector space.
+In this section, we will explore the properties of linear transformations and how they can be represented using matrices.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Thinking about Transformations
+
+For the purposes of this section, we will not consider the formal definition of a linear transformation, because that will hinder our understanding.
+Instead, we will approach this from a more intuitive perspective.
+
+The term "linear transformation" has two parts: "linear" and "transformation".
+We will first focus on what a transformation is, and then we will discuss what it means for a transformation to be linear.
+
+A transformation is essentially just a function; it takes an input and produces an output.
+These terms are used interchangeably in this context, but by convention, we use "transformation" here.
+The difference between a function that one would typically encounter and a linear transformation is that these transformations act on vectors.
+
+A function can be notated like $f(x)$, where $x$ is the input. Likewise, a transformation can be notated like $T(\va{v})$, where $\va{v}$ is the input vector.
+
+Just like functions, transformations have various components that define them, such as their domain, codomain, and image.
+For the sake of simplicity, we won't delve into these details, but it's important to keep in mind that there is a formal underpinning to these concepts.
+
+### Visualizing a Transformation
+
+One way to conceptualize a transformation is that they take a vector and *move* it to a different location in space.
+Below is a visualization of a transformation that takes a vector $\va{v}$ and moves it to a new location $T(\va{v})$.
+
+<NonlinearTransformationVisualizer
+    showGrid={false}
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    lerpedItems={(lerpFn) => (
+        <Vector tip={lerpFn(2, 2)} color={color("pink")} />
+    )}
+/>
+
+Doing this for multiple vectors will give us a sense of how the transformation behaves on the entire space:
+
+<NonlinearTransformationVisualizer
+    showGrid={false}
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    lerpedItems={(lerpFn) => (
+        range(-4, 5, 1).map((x) => (
+            range(-4, 5, 1).map((y) => (
+                <Vector tip={lerpFn(x, y)} color={
+                    gradient(
+                        // diagonal gradient
+                        color("red"),
+                        color("pink"),
+                        Math.sqrt((x + 4) ** 2 + (y + 4) ** 2) / (5 * Math.sqrt(2))
+                    )
+                } />
+            ))
+        ))
+    )}
+/>
+
+Next, we can replace each vector with a point to make things clearer.
+
+<NonlinearTransformationVisualizer
+    showGrid={false}
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+    lerpedItems={(lerpFn) => (
+        range(-4, 5, 1).map((x) => (
+            range(-4, 5, 1).map((y) => (
+                <Point x={lerpFn(x, y)[0]} y={lerpFn(x, y)[1]} color={
+                    gradient(
+                        // diagonal gradient
+                        color("red"),
+                        color("pink"),
+                        Math.sqrt((x + 4) ** 2 + (y + 4) ** 2) / (5 * Math.sqrt(2))
+                    )
+                } />
+            ))
+        ))
+    )}
+/>
+
+Sometimes, it's beneficial to visualize the transformation acting on not a set of vectors, but the grid itself:
+
+<NonlinearTransformationVisualizer
+    showGrid={true}
+    fn={(x, y) => [x + Math.sin(y), y + Math.sin(x)]}
+/>
+
+### What Makes a Transformation Linear?
+
+There is a formal definition of what it means for a transformation to be linear based on two properties that it must satisfy (additivity and homogeneity).
+Graphically, these properties correspond to the transformation preserving the structure of the space.
+
+Intuitively, a transformation is linear if it doesn't twist or distort the space. That is, **every line remains a line** after the transformation, and **the origin remains fixed at $(0, 0)$**.
+
+In the visualization below, the left side shows a linear transformation, and the right side shows a non-linear transformation.
+
+<div className="card">
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <NonlinearTransformationVisualizer
+                    showGrid={true}
+                    fn={(x, y) => [x + y, y]}
+                />
+            </div>
+            <div className="col">
+                <NonlinearTransformationVisualizer
+                    showGrid={true}
+                    fn={(x, y) => [x - (y ** 2), y - (x ** 2)]}
+                />
+            </div>
+        </div>
+    </div>
+</div>
+
+Here's another example. Initially, this looks like a linear transformation, but it's not:
+
+<NonlinearTransformationVisualizer
+    showGrid={true}
+    fn={(x, y) => [x + Math.sin(x), y + Math.sin(y)]}
+/>
+
+From this visualization, the lines remain lines and the origin remains fixed, so it seems like a linear transformation.
+However, this is just because we drew *some* lines, not all of them.
+If we draw a diagonal line, we can see that the transformation twists the line:
+
+<NonlinearTransformationVisualizer
+    showGrid={true}
+    fn={(x, y) => [x + Math.sin(x), y + Math.sin(y)]}
+    lerpedItems={(lerpFn) => (
+        <Plot.Parametric
+            xy={(t) => lerpFn(t, t / 2)}
+            color={color("yellow")}
+            t={[-8, 8]}
+        />
+    )}
+/>
+
+In order to account for *all* lines in the space, we need to add another condition: that the gridlines remain **parallel and evenly spaced**.
+
+Putting everything together, we can say that:
+
+<Boxed>
+A transformation $T$ is **linear** if it satisfies the following properties when acting on the space:
+
+1. Every line remains a line.
+2. The origin remains fixed at $(0, 0)$.
+3. The gridlines remain parallel and evenly spaced.
+
+</Boxed>
+
+In linear algebra, we often restrict our attention to linear transformations because they are easier to work with and have nice properties that we can exploit.
+After all, linear transformations and linear algebra share the term "linear" for a reason.
+
+## Representing Linear Transformations
+
+Recall that a linear transformation is a function that maps vectors to vectors in a way that preserves the structure of the vector space.
+We deduced that gridlines must remain parallel and evenly spaced for a transformation to be linear.
+
+A consequence of this is that we can describe a linear transformation by specifying where it sends the basis vectors.
+
+Consider a vector $\va{v} = 2\ihatc + 1\jhatc$.
+As previously mentioned, $\va{v}$ is a linear combination of the basis vectors $\ihatc$ and $\jhatc$ with the coefficients $2$ and $1$ respectively.
+
+When we transform the basis vectors $\ihatc$ and $\jhatc$ into new vectors $T(\ihatc)$ and $T(\jhatc)$, we can express $\va{v}$ as a linear combination of $T(\ihatc)$ and $T(\jhatc)$, but with the same coefficients $2$ and $1$.
+This is best illustrated with a diagram.
+
+First, let's visualize the basis vectors $\ihatc$ and $\jhatc$ and how they are transformed by a linear transformation $T$:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [1, -1], jhat: [2, 1] }}
+/>
+
+In our transformation, $\ihatc$ is sent to $\mqty[1 \\ -1]$ and $\jhatc$ is sent to $\mqty[2 \\ 1]$.
+
+Let's add our vector $\va{v}$ to the visualization:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [1, -1], jhat: [2, 1] }}
+    transformedItems={
+        <>
+            <Vector tip={[2, 1]} color={color("red")} />
+            <Vector tip={[2, 0]} color={color("blue")} opacity={.5} />
+            <LaTeX tex="2\mathbf{\hat{i}}" at={[1, -0.3]} />
+            <Vector tail={[2, 0]} tip={[2, 1]} color={color("yellow")} opacity={.5} />
+            <LaTeX tex="1\mathbf{\hat{j}}" at={[2.3, 0.5]} />
+        </>
+    }
+/>
+
+Notice that before the transformation, $\va{v}$ can be expressed as two $\ihatc$ vectors and one $\jhatc$ vector.
+After the transformation, $\va{v}$ can *still* be expressed as two $T(\ihatc)$ vectors and one $T(\jhatc)$ vector.
+
+If we write it out mathematically, we have:
+
+$$
+\begin{align}
+\va{v} &= 2\class{blue}{\mqty[1 \\ 0]} + 1\class{yellow}{\mqty[2 \\ 1]} \\
+T(\va{v}) &= 2\class{blue}{\mqty[1 \\ -1]} + 1\class{yellow}{\mqty[2 \\ 1]}
+\end{align}
+$$
+
+Essentially, when transforming a vector, we replace the basis vectors with their transformed counterparts and keep the coefficients the same.
+
+In a more general case, suppose the vector is $\va{v} = x\ihatc + y\jhatc$. Then:
+
+$$
+\begin{align}
+\va{v} &= x\class{blue}{\mqty[1 \\ 0]} + y\class{yellow}{\mqty[0 \\ 1]} \\
+T(\va{v}) &= x\class{blue}{\mqty[1 \\ -1]} + y\class{yellow}{\mqty[2 \\ 1]}
+\end{align}
+$$
+
+### Introducing The Matrix
+
+To sum up the previous section, we can represent a linear transformation by specifying where it sends the basis vectors.
+
+We looked at an example where $\ihatc$ was sent to $\mqty[1 \\ -1]$ and $\jhatc$ was sent to $\mqty[2 \\ 1]$.
+It is often convenient to represent these vectors as columns in a grid, known as a **matrix**:
+
+$$
+\begin{split}
+{} \\
+{} \\
+\underbrace{\mqty[ \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\class{blue}{1}} & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\class{yellow}{2}} \\ \class{blue}{-1} & \class{yellow}{1}]}_{\text{Matrix}} \\
+\end{split}
+$$
+
+This matrix has two columns, one representing the transformed $\ihatc$ and the other representing the transformed $\jhatc$.
+
+If we were to apply this transformation to a vector $\va{v} = \mqty[x \\ y]$, we would apply each column of the matrix to the corresponding component of $\va{v}$:
+
+$$
+\begin{split}
+{} \\ {} \\
+T &= \mqty[ \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\class{blue}{1}} & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\class{yellow}{2}} \\ \class{blue}{-1} & \class{yellow}{1}]
+    \qquad \va{v} = \mqty[3 \\ 2] \\
+T(\va{v}) &= 3 \class{blue}{\mqty[1 \\ -1]} + 2 \class{yellow}{\mqty[2 \\ 1]} \\
+&= \mqty[3 \\ -3] + \mqty[4 \\ 2] = \mqty[7 \\ -1]
+\end{split}
+$$
+
+When we apply the transformation to a vector, we often place the matrix in front of the vector in a **matrix-vector product**:
+
+$$
+\begin{equation}
+\mqty[1 & 2 \\ -1 & 1] \mqty[3 \\ 2] = \mqty[7 \\ -1]
+\end{equation}
+$$
+
+Finally, let's generalize this process. Given a matrix $\vb{A} = \mqty[a & b \\ c & d]$ and a vector $\mqty[x \\ y]$, the matrix-vector product is:
+
+$$
+\begin{equation}
+\begin{split}
+{} \\ {} \\
+\vb{A} &= \mqty[ \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\mathrlap{\class{blue}{a}}\phantom{0}} & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\mathrlap{\class{yellow}{b}}\phantom{0}} \\ \class{blue}{c} & \class{yellow}{d}]
+    \qquad \va{v} = \mqty[x \\ y] \\
+\vb{A}\va{v} &= \mqty[\class{blue}{a} & \class{yellow}{b} \\ \class{blue}{c} & \class{yellow}{d}] \mqty[x \\ y] = x \class{blue}{\mqty[a \\ c]} + y \class{yellow}{\mqty[b \\ d]} = \mqty[\class{blue}{a}x + \class{yellow}{b}y \\ \class{blue}{c}x + \class{yellow}{d}y]
+\end{split}
+\end{equation}
+$$
+
+The last equation is the general form of a matrix-vector product. Let's write it again for emphasis:
+
+<Boxed>
+$$
+\begin{equation}
+\vb{A}\va{v} = \mqty[\class{blue}{a} & \class{yellow}{b} \\ \class{blue}{c} & \class{yellow}{d}] \mqty[x \\ y] = x \class{blue}{\mqty[a \\ c]} + y \class{yellow}{\mqty[b \\ d]} = \mqty[\class{blue}{a}x + \class{yellow}{b}y \\ \class{blue}{c}x + \class{yellow}{d}y]
+\end{equation}
+$$
+</Boxed>
+
+## Geometric Transformations
+
+In the previous section, we discussed how linear transformations can be represented by matrices.
+Let's explore some common geometric transformations and how they can be represented using matrices.
+
+Remember that the matrix $\vb{A} = \mqty[a & b \\ c & d]$ represents a transformation that sends $\ihatc$ to $\mqty[a \\ c]$ and $\jhatc$ to $\mqty[b \\ d]$.
+
+### Scaling
+
+A scaling transformation stretches or compresses the space along the axes.
+For example, consider a scaling transformation that stretches the $x$-axis by a factor of $2$ and compresses the $y$-axis by a factor of $\frac{1}{2}$.
+
+Looking at where it takes the basis vectors, we have:
+
+$$
+\begin{align}
+\ihatc &\to \mqty[2 \\ 0] \qquad \jhatc \to \mqty[0 \\ 1/2] \\
+\vb{A} &= \mqty[2 & 0 \\ 0 & 1/2]
+\end{align}
+$$
+
+The visualization below shows how this transformation acts on the space:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [2, 0], jhat: [0, 0.5] }}
+/>
+
+In a more general case, a scaling transformation that stretches the $x$-axis by a factor of $s$ and the $y$-axis by a factor of $t$ can be represented by the matrix:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[s & 0 \\ 0 & t]
+\end{equation}
+$$
+
+If any of the factors are negative, the space is reflected across the corresponding axis.
+
+### Rotation
+
+A rotation transformation rotates the space by a certain angle.
+For example, consider a rotation transformation that rotates the space by $\theta$ counterclockwise.
+
+This one is a bit trickier to write, so let's draw it out first.
+The diagram below shows the basis vectors $\ihatc$ and $\jhatc$ and how they are rotated by an angle $\theta$:
+
+<Mafs viewBox={{ y: [-1, 1] }}>
+    <Coordinates.Cartesian />
+    <Vector tip={[1, 0]} color={color("blue")} style="dashed" />
+    <Vector tip={[0, 1]} color={color("yellow")} style="dashed" />
+
+    <Angle
+        fromRad={0}
+        toRad={Math.PI / 5}
+        at={[0, 0]}
+        radius={0.2}
+        label="\theta"
+    />
+    <Angle
+        fromRad={Math.PI / 2}
+        toRad={Math.PI / 5 + Math.PI / 2}
+        at={[0, 0]}
+        radius={0.2}
+        label="\theta"
+    />
+
+    <Transform rotate={Math.PI / 5}>
+        <Vector tip={[1, 0]} color={color("blue")} />
+        <Vector tip={[0, 1]} color={color("yellow")} />
+    </Transform>
+    <Line.Segment
+        point1={[Math.cos(Math.PI / 5), 0]}
+        point2={[Math.cos(Math.PI / 5), Math.sin(Math.PI / 5)]}
+        style="dashed"
+    />
+    <Line.Segment
+        point1={[0, Math.cos(Math.PI / 5)]}
+        point2={[-Math.sin(Math.PI / 5), Math.cos(Math.PI / 5)]}
+        style="dashed"
+    />
+</Mafs>
+
+Looking at where it takes the basis vectors, we have:
+
+$$
+\begin{align}
+\ihatc &\to \mqty[\cos{\theta} \\ \sin{\theta}] \qquad \jhatc \to \mqty[-\sin{\theta} \\ \cos{\theta}] \\
+\vb{A} &= \mqty[\cos{\theta} & -\sin{\theta} \\ \sin{\theta} & \cos{\theta}]
+\end{align}
+$$
+
+Notice that the rotated $\jhatc$ vector takes a negative sign in front of the $\sin{\theta}$ term.
+
+### Shearing
+
+A shearing transformation skews the space along the axes.
+When this happens, one of the basis vectors remains fixed, and the other is shifted along the fixed vector.
+
+For example, consider a shearing transformation that shifts the $y$-axis by a factor of $2$ along the $x$-axis.
+
+A visualization of this transformation is shown below:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [1, 0], jhat: [2, 1] }}
+/>
+
+Looking at where it takes the basis vectors, we have:
+
+$$
+\begin{align}
+\ihatc &\to \mqty[1 \\ 0] \qquad \jhatc \to \mqty[2 \\ 1] \\
+\vb{A} &= \mqty[1 & 2 \\ 0 & 1]
+\end{align}
+$$
+
+### No Transformation (Identity Matrix)
+
+Finally, let's consider a transformation that doesn't do anything.
+
+In terms of the basis vectors, this transformation sends $\ihatc$ to $\ihatc$ and $\jhatc$ to $\jhatc$.
+In other words, the basis vectors remain fixed.
+As such, the matrix representing this transformation can be written as:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[\class{blue}{1} & \class{yellow}{0} \\ \class{blue}{0} & \class{yellow}{1}]
+\end{equation}
+$$
+
+This matrix has a special name: the **identity matrix**, and it is often denoted by $\vb{I}$.
+Since this is in two dimensions, we can also add a subscript to denote the dimensionality:
+
+$$
+\begin{equation}
+\vb{I}_2 = \mqty[1 & 0 \\ 0 & 1]
+\end{equation}
+$$
+
+This can be generalized to higher dimensions by simply adding more rows and columns of $1$'s along the diagonal:
+
+$$
+\begin{equation}
+\vb{I}_n = \mqty[1 & 0 & \cdots & 0 \\ 0 & 1 & \cdots & 0 \\ \vdots & \vdots & \ddots & \vdots \\ 0 & 0 & \cdots & 1]
+\end{equation}
+$$

@@ -26,7 +26,7 @@ export function MathEquation({ children, inline = false, ...options }: MathEquat
         ...newOptions.tex,
     });
     const output = new SVG(newOptions.svg || undefined);
-    // co`nst output = new CHTML(newOptions.chtml || undefined);
+    // const output = new CHTML(newOptions.chtml || undefined);
     try {
         const doc = mathjax.document("", { InputJax: input, OutputJax: output });
         const domNode: HTMLElement = doc.convert(children.toString(), {

@@ -34,8 +34,8 @@ export default function LinearTransformationVisualizer({
 }: LinearTransformationVisualizerProps) {
     const { time, start, stop } = useStopwatch({ endTime: 2 });
     const T = easeInOutCubic(time, 0, 1, 2);
-    const ihat = vec.lerp(from.ihat, to.ihat, T);
-    const jhat = vec.lerp(from.jhat, to.jhat, T);
+    const ihat = vec.dist(from.ihat, to.ihat) === 0 ? from.ihat : vec.lerp(from.ihat, to.ihat, T);
+    const jhat = vec.dist(from.jhat, to.jhat) === 0 ? from.jhat : vec.lerp(from.jhat, to.jhat, T);
 
     const [hasStarted, setHasStarted] = useState(false);
     const [hasTouched, setHasTouched] = useState(false);
