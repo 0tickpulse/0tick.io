@@ -131,4 +131,43 @@ The transformation $T: \mathbb{R}^n \to \mathbb{R}^m$ is linear if it satisfies 
 A good exercise is to consider our geometric understanding of linear transformations and see how it fits with this formal definition *without getting lost in the notation*.
 Are the properties of additivity and homogeneity consistent with our understanding of how linear transformations behave geometrically (preserving the origin and lines)?
 
+### Example Problem: Verifying Linearity of Composite Transformations
+
+> Let $T: \mathbb{R}^2 \to \mathbb{R}^2$ and $S: \mathbb{R}^2 \to \mathbb{R}^2$ be two linear transformations.
+> Prove that the composite transformation $S \circ T$ is also a linear transformation.
+
+To prove that $S \circ T$ is a linear transformation, we need to show that it satisfies the properties of additivity and homogeneity.
+
+1. **Additivity**: Let $\va{v}, \va{w} \in \mathbb{R}^2$. Then:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    (S \circ T)(\va{v} + \va{w}) &= S(T(\va{v} + \va{w})) \\
+    &= S(T(\va{v}) + T(\va{w})) \\
+    &= S(T(\va{v})) + S(T(\va{w})) \\
+    &= (S \circ T)(\va{v}) + (S \circ T)(\va{w})
+    \end{split}
+    \end{equation}
+    $$
+
+    Hence, $S \circ T$ satisfies the additivity property.
+
+2. **Homogeneity**: Let $\alpha \in \mathbb{R}$ and $\va{v} \in \mathbb{R}^2$. Then:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    (S \circ T)(\alpha \va{v}) &= S(T(\alpha \va{v})) \\
+    &= S(\alpha T(\va{v})) \\
+    &= \alpha S(T(\va{v})) \\
+    &= \alpha (S \circ T)(\va{v})
+    \end{split}
+    \end{equation}
+    $$
+
+    Hence, $S \circ T$ satisfies the homogeneity property.
+
+Therefore, $S \circ T$ is a linear transformation. $\blacksquare$
+
 ## Linear Transformations of Different Sets
