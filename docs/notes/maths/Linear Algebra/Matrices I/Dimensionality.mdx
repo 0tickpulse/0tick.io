@@ -1,0 +1,266 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import range from "lodash/range"
+
+# Dimensionality
+
+Previously, we introduced the concept of linear transformations.
+We ran through a few examples in 2D to aid our understanding.
+In this section, we will extend our discussion to different dimensions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Linear Transformations in 3D
+
+In 2D, we had linear transformations that mapped vectors from 2D to 2D.
+Symbolically, we explored transformations of the form $T: \mathbb{R}^2 \to \mathbb{R}^2$.
+
+We visualized these transformations by observing how it transformed the coordinate grid in 2D:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [2, 0], jhat: [0, 0.5] }}
+/>
+
+It's important to note that in this visualization, each point on the grid is simply a condensed representation of a vector with the tip at that point.
+The transformation is applied to each of these vectors, and we visualize that by observing how they physically move.
+
+2D linear transformations can be represented by a $2 \times 2$ matrix, where each column represents where the basis vectors $\ihatc$ and $\jhatc$ are mapped to.
+The linear transformation in the above visualization can be represented by the following matrix:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[2 & 0 \\ 0 & 0.5]
+\end{equation}
+$$
+
+In 3D, things are very similar, except we are now working with vectors in $\mathbb{R}^3$.
+
+| 2D | 3D |
+|---|---|
+| $\mathbb{R}^2$ | $\mathbb{R}^3$ |
+| $\ihatc, \jhatc$ | $\ihatc, \jhatc, \khatc$ |
+| $2 \times 2$ matrix | $3 \times 3$ matrix |
+
+Below is a visualization of a 3D linear transformation. They're notably harder to visualize, but we can still observe how the transformation affects the coordinate grid:
+
+<LinearTransformationVisualizer3D
+    to={{ ihat: [2, 0, 0.5], jhat: [1, 0.5, 0], khat: [0.5, 0, 1] }}
+/>
+
+In this transformation, the basis vectors $\ihatc, \jhatc, \khatc$ are mapped to the vectors $\mqty[2 \\ 0 \\ 0.5], \mqty[1 \\ 0.5 \\ 0], \mqty[0.5 \\ 0 \\ 1]$ respectively.
+Hence, we can represent this transformation with the following $3 \times 3$ matrix:
+
+$$
+\begin{equation}
+\begin{split}
+{} \\ {} \\
+\vb{A} = \mqty[
+    \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\mathrlap{\class{blue}{2}}\phantom{0}}
+        & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\class{yellow}{1}}
+        & \overset{\smash{\displaystyle \overset{T(\khatc)}{\downarrow}}}{\class{green}{0.5}}
+        \\
+    \class{blue}{0} & \class{yellow}{0.5} & \class{green}{0} \\
+    \class{blue}{0.5} & \class{yellow}{0} & \class{green}{1}
+]
+\end{split}
+\end{equation}
+$$
+
+Recall that after a linear transformation, a vector $\va{v}$ is mapped to a new vector $T(\va{v})$ such that the coefficients of the basis vectors remain the same.
+This is the same for 3D linear transformations:
+
+$$
+\begin{align}
+{} \nonumber \\ {} \nonumber \\
+\vb{A} &= \mqty[
+    \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\class{blue}{2}}
+        & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\class{yellow}{1}}
+        & \overset{\smash{\displaystyle \overset{T(\khatc)}{\downarrow}}}{\class{green}{0.5}}
+        \\
+    \class{blue}{0} & \class{yellow}{0.5} & \class{green}{0} \\
+    \class{blue}{0.5} & \class{yellow}{0} & \class{green}{1}
+] \\
+\va{v} &= x\ihatc + y\jhatc + z\khatc \\
+\vb{A}\va{v} &= x\class{blue}{\mqty[2 \\ 0 \\ 0.5]} + y\class{yellow}{\mqty[1 \\ 0.5 \\ 0]} + z\class{green}{\mqty[0.5 \\ 0 \\ 1]}
+\end{align}
+$$
+
+Generalizing, if we have *any* $3 \times 3$ matrix $\vb{A}$, the matrix-vector product looks like this:
+
+$$
+\begin{align}
+{} \nonumber \\ {} \nonumber \\
+\vb{A} &= \mqty[
+    \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\mathrlap{\class{blue}{a}}\phantom{0}}
+        & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\mathrlap{\class{yellow}{b}}\phantom{0}}
+        & \overset{\smash{\displaystyle \overset{T(\khatc)}{\downarrow}}}{\mathrlap{\class{green}{c}}\phantom{0}}
+        \\
+    \class{blue}{d} & \class{yellow}{e} & \class{green}{f} \\
+    \class{blue}{g} & \class{yellow}{h} & \class{green}{i}
+] \\
+\va{v} &= x\ihatc + y\jhatc + z\khatc \\
+\vb{A}\va{v} &= x\class{blue}{\mqty[a \\ d \\ g]} + y\class{yellow}{\mqty[b \\ e \\ h]} + z\class{green}{\mqty[c \\ f \\ i]} \nonumber \\
+&= \mqty[\class{blue}{a}x + \class{yellow}{b}y + \class{green}{c}z \\ \class{blue}{d}x + \class{yellow}{e}y + \class{green}{f}z \\ \class{blue}{g}x + \class{yellow}{h}y + \class{green}{i}z]
+\end{align}
+$$
+
+## Linear Transformations Between Dimensions
+
+The linear transformations that we've discussed so far have been between the same dimensions.
+This means that if you give the transformation a 2D vector, it will output a 2D vector, and likewise for 3D vectors.
+This does not have to be the case - we can have linear transformations that map vectors from one dimension to another.
+(In an even more general sense, we can have linear transformations that map vectors from any vector space to another.)
+
+Consider a linear transformation that takes a 2D vector and outputs a 3D vector:
+
+$$
+\begin{equation}
+\va{v} = \mqty[1 \\ 2] \implies T(\va{v}) = \mqty[1 \\ 2 \\ 3]
+\end{equation}
+$$
+
+In a visual sense, this transformation can be thought of as taking a 2D vector and "lifting" it into 3D space.
+When applying transformations like this to the coordinate grid, it's less helpful to think of "moving" vectors.
+Instead, let's place a 2D grid and a 3D grid side by side, and observe the basis vectors on both:
+
+<div className="card">
+    <div className="card__body">
+        <div className="row row--no-gutters">
+            <div className="col col--5">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    <Vector tip={[1, 0]} color={color("blue")} />
+                    <LaTeX tex="\mathbf{\hat{i}}" at={[1.3, 0]} color={color("blue")} />
+                    <Vector tip={[0, 1]} color={color("yellow")} />
+                    <LaTeX tex="\mathbf{\hat{j}}" at={[0, 1.3]} color={color("yellow")} />
+                </Mafs>
+            </div>
+            <div className="col col--2" style={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <MathEquation>{"\\xrightarrow{T(\\va{v})}"}</MathEquation>
+            </div>
+            <div className="col col--5">
+                <CustomMathbox>
+                    <MB.Cartesian scale={[0.15, 0.15, 0.15]}>
+                        <MB.Axis axis="x" range={[-10, 10]} />
+                        <MB.Axis axis="y" range={[-10, 10]} />
+                        <MB.Axis axis="z" range={[-10, 10]} />
+
+                        <MB.Array id="ihat" channels={3} items={2} data={[[0, 0, 0], [0, -1, 1]]} />
+                        <MB.Vector points="#ihat" color={color("blue")} width={5} end={true} />
+                        <MB.Array id="jhat" channels={3} items={2} data={[[0, 0, 0], [-1, 2, 0.5]]} />
+                        <MB.Vector points="#jhat" color={color("yellow")} width={5} end={true} />
+
+                        <MB.Transform matrix={[
+                            0, -1, 0, 0,
+                            -1, 2, 0, 0,
+                            1, 0.5, 1, 0,
+                            0, 0, 0, 1
+                        ]}>
+                            <MB.Grid axes="xy" rangeX={[-10, 10]} rangeY={[-10, 10]} />
+                        </MB.Transform>
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+        </div>
+    </div>
+</div>
+
+Alternatively, we can place a copy of the 2D grid on the $xy$-plane of the 3D grid so that we can observe the transformation more clearly:
+
+<LinearTransformationVisualizer3D
+    from={{ ihat: [1, 0, 0], jhat: [0, 1, 0], khat: [0, 0, 0] }}
+    to={{ ihat: [0, -1, 0], jhat: [-1, 2, 0.5], khat: [0, 0, 0] }}
+    showGrid={false}
+>
+    <MB.Grid
+        axes="xy"
+        rangeX={[-10, 10]}
+        rangeY={[-10, 10]}
+    />
+</LinearTransformationVisualizer3D>
+
+We can go the other way as well: a linear transformation that takes a 3D vector and outputs a 2D vector:
+
+<LinearTransformationVisualizer3D
+    to={{ ihat: [1, 1, 0], jhat: [-1, 0, 0], khat: [0, -2, 0] }}
+/>
+
+This transformation can be thought of as "flattening" a 3D vector into 2D space.
+These flattening and lifting transformations are common in computational stuff.
+For instance, in games and graphics, we have a virtual 3D world that we need to project onto a 2D screen.
+This is done by a transformation that takes 3D vectors and outputs 2D vectors.
+This is also why GPUs can be thought of as specialized hardware for performing matrix and vector operations.
+
+### Nonsquare Matrix Representation
+
+If we want to represent the transformation in the previous example with a matrix, we will do what we did before: place the coordinates of each basis vector in a column.
+In the transformation, $\ihatc$ is mapped to $\mqty[0 \\ -1 \\ 0]$ and $\jhatc$ is mapped to $\mqty[-1 \\ 2 \\ 0.5]$.
+Thus, the matrix representation of this transformation is:
+
+$$
+\begin{align}
+{} \nonumber \\ {} \nonumber \\
+\vb{A} = \mqty[
+    \overset{\smash{\displaystyle \overset{T(\ihatc)}{\downarrow}}}{\class{blue}{0}}
+        & \overset{\smash{\displaystyle \overset{T(\jhatc)}{\downarrow}}}{\class{yellow}{-1}}
+        \\
+    \class{blue}{-1} & \class{yellow}{2} \\
+    \class{blue}{0} & \class{yellow}{0.5}
+]
+\end{align}
+$$
+
+Notice that our matrix is no longer square. Instead, it has $3$ rows and $2$ columns.
+Thus, we call it a $3 \times 2$ matrix, corresponding to a transformation from $\mathbb{R}^2$ to $\mathbb{R}^3$.
+
+## Transformation Compatibility
+
+When we have a linear transformation that maps vectors from one dimension to another, we need to ensure that the dimensions of the matrix match the dimensions of the input and output vectors.
+
+For example, if we have a linear transformation mapping from $\mathbb{R}^2$ to $\mathbb{R}^3$, the vector input must have $2$ components:
+
+$$
+\begin{equation}
+T(\va{v}) = \mqty[\class{blue}{1} & \class{yellow}{2} \\ \class{blue}{3} & \class{yellow}{4} \\ \class{blue}{5} & \class{yellow}{6}] \mqty[\class{blue}{x} \\ \class{yellow}{y}]
+\end{equation}
+$$
+
+More generally, if we have a linear transformation mapping from $\mathbb{R}^n$ to $\mathbb{R}^m$, the matrix representing the transformation must have $m$ rows and $n$ columns:
+
+- Each column represents a transformed basis vector. Since the input vector has $n$ components, the matrix must have $n$ basis vectors, so it must have $n$ columns.
+- Each row represents one component of the transformed basis vector. The output vector has $m$ components, so the matrix must have $m$ rows.
+
+The input to this transformation must have $n$ components, and the output will have $m$ components:
+
+$$
+\begin{equation}
+\overset{\displaystyle \overset{\mathbb{R}^n \mapsto \mathbb{R}^m}{\downarrow}}{T(\va{v})} = \underset{\displaystyle \underset{m \times n}{\uparrow}}{\vb{A}} \, \underset{\displaystyle \underset{n \times 1}{\uparrow}}{\va{v}}
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+In this section, we extended our discussion of linear transformations to different dimensions.
+
+Here are the key points to remember:
+
+- Linear transformations can map vectors from one dimension to another.
+- The matrix representation of a linear transformation must have dimensions that match the input and output vectors.
+
+    More specifically, if we have a linear transformation mapping from $\mathbb{R}^n$ to $\mathbb{R}^m$, the matrix representing the transformation must have $m$ rows and $n$ columns.
+    This matrix is known as a $m \times n$ matrix.
+
+In the next section, we will explore how we can combine multiple linear transformations and multiply matrices to represent these transformations.

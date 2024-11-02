@@ -1,0 +1,143 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import range from "lodash/range"
+
+# Composite Transformations
+
+In the previous sections, we laid the groundwork for a visual understanding of transformations.
+We learned how these transformations, due to their linearity (which we currently understand as preserving the origin, and lines staying parallel and evenly spaced), can be represented by matrices.
+We walked through the process of applying these transformations to vectors, and we saw how the matrix-vector product is a way to apply a transformation to a vector.
+
+In this section, we will explore how we can combine multiple transformations into a single transformation.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Combining Transformations
+
+Suppose we have two transformations, $R$ and $S$, that rotate and scale vectors, respectively.
+If we apply $R$ to a vector, and then apply $S$ to the result, we will rotate the vector and then scale the result.
+
+We can represent this process as a single transformation, $T$, that is the result of applying $S$ to the result of applying $R$.
+This transformation $T$ is called the **composite transformation** of $R$ and $S$.
+
+Recall that when we apply a transformation to a vector, we multiply the transformation matrix by the vector.
+Suppose our transformation matrices are:
+
+$$
+\begin{align}
+\vb{R} &= \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix} \\
+\vb{S} &= \begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}
+\end{align}
+$$
+
+Then, applying $R$ to a vector $\va{v}$ is equivalent to multiplying the matrix $\vb{R}$ by $\va{v}$:
+
+$$
+\begin{equation}
+R(\va{v}) = \vb{R} \va{v} = \mqty[0 & 1 \\ -1 & 0] \va{v}
+\end{equation}
+$$
+
+And then applying $S$ to the result is equivalent to multiplying the matrix $\vb{S}$ by the result:
+
+$$
+\begin{equation}
+S(R(\va{v})) = \mqty[2 & 0 \\ 0 & 1] \qty(\mqty[0 & 1 \\ -1 & 0] \va{v})
+\end{equation}
+$$
+
+We can combine these two matrices into a single matrix, $\vb{T}$, that represents the composite transformation of $R$ and $S$.
+This matrix is the result of **matrix multiplication**, a new operation that we will explore in this section.
+
+## Deriving the Composite Transformation Matrix
+
+To summarize the previous section, we have two transformations, $R$ and $S$, with matrices $\vb{R}$ and $\vb{S}$.
+To find the composite transformation matrix $\vb{T}$, we multiply the matrices $\vb{R}$ and $\vb{S}$:
+
+$$
+\begin{equation}
+\vb{T} = \vb{S} \vb{R} \implies T(\va{v}) = \vb{T} \va{v} = \vb{S} \vb{R} \va{v} = \mqty[2 & 0 \\ 0 & 1] \qty(\mqty[0 & 1 \\ -1 & 0] \va{v})
+\end{equation}
+$$
+
+Let's zoom in on the matrix multiplication step:
+
+$$
+\underbrace{\mqty[2 & 0 \\ 0 & 1]}_{\text{Scaling}} \underbrace{\mqty[0 & 1 \\ -1 & 0]}_{\text{Rotation}} = \mqty[? & ? \\ ? & ?]
+$$
+
+Recall that each column in the matrix represents the result of applying the transformation to the basis vectors.
+So we just need to apply the transformation to the basis vectors and fill in the resulting columns of the matrix.
+
+When we apply the rotation matrix, $\vb{R}$, we get that $\ihatc = \mqty[0 \\ -1]$ and $\jhatc = \mqty[1 \\ 0]$ (since the columns represent the transformed basis vectors).
+Then, we can apply the scaling matrix, $\vb{S}$, to these vectors to get the columns of the composite transformation matrix:
+
+$$
+\begin{align}
+\vb{S}\vb{R}\ihatc = \mqty[2 & 0 \\ 0 & 1] \mqty[0 \\ -1] &= \mqty[0 \\ -1] \\
+\vb{S}\vb{R}\jhatc = \mqty[2 & 0 \\ 0 & 1] \mqty[1 \\ 0] &= \mqty[2 \\ 0]
+\end{align}
+$$
+
+Then, these new vectors are the columns of the composite transformation matrix:
+
+$$
+\begin{equation}
+\vb{T} = \mqty[\class{blue}{0} & \class{yellow}{2} \\ \class{blue}{-1} & \class{yellow}{0}]
+\end{equation}
+$$
+
+Generalizing this process, let's say we have two transformations, $M_1$ and $M_2$, with matrices $\vb{M}_1$ and $\vb{M}_2$ as:
+
+$$
+\begin{equation}
+\vb{M}_1 = \mqty[a & b \\ c & d] \qquad \vb{M}_2 = \mqty[e & f \\ g & h]
+\end{equation}
+$$
+
+Let's say we apply $M_1$ first, and then apply $M_2$.
+Applying $M_1$ to the basis vectors gives us $\ihatc = \mqty[a \\ c]$ and $\jhatc = \mqty[b \\ d]$.
+Then, applying $M_2$ to these vectors gives us the columns of the composite transformation matrix:
+
+$$
+\begin{align}
+\vb{M}_2\vb{M}_1\ihatc &= \mqty[e & f \\ g & h] \mqty[a \\ c] = a\mqty[e \\ g] + c\mqty[f \\ h] = \mqty[ae + cf \\ ag + ch] \\
+\vb{M}_2\vb{M}_1\jhatc &= \mqty[e & f \\ g & h] \mqty[b \\ d] = b\mqty[e \\ g] + d\mqty[f \\ h] = \mqty[be + df \\ bg + dh]
+\end{align}
+$$
+
+Therefore, the composite transformation matrix is:
+
+<Boxed>
+$$
+\begin{equation}
+\vb{T} = \mqty[e & f \\ g & h] \mqty[a & b \\ c & d] = \mqty[ae + cf & be + df \\ ag + ch & bg + dh]
+\end{equation}
+$$
+</Boxed>
+
+Just as a memory aid, going from left to right, top to bottom, the composite transformation matrix can be calculated as:
+
+- Row 1 (of left matrix), Column 1 (of right matrix): $e \cdot a + f \cdot c$
+- Row 1, Column 2: $e \cdot b + f \cdot d$
+- Row 2, Column 1: $g \cdot a + h \cdot c$
+- Row 2, Column 2: $g \cdot b + h \cdot d$
+
+Essentially, go through the rows of the left matrix, and for each row, go through the columns of the right matrix, multiplying the corresponding elements and summing them up.
+
+However, understanding the process intuitively through the composition of linear transformations is far more important and insightful than rote memorization of the formula.
+
+

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 export type LinearTransformationVisualizerProps = {
     from?: LinearTransformation;
     to: LinearTransformation;
-    transformedItems?: React.ReactNode;
+    transformedItems?: React.ReactNode | ((T: (v: vec.Vector2) => vec.Vector2) => React.ReactNode);
     children?: React.ReactNode;
     mafsProps?: React.ComponentProps<typeof Mafs>;
 
@@ -74,6 +74,8 @@ export default function LinearTransformationVisualizer({
         evaluatedIHat: vec.transform([1, 0], mafsMatrix),
     });
 
+    const transformFn = (v: vec.Vector2) => vec.transform(v, mafsMatrix);
+
     return (
         <div className="card">
             <div className="card__body">
@@ -97,7 +99,7 @@ export default function LinearTransformationVisualizer({
                             />
                         </g>
                     </g>
-                    <Transform matrix={mafsMatrix}>{transformedItems}</Transform>
+                    <Transform matrix={mafsMatrix}>{typeof transformedItems === "function" ? transformedItems(transformFn) : transformedItems}</Transform>
                     <Vector tail={[0, 0]} tip={ihat} color={color("blue")} />
                     <Vector tail={[0, 0]} tip={jhat} color={color("yellow")} />
                     {children}

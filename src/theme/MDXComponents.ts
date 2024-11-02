@@ -14,16 +14,17 @@ import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannAppr
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import MDXComponents from "@theme-original/MDXComponents";
 import NonlinearTransformationVisualizer from "../components/mdxGlobal/NonlinearTransformationVisualizer";
+import { PolarCoordinateVisualizer } from "../components/mdxGlobal/PolarCoordinatePlayground";
 import { Checkbox } from "../components/mdxGlobal/controlPanel/Checkbox";
 import { ControlPanel } from "../components/mdxGlobal/controlPanel/ControlPanel";
 import { Dropdown } from "../components/mdxGlobal/controlPanel/Dropdown";
 import { Pills } from "../components/mdxGlobal/controlPanel/Pills";
 import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
-import { PolarCoordinateVisualizer } from "../components/mdxGlobal/PolarCoordinatePlayground";
 
 import * as mafs from "mafs";
 import { ArcLengthVisualizer } from "../components/mdxGlobal/ArcLengthVisualizer";
 import { LineIntegralVisualizer3D } from "../components/mdxGlobal/LineIntegralVisualizer3D";
+import LinearTransformationVisualizer3D from "../components/mdxGlobal/LinearTransformationVisualizer3D";
 
 export default {
     ...MDXComponents,
@@ -34,6 +35,7 @@ export default {
     DerivativeFromLimits,
     DivergenceVisualization,
     LinearTransformationVisualizer,
+    LinearTransformationVisualizer3D,
     NonlinearTransformationVisualizer,
     HoverableBox,
     RiemannApproximation,
