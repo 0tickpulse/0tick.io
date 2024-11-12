@@ -1,0 +1,286 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import range from "lodash/range";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Determinant
+
+In this section, we will introduce the concept of the determinant of a matrix.
+It is a scalar value that can be thought of as a geometric scaling factor.
+It will be helpful to first understand the determinant in the context of 2D space before we generalize it to higher dimensions.
+Then, we will derive a formula to find this determinant.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Imagine a 2D linear transformation that scales the $x$-axis by a factor of $2$ and the $y$-axis by a factor of $3$.
+This transformation can be represented by the matrix:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[2 & 0 \\ 0 & 3]
+\end{equation}
+$$
+
+Notice that this matrix appears to scale the space up:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [2, 0], jhat: [0, 3] }}
+/>
+
+Next, consider a different linear transformation:
+
+$$
+\begin{equation}
+\vb{B} = \mqty[0.5 & 0 \\ 1 & 1]
+\end{equation}
+$$
+
+This matrix appears to scale the space down:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [0.5, 1], jhat: [0, 1] }}
+/>
+
+Is there a way to quantify how much a matrix scales space?
+We can imagine placing a square in the space and observing how the matrix transforms it.
+For example, the first transformation scales the square by a factor of $6$:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [2, 0], jhat: [0, 3] }}
+    transformedItems={
+        <Polygon
+            points={[
+                [0, 0],
+                [1, 0],
+                [1, 1],
+                [0, 1],
+            ]}
+            color={color("green")}
+        />
+    }
+/>
+
+This factor, $6$, is known as the **determinant** of the matrix $\vb{A}$.
+
+However, we only know how the matrix scales this one unit square.
+What if we want to know how the matrix scales any shape in space?
+
+- Since linear transformations preserve gridlines to be parallel and evenly spaced, any rectangle will get scaled by the same factor.
+- Any shape can be approximated by a collection of rectangles.
+
+Therefore, the determinant of a matrix represents how *any* shape in space is scaled by the matrix.
+
+Below is a few examples of how different matrices scale space:
+
+:::info Different Determinants
+
+<Tabs>
+    <TabItem value="scaleUp" label="Scale Up">
+        <LinearTransformationVisualizer
+            to={{ ihat: [2, 0], jhat: [0, 3] }}
+            transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+        />
+        **Determinant**: $6$
+
+        This transformation scales space up by a factor of $6$.
+    </TabItem>
+    <TabItem value="scaleDown" label="Scale Down">
+        <LinearTransformationVisualizer
+            to={{ ihat: [0.5, 0], jhat: [0, 1] }}
+            transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+        />
+        **Determinant**: $0.5$
+
+        This transformation scales space down by a factor of $0.5$.
+    </TabItem>
+    <TabItem value="flip" label="Flip">
+        <LinearTransformationVisualizer
+            to={{ ihat: [1, 0], jhat: [0, -1] }}
+            transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+        />
+        **Determinant**: $-1$
+
+        This transformation does not scale space, but appears to "flip" it.
+    </TabItem>
+    <TabItem value="shear" label="Shear">
+        <LinearTransformationVisualizer
+            to={{ ihat: [1, 0], jhat: [1, 1] }}
+            transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+        />
+        **Determinant**: $1$
+
+        This shearing transformation, while it appears to distort space, does not scale it.
+    </TabItem>
+    <TabItem value="rotate" label="Rotate">
+        <LinearTransformationVisualizer
+            to={{ ihat: [0, 1], jhat: [-1, 0] }}
+            transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+        />
+        **Determinant**: $1$
+
+        Similar to the shearing transformation, this rotation does not scale space.
+        In fact, **all rotations have a determinant of $1$**.
+    </TabItem>
+    <TabItem value="squisht" label="Squish">
+        <LinearTransformationVisualizer
+            to={{ ihat: [1, 0.5], jhat: [-0.5, -0.25] }}
+            transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+        />
+        **Determinant**: $0$
+
+        Notice that this transformation squishes space to a line.
+        This means that the square "collapses" to a line, which has no area, hence the determinant is $0$.
+    </TabItem>
+</Tabs>
+
+:::
+
+### Negative Determinants
+
+In the example above, we saw that the determinant of a matrix can be negative if it "flips" space.
+
+We can tell whether a space is flipped by looking at the basis vectors.
+Notice that in the normal case, the basis vectors are oriented in a counterclockwise direction such that $\ihatc$ is to the right of $\jhatc$:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Vector tip={[1, 0]} color={color("blue")} />
+    <LaTeX at={[1.3, 0]} tex="\mathbf{\hat{i}}" color={color("blue")} />
+    <Vector tip={[0, 1]} color={color("yellow")} />
+    <LaTeX at={[0, 1.3]} tex="\mathbf{\hat{j}}" color={color("yellow")} />
+</Mafs>
+
+If this orientation is reversed, such that $\ihatc$ is to the left of $\jhatc$, then the space is flipped.
+Consider the following transformation:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [1, 0.5], jhat: [0.5, -1] }}
+    transformedItems={
+        <>
+            <LaTeX at={[1.3, 0]} tex="\mathbf{\hat{i}}" color={color("blue")} />
+            <LaTeX at={[0, 1.3]} tex="\mathbf{\hat{j}}" color={color("yellow")} />
+        </>
+    }
+/>
+
+Notice that now, $\ihatc$ is to the left of $\jhatc$; this corresponds to a negative determinant.
+
+## Determinants in 3D
+
+Consider extending the concept of determinants to 3D space.
+
+In 2D, the determinant of a matrix represented how any **area** in space was scaled. We considered a **unit square** to understand this scaling.
+In 3D, we can instead consider a **unit cube** to understand how any **volume** in space is scaled.
+
+Below is a 3D transformation along with a unit cube:
+
+<LinearTransformationVisualizer3D
+    to={{ ihat: [2, 0, 0], jhat: [1, 2, 0], khat: [0, 0, 1.5] }}
+    showGrid={false}
+    transformedItems={T => <DeterminantCube T={T} />}
+/>
+
+### Orientation of 3D Space
+
+In 2D, we could tell whether space was flipped by whether $\ihatc$ was to the left or right of $\jhatc$.
+In 3D, we do something similar, but it is a bit more complicated, since we have to consider the orientation of *three* vectors.
+
+The convention for this is known as the **right-hand rule**.
+Given three positively-oriented vectors $\va{a}$, $\va{b}$, and $\va{c}$, if you curl your fingers from $\va{a}$ to $\va{b}$, your thumb points in the direction of $\va{c}$.
+
+In 3D space, if you curl your fingers from $\ihatc$ to $\jhatc$, your thumb should point in the direction of $\khatc$ if space is positively oriented.
+If space is negatively oriented, your thumb will point in the opposite direction.
+
+<div className="card">
+    <div className="card__header">
+        <div className="row">
+            <div className="col">
+                <h3>Positively Oriented</h3>
+            </div>
+            <div className="col">
+                <h3>Negatively Oriented</h3>
+            </div>
+        </div>
+    </div>
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <CustomMathbox>
+                    <MB.Cartesian>
+                        <MB.Axis axis="x" range={[-5, 5]} color="white" />
+                        <MB.Axis axis="y" range={[-5, 5]} color="white" />
+                        <MB.Axis axis="z" range={[-5, 5]} color="white" />
+
+                        <MB.Array id="ihat" items={1} channels={3} data={[[1, 0, 0]]} />
+                        <MB.Array id="jhat" items={1} channels={3} data={[[0, 1, 0]]} />
+                        <MB.Array id="khat" items={1} channels={3} data={[[0, 0, 1]]} />
+                        <MB.Array id="ihat_vec" items={2} channels={3} data={[[0, 0, 0], [1, 0, 0]]} />
+                        <MB.Array id="jhat_vec" items={2} channels={3} data={[[0, 0, 0], [0, 1, 0]]} />
+                        <MB.Array id="khat_vec" items={2} channels={3} data={[[0, 0, 0], [0, 0, 1]]} />
+
+                        <MB.Text id="i_text" expr={(emit) => { emit("i"); }} />
+                        <MB.Text id="j_text" expr={(emit) => { emit("j"); }} />
+                        <MB.Text id="k_text" expr={(emit) => { emit("k"); }} />
+
+                        <MB.Vector points="#ihat_vec" end={true} width={4} color={color("blue")} />
+                        <MB.Vector points="#jhat_vec" end={true} width={4} color={color("yellow")} />
+                        <MB.Vector points="#khat_vec" end={true} width={4} color={color("green")} />
+
+                        <MB.Label points="#ihat" text="#i_text" />
+                        <MB.Label points="#jhat" text="#j_text" />
+                        <MB.Label points="#khat" text="#k_text" />
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+            <div className="col">
+                <CustomMathbox>
+                    <MB.Cartesian>
+                        <MB.Axis axis="x" range={[-5, 5]} color="white" />
+                        <MB.Axis axis="y" range={[-5, 5]} color="white" />
+                        <MB.Axis axis="z" range={[-5, 5]} color="white" />
+
+                        <MB.Array id="ihat" items={1} channels={3} data={[[0, 1, 0]]} />
+                        <MB.Array id="jhat" items={1} channels={3} data={[[1, 0, 0]]} />
+                        <MB.Array id="khat" items={1} channels={3} data={[[0, 0, 1]]} />
+                        <MB.Array id="ihat_vec" items={2} channels={3} data={[[0, 0, 0], [0, 1, 0]]} />
+                        <MB.Array id="jhat_vec" items={2} channels={3} data={[[0, 0, 0], [1, 0, 0]]} />
+                        <MB.Array id="khat_vec" items={2} channels={3} data={[[0, 0, 0], [0, 0, 1]]} />
+
+                        <MB.Text id="i_text" expr={(emit) => { emit("i"); }} />
+                        <MB.Text id="j_text" expr={(emit) => { emit("j"); }} />
+                        <MB.Text id="k_text" expr={(emit) => { emit("k"); }} />
+
+                        <MB.Vector points="#ihat_vec" end={true} width={4} color={color("blue")} />
+                        <MB.Vector points="#jhat_vec" end={true} width={4} color={color("yellow")} />
+                        <MB.Vector points="#khat_vec" end={true} width={4} color={color("green")} />
+
+                        <MB.Label points="#ihat" text="#i_text" />
+                        <MB.Label points="#jhat" text="#j_text" />
+                        <MB.Label points="#khat" text="#k_text" />
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+        </div>
+    </div>
+</div>
+
+## Deriving the 2D Determinant
+
+Now that we know what the determinant geometrically represents, we also need to be able to compute it.
+

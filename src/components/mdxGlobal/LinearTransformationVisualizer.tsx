@@ -8,6 +8,7 @@ export type LinearTransformationVisualizerProps = {
     to: LinearTransformation;
     transformedItems?: React.ReactNode | ((T: (v: vec.Vector2) => vec.Vector2) => React.ReactNode);
     children?: React.ReactNode;
+    footerItems?: React.ReactNode;
     mafsProps?: React.ComponentProps<typeof Mafs>;
 
     onTChange?: (T: number) => void;
@@ -29,6 +30,8 @@ export default function LinearTransformationVisualizer({
     mafsProps,
     transformedItems,
     children,
+
+    footerItems,
 
     onTChange,
 }: LinearTransformationVisualizerProps) {
@@ -109,6 +112,7 @@ export default function LinearTransformationVisualizer({
                 <button className={`button button--secondary button--block ${hasStarted ? "button--danger" : "button--success"}`} onClick={startStop}>
                     {hasStarted ? "Reset" : "Start"}
                 </button>
+                {footerItems}
             </div>
         </div>
     );

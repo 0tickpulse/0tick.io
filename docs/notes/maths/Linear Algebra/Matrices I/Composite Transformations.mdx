@@ -38,8 +38,8 @@ Suppose our transformation matrices are:
 
 $$
 \begin{align}
-\vb{R} &= \begin{bmatrix} 0 & 1 \\ -1 & 0 \end{bmatrix} \\
-\vb{S} &= \begin{bmatrix} 2 & 0 \\ 0 & 1 \end{bmatrix}
+\vb{R} &= \mqty[ 0 & 1 \\ -1 & 0 ] \\
+\vb{S} &= \mqty[ 2 & 0 \\ 0 & 1 ]
 \end{align}
 $$
 
@@ -140,4 +140,62 @@ Essentially, go through the rows of the left matrix, and for each row, go throug
 
 However, understanding the process intuitively through the composition of linear transformations is far more important and insightful than rote memorization of the formula.
 
+### Deriving the 3D Composite Transformation Matrix
 
+The process of deriving the composite transformation matrix for 3D transformations is similar to the 2D case.
+
+Suppose we have two transformations, $M_1$ and $M_2$, with matrices $\vb{M}_1$ and $\vb{M}_2$ as:
+
+$$
+\begin{align}
+\vb{M}_1 &= \mqty[ a & b & c \\ d & e & f \\ g & h & i ] \\
+\vb{M}_2 &= \mqty[ j & k & l \\ m & n & o \\ p & q & r ]
+\end{align}
+$$
+
+Let's say we apply $M_1$ first, and then apply $M_2$.
+
+Since $M_1$ is applied first, the columns of $M_1$ represent the basis vectors after the first transformation.
+Applying $M_2$ to these vectors gives us the columns of the composite transformation matrix:
+
+$$
+\begin{align}
+\vb{M}_2\vb{M}_1\ihatc &= \mqty[ j & k & l \\ m & n & o \\ p & q & r ] \mqty[ a \\ d \\ g ] = a\mqty[ j \\ m \\ p ] + d\mqty[ k \\ n \\ q ] + g\mqty[ l \\ o \\ r ] = \mqty[ ja + kd + lg \\ ma + nd + og \\ pa + qd + rg ] \\
+\vb{M}_2\vb{M}_1\jhatc &= \mqty[ j & k & l \\ m & n & o \\ p & q & r ] \mqty[ b \\ e \\ h ] = b\mqty[ j \\ m \\ p ] + e\mqty[ k \\ n \\ q ] + h\mqty[ l \\ o \\ r ] = \mqty[ jb + ke + lh \\ mb + ne + oh \\ pb + qe + rh ] \\
+\vb{M}_2\vb{M}_1\khatc &= \mqty[ j & k & l \\ m & n & o \\ p & q & r ] \mqty[ c \\ f \\ i ] = c\mqty[ j \\ m \\ p ] + f\mqty[ k \\ n \\ q ] + i\mqty[ l \\ o \\ r ] = \mqty[ jc + kf + li \\ mc + nf + oi \\ pc + qf + ri ]
+\end{align}
+$$
+
+Therefore, the composite transformation matrix is:
+
+$$
+\begin{equation}
+\vb{T} = \mqty[ ja + kd + lg & jb + ke + lh & jc + kf + li \\ ma + nd + og & mb + ne + oh & mc + nf + oi \\ pa + qd + rg & pb + qe + rh & pc + qf + ri ]
+\end{equation}
+$$
+
+This process can be generalized to any number of dimensions, but the intuition remains the same: the columns of the composite transformation matrix are the result of applying the second transformation to the basis vectors after applying the first transformation.
+
+As it is hopefully clear by now, multiplying matrices can get quite tedious, especially for larger matrices.
+Therefore, it is usually more practical to use computers to perform these calculations.
+Then, we can focus on understanding the intuition behind the process and the geometric implications of combining transformations.
+
+## Summary and Next Steps
+
+In this section, we explored how we can combine multiple transformations into a single transformation, known as the composite transformation.
+
+Here are the key points to remember:
+
+- The composite transformation of two transformations, $R$ and $S$, is the result of applying $S$ to the result of applying $R$.
+- The composite transformation matrix is found by multiplying the matrices of the individual transformations.
+- The columns of the composite transformation matrix are the result of applying the second transformation to the basis vectors after applying the first transformation.
+- The process can be generalized to any number of dimensions, but the intuition remains the same.
+- For the 2D case, it looks like this:
+
+    $$
+    \begin{equation}
+    \vb{T} = \mqty[e & f \\ g & h] \mqty[a & b \\ c & d] = \mqty[ae + cf & be + df \\ ag + ch & bg + dh]
+    \end{equation}
+    $$
+
+In the next section, we will introduce a new concept known as the **determinant** of a matrix.

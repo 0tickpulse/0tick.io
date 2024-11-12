@@ -110,6 +110,16 @@ const config = {
                     // Please change this to your repo.
                     // Remove this to remove the "edit this page" links.
                     editUrl: "https://github.com/0tickpulse/0tick.io/tree/main/",
+                    remarkPlugins: [remarkMath],
+                    rehypePlugins: [
+                        (options: Options) => {
+                            config.customFields.mathJaxOptions = {
+                                ...options,
+                                ...config.customFields.mathJaxOptions,
+                            };
+                            return rehypeMathjax(config.customFields.mathJaxOptions);
+                        },
+                    ],
                 },
                 theme: {
                     customCss: require.resolve("./src/css/custom.scss"),

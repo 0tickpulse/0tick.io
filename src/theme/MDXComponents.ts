@@ -13,18 +13,19 @@ import ParametricSurfaceTransformVisualizer from "@site/src/components/mdxGlobal
 import { RiemannApproximation } from "@site/src/components/mdxGlobal/RiemannApproximation";
 import { ThreeDTest } from "@site/src/components/mdxGlobal/ThreeDTest";
 import MDXComponents from "@theme-original/MDXComponents";
-import NonlinearTransformationVisualizer from "../components/mdxGlobal/NonlinearTransformationVisualizer";
-import { PolarCoordinateVisualizer } from "../components/mdxGlobal/PolarCoordinatePlayground";
-import { Checkbox } from "../components/mdxGlobal/controlPanel/Checkbox";
-import { ControlPanel } from "../components/mdxGlobal/controlPanel/ControlPanel";
-import { Dropdown } from "../components/mdxGlobal/controlPanel/Dropdown";
-import { Pills } from "../components/mdxGlobal/controlPanel/Pills";
-import { SliderInput } from "../components/mdxGlobal/controlPanel/SliderInput";
+import NonlinearTransformationVisualizer from "@site/src/components/mdxGlobal/NonlinearTransformationVisualizer";
+import { PolarCoordinateVisualizer } from "@site/src/components/mdxGlobal/PolarCoordinatePlayground";
+import { Checkbox } from "@site/src/components/mdxGlobal/controlPanel/Checkbox";
+import { ControlPanel } from "@site/src/components/mdxGlobal/controlPanel/ControlPanel";
+import { Dropdown } from "@site/src/components/mdxGlobal/controlPanel/Dropdown";
+import { Pills } from "@site/src/components/mdxGlobal/controlPanel/Pills";
+import { SliderInput } from "@site/src/components/mdxGlobal/controlPanel/SliderInput";
 
 import * as mafs from "mafs";
-import { ArcLengthVisualizer } from "../components/mdxGlobal/ArcLengthVisualizer";
-import { LineIntegralVisualizer3D } from "../components/mdxGlobal/LineIntegralVisualizer3D";
-import LinearTransformationVisualizer3D from "../components/mdxGlobal/LinearTransformationVisualizer3D";
+import { ArcLengthVisualizer } from "@site/src/components/mdxGlobal/ArcLengthVisualizer";
+import { LineIntegralVisualizer3D } from "@site/src/components/mdxGlobal/LineIntegralVisualizer3D";
+import LinearTransformationVisualizer3D from "@site/src/components/mdxGlobal/LinearTransformationVisualizer3D";
+import { DeterminantCube } from "@site/src/components/mdxGlobal/DeterminantCube";
 
 export default {
     ...MDXComponents,
@@ -34,6 +35,7 @@ export default {
     Cite,
     DerivativeFromLimits,
     DivergenceVisualization,
+    DeterminantCube,
     LinearTransformationVisualizer,
     LinearTransformationVisualizer3D,
     NonlinearTransformationVisualizer,

@@ -30,19 +30,13 @@ function lerp(a: Vector3, b: Vector3, t: number) {
     const m = mag(d);
     return add(a, withMag(d, m * t));
 }
-function matMul(m: Matrix3, v: Vector3): Vector3 {
-    return [
-        m[0][0] * v[0] + m[0][1] * v[1] + m[0][2] * v[2],
-        m[1][0] * v[0] + m[1][1] * v[1] + m[1][2] * v[2],
-        m[2][0] * v[0] + m[2][1] * v[1] + m[2][2] * v[2],
-    ];
-}
 
 export type LinearTransformationVisualizerProps = {
     from?: LinearTransformation;
     to: LinearTransformation;
     transformedItems?: (T: (v: Vector3) => Vector3) => React.ReactNode;
     children?: React.ReactNode;
+    mathboxProps?: React.ComponentProps<typeof CustomMathbox>;
     cartesianProps?: React.ComponentProps<typeof MB.Cartesian>;
 
     showGrid?: boolean;
@@ -67,6 +61,7 @@ export default function LinearTransformationVisualizer({
     to,
     transformedItems,
     children,
+    mathboxProps,
     cartesianProps,
     showGrid = true,
 
@@ -104,7 +99,13 @@ export default function LinearTransformationVisualizer({
         }
     }, [T]);
 
-    const transformFn = (v: Vector3) => matMul([ihat, jhat, khat], v);
+    const transformFn = (v: Vector3) => {
+        return [
+            v[0] * ihat[0] + v[1] * jhat[0] + v[2] * khat[0],
+            v[0] * ihat[1] + v[1] * jhat[1] + v[2] * khat[1],
+            v[0] * ihat[2] + v[1] * jhat[2] + v[2] * khat[2],
+        ];
+    };
     const matrix = [
         ihat[0],
         jhat[0],
@@ -124,7 +125,7 @@ export default function LinearTransformationVisualizer({
     return (
         <div className="card">
             <div className="card__body">
-                <CustomMathbox>
+                <CustomMathbox {...mathboxProps}>
                     <MB.Cartesian scale={[0.2, 0.2, 0.2]} {...cartesianProps}>
                         <MB.Axis axis="x" range={[-5, 5]} color="white" />
                         <MB.Axis axis="y" range={[-5, 5]} color="white" />
