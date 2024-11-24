@@ -1,0 +1,88 @@
+# Electricity and Magnetism
+
+Modern physics is mainly based on a few different theories that take place in different scales:
+
+- At "everyday" scales, we have **classical mechanics**, which is based on Newton's laws of motion.
+    This theory works well for objects that are not too small or moving too fast, hence "everyday" scales.
+
+    Problems in classical mechanics are solved primarily by Newton's laws (or by the Lagrangian and Hamiltonian formulations, which are more general and can be applied to more complex systems).
+    By the 20th century, classical mechanics was well understood and was considered a "complete" theory.
+    However, it was soon discovered that classical mechanics was not sufficient to explain a variety of phenomena, which is why new theories were developed.
+- At very small scales, we have **quantum mechanics**, which describes the behavior of particles at the atomic and subatomic levels.
+    Quantum mechanics is based on waves and probabilities, and it is used to describe the behavior of particles like electrons and photons.
+    Quantum mechanics is a very successful theory and has been tested extensively in experiments.
+- At very high speeds, we have **special relativity**, which describes the behavior of objects moving at speeds close to the speed of light.
+    From noticing that the speed of light is constant in all reference frames (because its value is based on two fundamental constants), Einstein made a series of postulates that led to the development of special relativity.
+    Special relativity has many interesting consequences, such as time dilation and length contraction.
+- At very large scales, we have **general relativity**, which describes the behavior of objects with very strong gravitational fields.
+    Originally, due to a discrepancy between the predictions of Newtonian gravity and the observed orbit of Mercury, Einstein developed general relativity.
+    It describes gravity not as a Newtonian force, but as the curvature of spacetime caused by mass and energy.
+
+    General relativity has been tested in many ways and has passed all tests so far.
+    In fact, even the acceleration of the universe's expansion, which Einstein initially thought was a mistake in his equations, was later confirmed by observations.
+
+Electricity and Magnetism are part of classical physics.
+Outside of gravity, they are the forces that keep our lives on Earth running.
+All matter is made up of atoms, which are made up of a positively charged nucleus surrounded by negatively charged electrons.
+The interactions between these charges are what give rise to electricity and magnetism.
+
+This means that all of chemistry, biology, and even the functioning of our brains are based on the principles of electricity and magnetism.
+In fact, even the light that we see is an electromagnetic wave - the result of oscillating electric and magnetic fields.
+
+There are four equations that describe all of classical electromagnetism, known as **Maxwell's equations**.
+They are based on the work of many scientists, including Gauss, Ampère, and Faraday, but were first written down in their modern form by James Clerk Maxwell in the 19th century.
+Maxwell's equations are:
+
+$$
+\begin{align}
+\div{\class{yellow}{\va{E}}} &= \frac{\rho}{\varepsilon_0} && \iint_S \class{yellow}{\va{E}} \vdot \dd{\va{a}} = \frac{Q_{\text{enc}}}{\varepsilon_0} \\
+\div{\class{blue}{\va{B}}} &= 0 && \iint_S \class{blue}{\va{B}} \vdot \dd{\va{a}} = 0 \\
+\curl{\class{yellow}{\va{E}}} &= -\pdv{\class{blue}{\va{B}}}{t} && \oint_C \class{yellow}{\va{E}} \vdot \dd{\va{r}} = -\dv{t} \iint_S \class{blue}{\va{B}} \vdot \dd{\va{a}} \\
+\curl{\class{blue}{\va{B}}} &= \mu_0\va{J} + \mu_0\varepsilon_0\pdv{\class{yellow}{\va{E}}}{t} && \oint_C \class{blue}{\va{B}} \vdot \dd{\va{r}} = \mu_0 \iint_S \va{J} \vdot \dd{\va{a}} + \mu_0\varepsilon_0 \dv{t} \iint_S \class{yellow}{\va{E}} \vdot \dd{\va{a}}
+\end{align}
+$$
+
+Here, $\va{E}$ is the electric field, and $\va{B}$ is the magnetic field.
+A large part of classical electromagnetism is understanding how these fields interact with each other and with charges and currents.
+
+Eventually, we will see that these fields can be combined into a single field, known as the **electromagnetic field**, which is described by a single tensor.
+This field is what gives rise to electromagnetic waves, which are the basis of what we call light.
+
+## Roadmap
+
+We will try to cover the following topics:
+
+1. **Electrostatics**: We will start with a study of electric fields and potentials in static situations - when charges are not moving.
+    This is largely comprised of first starting with Coulomb's law, showing that calculations with it are cumbersome, and then creating a framework to greatly simplify the calculations.
+    This involves the concept of the electric field, as well as **Gauss's law**, which is the first of Maxwell's equations.
+2. **Magnetostatics**: We will then move on to magnetic fields and potentials in static situations.
+    This is similar to electrostatics, but with a few key differences, since the magnetic force acts a bit differently from the electric force.
+3. **Electrodynamics**: We will then combine electric and magnetic fields to study how they interact with each other and with moving charges.
+    This is where we derive the third and fourth Maxwell's equations.
+4. **Electromagnetic waves**: Finally, we will study how electric and magnetic fields can propagate through space as waves.
+    This is where we will see how light is just an electromagnetic wave, and how it can be described by the same equations as any other electromagnetic wave.
+5. **Special relativity**: With the knowledge of electromagnetism, we will find out that Maxwell's equations are not invariant under Galilean transformations, which led Einstein to develop special relativity.
+    We will see how special relativity is a natural consequence of the laws of electromagnetism.
+
+This roadmap is quite ambitious, and we may not be able to cover all of these topics in detail.
+
+However, we will try to provide a good foundation in electromagnetism, focusing on the key ideas and intuitions along with motivating examples.
+There will be a mix of theory, examples, and problems to solve.
+
+Throughout the notes, we will primarily use the SI system of units. This is the most common system of units for undergraduate electromagnetism courses.
+The Gaussian CGS system is also used in some cases due to its mathematical simplicity, but we will try to avoid it as much as possible.
+I might include a section on the Gaussian system, as well as unit conversions, at the end of the notes.
+
+## Resources
+
+- Textbooks: Griffiths, Griffiths, Griffiths. "Introduction to Electrodynamics".
+    *The* standard textbook for learning electromagnetism. There is really no better book for learning the subject.
+    It is clear, concise, and has a good mix of theory and problems.
+
+    There are alternatives, of course. Purcell and Morin's book is also quite good. It has less math and more intuition, which can be good to really get the understanding.
+    Also, it treats magnetism as a relativistic effect; given electrostatics and special relativity, the book shows that another force, magnetism, must exist, in Chapter 5.
+    You can always use one book as the main reference and another as a secondary reference to get a different perspective.
+- If you want a non-calculus-based introduction, online resources like Khan Academy are good.
+    However, they will not go into as much depth as a textbook.
+
+For more resources, just go on MIT OpenCourseWare and look at the electromagnetism courses.

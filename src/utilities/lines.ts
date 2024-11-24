@@ -30,7 +30,7 @@ export function bezierCurve(start: vec.Vector2, end: vec.Vector2, control: vec.V
 export function lineLabel(
     from: vec.Vector2,
     to: vec.Vector2,
-    direction: "left" | "right",
+    direction: "left" | "right" = "right",
     { sideOffset = 0.3, forwardOffset = 0 }: Partial<Record<"sideOffset" | "forwardOffset", number>> = {}
 ): vec.Vector2 {
     const vector = vec.sub(to, from);

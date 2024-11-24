@@ -1,0 +1,247 @@
+---
+title: The Equation That Connects Brownian Motion and Options Pricing
+description: A look into the relationship between Brownian motion and Options pricing.
+authors: [0tick]
+draft: true
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { useState, useRef, useCallback, useMemo, memo, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, getColorFromMagnitude, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import range from "lodash/range"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { easeInOutCubic } from "js-easing-functions";
+
+# The Equation That Connects Brownian Motion and Options Pricing
+
+Here we have two seemingly unrelated concepts: Brownian motion and options pricing.
+One comes from physics, describing the random motion of particles in a fluid, while the other comes from finance, describing the price of financial derivatives.
+But are they really as unrelated as they seem?
+
+It turns out, there is a deep connection between the two. *Very* deep.
+In fact, the mathematical framework used to model Brownian motion is the *exact same* as the one used to model options pricing.
+
+In this post, we will explore the history of Brownian motion and options pricing, and how they are related through the lens of mathematics.
+The general outline of this post will be as follows:
+
+1. Options:
+    - We will start by introducing options pricing.
+    - We will look at Louis Bachelier's work on the subject.
+    - We will introduce the problem, that is, how we can price an option.
+2. Brownian Motion:
+    - Then, we will take a detour and discuss Brownian motion.
+    - We will see how Brownian motion is related to options pricing in terms of probability theory.
+    - These topics, and the above, will be intertwined throughout the post.
+3. We will see how this all comes together in something called the Black-Scholes-Merton equation.
+
+Of course, I know far more about physics than finance, so I will be learning along with you.
+Get ready for a wild ride through the world of stochastic calculus, probability distributions, partial differential equations, heat flow, diffusion, card counting, stocks, hedging, and much more.
+
+{/* truncate */}
+
+## The Options Conundrum
+
+Suppose you are Thales of Miletus, an ancient Greek philosopher and mathematician.
+One day, you are walking through the olive groves of Miletus when you come across a group of olive press owners.
+
+The next summer is expected to be a bumper crop, meaning there will be a lot of olives in the market.
+Olives need to be pressed to make olive oil, and the bumper crop will lead to an increased demand for olive presses.
+An increased demand for olive presses will lead to higher prices for the use of the presses.
+
+You see an opportunity here.
+Although you don't have enough money to rent the presses during the bumper crop, wouldn't it be great if you could "lock in" the price now (which is lower) and rent the presses later at the same price?
+This way, you could make a profit by renting the presses at the higher price.
+Of course, the press owners also need an incentive to agree to this deal, so you offer them a small sum of money for the option to rent the presses at the current price.
+
+This is the essence of an **option**, or more specifically, a **call option**.
+When you buy a call option, you can buy an asset (like olive presses) at a fixed price (called the **strike price**) at a later date.
+For example, you could buy a call option to buy grains at $$ $100$$ per ton next year.
+Then, if the price of grains rises to $$ $150$$ per ton, you can exercise your option and buy the grains at $$ $100$$ per ton, making a profit of $$ $50$$ per ton.
+
+The press owners agreed to the call option.
+As the summer progresses, the bumper crop comes in, and the price of olive presses skyrockets.
+You exercise your option and rent the presses at the agreed-upon, lower price.
+Then, you rent the presses to other farmers at the higher price, making a tidy profit.
+
+The opposite of a call option is a **put option**.
+With a put option, you have the right to sell an asset at a fixed price at a later date.
+For example, you could buy a put option to sell your house at $$ $500,000$$ next year.
+Then, if the housing market crashes and the price of your house falls to $$ $400,000$$, you can exercise your option and sell your house at $$ $500,000$$, making a profit of $$ $100,000$$.
+
+| Type of Option | What it Allows | Good when... |
+|----------------|----------------|--------------|
+| Call Option | You to buy an asset at a fixed price | The price of the asset rises |
+| Put Option | You to sell an asset at a fixed price | The price of the asset falls |
+
+### Graphing the Payoff
+
+Let's graph the payoff of a call option.
+Suppose you buy a call option to buy a stock at a price $K$, and the stock price at the end of the year is some value $S$.
+
+We can first visualize the call option as a horizontal line, whereas the stock price is a fluctuating line:
+
+{(() => {
+    const start = 2;
+    const expiry = 12;
+    const price = (x) => Math.cos(17 * x) / 5 + (Math.sin(5 * x) / 3) + (Math.sin(19 * x) / 13) + Math.log(x) + 4; // just some random function that looks messy
+    const option = price(start);
+
+    return (
+        <Mafs viewBox={{ x: [0, 15], y: [0, 10] }}>
+            <Coordinates.Cartesian xAxis={{ lines: false, labels: () => "" }} yAxis={{ lines: false, labels: () => "" }} />
+            <Polyline points={[[start, 0], [start, option], [expiry, option], [expiry, 0]]} strokeStyle="dashed" /> {/* Strike price */}
+            <Vector tail={[start + 1, option - 1]} tip={[start, option]} />
+            <Text x={start + 1} y={option - 1} attach="se" size={20}>
+                Option starts (K)
+            </Text>
+            <Plot.OfX y={(x) => x > 0 ? price(x) : null} color={color("yellow")} /> {/* Stock price */}
+            <Vector tail={[3 - 1, price(3) + 2]} tip={[3, price(3)]} />
+            <Text x={3 - 1} y={price(3) + 2} attach="n" color={color("yellow")} size={20}>
+                Stock price
+            </Text>
+            <Point x={start} y={option} color={color("red")} />
+            <Point x={expiry} y={option} color={color("red")} />
+            <Point x={expiry} y={price(expiry)} color={color("green")} />
+
+            <Vector tail={[expiry - 1, option - 2]} tip={[expiry, option]} />
+            <Text x={expiry - 1} y={option - 2} attach="sw" size={20}>
+                Option ends (this is the price you pay)
+            </Text>
+
+            <Vector tail={[expiry - 1, price(expiry) + 2]} tip={[expiry, price(expiry)]} />
+            <Text x={expiry - 1} y={price(expiry) + 2} attach="n" color={color("green")} size={20}>
+                Stock price at expiry (S)
+            </Text>
+
+            <Vector tail={[expiry, option]} tip={[expiry, price(expiry)]} color={color("green")} />
+            <Vector tail={[expiry, price(expiry)]} tip={[expiry, option]} color={color("green")} />
+
+            <Text x={expiry} y={(option + price(expiry)) / 2} attach="e" color={color("green")} size={20}>
+                Profit
+            </Text>
+        </Mafs>
+    );
+})()}
+
+Let's break down the graph:
+
+- At the starting point, you buy the call option at the strike price $K$.
+    This is the price you will pay for the stock (if you choose to exercise the option).
+- The stock price fluctuates over time, as shown by the wavy yellow line.
+- At the end of the year (the expiry date), the stock price is $S$.
+- By exercising the option, you can buy the stock at the strike price $K$ and sell it at the stock price $S$.
+    The difference between the two is your profit, $S - K$.
+
+Recall that we have to pay an initial price for the option.
+This is used to give the seller of the option an incentive to sell it to you.
+If we call this price $C$, then the profit from exercising the option is $S - K - C$.
+
+Then, we can say that:
+
+1. If the stock price at the end is higher than the striking price, you exercise the option and make a profit of $S - K - C$.
+2. If the stock price at the end is lower than the striking price, you don't exercise the option and lose the price of the option, $C$.
+
+We can make our profit function as a piecewise function:
+
+$$
+\begin{equation}
+\text{Profit/Loss} = \begin{cases}
+S - K - C & \qif S > K \\
+- C & \qif S \leq K
+\end{cases}
+\end{equation}
+$$
+
+Since we know $C$ and $K$, we can graph this function for different values of $S$.
+This produces the following graph:
+
+<Mafs>
+    {/* k = 1, s = 2, c = 0.5 */}
+    <Coordinates.Cartesian xAxis={{ lines: false, labels: () => "" }} yAxis={{ lines: false, labels: () => "" }} />
+    <Plot.OfX y={(x) => x > 1 ? x - 1 - 0.5 : -0.5} color={color("green")} />
+    <Point x={1} y={0} />
+    <LaTeX tex="S = K" at={[1, 0.3]} />
+</Mafs>
+
+So now we know how to graph the profit function for a call option.
+Next, we need to consider this whole process from the seller's perspective.
+How can they price the option in such a way that they don't lose money?
+
+We will come back to this question later. For now, let's take a look at some physics.
+
+## Brownian Motion and Probability Distributions
+
+When Brownian motion was first observed, it was a complete mystery.
+Discovered by botanist Robert Brown in 1827, it was the random motion of pollen grains suspended in water.
+The grains would move in a seemingly random manner, jiggling around as if they were alive.
+
+He repeated the experiment with non-living particles like dust and saw the same behavior.
+Why is this the case?
+
+Turns out, as explained by Einstein in 1905, the motion of the particles is due to the stuff around them hitting the particles.
+Imagine you are in a crowded room and you are trying to move through the crowd.
+People will bump into you, causing you to move in random directions. This is similar to what happens to the particles in Brownian motion.
+
+This type of motion has a fitting name; it is called **Brownian motion**.
+At any given time, assuming we can't predict anything about the motion, the particle has an equal chance of moving in any direction.
+This is called a **random walk**, and it is a fundamental concept in probability theory.
+
+### The Normal Distribution
+
+In order to understand this further, we shall consider moving in one dimension, and make some simplifying assumptions.
+Let's say we are at position $x$ at time $t$.
+At the next time step, we make a coin toss, and if it is heads, we move to the right; if it is tails, we move to the left.
+
+So each time step, we move either $+1$ or $-1$.
+
+This is best seen in real life using a Galton board, which is a board with pegs that the ball bounces off of.
+
+![Galton board](https://upload.wikimedia.org/wikipedia/commons/c/c1/Galton_box.jpg)
+
+Each time the ball hits a peg, it has an equal chance of moving left or right.
+As the ball moves down the board, it will hit more pegs, and eventually it will land in one of the bins at the bottom.
+
+Let's repeat this process many times and try to guess how many balls will land in each bin.
+Mathematically, the process can simply be seen as repeatedly adding $+1$ or $-1$ to a number.
+Denote each step as $X_i$, where $i$ is the step number.
+Then, the position at time $t$ is given by:
+
+$$
+\begin{equation}
+X_t = X_0 + X_1 + X_2 + \ldots + X_t
+\end{equation}
+$$
+
+The **Central Limit Theorem** states that when you add up these random variables, the distribution of the sum tends to a **normal distribution**.
+To unpack this, we first need to understand a few things:
+
+- The **mean** of a distribution $\mu$ is like a weighted average of the values.
+    In our case, for a single step, the mean is $0$ since we have an equal chance of moving left or right.
+    The mean is also called the **expected value** and is denoted by $E[X]$.
+- The **variance** of a distribution $\sigma^2$ is a measure of how *spread out* the values are.
+    Essentially, it tells us how much the values deviate from the mean.
+    It's calculated by taking the average of the squared differences between each value and the mean.
+    Using the square is nice because it makes all the difference positive, and does not lead to difficult computations (which would happen if we used the absolute value).
+
+    $$
+    \begin{equation}
+    \sigma^2 = E[(X - \mu)^2] = \sum (X - \mu)^2 \cdot P(x = X)
+    \end{equation}
+    $$
+
+    So in our case, for each outcome $1$ and $-1$, the squared difference is just $1$, so the variance is $\sigma^2 = 1$.
+- The **standard deviation** is the square root of the variance, $\sigma$.
+    One annoying thing about the variance is that it's in squared units; if our data was in meters, for example, the variance would be in meters squared.
+    The standard deviation simply takes the square root of that, so it's in the same units as the data.
+
+    $$
+    \begin{equation}
+    \sigma = \sqrt{\sigma^2} = \sqrt{E[(X - \mu)^2]}
+    \end{equation}
+    $$
+
+

@@ -146,4 +146,89 @@ v_1 w_1 + v_2 w_2 + \cdots + v_n w_n &= \norm{\va{v}}\norm{\va{w}} \cos \theta \
 \end{align}
 $$
 
+Hence, the equivalence is proven. $\blacksquare$
+
 ## By Vector Decomposition
+
+:::info Brief Overview
+
+This proof assumes the geometric definition of the dot product ($\va{v} \cdot \va{w} = \norm{\va{v}} \norm{\va{w}} \cos \theta$) and uses the decomposition of vectors into their components to derive the component definition of the dot product ($\va{v} \cdot \va{w} = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n$).
+Along the way, it uses various properties of the dot product, such as its distributivity over vector addition and scalar multiplication.
+
+:::
+
+Let $\va{v} = v_1 \ihatc + v_2 \jhatc + v_3 \khatc$ and $\va{w} = w_1 \ihatc + w_2 \jhatc + w_3 \khatc$.
+As we know, these vectors are in 3D space, but the proof can be generalized to any dimension.
+
+We can express the dot product of $\va{v}$ and $\va{w}$ as:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = (v_1 \ihatc + v_2 \jhatc + v_3 \khatc) \cdot (w_1 \ihatc + w_2 \jhatc + w_3 \khatc)
+\end{equation}
+$$
+
+By the distributivity of the dot product over vector addition, we can expand this expression into the sum of the dot products of the individual components.
+This is analogous to how we expand the product of two binomials; $(a + b)(c + d) = ac + ad + bc + bd$.
+
+Notice that in the product of the two binomials, each term is the product of one term from the first binomial and one term from the second binomial.
+We get every possible combination of terms from the two binomials. This is the same for trinomials; $(a + b + c)(d + e + f) = ad + ae + af + bd + be + bf + cd + ce + cf$.
+
+Applying this to the dot product of $\va{v}$ and $\va{w}$, we get a similar expansion:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \cdot \va{w} &= (v_1 \ihatc + v_2 \jhatc + v_3 \khatc) \cdot (w_1 \ihatc + w_2 \jhatc + w_3 \khatc) \\
+&= v_1 \ihatc \cdot (w_1 \ihatc + w_2 \jhatc + w_3 \khatc) + v_2 \jhatc \cdot (w_1 \ihatc + w_2 \jhatc + w_3 \khatc) + v_3 \khatc \cdot (w_1 \ihatc + w_2 \jhatc + w_3 \khatc) \\
+&= \quad v_1 w_1 \ihatc \cdot \ihatc + v_1 w_2 \ihatc \cdot \jhatc + v_1 w_3 \ihatc \cdot \khatc \\
+    &\quad {}+ v_2 w_1 \jhatc \cdot \ihatc + v_2 w_2 \jhatc \cdot \jhatc + v_2 w_3 \jhatc \cdot \khatc \\
+    &\quad {}+ v_3 w_1 \khatc \cdot \ihatc + v_3 w_2 \khatc \cdot \jhatc + v_3 w_3 \khatc \cdot \khatc
+\end{split}
+\end{equation}
+$$
+
+Recall from the [previous section on the corollaries of the dot product](./Dot%20Product%20Corollaries#basis-vectors-and-the-kronecker-delta) that the dot product of two basis vectors is 1 if they are the same and 0 if they are different.
+As such, all the terms in the expansion where the basis vectors are different will evaluate to 0, and the terms where the basis vectors are the same will evaluate to 1:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \cdot \va{w} &= \quad \boxed{v_1 w_1 \ihatc \cdot \ihatc} + \cancel{v_1 w_2 \ihatc \cdot \jhatc} + \cancel{v_1 w_3 \ihatc \cdot \khatc} \\
+    &\quad {}+ \cancel{v_2 w_1 \jhatc \cdot \ihatc} + \boxed{v_2 w_2 \jhatc \cdot \jhatc} + \cancel{v_2 w_3 \jhatc \cdot \khatc} \\
+    &\quad {}+ \cancel{v_3 w_1 \khatc \cdot \ihatc} + \cancel{v_3 w_2 \khatc \cdot \jhatc} + \boxed{v_3 w_3 \khatc \cdot \khatc} \\
+    &= v_1 w_1 + v_2 w_2 + v_3 w_3
+\end{split}
+\end{equation}
+$$
+
+Since this proof starts with the geometric definition of the dot product and derives the component definition, it shows that the two definitions are equivalent:
+
+$$
+\begin{equation}
+\norm{\va{v}} \norm{\va{w}} \cos \theta = v_1 w_1 + v_2 w_2 + v_3 w_3 \tag{\ref{eq:dot-product-equivalence}}
+\end{equation}
+$$
+
+Hence, the equivalence is proven. $\blacksquare$
+
+As mentioned earlier, this proof can be generalized to any dimension using the same principles.
+The key idea is to expand the dot product of two vectors into the sum of the dot products of their components, and then use the properties of the dot product to simplify the expression.
+
+## Dot Product as a Linear Transformation
+
+:::info Brief Overview
+
+This proof assumes we don't know the geometric or component definitions of the dot product.
+Instead, it treats the act of projection as a linear transformatior and shows that the computation of this transformation is equivalent to the component definition of the dot product.
+
+:::
+
+This is the most mind-blowing proof in my opinion, originating from 3b1b's series on linear algebra.
+
+Imagine that we do not know anything about the dot product, only that it does some kind of projection.
+Let $\vu{u}$ be some unit vector that we want to project $\va{v}$ onto. Essentially, we are turning this two-dimensional $\va{v}$ onto a line defined by $\vu{u}$.
+Hence, this is a transformation from $\mathbb{R}^2$ to $\mathbb{R}$.
+
+Recall that linear transformations are defined by how they act on the basis vectors.
+Since we want to project it onto a line, each column in the matrix representing the transformation would only have one entry.

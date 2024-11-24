@@ -1,0 +1,263 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { Fragment } from "react";
+import { sphericalToCartesian } from "@site/src/utilities/geometry"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Gauss's Law
+
+In this section, we will explore Gauss's Law, a fundamental law of electrostatics that is used to calculate electric fields.
+It is often much easier to use Gauss's Law than to calculate electric fields directly with Coulomb's Law, especially in situations with high symmetry.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Electric Flux
+
+I discussed the concept of flux in the Math section, where we talked about the flux of a vector field through a surface.
+Hence, this is just a review of that concept.
+
+In the context of electrostatics, we are interested in the **electric flux** through a surface.
+
+The electric flux through a surface is defined as the electric field passing through the surface, weighted by the area of the surface.
+It can be thought of using a fluid analogy; the field lines are like a fluid, and the flux is the amount of fluid passing through the surface per unit area.
+Alternatively, consider the electric field as a light source, and the flux is the amount of light passing through the surface.
+
+The electric flux $\Phi_E$ through a surface $S$ is given by:
+
+$$
+\begin{equation}
+\Phi_E = \iint_S \va{E} \cdot \dd{\va{a}}
+\end{equation}
+$$
+
+where $\va{E}$ is the electric field and $\dd{\va{a}}$ is an infinitesimal area vector.
+
+## Gauss's Law
+
+Consider a sphere of radius $R$ with a point charge $q$ at its center.
+Since it's a sphere, the electric field will be radially symmetric, pointing equally outwards in all directions.
+
+We know, from Coulomb's Law, that on any point on the sphere, the electric field is given by:
+
+$$
+\begin{equation}
+\va{E} = \frac{1}{4\pi\varepsilon_0}\frac{q}{R^2} \vu{r}
+\end{equation}
+$$
+
+### Integral Form
+
+We want to calculate the electric flux through the sphere.
+The key point is that since the electric field is constant, we can bring $\va{E}$ out of the integral:
+
+$$
+\begin{equation}
+\begin{split}
+\Phi_E &= \iint_S \va{E} \cdot \dd{\va{a}} \\
+&= \iint_S E \dd{a} \\
+&= E \iint_S \dd{a} \\
+&= \frac{1}{4\pi\varepsilon_0}\frac{q}{R^2} \vu{r} \cdot 4\pi R^2 \\
+&= \frac{q}{\varepsilon_0}
+\end{split}
+\end{equation}
+$$
+
+Now, imagine that instead of a sphere, we have a surface of any shape.
+Each patch on the sphere corresponds to a patch on the new surface.
+This new patch on the surface will have a different distance and area.
+
+Now, notice that as the distance from the patch to the charge increases, (1) the electric field decreases by $\frac{1}{r^2}$ and (2) the area increases by $r^2$.
+This means that they **cancel out**, and the flux through the new surface will be the same as the flux through the sphere.
+
+As such, for *any* surface enclosing a charge, the electric flux through the surface is $\frac{q}{\varepsilon_0}$.
+This is known as **Gauss's Law**:
+
+<Boxed>
+**Gauss's Law, Integral Form**: For any closed surface $S$ enclosing a charge $Q_\text{enc}$, the electric flux through the surface is given by:
+
+$$
+\begin{equation}
+\Phi_E = \iint_S \va{E} \cdot \dd{\va{a}} = \frac{Q_\text{enc}}{\varepsilon_0} \label{eq:gauss-law}
+\end{equation}
+$$
+
+</Boxed>
+
+For charges outside the surface, the flux through the surface is zero.
+The reason for this is that while the field lines pass through the surface, eventually the same amount of field lines will also exit the surface.
+Hence, the flux from each time a field line enters the surface is canceled out by the flux from each time a field line exits the surface.
+So the total flux is zero.
+
+### Differential Form
+
+The integral form of Gauss's Law is useful for calculating the electric field for surfaces.
+We can also use an equivalent form of Gauss's Law to describe the electric field at a single point.
+
+We can imagine slowly shrinking the surface $S$ enclosing the charge $q$ until it becomes infinitesimally small, and consider the flux per unit volume.
+So, taking the limit as the surface shrinks to zero, i.e. $V \to 0$, we get:
+
+$$
+\begin{align}
+\Phi_E &= \iint_S \va{E} \cdot \dd{\va{a}} = \frac{q}{\varepsilon_0} \tag{\ref{eq:gauss-law}} \\
+\lim_{V \to 0} \frac{\Phi_E}{V} &= \lim_{V \to 0} \frac{q}{\varepsilon_0 V}
+\end{align}
+$$
+
+The left-hand side is known as the **divergence** of the electric field, denoted $\div{\va{E}}$. On the right, we have the charge density $\rho = \frac{q}{V}$.
+Then, this becomes the differential form of Gauss's Law:
+
+<Boxed>
+**Gauss's Law, Differential Form**: For any volume $V$ enclosing a charge density $\rho$, the divergence of the electric field is given by:
+
+$$
+\begin{equation}
+\div{\va{E}} = \frac{\rho}{\varepsilon_0} \label{eq:gauss-law-diff}
+\end{equation}
+$$
+
+</Boxed>
+
+What we've done here is known as the **Divergence Theorem**, which, more generally, states:
+
+$$
+\begin{equation}
+\iint_S \va{E} \cdot \dd{\va{a}} = \iiint_V \div{\va{E}} \dd{V}
+\end{equation}
+$$
+
+(The Divergence Theorem should make a lot of intuitive sense.
+The divergence of a vector field is essentially the flux per unit volume.
+Wouldn't it make sense that the total flux through a surface is equal to the flux per unit volume integrated over the volume?
+It's essentially analogous to saying that the displacement of an object is the velocity integrated over time.)
+
+### Deriving the Differential Form Directly
+
+We can also derive the differential form of Gauss's Law directly from the definition of the electric field.
+
+We know that the electric field is given by:
+
+$$
+\begin{equation}
+\va{E} = \frac{1}{4\pi\varepsilon_0} \iiint_V \frac{\rho}{r_{12}^2} \vu{r}_{12} \dd{V}
+\end{equation}
+$$
+
+Where the subscript $12$ denotes the vector from the charge to the point in space.
+
+Taking the divergence of this expression, we get:
+
+$$
+\begin{equation}
+\div{\va{E}} = \frac{1}{4\pi\varepsilon_0} \iiint_V \div{\qty(\frac{\rho}{r_{12}^2} \vu{r}_{12})} \dd{V}
+\end{equation}
+$$
+
+We know that the divergence of $\frac{\rho}{r_{12}^2} \vu{r}_{12}$ is:
+
+$$
+\begin{equation}
+\div{\qty(\frac{\rho}{r_{12}^2} \vu{r}_{12})} = \frac{1}{r_{12}^2} \pdv{r} \qty(r_{12}^2 \frac{\rho}{r_{12}^2}) = 0
+\end{equation}
+$$
+
+So the divergence is zero, right?
+Not quite. Cancel out the $r_{12}^2$ terms is only valid for $r \neq 0$.
+Instead, $\div{\qty(\frac{\rho}{r_{12}^2} \vu{r}_{12})} = 0$ only for $r \neq 0$.
+
+Let's see how we can use another method to calculate the divergence at $0$ - applying the Divergence Theorem.
+For notational simplicity, let's denote $\frac{\rho}{r_{12}^2} \vu{r}_{12}$ as $\va{F}$.
+
+Then, the Divergence Theorem states:
+
+$$
+\begin{equation}
+\iint_S \va{F} \cdot \dd{\va{a}} = \iiint_V \div{\va{F}} \dd{V}
+\end{equation}
+$$
+
+We can calculate the left-hand side by considering a sphere of radius $R$:
+
+$$
+\begin{equation}
+\begin{split}
+\iint_S \va{F} \cdot \dd{\va{a}} &= \iint_S \frac{\rho}{R^2} \dd{a} \\
+&= \frac{\rho}{R^2} \iint_S \dd{a} \\
+&= \frac{\rho}{R^2} \cdot 4\pi R^2 \\
+&= 4\pi \rho
+\end{split}
+\end{equation}
+$$
+
+Hence, the divergence of $\va{F}$ is:
+
+$$
+\begin{align}
+\div{\va{F}} &= \begin{cases}
+0 & \text{if } r \neq 0 \\
+\infty \rho & \text{if } r = 0
+\end{cases} \\
+\qand \iiint_V \div{\va{F}} \dd{V} &= 4\pi \rho
+\end{align}
+$$
+
+We will need to be a bit more precise with notation.
+Denote $\va{r}$ as the position of the test charge and $\va{r}'$ as the position of the charge density.
+Then, the vector $\va{r}_{12}$ is $\va{r} - \va{r}'$.
+
+Rewriting this with the Dirac delta function $\delta^3(\va{r}_{12})$, we get:
+
+$$
+\begin{equation}
+\div{\va{F}} = 4\pi \rho(\va{r}') \delta^3(\va{r}_{12}) = 4\pi \rho(\va{r}') \delta^3(\va{r} - \va{r}')
+\end{equation}
+$$
+
+Note that $\rho$ is a function of $\va{r}'$ (the position of the charge).
+
+Going back to the expression for the electric field:
+
+$$
+\begin{equation}
+\begin{split}
+\div{\va{E}(\va{r})} &= \frac{1}{4\pi\varepsilon_0} \iiint_V \div{\qty(\frac{\rho(\va{r}')}{\norm{\va{r} - \va{r}'}^2} \vu{r}_{12})} \dd{V} \\
+&= \frac{1}{4\pi\varepsilon_0} \iiint_V 4\pi \rho(\va{r}') \delta^3(\va{r} - \va{r}') \dd{V}
+\end{split}
+\end{equation}
+$$
+
+We need to use a property of the Dirac delta function:
+
+$$
+\begin{equation}
+\iiint f(\va{r}) \delta^3(\va{r} - \va{r}') \dd{V} = f(\va{r}')
+\end{equation}
+$$
+
+(This only applies when the integral is over the entire space. This is fine for our purposes, since outside of the charge distribution, the charge density is zero, so the integrand is zero.
+Also, you can derive this property by first considering it in 1D by considering the value of $f(x)\delta(x)$ and then generalizing to 3D.)
+
+Then, the divergence of the electric field is:
+
+$$
+\begin{equation}
+\begin{split}
+\div{\va{E}(\va{r})} &= \frac{1}{4\pi\varepsilon_0} 4\pi \rho(\va{r}) \\
+&= \frac{\rho(\va{r})}{\varepsilon_0}
+\end{split}
+\end{equation}
+$$
+
+Which is the differential form of Gauss's Law.
+

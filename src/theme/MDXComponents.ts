@@ -26,6 +26,7 @@ import { ArcLengthVisualizer } from "@site/src/components/mdxGlobal/ArcLengthVis
 import { LineIntegralVisualizer3D } from "@site/src/components/mdxGlobal/LineIntegralVisualizer3D";
 import LinearTransformationVisualizer3D from "@site/src/components/mdxGlobal/LinearTransformationVisualizer3D";
 import { DeterminantCube } from "@site/src/components/mdxGlobal/DeterminantCube";
+import { CoulombLawVisualizer } from "@site/src/components/mdxGlobal/CoulombLawVisualizer";
 
 export default {
     ...MDXComponents,
@@ -33,6 +34,7 @@ export default {
     Boxed,
     Citation,
     Cite,
+    CoulombLawVisualizer,
     DerivativeFromLimits,
     DivergenceVisualization,
     DeterminantCube,

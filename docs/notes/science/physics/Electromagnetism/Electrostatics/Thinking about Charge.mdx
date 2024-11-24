@@ -1,0 +1,120 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Thinking about Charge
+
+In this section, we will explore the concept of charge in more detail.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Classical View of Charge
+
+In classical physics, charge is a fundamental property of matter.
+All matter possesses charge, and it is responsible for the electromagnetic interactions between particles.
+
+Classical physics assumes that **charge is continuous**; that is, it can take on any value.
+Of course, we know that all charge in the universe is quantized in units of the elementary charge $e$.
+However, the principles of classical physics still hold to an enormous degree of accuracy.
+The elementary charge is so small ($e \approx 1.6 \times 10^{-19} \, \text{C}$) that in most macroscopic situations, charge appears continuous.
+
+The second assumption is that **charge distribution is continuous**.
+This means that charge is spread out over a volume, and we can talk about the charge "density" at any point in space.
+Once again, we know that at a microscopic level, charge distribution is not continuous, rather there are particles with discrete charges that make up matter.
+
+This is not to say that classical electromagnetism does not study the interactions between individual charges.
+In fact, the entire field of electrostatics *is* built on the interactions between individual charges.
+We will see how Coulomb's Law, the most fundamental law of electrostatics, describes the force between two individual point charges.
+
+This is also not to say that classical electromagnetism is not useful; it is actually increasingly important in modern physics. Why?
+
+- The Theory of Relativity does not change the laws of electromagnetism.
+    In fact, the Theory of Relativity was developed to make electromagnetism consistent with the laws of physics.
+- Quantum Mechanics, which describes the behavior of particles at the smallest scales, only deviates from classical physics in extreme situations.
+    These situations are so small - $< 10^{-12} \, \text{m}$ ($100$ times smaller than an atom) - that they are not relevant to most macroscopic situations.
+    In fact, we can discuss the behavior of atoms and molecules using classical electromagnetism with great accuracy.
+    In the case that quantum effects are important, a field called **quantum electrodynamics** is used, which is a quantum mechanical theory of electromagnetism.
+
+## The Charge in Matter
+
+It was experimentally discovered that there are two types of charge, where same charges repel and opposite charges attract.
+To make it mathematically convenient, we call one type of charge positive and the other negative.
+
+As current models suggest, any particle with a charge also has an antiparticle with the exact same properties, just with an opposite charge.
+This means that there are also antiprotons and positrons, which have negative and positive charges, respectively.
+
+Particles and their antiparticles can annihilate each other, releasing energy in the form of photons.
+This energy is what we see in particle accelerators, where particles are smashed together at high speeds to create new particles and study their properties.
+
+In the early universe, when the temperature was high enough, particles and antiparticles were created in equal amounts.
+Due to some unknown asymmetry in the laws of physics, there was a slight excess of particles over antiparticles.
+This excess of particles is what makes up all the matter in the universe today.
+The asymmetry in the laws of physics that caused this excess is one of the biggest unsolved problems in physics.
+
+The majority of positive charge in the universe is in the form of protons, while the majority of negative charge is in the form of electrons.
+In an atom, the protons are concentrated in the center, forming the **nucleus**, while the electrons are spread out in **orbitals** around the nucleus.
+The electrons are held in place by the electromagnetic force between the positive protons and the negative electrons.
+
+Note that while protons are positive and electrons are negative, this assignment of charge signs is arbitrary.
+In fact, the assignment of charge signs was done before the discovery of the electron.
+
+All charge in the universe is a multiple of the elementary charge $e$.
+Protons have a charge of $+e$, electrons have a charge of $-e$, and neutrons have no charge.
+Protons are part of a class of particles called hadrons, and they have an internal structure made up of three quarks.
+Namely, a proton is made up of two up quarks (each with a charge of $+\frac{2}{3}e$) and one down quark (with a charge of $-\frac{1}{3}e$).
+If, then, an isolated quark exists, it would violate the quantization of charge. However, quantum chromodynamics (QCD) prevents the existence of isolated quarks.
+
+As we briefly mentioned earlier, we will mostly ignore the quantization of charge in classical electromagnetism.
+Instead, we act like a charge, $q$, can take on any value, and we can talk about the charge density at any point in space.
+The charge density can be thought of as an "average" charge per unit volume, in the same way that mass density is the "average" mass per unit volume.
+We will also treat the particles simply as point charges. Experiments have shown that protons and electrons are much smaller than the smallest distances we can measure, so treating them as point charges is a good approximation.
+
+## Conservation of Charge
+
+Charge, like many other quantities in physics, is conserved.
+This means that the total charge in an isolated (no matter flow) system remains constant over time.
+In other words, charge cannot be created or destroyed, only transferred from one object to another.
+(This will be a highly contentious point in the future when we discuss the invariance of charge.)
+
+Note that this does not mean that charge is always equal in all parts of a system.
+For example, in a circuit, charge can flow from one part of the circuit to another, even though the total charge in the circuit remains constant.
+Another example is a photon's ability to create an electron-positron pair, which, although it changes the charge of the system, does not violate the conservation of charge because the photon itself carries no charge.
+
+Conservation laws, such as the conservation of charge, are fundamental to physics.
+Some advanced mathematical theories, such as Noether's theorem, show that conservation laws actually arise from certain symmetries in the universe.
+
+We can make this more concrete by writing the conservation of charge mathematically:
+
+$$
+\begin{equation}
+\dv{Q}{t} = 0
+\end{equation}
+$$
+
+where $Q$ is the total charge.
+
+## Summary and Next Steps
+
+In this section, we explored the concept of charge in more detail.
+
+Here are the key points to remember:
+
+- Charge is a fundamental property of matter that is responsible for electromagnetic interactions.
+- Charge is quantized in units of the elementary charge $e$.
+- Charge is conserved, meaning that the total charge in an isolated system remains constant over time.
+
+This classical view of charge will form the basis for our study of electrostatics.
+This page is a lot of words and very little math, but we will soon dive into the mathematical formalism of charge and its interactions.
+In the next section, we will dive into Coulomb's Law, which describes the force between two point charges.

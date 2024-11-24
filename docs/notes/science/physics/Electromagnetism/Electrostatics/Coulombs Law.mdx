@@ -1,0 +1,616 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { Fragment } from "react";
+import { sphericalToCartesian } from "@site/src/utilities/geometry"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Coulomb's Law
+
+Coulomb's Law is the most fundamental law of electrostatics, describing the force between two point charges.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Principle of Superposition
+
+Imagine we have a system of $n$ point charges, $q_1, q_2, \ldots, q_n$. Call these charges the "source charges".
+Then, imagine placing another point charge, $Q$, at some point in space. Call this charge the "test charge".
+
+The basis of electrostatics is to ask: what is the force on the test charge $Q$ due to the source charges $q_1, q_2, \ldots, q_n$?
+One extremely powerful principle in electrostatics is known as **Principle of Superposition**:
+
+> **Principle of Superposition**: The total force on a charge due to multiple charges is the vector sum of the forces on the charge due to each individual charge.
+
+This principle allows us to break down complex systems of charges into simpler systems, and then add up the forces due to each individual charge.
+
+Let $\va{F}_i$ be the force on the test charge $Q$ due to the source charge $q_i$.
+Then, the total force on the test charge $Q$ is:
+
+$$
+\begin{equation}
+\va{F} = \va{F}_1 + \va{F}_2 + \cdots + \va{F}_n
+\end{equation}
+$$
+
+## Coulomb's Law
+
+Given the system of charges described above, the force on the test charge $Q$ due to the source charge $q_i$ is given by Coulomb's Law:
+
+<div className="card">
+    <div className="card__header">
+        <h3>
+            Coulomb's Law
+        </h3>
+    </div>
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <CoulombLawVisualizer />
+            </div>
+            <div className="col">
+
+                $$
+                \begin{equation}
+                \va{F}_i = k \frac{\class{blue}{q_i} \class{yellow}{Q}}{r_i^2} \class{pink}{\vu{r}_i} \label{eq:coulomb-law}
+                \end{equation}
+                $$
+
+                where:
+
+                - $k$ is the Coulomb constant, approximately $8.99 \times 10^9 \, \text{N} \cdot \text{m}^2 \cdot \text{C}^{-2}$.
+                - $\class{blue}{q_i}$ is the charge of the $i$-th source charge.
+                - $\class{yellow}{Q}$ is the charge of the test charge.
+                - $r_i$ is the distance between the $i$-th source charge and the test charge.
+                - $\class{pink}{\vu{r}_i}$ is the unit vector pointing from the $i$-th source charge to the test charge $\class{yellow}{Q}$.
+
+            </div>
+        </div>
+    </div>
+</div>
+
+The SI unit of charge is the Coulomb ($\text{C}$).
+For historical reasons, $k$ is written in terms of the permittivity of free space, $\varepsilon_0$, as:
+
+$$
+\begin{equation}
+k = \frac{1}{4 \pi \varepsilon_0}
+\end{equation}
+$$
+
+Coulomb's Law is then written as:
+
+$$
+\begin{equation}
+\va{F}_i = \frac{1}{4 \pi \varepsilon_0} \frac{\class{blue}{q_i} \class{yellow}{Q}}{r_i^2} \class{pink}{\vu{r}_i}
+\end{equation}
+$$
+
+The total force from the $n$ source charges on the test charge $Q$ is then:
+
+$$
+\begin{equation}
+\begin{split}
+\va{F} &= \va{F}_1 + \va{F}_2 + \cdots + \va{F}_n \\
+&= \frac{1}{4 \pi \varepsilon_0} \qty(\frac{\class{blue}{q_1} \class{yellow}{Q}}{r_1^2} \class{pink}{\vu{r}_1} + \frac{\class{blue}{q_2} \class{yellow}{Q}}{r_2^2} \class{pink}{\vu{r}_2} + \cdots + \frac{\class{blue}{q_n} \class{yellow}{Q}}{r_n^2} \class{pink}{\vu{r}_n}) \\
+&= \frac{Q}{4 \pi \varepsilon_0} \qty(\frac{\class{blue}{q_1}}{r_1^2} \class{pink}{\vu{r}_1} + \frac{\class{blue}{q_2}}{r_2^2} \class{pink}{\vu{r}_2} + \cdots + \frac{\class{blue}{q_n}}{r_n^2} \class{pink}{\vu{r}_n})
+\end{split} \label{eq:total-force}
+\end{equation}
+$$
+
+## The Electric Field
+
+Going back to the final expression for the total force on the test charge $Q$, let's isolate the test charge $Q$:
+
+$$
+\begin{equation}
+\va{F} = Q \qty[\frac{1}{4 \pi \varepsilon_0} \qty(\frac{\class{blue}{q_1}}{r_1^2} \class{pink}{\vu{r}_1} + \frac{\class{blue}{q_2}}{r_2^2} \class{pink}{\vu{r}_2} + \cdots + \frac{\class{blue}{q_n}}{r_n^2} \class{pink}{\vu{r}_n})]
+\end{equation}
+$$
+
+Define a new quantity, $\va{E}$, called the **electric field**, as:
+
+$$
+\begin{equation}
+\va{E} \equiv \frac{1}{4 \pi \varepsilon_0} \qty(\frac{\class{blue}{q_1}}{r_1^2} \class{pink}{\vu{r}_1} + \frac{\class{blue}{q_2}}{r_2^2} \class{pink}{\vu{r}_2} + \cdots + \frac{\class{blue}{q_n}}{r_n^2} \class{pink}{\vu{r}_n}) = \sum_{i=1}^n \frac{\class{blue}{q_i}}{4 \pi \varepsilon_0 r_i^2} \class{pink}{\vu{r}_i} \label{eq:electric-field}
+\end{equation}
+$$
+
+It acts as a quantity that describes the force **per unit charge**.
+Instead of acting on a specific charge $Q$ at a point, the electric field simply describes the force that *would* act on a charge of $1 \, \text{C}$ at that point.
+This makes $\va{E}$ a function of position in space, and it is a vector field.
+
+Then, the total force on the test charge $Q$ is simply:
+
+$$
+\begin{equation}
+\va{F} = Q \va{E}
+\end{equation}
+$$
+
+The electric field, as a vector field, can be visualized as a set of vectors at each point in space:
+
+{(() => {
+    const charge = useMovablePoint([0, 0], { color: color("green") });
+    const unitVec = ([x, y]) => vec.normalize(vec.sub([x, y], charge.point));
+    const magnitude = ([x, y]) => vec.mag(vec.sub([x, y], charge.point)) === 0 ? 0 : (10 / vec.mag(vec.sub([x, y], charge.point)) ** 2);
+    return (
+        <Mafs>
+            {/* <Coordinates.Cartesian xAxis={{ lines: false, labels: () => "" }} yAxis={{ lines: false, labels: () => "" }} /> */}
+            <Plot.VectorField
+                xy={([x, y]) => vec.withMag(unitVec([x, y]), magnitude([x, y]))}
+                xyOpacity={magnitude}
+                step={0.5}
+            />
+            {charge.element}
+        </Mafs>
+    )
+})()}
+
+## From Discrete to Continuous
+
+As we discussed in the previous page, clasiscal electromagnetism treats charge as a continuous distribution.
+This means that we can treat the source charges $q_1, q_2, \ldots, q_n$ as a continuous charge distribution over space.
+There are three different types of charge distributions, the linear, surface, and volume charge distributions.
+
+For a linear charge distribution, the charge is distributed along a line.
+The charge density, $\lambda$, is the charge per unit length, i.e. how much charge is present per unit length of the line.
+Then, the charge $\dd{Q}$ in a small segment of the line, $\dd{l}$, is:
+
+$$
+\begin{equation}
+\dd{Q} = \lambda \dd{l}
+\end{equation}
+$$
+
+The total charge $Q$ in the line is then the integral of the charge density over the length of the line:
+
+$$
+\begin{equation}
+Q = \int \lambda \dd{l}
+\end{equation}
+$$
+
+And the electric field at a point due to a linear charge distribution is:
+
+$$
+\begin{equation}
+\va{E} = \frac{1}{4 \pi \varepsilon_0} \int \frac{\class{yellow}{Q}}{r^2} \vu{r} = \frac{1}{4 \pi \varepsilon_0} \int \frac{\class{yellow}{\lambda}}{r^2} \vu{r} \class{yellow}{\dd{l}}
+\end{equation}
+$$
+
+A similar definition can be made for surface and volume charge distributions. A table summarizing the three types of charge distributions is given below:
+
+| Type of Distribution | Charge Density | Charge | Electric Field |
+| --- | --- | --- | --- |
+| Linear | $\lambda \quad [\text{C} \cdot \text{m}^{-1}]$ | $\dd{Q} = \lambda \dd{l}$ | $\displaystyle \va{E} = \frac{1}{4 \pi \varepsilon_0} \int \frac{\lambda}{r^2} \vu{r} \dd{l}$ |
+| Surface | $\sigma \quad [\text{C} \cdot \text{m}^{-2}]$ | $\dd{Q} = \sigma \dd{a}$ | $\displaystyle \va{E} = \frac{1}{4 \pi \varepsilon_0} \iint \frac{\sigma}{r^2} \vu{r} \dd{a}$ |
+| Volume | $\rho \quad [\text{C} \cdot \text{m}^{-3}]$ | $\dd{Q} = \rho \dd{V}$ | $\displaystyle \va{E} = \frac{1}{4 \pi \varepsilon_0} \iiint \frac{\rho}{r^2} \vu{r} \dd{V}$ |
+
+## Field from Uniform Sphere
+
+By now, armed with Coulomb's Law and the concept of the electric field, in principle, electrostatics is *complete*.
+This means that purely logically, we can derive any result in electrostatics using these two principles.
+
+To demosntrate this, we will now solve some a basic problem involving Coulomb's Law and the electric field.
+There are two goals for basic problems problems like this:
+
+- To understand how to apply Coulomb's Law and the formula for the electric field to solve problems.
+- To realize that this is a f\*\*\*ing pain in the a\*\* and we need a better way to do this.
+
+The problem is as follows:
+
+> A solid sphere of radius $R$ has a charge $Q$ uniformly distributed throughout its *surface*.
+> Find the electric field at a point that is $z$ units above the center of the sphere.
+>
+> You will need to use the cosine rule to solve this problem.
+> You will end up with two cases, one where the point is inside the sphere and one where the point is outside the sphere.
+
+To solve this problem, we will need to integrate the electric field over the entire surface of the sphere.
+We shall use spherical coordinates to simplify the calculation.
+
+<CustomMathbox>
+    <MB.Cartesian>
+        <MB.Axis axis="x" range={[-2, 2]} />
+        <MB.Axis axis="y" range={[-2, 2]} />
+        <MB.Axis axis="z" range={[-2, 2]} />
+        <MB.Matrix
+            id="sphere"
+            bufferWidth={128}
+            bufferHeight={64}
+            width={65}
+            height={32}
+            expr={(emit, i, j) => {
+                let phi = (i / 64) * Math.PI * 2;
+                let theta = (j / 32) * Math.PI;
+
+                emit(...sphericalToCartesian(1, theta, phi));
+            }}
+            channels={3}
+        />
+        <MB.Surface
+            points="#sphere"
+            color={"#B0B0B0"}
+            lineX={true}
+            lineY={true}
+            opacity={0.75}
+            zBias={-1}
+        />
+    </MB.Cartesian>
+</CustomMathbox>
+
+We shall consider a small surface element $\dd{a}$ on the sphere, then use the surface charge density to calculate the charge in this element.
+The charge density $\sigma$ is the charge per unit area, i.e. how much charge is present per unit area of the surface.
+Since it is uniformly distributed, the charge density is constant and equal to:
+
+$$
+\begin{equation}
+\sigma = \frac{\text{(Total charge)}}{\text{(Surface area)}} = \frac{Q}{4 \pi R^2}
+\end{equation}
+$$
+
+The surface element $\dd{a}$ is a small patch on the sphere shown below:
+
+<CustomMathbox>
+    <MB.Cartesian>
+        <MB.Axis axis="x" range={[-2, 2]} />
+        <MB.Axis axis="y" range={[-2, 2]} />
+        <MB.Axis axis="z" range={[-2, 2]} />
+        <MB.Matrix
+            id="sphere"
+            bufferWidth={128}
+            bufferHeight={64}
+            width={65}
+            height={32}
+            expr={(emit, i, j) => {
+                // phi from 0 to pi/2 instead
+                let phi = (i / 64) * Math.PI / 2;
+                // theta from 0 to pi/2 instead
+                let theta = (j / 32) * Math.PI / 2;
+
+                emit(...sphericalToCartesian(1, theta, phi));
+            }}
+            channels={3}
+        />
+        <MB.Surface
+            points="#sphere"
+            color={"#B0B0B0"}
+            lineX={true}
+            lineY={true}
+            opacity={0.75}
+            zBias={-1}
+        />
+        <MB.Matrix
+            id="area_element"
+            bufferWidth={128}
+            bufferHeight={64}
+            width={8}
+            height={8}
+            expr={(emit, i, j) => {
+                // phi from 2pi/8 to 3pi/8 instead
+                let phi = (i / 8) * Math.PI / 8 + Math.PI / 4;
+                // theta from pi/4 to 5pi/16 instead
+                let theta = (j / 8) * Math.PI / 8 + Math.PI / 4;
+
+                emit(...sphericalToCartesian(1, theta, phi));
+            }}
+            channels={3}
+        />
+        <MB.Surface
+            points="#area_element"
+            color={color("red")}
+            lineX={true}
+            lineY={true}
+            zBias={1}
+            zOrder={2}
+        />
+        {[
+            // [phi, theta]
+            [Math.PI / 4, Math.PI / 4],
+            [Math.PI / 4, 3 * Math.PI / 8],
+            [3 * Math.PI / 8, Math.PI / 4],
+            [3 * Math.PI / 8, 3 * Math.PI / 8],
+        ].map(([phi, theta], i) => {
+            const point = sphericalToCartesian(1, theta, phi);
+            const [x, y, z] = point;
+            return (
+                <Fragment key={i}>
+                    <MB.Array id={`point_${i}`} items={2} channels={3} data={[[0, 0, 0], point]} />
+                    <MB.Line points={`#point_${i}`} width={5} />
+                </Fragment>
+            )
+        })}
+    </MB.Cartesian>
+</CustomMathbox>
+
+The area of this surface element is its width times its height, which is $\dd{a} = R \sin(\theta)\dd{\phi} \cdot R \dd{\theta} = R^2 \sin(\theta) \dd{\theta} \dd{\phi}$.
+Therefore, the charge $\dd{Q}$ in this surface element is:
+
+$$
+\begin{equation}
+\dd{Q} = \sigma \dd{a} = \frac{Q}{4 \pi R^2} R^2 \sin(\theta) \dd{\theta} \dd{\phi} = \frac{Q}{4 \pi} \sin(\theta) \dd{\theta} \dd{\phi} \label{eq:sphere-dQ}
+\end{equation}
+$$
+
+This charge contributes to the electric field at the point $P$. Call this contribution $\dd{\va{E}}$.
+The key idea is that **the contribution is only along the radial (vertical) direction**.
+This is due to the symmetry of the sphere, which means that there is another point, $P'$, on the opposite side of the sphere that contributes an equal and opposite electric field in the horizontal direction.
+A diagram of this is shown below:
+
+<Mafs>
+    <Circle center={[0, 0]} radius={2} />
+    <Point x={0} y={3} />
+    <Point x={2 * Math.cos(3 / 4)} y={2 * Math.sin(3 / 4)} color={color("green")} />
+    <LaTeX at={[2 * Math.cos(3 / 4) + 0.3, 2 * Math.sin(3 / 4)]} color={color("green")} tex="P" />
+    <Point x={-2 * Math.cos(3 / 4)} y={2 * Math.sin(3 / 4)} color={color("red")} />
+    <LaTeX at={[-2 * Math.cos(3 / 4) - 0.3, 2 * Math.sin(3 / 4)]} color={color("red")} tex="P'" />
+
+    <Transform translate={[0, 3]}>
+        <Vector tip={vec.normalize(vec.sub([2 * Math.cos(3 / 4), 2 * Math.sin(3 / 4)], [0, 3]))} color={color("green")} />
+        <LaTeX at={[1, -0.5]} color={color("green")} tex="\text{d}\mathbf{\vec{E}}" />
+
+        <Vector tip={vec.normalize(vec.sub([-2 * Math.cos(3 / 4), 2 * Math.sin(3 / 4)], [0, 3]))} color={color("red")} />
+        <LaTeX at={[-1, -0.5]} color={color("red")} tex="\text{d}\mathbf{\vec{E}}'" />
+    </Transform>
+
+    <Line.Segment point1={[0, 0]} point2={[0, 3]} style="dashed" />
+    <LaTeX at={lineLabel([0, 0], [0, 3])} tex="z" />
+</Mafs>
+
+So we only need to consider the vertical component of the electric field; $\dd{\va{E}} \equiv \dd{E}_z \vu{k}$.
+To find this component, we need:
+
+- The charge $\dd{Q}$ in the surface element. We already know this to be $\dd{Q} = \sigma R^2 \sin(\theta) \dd{\theta} \dd{\phi}$.
+- The distance $r_p$ from the surface element to the point $P$. We do not know this yet. (I use $r_p$ instead of $r_P$ since $r_P$ looks weird in $\mathrm{\LaTeX}$.)
+
+We can construct a triangle with the surface element, the point $P$, and the center of the sphere. This triangle is shown below:
+
+<Mafs>
+    <Circle center={[0, 0]} radius={2} />
+    <Point x={0} y={3} />
+    <Point x={2 * Math.cos(3 / 4)} y={2 * Math.sin(3 / 4)} />
+    <LaTeX at={[2 * Math.cos(3 / 4) + 0.3, 2 * Math.sin(3 / 4)]} tex="P" />
+
+    <Polygon points={[[0, 0], [0, 3], [2 * Math.cos(3 / 4), 2 * Math.sin(3 / 4)]]} strokeStyle="dashed" />
+    <LaTeX at={lineLabel([0, 0], [0, 3], "left")} tex="z" />
+
+    <Transform translate={[0, 3]}>
+        <Vector tip={vec.normalize(vec.sub([2 * Math.cos(3 / 4), 2 * Math.sin(3 / 4)], [0, 3]))} color={color("green")} />
+        <LaTeX at={[0.4, -1]} color={color("green")} tex="\text{d}\mathbf{\vec{E}}" />
+    </Transform>
+
+    {/* r_p = sqrt(13 - 12 * cos(3 / 4)) */}
+
+    {/* Angle theta */}
+    <Angle at={[0, 0]} fromRad={3 / 4} toRad={Math.PI / 2} label="\theta" />
+
+    {/* Angle alpha */}
+    {/* Alpha = arcsin(R sintheta/sqrt(13 - 12 * cos(3 / 4))) */}
+    <Angle at={[0, 3]} fromRad={-Math.PI / 2} toRad={-(Math.PI / 2) + Math.asin(2 * Math.sin(3 / 4) / Math.sqrt(13 - 12 * Math.cos(3 / 4)))} label="\alpha" />
+
+    {/* Distance r_p */}
+    <LaTeX at={lineLabel([0, 3], [2 * Math.cos(3 / 4), 2 * Math.sin(3 / 4)], "left")} tex="r_p" />
+</Mafs>
+
+We can now find the distance $r_p$ using the cosine rule.
+(Recall that $\theta$ is the angle from the vertical axis to the point $P$.)
+
+$$
+\begin{equation}
+r_p^2 = R^2 + z^2 - 2Rz\cos(\theta) \label{eq:sphere-r_p2}
+\end{equation}
+$$
+
+With this, we can find the electric field $\dd{\va{E}}$ at the point $P$ due to the surface element.
+Remember that only the vertical component of the electric field contributes to the electric field at $P$.
+We shall use $k = \frac{1}{4 \pi \varepsilon_0}$ for simplicity.
+
+$$
+\begin{align}
+\dd{E} &= k \frac{\dd{Q}}{r_p^2} \\
+\dd{E}_z &= -\dd{E} \cos(\alpha) = k -\frac{\class{yellow}{\dd{Q}}}{r_p^2} \cos(\alpha) \nonumber \\
+&= -k \frac{\class{yellow}{Q \sin(\theta) \dd{\theta} \dd{\phi}}}{\class{yellow}{4 \pi} r_p^2} \cos(\alpha) \label{eq:sphere-dE}
+\end{align}
+$$
+
+The total electric field at the point $P$ is then the sum of the electric fields due to all the surface elements.
+This is an integral over the entire surface of the sphere. The bounds are $\theta \in [0, \pi]$ and $\phi \in [0, 2\pi]$.
+
+$$
+\begin{equation}
+\begin{split}
+E_z &= \int \dd{E}_z \\
+&= -k \int_{\theta = 0}^{\pi} \int_{\phi = 0}^{2\pi} \frac{Q \class{yellow}{\cos(\alpha) \sin(\theta) \dd{\theta}} \dd{\phi}}{4 \pi \class{yellow}{r_p^2}} \\
+&= -kQ \qty(\int_{\theta = 0}^{\pi} \frac{\class{yellow}{\cos(\alpha) \sin(\theta) \dd{\theta}}}{4 \pi \class{yellow}{r_p^2}}) \qty(\int_{\phi = 0}^{2\pi} \dd{\phi}) \\
+&= -2\pi kQ \int_{\theta = 0}^{\pi} \frac{\class{yellow}{\cos(\alpha) \sin(\theta) \dd{\theta}}}{4 \pi \class{yellow}{r_p^2}} \\
+&= -\frac{kQ}{2} \int_{\theta = 0}^{\pi} \frac{\cos(\alpha) \sin(\theta) \dd{\theta}}{r_p^2} \label{eq:sphere-E_z}
+\end{split}
+\end{equation}
+$$
+
+The angle $\alpha$ is the angle between the electric field and the vertical axis. From the cosine rule on $\alpha$ we have:
+
+$$
+\begin{equation}
+\cos(\alpha) = \frac{z^2 - R^2 + r_p^2}{2zr_p} \label{eq:sphere-cos_alpha}
+\end{equation}
+$$
+
+To simplify the integral, we can make the subject $r_p$ instead of $\theta$.
+By the cosine rule and implicit differentiation, we have:
+
+$$
+\begin{align}
+r_p^2 &= R^2 + z^2 - 2Rz\cos(\theta) \tag{\ref{eq:sphere-r_p2}} \\
+2r_p \dd{r_p} &= 2Rz\sin(\theta) \dd{\theta} \nonumber \\
+\sin(\theta) \dd{\theta} &= \frac{r_p \dd{r_p}}{Rz} \label{eq:sphere-sin_theta}
+\end{align}
+$$
+
+Now, regarding the bounds of the integral, we can visualize $r_p$ from $\theta = 0$ to $\theta = \pi$.
+(You could calculate the bounds with brute force, but this is a more elegant way to do it.)
+At $\theta = 0$, the charge is at the top of the sphere. The diagram below shows $r_p$ for both $z < R$ and $z > R$:
+
+<Mafs>
+    <Transform translate={[-3, 0]}>
+        <Circle center={[0, 0]} radius={2} />
+        <Point x={0} y={3} />
+        <Vector tip={[0, 3]} color={color("green")} />
+        <LaTeX at={[0.3, 1.5]} color={color("green")} tex="z" />
+        <Vector tip={[0, 2]} opacity={0.5} />
+        <LaTeX at={[-0.3, 1]} opacity={0.5} tex="R" />
+        <Vector tail={[-0.1, 2]} tip={[-0.1, 3]} opacity={0.5} />
+        <LaTeX at={[-0.3, 2.5]} opacity={0.5} tex="r_p" />
+    </Transform>
+
+    <Transform translate={[3, 0]}>
+        <Circle center={[0, 0]} radius={2} />
+        <Point x={0} y={1} />
+        <Vector tip={[0, 1]} color={color("green")} />
+        <LaTeX at={[-0.3, 0.5]} color={color("green")} tex="z" />
+        <Vector tip={[0, 2]} opacity={0.5} />
+        <LaTeX at={[0.3, 1]} opacity={0.5} tex="R" />
+        <Vector tail={[-0.1, 2]} tip={[-0.1, 1]} opacity={0.5} />
+        <LaTeX at={[-0.3, 1.5]} opacity={0.5} tex="r_p" />
+    </Transform>
+</Mafs>
+
+Evidently, the bounds are $|z - R|$ and $z + R$. (For $z > R$, the lower bound of $r_p$ is $r_p = z - R$, while for $z < R$, the lower bound is $r_p = R - z$.)
+The upper bound is $r_p = z + R$ for both cases:
+
+<Mafs>
+    <Transform translate={[-3, 0]}>
+        <Circle center={[0, 0]} radius={2} />
+        <Point x={0} y={3} />
+        <Vector tip={[0, 3]} color={color("green")} />
+        <LaTeX at={[0.3, 1.5]} color={color("green")} tex="z" />
+        <Vector tip={[0, -2]} opacity={0.5} />
+        <LaTeX at={[0.3, -1]} opacity={0.5} tex="R" />
+        <Vector tail={[-0.1, -2]} tip={[-0.1, 3]} opacity={0.5} />
+        <LaTeX at={[-0.3, 0.5]} opacity={0.5} tex="r_p" />
+    </Transform>
+
+    <Transform translate={[3, 0]}>
+        <Circle center={[0, 0]} radius={2} />
+        <Point x={0} y={1} />
+        <Vector tip={[0, 1]} color={color("green")} />
+        <LaTeX at={[0.3, 0.5]} color={color("green")} tex="z" />
+        <Vector tip={[0, -2]} opacity={0.5} />
+        <LaTeX at={[0.3, -1]} opacity={0.5} tex="R" />
+        <Vector tail={[-0.1, 1]} tip={[-0.1, -2]} opacity={0.5} />
+        <LaTeX at={[-0.3, -0.5]} opacity={0.5} tex="r_p" />
+    </Transform>
+</Mafs>
+
+Using both equations, we can rewrite the integral as:
+
+$$
+\begin{equation}
+\begin{split}
+E_z &= -\frac{kQ}{2} \int_{\theta = 0}^{\pi} \frac{\cos(\alpha) \class{blue}{\sin(\theta) \dd{\theta}}}{r_p^2} \\
+&= -\frac{kQ}{2} \int_{r_p = |z - R|}^{z + R} \frac{\cos(\alpha) \class{blue}{\frac{r_p \dd{r_p}}{Rz}}}{r_p^2} \\
+&= -\frac{kQ}{2} \int_{r_p = |z - R|}^{z + R} \frac{\cos(\alpha)}{r_p R z} \dd{r_p} \\
+&= -\frac{kQ}{2} \int_{r_p = |z - R|}^{z + R} \frac{z^2 - R^2 + r_p^2}{2r_p^2 R z^2} \dd{r_p} \\
+&= -\frac{kQ}{4Rz^2} \int_{r_p = |z - R|}^{z + R} \qty(\frac{z^2 - R^2}{r_p^2} + 1) \dd{r_p} \\
+&= -\frac{kQ}{4Rz^2} \qty(\int_{r_p = |z - R|}^{z + R} \frac{z^2 - R^2}{r_p^2} \dd{r_p} + \int_{r_p = |z - R|}^{z + R} \dd{r_p}) \\
+&= -\frac{kQ}{4Rz^2} \eval{\qty(-\frac{z^2 - R^2}{r_p} + r_p)}_{r_p = |z - R|}^{z + R} \\
+&= -\frac{kQ}{4Rz^2} \qty[\qty(-\frac{z^2 - R^2}{z + R} + z + R) - \qty(-\frac{z^2 - R^2}{|z - R|} + |z - R|)] \\
+&= -\frac{kQ}{4Rz^2} \qty[\frac{z^2 - R^2}{|z - R|} - \frac{z^2 - R^2}{z + R} + z + R - |z - R|] \\
+\end{split}
+\end{equation}
+$$
+
+From here, it depends on whether $z > R$ or $z < R$.
+
+For $z > R$, we have $|z - R| = z - R$:
+
+$$
+\begin{equation}
+\begin{split}
+E_z &= -\frac{kQ}{4Rz^2} \qty[\frac{z^2 - R^2}{z - R} - \frac{z^2 - R^2}{z + R} + z + R - (z - R)] \\
+&= -\frac{kQ}{4Rz^2} \qty[\frac{(z - R)(z + R)^2 - (z - R)^2(z + R)}{(z - R)(z + R)} + 2R] \\
+&= -\frac{kQ}{4Rz^2} \qty[\frac{\cancel{(z - R)(z + R)}[(z + R) - (z - R)]}{\cancel{(z - R)(z + R)}} + 2R] \\
+&= -\frac{kQ}{4Rz^2} \qty[2R + 2R] \\
+&= -\frac{kQ}{z^2}
+\end{split}
+\end{equation}
+$$
+
+Recall that for a point charge $Q$ at a distance $z$ from the center of the sphere, the electric field is $\frac{kQ}{z^2}$.
+So the electric field at a point $z$ units above the center of the sphere is the same as that of a point charge at the center of the sphere.
+
+For $z < R$, we have $|z - R| = R - z$:
+
+$$
+\begin{equation}
+\begin{split}
+E_z &= -\frac{kQ}{4Rz^2} \qty[\frac{z^2 - R^2}{R - z} - \frac{z^2 - R^2}{z + R} + z + R - (R - z)] \\
+&= -\frac{kQ}{4Rz^2} \qty[\frac{(z - R)(z + R)^2 - (z - R)^2(z + R)}{\class{blue}{(R - z)}(z + R)} + 2z] \\
+&= -\frac{kQ}{4Rz^2} \qty[\class{blue}{-}\frac{(z - R)(z + R)[(z + R) - (z - R)]}{\class{blue}{(z - R)}(z + R)} + 2z] \\
+&= -\frac{kQ}{4Rz^2} \qty[-2z + 2z] \\
+&= 0
+\end{split}
+\end{equation}
+$$
+
+So the electric field at a point $z$ units below the center of the sphere is zero.
+
+Our conclusions are:
+
+- For $z > R$, the electric field at a point $z$ units above the center of the sphere is the same as that of a point charge at the center of the sphere.
+- For $z < R$, the electric field at a point $z$ units below the center of the sphere is zero.
+
+Notice how absolutely painful this was. We had to do a complicated spherical integral, and then we had to use a bunch of trigonometry to simplify the result.
+Any algebraic mistake would have resulted in a wrong answer.
+And this is all just for a simple sphere with a uniform charge distribution.
+Imagine doing this for a more complex charge distribution.
+
+There is a far better way to do this, and that is by using Gauss' Law.
+In fact, Gauss' Law is so powerful that a person could probably solve this problem completely mentally.
+We shall discuss Gauss' Law in the next section.
+
+## Summary and Next Steps
+
+In this section, we have introduced the concept of the electric field and how it is related to the force on a test charge.
+
+Here are the key points to remember:
+
+- The electric force on a test charge $Q$ due to a source charge $q_i$ is given by Coulomb's Law:
+
+    $$
+    \begin{equation}
+    \va{F}_i = \frac{1}{4 \pi \varepsilon_0} \frac{q_i Q}{r_i^2} \vu{r}_i \tag{\ref{eq:coulomb-law}}
+    \end{equation}
+    $$
+
+- The principle of superposition allows us to find the total force on the test charge by summing the forces from all the source charges:
+
+    $$
+    \begin{equation}
+    \va{F} = \frac{Q}{4 \pi \varepsilon_0} \sum_{i=1}^n \frac{q_i}{r_i^2} \vu{r}_i \tag{\ref{eq:total-force}}
+    \end{equation}
+    $$
+
+- The electric field $\va{E}$ is defined as the force per unit charge acting on a test charge at a point:
+
+    $$
+    \begin{equation}
+    \va{E} \equiv \frac{1}{4 \pi \varepsilon_0} \sum_{i=1}^n \frac{q_i}{r_i^2} \vu{r}_i \tag{\ref{eq:electric-field}}
+    \end{equation}
+    $$
+
+- For continuous charge distributions, the charge density takes three forms: linear, surface, and volume charge densities.
+- The electric field due from a continuous charge distribution can be found by integrating the electric field due to each charge element over the entire distribution.
+- Do not use Coulomb's Law to solve problems.
+
+In the next section, we shall introduce Gauss' Law, a powerful tool that allows us to solve electrostatic problems with *much*, ***much*** more ease.
