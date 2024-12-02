@@ -1,0 +1,116 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Dot Product: Applications
+
+This is likely the last section of the miniseries on dot products.
+In this section, we will explore some applications of the dot product in various fields.
+We will begin with the more common applications, and then move on to some more less well-known ones.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Physical Work
+
+In Physics, there is a quantity called a force.
+This force is a vector quantity; its magnitude is the strength of the force, and its direction is the direction in which the force is applied.
+For example, if you push a box to the right, the force you apply is a vector pointing to the right.
+
+When a force $\va{F}$ is applied to an object, it can move by a certain distance $\Delta \va{r}$.
+The quantity, **work**, represents how much energy is transferred to the object by the force.
+Thinking intuitively, if you push a box with the same force over a longer distance, you are giving it more energy.
+Similarly, if you push a box with a stronger force over the same distance, you are also giving it more energy.
+
+Thus, we can define work, $W$ as the product of the magnitudes of the force and distance, right?
+
+$$
+\begin{equation}
+W \overset{?}{\equiv} \norm{\va{F}} \norm{\Delta \va{r}}
+\end{equation}
+$$
+
+The problem with this definition is that it does not account for the direction of the force.
+Imagine you are pushing a box in an upward-right direction against a wall.
+The force you apply is in the upward-right direction, but the box only moves up.
+In this case, **only the force component in the direction of the motion (up) contributes to the work done**.
+
+<Mafs>
+    <Line.Segment point1={[-5, -2]} point2={[3, -2]} />
+    <Plot.OfY x={y => 3} />
+    <Transform translate={[2, -1]}>
+        <Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} strokeStyle="dashed" color={color("blue")} />
+        <Vector tail={[-0.75, -0.75]} tip={[0.5, 0.5]} color={color("red")} />
+        <LaTeX tex="\mathbf{\vec{F}}" at={[-0.5, 0]} color={color("red")} />
+        <Vector tail={[0.5, -0.75]} tip={[0.5, 0.5]} />
+        <LaTeX tex="F_y" at={[0.8, -0.3]} />
+        <Line.Segment point1={[-0.75, -0.75]} point2={[0.5, -0.75]} style="dashed" />
+    </Transform>
+    <Transform translate={[2, 1]}>
+        <Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("blue")} />
+        <Vector tail={[0.5, -1.5]} tip={[0.5, 0.5]} />
+        <LaTeX tex="\Delta \mathbf{\vec{r}}" at={[0.2, -0.5]} />
+    </Transform>
+</Mafs>
+
+So, in reality, the work done is:
+
+$$
+\begin{equation}
+W \equiv \norm{\va{F} \text{ projected onto } \Delta \va{r}} \norm{\Delta \va{r}}
+\end{equation}
+$$
+
+But wait... that's just the dot product of the force and the distance vector:
+
+<Boxed>
+$$
+\begin{equation}
+W \equiv \va{F} \cdot \Delta \va{r}
+\end{equation}
+$$
+</Boxed>
+
+The work is an extremely important concept in Physics, and the dot product is the key to understanding it.
+It's relevant to understanding how energy is transferred in various systems, which in turn is crucial for understanding the behavior of physical systems.
+
+## Graphics
+
+## Language
+
+Recall that the dot product of two vectors $\va{v}$ and $\va{w}$ can be thought of as a measure of their similarity.
+If the dot product is positive, the vectors are pointing in roughly the same direction.
+If the dot product is negative, the vectors are pointing in roughly opposite directions.
+
+This property of the dot product is used in Natural Language Processing (NLP) to compare the similarity of two pieces of text.
+For a simplified example, imagine we have three letters, "a", "b", and "c".
+We can represent each word as a dimension in a 3D space, where the letter "a" is the vector $\va{a} = \mqty[1 \\ 0 \\ 0]$, "b" is $\va{b} = \mqty[0 \\ 1 \\ 0]$, and "c" is $\va{c} = \mqty[0 \\ 0 \\ 1]$.
+
+Now, let's consider the words "abca" and "accb".
+
+The word "abca" has two "a"s, one "b", and one "c".
+Thus, we can represent it as $2\va{a} + \va{b} + \va{c} = \mqty[2 \\ 1 \\ 1]$.
+
+Similarly, the word "accb" can be represented as $\va{a} + 2\va{c} + \va{b} = \mqty[1 \\ 1 \\ 2]$.
+
+Then, their similarity can be calculated as the dot product of the two vectors:
+
+$$
+\begin{equation}
+\text{abca} \cdot \text{accb} = \mqty[2 \\ 1 \\ 1] \cdot \mqty[1 \\ 1 \\ 2] = 2 \cdot 1 + 1 \cdot 1 + 1 \cdot 2 = 5
+\end{equation}
+$$
+
+Of course, in real-world applications, the vectors are much higher-dimensional, and the words are represented as vectors in a high-dimensional space.
+For example, some plagiarism detection software use the dot product to compare the similarity of two pieces of text.

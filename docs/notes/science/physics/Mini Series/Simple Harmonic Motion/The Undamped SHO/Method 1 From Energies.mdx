@@ -1,0 +1,32 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { Fragment } from "react";
+import { sphericalToCartesian } from "@site/src/utilities/geometry"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Method 1: From Energies
+
+In the previous section, we derived the differential equation that describes the motion of a mass-spring system.
+This differential equation is a second-order ordinary differential equation (ODE) that can be written as:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \omega_0^2 x = 0 \label{eq:undamped-sho-ode}
+\end{equation}
+$$
+
+In this section, we will explore the first method to solve this differential equation, which, instead of using this ODE directly, uses the conservation of energy.
+
+## Table of Contents
+
+<TOCInline toc={toc} />

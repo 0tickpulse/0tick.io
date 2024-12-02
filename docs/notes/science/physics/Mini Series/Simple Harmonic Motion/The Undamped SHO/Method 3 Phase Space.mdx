@@ -1,0 +1,367 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { Fragment } from "react";
+import { sphericalToCartesian } from "@site/src/utilities/geometry"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Method 3: Phase Space
+
+In the previous section, we derived the differential equation that describes the motion of a mass-spring system.
+This differential equation is a second-order ordinary differential equation (ODE) that can be written as:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \omega_0^2 x = 0 \label{eq:undamped-sho-ode}
+\end{equation}
+$$
+
+In this section, we will explore the third method of solving this differential equation: transforming it into a system of first-order ODEs and then using linear algebra to solve it.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Phase Space
+
+We know that the second derivative of the position function $x(t)$ is the acceleration of the mass, $a(t) \equiv \dv[2]{x}{t}$.
+Let's define a new function $v(t) \equiv \dv{x}{t}$, which represents the velocity of the mass.
+Then, Equation $\eqref{eq:undamped-sho-ode}$ can be rewritten as:
+
+$$
+\begin{equation}
+\dv{v}{t} + \omega_0^2 x = 0
+\end{equation}
+$$
+
+And since $v(t) = \dv{x}{t}$, we have two first-order ODEs:
+
+$$
+\begin{align}
+\dv{x}{t} &= v(t) \\
+\dv{v}{t} &= -\omega_0^2 x(t)
+\end{align}
+$$
+
+This is the fun part - now imagine we have a coordinate system with two axes: one for $x$ and one for $v$.
+This is known as a **phase space**.
+Each point $(x, v)$ in this coordinate system represents a state of the system at a given time $t$.
+Let $\va{s} = \mqty[x \\ v]$ be the state vector of the system.
+Then, the system of first-order ODEs can be written as:
+
+$$
+\begin{equation}
+\dv{t} \mqty[x \\ v] = \mqty[v \\ -\omega_0^2 x(t)] \label{eq:state-space-ode}
+\end{equation}
+$$
+
+This means that at each point $\va{s}$ in the phase space, the vector field $\mqty[v \\ -\omega_0^2 x]$ gives the direction of the velocity vector at that point.
+We can graph this vector field to visualize the behavior of the system:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.VectorField
+        xy={([x, v]) => [v, -1.5 * x]}
+        step={0.5}
+    />
+</Mafs>
+
+In the graph above, the horizontal axis represents the position $x$ of the mass, and the vertical axis represents the velocity $v$ of the mass.
+By placing a point on the phase space and tracing its path, we can visualize the motion of the mass-spring system:
+
+<DivergenceVisualization
+    f={([x, y]) => [y, -1.5 * x]}
+    vectorFieldProps={{ step: 0.5 }}
+/>
+
+(The movement is not perfectly accurate since its done numerically, but it gives a good idea of the motion.)
+
+Notice that the path traced by the point is an ellipse, which should make intuitive sense as the system oscillates back and forth.
+We can analyze some properties of the system by looking at this phase space.
+For one, we can pick an initial point and trace its path to see how the system evolves over time:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.VectorField
+        xy={([x, v]) => [v, -1.5 * x]}
+        step={0.5}
+    />
+    <Ellipse center={[0, 0]} radius={[2, 3]} fillOpacity={0} color={color("blue")} />
+</Mafs>
+
+We can notice that:
+
+- At the horizontal intercepts, the velocity is zero, while the displacements are at their maximum.
+    This corresponds to the mass being at the extreme points of its motion.
+- At the vertical intercepts, the displacement is zero, while the velocity is at its maximum.
+    This corresponds to the mass being at the equilibrium position.
+
+## Vectors and Matrices
+
+To solve the system of first-order ODEs, carefully observe the system of equations:
+
+$$
+\begin{equation}
+\dv{t} \mqty[x \\ v] = \mqty[v \\ -\omega_0^2 x] \tag{\ref{eq:state-space-ode}}
+\end{equation}
+$$
+
+We can rewrite the right-hand side of the equation as a matrix-vector product, where the vector is just the state vector $\va{s}$:
+
+$$
+\begin{equation}
+\dv{t} \mqty[x \\ v] = \mqty[0 & 1 \\ -\omega_0^2 & 0] \mqty[x \\ v]
+\end{equation}
+$$
+
+This matrix is known as the **state matrix** of the system and is denoted by $\vb{A}$.
+If we use all the variables in the system, we can write the system of ODEs as:
+
+$$
+\begin{equation}
+\dv{t} \va{s} = \vb{A} \va{s}
+\end{equation}
+$$
+
+This should look familiar if you've studied any differential equations.
+It resembles exponential growth and decay equations, where we have $\dv{y}{t} = k y$.
+In that case, the solution is $y(t) = C e^{k(t + \phi)}$.
+Similarly, we can guess the solution to the system of ODEs as:
+
+$$
+\begin{equation}
+\va{s}(t) = \va{s}_0e^{\lambda(t + \phi)}
+\end{equation}
+$$
+
+Where $\va{s}_0$ and $\lambda$ are some unknown constants for now.
+Substitute this into the system of ODEs:
+
+$$
+\begin{equation}
+\dv{t} \va{s}(t) = \lambda \va{s}_0 e^{\lambda(t + \phi)} = \vb{A} \va{s}_0 e^{\lambda(t + \phi)}
+\end{equation}
+$$
+
+So we have $\lambda \va{s}_0 = \vb{A} \va{s}_0$.
+Once again, this should look familiar if you've studied linear algebra.
+$\lambda$ is an **eigenvalue** of the matrix $\vb{A}$, and $\va{s}_0$ is the corresponding **eigenvector**.
+
+## Eigenvalues and Eigenvectors
+
+Now we need to find the eigenvalues of the state matrix $\vb{A}$.
+We can use the trick of finding the eigenvalues of a matrix by the following equation:
+
+$$
+\begin{equation}
+\lambda_1, \lambda_2 = m \pm \sqrt{m^2 - p}
+\end{equation}
+$$
+
+Where $m$ is the trace of the matrix (and the mean of the eigenvalues) and $p$ is the determinant of the matrix (and the product of the eigenvalues).
+For the state matrix $\vb{A} = \mqty[0 & 1 \\ -\omega_0^2 & 0]$, we have:
+
+$$
+\begin{equation}
+\lambda_1, \lambda_2 = 0 \pm \sqrt{0 - (-\omega_0^2)} = \pm i \omega_0
+\end{equation}
+$$
+
+The eigenvalues are complex numbers, which means the system will oscillate.
+
+## Deriving the General Solution
+
+Now that we have $\lambda_1 = i \omega_0$ and $\lambda_2 = -i \omega_0$, as well as the solution $\va{s}(t) = \va{s}_0 e^{\lambda(t + \phi)}$, we can derive the general solution to the system of ODEs.
+First, we need to find values for $\va{s}_0$ - they must be eigenvectors of the state matrix $\vb{A}$.
+
+For $\lambda_1 = i \omega_0$, we have:
+
+$$
+\begin{equation}
+\vb{A} \mqty[x_1 \\ v_1] = \mqty[0 & 1 \\ -\omega_0^2 & 0] \mqty[x_1 \\ v_1] = i \omega_0 \mqty[x_1 \\ v_1]
+\end{equation}
+$$
+
+This gives us the system of equations:
+
+$$
+\begin{align}
+v_1 &= i \omega_0 x_1 \\
+-\omega_0^2 x_1 &= i \omega_0 v_1
+\end{align}
+$$
+
+The second equation is just the first equation multiplied by $i \omega_0$.
+Thus, for any $x_1 = c_1$ and $v_1 = i \omega_0 c_1$, where $c_1$ is a constant, we have an eigenvector.
+Therefore, the first eigenvector is $\mqty[c_1 \\ i \omega_0 c_1]$.
+
+Similarly, for $\lambda_2 = -i \omega_0$, we have the eigenvector $\mqty[c_2 \\ -i \omega_0 c_2]$.
+
+Then, the general solution to the system of ODEs is the sum of the two eigenvectors multiplied by their corresponding eigenvalues:
+
+$$
+\begin{equation}
+\va{s}(t) = c_1 e^{i (\omega_0 t + \phi)} \mqty[1 \\ i \omega_0] + c_2 e^{-i (\omega_0 t + \phi)} \mqty[1 \\ -i \omega_0]
+\end{equation}
+$$
+
+This is the general solution to the system of ODEs that describe the motion of an undamped mass-spring system.
+However, this solution is in terms of complex numbers, which can be difficult to interpret.
+So we can separate the real and imaginary parts of the solution to get a more intuitive form.
+
+Using Euler's formula $e^{i \theta} = \cos \theta + i \sin \theta$, we can rewrite the solution as:
+
+$$
+\begin{equation}
+\begin{split}
+\va{s}(t) &= c_1 e^{i (\omega_0 t + \phi)} \mqty[1 \\ i \omega_0] + c_2 e^{-i (\omega_0 t + \phi)} \mqty[1 \\ -i \omega_0] \\
+&= c_1 (\cos(\omega_0 t + \phi) + i \sin(\omega_0 t + \phi)) \mqty[1 \\ i \omega_0] + c_2 (\cos(\omega_0 t + \phi) - i \sin(\omega_0 t + \phi)) \mqty[1 \\ -i \omega_0] \\
+&= \qty((c_1 - c_2) \cos(\omega_0 t + \phi) + i (c_1 + c_2) \sin(\omega_0 t + \phi)) \mqty[1 \\ i \omega_0]
+\end{split}
+\end{equation}
+$$
+
+Let $A = c_1 - c_2$ and $B = c_1 + c_2$.
+Then, the solution is:
+
+$$
+\begin{equation}
+\va{s}(t) = \mqty[A \cos(\omega_0 t + \phi) + i B \sin(\omega_0 t + \phi) \\ i A \omega_0 \cos(\omega_0 t + \phi) - B \sin(\omega_0 t + \phi)] = \mqty[x(t) \\ v(t)]
+\end{equation}
+$$
+
+Taking just the real part of the solution, we have:
+
+$$
+\begin{align}
+x(t) &= A \cos(\omega_0 t + \phi) \\
+v(t) &= -B \omega_0 \sin(\omega_0 t + \phi)
+\end{align}
+$$
+
+Now we have the general solution to the system of ODEs that describe the motion of an undamped mass-spring system.
+
+## Initial Conditions
+
+Finally, we need to find the constants $A$ and $B$ using the initial conditions of the system.
+Let $x(0) = x_0$ and $v(0) = v_0$ be the initial position and velocity of the mass, respectively.
+
+Just differentiating $x(t)$ we get $v(t) = -A \omega_0 \sin(\omega_0 t + \phi)$.
+Hence, $B = A \omega_0$.
+
+For $x(t)$, we can first split the cosine function using the angle addition formula:
+
+$$
+\begin{equation}
+x(t) = A \cos(\omega_0 t + \phi) = A \cos(\omega_0 t) \cos(\phi) - A\sin(\omega_0 t) \sin(\phi)
+\end{equation}
+$$
+
+Let $C = A \cos(\phi)$ and $D = -A \sin(\phi)$, it'll make the calculations easier.
+Then, we have:
+
+$$
+\begin{equation}
+x(t) = C \cos(\omega_0 t) + D \sin(\omega_0 t)
+\end{equation}
+$$
+
+Differentiating $x(t)$ with respect to $t$ gives us $v(t)$:
+
+$$
+\begin{equation}
+v(t) = -C \omega_0 \sin(\omega_0 t) + D \omega_0 \cos(\omega_0 t)
+\end{equation}
+$$
+
+At $t = 0$, $\cos(t = 0) = 1$ and $\sin(t = 0) = 0$. Thus:
+
+$$
+\begin{align}
+x(t = 0) \equiv x_0 &= C \\
+v(t = 0) \equiv v_0 &= D \omega_0
+\end{align}
+$$
+
+Hence:
+
+$$
+\begin{align}
+C &= x_0 \\
+D &= \frac{v_0}{\omega_0}
+\end{align}
+$$
+
+Next, consider $\phi$ in relation to $A$, $C$, and $-D$.
+Since $C = A \cos(\phi)$ and $D = -A \sin(\phi)$, we can construct a right-angled triangle with sides $A$, $C$, and $-D$.
+Furthermore, by the Pythagorean theorem, we have:
+
+$$
+\begin{equation}
+A = \sqrt{C^2 + D^2} = \sqrt{x_0^2 + \frac{v_0^2}{\omega_0^2}}
+\end{equation}
+$$
+
+Using the triangle, $\tan(\phi) = -\frac{D}{C}$, so:
+
+$$
+\begin{equation}
+\phi = \arctan(-\frac{D}{C}) = \arctan(-\frac{v_0}{x_0 \omega_0})
+\end{equation}
+$$
+
+With all these values, we can now write the general solution in two forms:
+
+<Boxed>
+**Undamped SHO General Solution**:
+
+$$
+\begin{align}
+x(t) &= A \cos(\omega_0 t + \phi) \\
+x(t) &= x_0 \cos(\omega_0 t) + \frac{v_0}{\omega_0} \sin(\omega_0 t)
+\end{align}
+$$
+
+Where:
+
+- $x_0$ is the initial position of the mass.
+- $v_0$ is the initial velocity of the mass.
+- $\omega_0 \equiv \sqrt{\frac{k}{m}}$ is the angular frequency of the mass-spring system.
+- $A = \sqrt{x_0^2 + \frac{v_0^2}{\omega_0^2}}$ is the amplitude of the motion.
+- $\phi = \arctan(-\frac{v_0}{x_0 \omega_0})$ is the phase shift of the motion.
+</Boxed>
+
+Similarly, for $v(t)$:
+
+<Boxed>
+**Undamped SHO Velocity**:
+
+$$
+\begin{align}
+v(t) &= B \sin(\omega_0 t + \phi) = -A \omega_0 \sin(\omega_0 t + \phi) \\
+v(t) &= -x_0 \omega_0 \sin(\omega_0 t) + v_0 \cos(\omega_0 t)
+\end{align}
+$$
+
+Where:
+
+- $x_0$ is the initial position of the mass.
+- $v_0$ is the initial velocity of the mass.
+- $\omega_0 \equiv \sqrt{\frac{k}{m}}$ is the angular frequency of the mass-spring system.
+- $B = -A \omega_0 = -\omega_0 \sqrt{x_0^2 + \frac{v_0^2}{\omega_0^2}}$ is the amplitude of the velocity.
+- $\phi = \arctan(-\frac{v_0}{x_0 \omega_0})$ is the phase shift of the velocity.
+</Boxed>
+
+## Summary and Next Steps
+
+The important takeaway from this section is not just the solution to the system of ODEs.
+Rather, the concepts of phase space, eigenvalues, and eigenvectors are far more crucial in understanding the behavior of linear systems.
