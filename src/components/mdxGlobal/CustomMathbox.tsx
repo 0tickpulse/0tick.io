@@ -26,6 +26,7 @@ const MATHBOX_DEFAULT_PROPS: Props = {
     containerStyle: {
         height: "500px"
     },
+    containerClass: "math-container"
 };
 
 const CustomMathbox = forwardRef((props: Props, ref: React.Ref<MathboxSelection<"root">>) => {

@@ -75,7 +75,7 @@ label {
     color: var(--custom-color-pink);
 }
 
-.MafsView {
+.MafsView, .math-container {
     // apply a border to the MafsView component with the color as the text color var(--ifm-font-color-base), with 25% opacity
     border: 1px solid color-mix(in srgb, var(--ifm-font-color-base) 25%, transparent);
     border-radius: 0.5rem;

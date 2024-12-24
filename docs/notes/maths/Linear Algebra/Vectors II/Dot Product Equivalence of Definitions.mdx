@@ -364,9 +364,105 @@ Note: What we have derived here has a name: covectors, or dual vectors.
 These are vectors that take in a vector and output a scalar.
 Covectors are very important in the fields of differential geometry and general relativity.
 
+## Non-Orthonormal Vectors (Optional Section)
+
+The component definition of the dot product, as shown in the second proof, is only valid for orthonormal vectors.
+However, the geometric definition of the dot product, as shown in the first proof, is valid for any pair of vectors because it is independent of the basis.
+
+We can try to extend the component definition to non-orthonormal vectors.
+Let $\va{v} = v_1 \va{e}_1 + v_2 \va{e}_2 + v_3 \va{e}_3$ and $\va{w} = w_1 \va{e}_1 + w_2 \va{e}_2 + w_3 \va{e}_3$.
+The dot product of $\va{v}$ and $\va{w}$ is, by distributing everything:
+
+$$
+\begin{equation}
+\begin{split}
+\va{v} \cdot \va{w} &= \class{red}{v_1} \class{blue}{w_1} \va{e}_1 \cdot \va{e}_1 + \class{red}{v_1} \class{blue}{w_2} \va{e}_1 \cdot \va{e}_2 + \class{red}{v_1} \class{blue}{w_3} \va{e}_1 \cdot \va{e}_3 \\
+&\quad {}+ \class{red}{v_2} \class{blue}{w_1} \va{e}_2 \cdot \va{e}_1 + \class{red}{v_2} \class{blue}{w_2} \va{e}_2 \cdot \va{e}_2 + \class{red}{v_2} \class{blue}{w_3} \va{e}_2 \cdot \va{e}_3 \\
+&\quad {}+ \class{red}{v_3} \class{blue}{w_1} \va{e}_3 \cdot \va{e}_1 + \class{red}{v_3} \class{blue}{w_2} \va{e}_3 \cdot \va{e}_2 + \class{red}{v_3} \class{blue}{w_3} \va{e}_3 \cdot \va{e}_3
+\end{split}
+\end{equation}
+$$
+
+Notice that each row has a constant index for $v$ (red) and a varying index for $w$ (blue).
+We can group the terms by the the $v$ index by a product between a row vector and a column vector:
+
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \mqty[\class{red}{v_1} & \class{red}{v_2} & \class{red}{v_3}]
+    \mqty[
+        \class{blue}{w_1} \va{e}_1 \cdot \va{e}_1 + \class{blue}{w_2} \va{e}_1 \cdot \va{e}_2 + \class{blue}{w_3} \va{e}_1 \cdot \va{e}_3 \\
+        \class{blue}{w_1} \va{e}_2 \cdot \va{e}_1 + \class{blue}{w_2} \va{e}_2 \cdot \va{e}_2 + \class{blue}{w_3} \va{e}_2 \cdot \va{e}_3 \\
+        \class{blue}{w_1} \va{e}_3 \cdot \va{e}_1 + \class{blue}{w_2} \va{e}_3 \cdot \va{e}_2 + \class{blue}{w_3} \va{e}_3 \cdot \va{e}_3
+    ]
+\end{equation}
+$$
+
+We can further group the terms by the $w$ index by a product between a matrix and a column vector:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \mqty[\class{red}{v_1} & \class{red}{v_2} & \class{red}{v_3}]
+    \mqty[
+        \va{e}_1 \cdot \va{e}_1 & \va{e}_1 \cdot \va{e}_2 & \va{e}_1 \cdot \va{e}_3 \\
+        \va{e}_2 \cdot \va{e}_1 & \va{e}_2 \cdot \va{e}_2 & \va{e}_2 \cdot \va{e}_3 \\
+        \va{e}_3 \cdot \va{e}_1 & \va{e}_3 \cdot \va{e}_2 & \va{e}_3 \cdot \va{e}_3
+    ]
+    \mqty[\class{blue}{w_1} \\ \class{blue}{w_2} \\ \class{blue}{w_3}]
+\end{equation}
+$$
+</Boxed>
+
+This is the most general form of the dot product, and it is valid for any pair of vectors, orthonormal or not.
+The matrix in the middle is called the **metric tensor matrix**. It is a matrix that encodes the information about the dot product of the basis vectors.
+If we denote this matrix as $\vb{G}$, then the dot product of $\va{v}$ and $\va{w}$ can be written as:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \va{v}^T \vb{G} \va{w}
+\end{equation}
+$$
+</Boxed>
+
+It is often convenient to refer to a specific part of the metric tensor matrix.
+The element in the $i$th row and $j$th column of the metric tensor matrix is denoted as $g_{ij}$:
+
+$$
+\begin{equation}
+g_{ij} \equiv \va{e}_i \cdot \va{e}_j
+\end{equation}
+$$
+
+Then, we can write the dot product as a sum over the components of the vectors:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} \cdot \va{w} = \sum_{i=1}^n \sum_{j=1}^n v_i g_{ij} w_j
+\end{equation}
+$$
+</Boxed>
+
+In the case of orthonormal vectors, we simply have $g_{ij} = \delta_{ij}$, where $\delta_{ij}$ is the Kronecker delta.
+This follows from the fact that the dot product of two basis vectors is 1 if they are the same and 0 if they are different.
+The matrix is then the identity matrix, and the dot product simplifies to $\va{v} \cdot \va{w} = \va{v}^T \va{w} = v_1 w_1 + v_2 w_2 + \cdots + v_n w_n$.
+
 ## Summary and Next Steps
 
 In this section, we have shown that the two definitions of the dot product are equivalent.
 This is a very important result, as it shows that the dot product is a very fundamental operation in linear algebra.
+
+Here are the key points to remember:
+
+- The geometric definition of the dot product, $\norm{\va{v}} \norm{\va{w}} \cos \theta$, is equivalent to the component definition, $v_1 w_1 + v_2 w_2 + \cdots + v_n w_n$.
+- The equivalence can be shown in multiple ways, such as using the cosine rule, vector decomposition, or treating the dot product as a linear transformation.
+- The component definition of the dot product can be extended to non-orthonormal vectors using the metric tensor matrix:
+
+    $$
+    \begin{equation}
+    \va{v} \cdot \va{w} = \va{v}^T \vb{G} \va{w} = \sum_{i=1}^n \sum_{j=1}^n v_i g_{ij} w_j
+    \end{equation}
+    $$
 
 In the next section, we will end our introduction to the dot product by exploring some of its real-world applications.

@@ -94,6 +94,8 @@ This property is used in Computer Graphics to determine the position of objects 
 Think about it: when you're looking at a 3D scene on a screen, the computer is essentially projecting a 3D scene onto a 2D plane.
 There are different ways to project a 3D scene onto a 2D plane, but many of them involve the dot product.
 
+Not much more to say here; we will discuss planes in much more detail in the next sections.
+
 ## Lighting in Graphics
 
 In Computer Graphics, the dot product is used to determine the intensity of light on a surface.
@@ -112,16 +114,6 @@ The goal of rendering is simply to determine the color of each of those pixels.
         <div className="card">
             <div className="card__body">
                 <CustomMathbox
-                    options={{
-                        plugins: ["core", "controls", "cursor"],
-                        controls: {
-                            klass: OrbitControls,
-                        },
-                        camera: {
-                            up: new THREE.Vector3(0, 0, 1),
-                            lookAt: [0, -1, 0.5],
-                        },
-                    }}
                     onInitialized={(mathbox) => {
                         // Ball
                         const mesh = new THREE.Mesh(
@@ -323,3 +315,18 @@ $$
 
 Of course, in real-world applications, the vectors are much higher-dimensional, and the words are represented as vectors in a high-dimensional space.
 For example, some plagiarism detection software use the dot product to compare the similarity of two pieces of text.
+
+## Summary and Next Steps
+
+This concludes our miniseries on the dot product.
+We have explored the dot product in depth, from its definition to its applications in various fields.
+
+Here are the key points to remember:
+
+- The dot product is a measure of the similarity of two vectors.
+- It can be used to project one vector onto another.
+- It is used in Physics to calculate work done by a force.
+- It is used in Computer Graphics to determine the intensity of light on a surface.
+- It is used in Natural Language Processing to compare the similarity of two pieces of text.
+
+In the next section, we will introduce another fundamental operation on vectors: the cross product.

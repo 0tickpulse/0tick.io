@@ -1,0 +1,335 @@
+---
+sidebar_position: 5
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+
+# Cross Product: Introduction
+
+Recall our discussion on multiplying vectors.
+When we tried to invent a way to multiply vectors, we said that there are two ways we can multiply vectors: one that results in a scalar and one that results in a vector.
+The "scalar product" is the dot product, and the "vector product" is our current topic: the cross product.
+We will try to think of certain conditions that we need from a vector product, and see how that leads us to the cross product.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+The cross product is a vector product, which means that when we multiply two vectors, we get another vector.
+Let's consider what we need from a vector product:
+
+1. The product should, obviously, be a vector.
+2. All pairs of vectors should have a product; it should be defined for all vectors.
+3. The product should output *one* vector; there should be no ambiguity in the result.
+4. The product should follow the usual rules of multiplication, such as:
+    - $(c\va{v}) \cross \va{w} = c(\va{v} \cross \va{w}) = \va{v} \cross (c\va{w})$
+    - $(\va{v} + \va{w}) \cross \va{c} = \va{v} \cross \va{c} + \va{w} \cross \va{c}$
+
+The cross product satisfies all these conditions and, in addition, has some interesting geometric properties.
+Just like when discussing the dot product, we will first explore the geometry of the cross product.
+Unlike the dot product, the cross product gives us a vector, so we will have to consider both the magnitude and direction of the cross product.
+
+In the following two sections, we will discuss the magnitude and direction of the cross product of $\va{v}$ and $\va{w}$.
+
+### Magnitude
+
+Recall that we want the cross product to obey the "usual rules of multiplication".
+For instance, if we double the magnitude of one of the vectors, the magnitude of the cross product should also double.
+
+Let's take a geometric approach; consider the parallelogram spanned by $\va{v}$ and $\va{w}$.
+We can define the area of this parallelogram as the magnitude of the cross product of $\va{v}$ and $\va{w}$.
+
+export function CrossProductMagnitude({ showCalculation = false }) {
+    const v = useMovablePoint([2, 3]);
+    const w = useMovablePoint([3, -1]);
+
+    const parallelogramPoint = vec.add(v.point, w.point);
+    // v and w are 2D, but we pretend they're 3D by setting the z-component to 0.
+    // vec also doesn't have a cross product function, so we'll calculate it manually.
+    const crossProductMag = Math.abs(v.point[0] * w.point[1] - v.point[1] * w.point[0]);
+
+    const vAngle = Math.atan2(v.point[1], v.point[0]);
+    const wAngle = Math.atan2(w.point[1], w.point[0]);
+
+    return (
+        <Mafs>
+            <Coordinates.Cartesian />
+            <Polygon
+                points={[
+                    [0, 0],
+                    v.point,
+                    parallelogramPoint,
+                    w.point,
+                ]}
+                color={color("purple")}
+            />
+
+            <LaTeX
+                tex="||\mathbf{\vec{v} \times \vec{w}}||"
+                at={[
+                    (v.point[0] + w.point[0]) / 2,
+                    (v.point[1] + w.point[1]) / 2,
+                ]}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={v.point}
+                color={color("red")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{v}}"
+                at={lineLabel([0, 0], v.point, "left")}
+            />
+
+            <Vector
+                tail={[0, 0]}
+                tip={w.point}
+                color={color("blue")}
+            />
+            <LaTeX
+                tex="\mathbf{\vec{w}}"
+                at={lineLabel([0, 0], w.point, "right")}
+            />
+
+            {v.element}
+            {w.element}
+
+            {showCalculation && (
+                <>
+                    <Angle
+                        at={[0, 0]}
+                        fromRad={vAngle}
+                        toRad={wAngle}
+                        label="\theta"
+                    />
+
+                    <Line.Segment
+                        point1={v.point}
+                        point2={vec.withMag(
+                            w.point,
+                            vec.dot(v.point, w.point) / vec.mag(w.point)
+                        )}
+                        style="dashed"
+                    />
+                </>
+            )}
+        </Mafs>
+    )
+}
+
+<CrossProductMagnitude />
+
+If we double the magnitude of $\va{v}$, the parallelogram will also double in area.
+This means that the magnitude of the cross product should also double.
+
+Given that the angle between $\va{v}$ and $\va{w}$ is $\theta$, the magnitude of the cross product can be calculated with some trigonometry:
+
+<CrossProductMagnitude showCalculation />
+
+<Boxed>
+$$
+\begin{equation}
+\norm{\va{v} \cross \va{w}} = \norm{\va{v}} \norm{\va{w}} \sin \theta \label{eq:cross-product-magnitude}
+\end{equation}
+$$
+</Boxed>
+
+### Direction
+
+This is where the cross product gets interesting.
+Our condition for the cross product was that it should output *one* vector.
+Additionally, there should be a one-to-one correspondence between the directions of the input vectors and the output vector.
+This means that changing the directions of $\va{v}$ and $\va{w}$ should also change the direction of the cross product.
+
+One clever way to make the cross product depend on the directions of $\va{v}$ and $\va{w}$ is to make it perpendicular to both vectors.
+Imagine $\va{v}$ and $\va{w}$ as two vectors that define a plane.
+Then, the cross product should be perpendicular to this plane; it should "stick out" of the plane:
+
+{(() => {
+    const [v, setV] = useState([2, 3, 0]);
+    const [w, setW] = useState([3, -1, 0]);
+    const crossProduct = [
+        v[1] * w[2] - v[2] * w[1],
+        v[2] * w[0] - v[0] * w[2],
+        v[0] * w[1] - v[1] * w[0],
+    ]; // manually calculate the cross product because vec only supports 2D vectors
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox
+                    onInitialized={(mathbox) => {
+                        const vObj = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.1),
+                            new THREE.MeshBasicMaterial({ color: 0xff0000 })
+                        );
+                        vObj.position.set(...v);
+                        // v controls
+                        const vControl = new TransformControls(mathbox.three.camera, mathbox.three.renderer.domElement);
+                        vControl.attach(vObj);
+                        vControl.addEventListener("dragging-changed", (event) => {
+                            // Disable orbit controls when dragging v
+                            mathbox.three.controls.enabled = !event.value;
+                        });
+                        // Update v position
+                        vControl.addEventListener("objectChange", () => {
+                            setV(vObj.position.toArray());
+                        });
+                        mathbox.three.scene.add(vObj);
+                        mathbox.three.scene.add(vControl);
+
+                        // w controls
+                        const wObj = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.1),
+                            new THREE.MeshBasicMaterial({ color: 0x0000ff })
+                        );
+                        wObj.position.set(...w);
+                        const wControl = new TransformControls(mathbox.three.camera, mathbox.three.renderer.domElement);
+                        wControl.attach(wObj);
+                        wControl.addEventListener("dragging-changed", (event) => {
+                            // Disable orbit controls when dragging w
+                            mathbox.three.controls.enabled = !event.value;
+                        });
+                        // Update w position
+                        wControl.addEventListener("objectChange", () => {
+                            setW(wObj.position.toArray());
+                        });
+                        mathbox.three.scene.add(wObj);
+                        mathbox.three.scene.add(wControl);
+
+                        // Camera settings
+                        mathbox.three.camera.position.set(5, 5, 3);
+                    }}
+                >
+                    <MB.Cartesian>
+                        <MB.Axis axis="x" range={[-5, 5]} width={10} />
+                        <MB.Axis axis="y" range={[-5, 5]} width={10} />
+                        <MB.Axis axis="z" range={[-5, 5]} width={10} />
+
+                        {/* v */}
+                        <MB.Array id="v" items={2} channels={3} data={[0, 0, 0, ...v]} />
+                        <MB.Vector points="#v" width={15} color={color("red")} />
+
+                        {/* w */}
+                        <MB.Array id="w" items={2} channels={3} data={[0, 0, 0, ...w]} />
+                        <MB.Vector points="#w" width={15} color={color("blue")} />
+
+                        {/* Plane */}
+                        <MB.Area
+                            id="plane"
+                            axes="xy"
+                            expr={(emit, x, y, i, t) => {
+                                // Plane spanned by v and w, with x and y as the "coordinates"
+                                return (
+                                    emit(x * v[0] + y * w[0], x * v[1] + y * w[1], x * v[2] + y * w[2])
+                                );
+                            }}
+                            width={64}
+                            height={64}
+                            channels={3}
+                            rangeX={[-10, 10]}
+                            rangeY={[-10, 10]}
+                        />
+                        <MB.Surface
+                            points="#plane"
+                            opacity={0.75}
+                            color={"#b0b0b0"}
+                            lineX={true}
+                            lineY={true}
+                            zBias={-1}
+                            zIndex={-1}
+                            zOrder={35}
+                            shaded={true}
+                        />
+                        {/* Cross product */}
+                        <MB.Array id="cross" items={2} channels={3} data={[0, 0, 0, ...crossProduct]} />
+                        <MB.Vector points="#cross" width={15} color={color("purple")} zBias={3} zIndex={3} />
+                    </MB.Cartesian>
+                </CustomMathbox>
+            </div>
+        </div>
+    );
+})()}
+
+However, there are two directions perpendicular to a plane - one pointing "up" and one pointing "down".
+We need a way to choose one of these directions without ambiguity.
+One way to do this is to use the **right-hand rule**.
+This rule is a convention, and it is used to ensure that the cross product is well-defined:
+
+<Boxed>
+The direction of the cross product $\va{v} \cross \va{w}$ is given by the right-hand rule: if you curl the fingers of your right hand from $\va{v}$ to $\va{w}$, your thumb points in the direction of $\va{v} \cross \va{w}$.
+</Boxed>
+
+Note that this has an interesting consequence: the cross product is not commutative.
+If you swap the order of the vectors, the direction of the cross product changes.
+Instead, the cross product is **anticommutative**:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} \cross \va{w} = -(\va{w} \cross \va{v})
+\end{equation}
+$$
+</Boxed>
+
+Also, this means that the cross product is only defined in three dimensions.
+In lower dimensions, like 2D, there is no unique direction perpendicular to a plane, so the cross product is not defined.
+In higher dimensions, there are multiple directions perpendicular to a plane, so the cross product is not unique.
+3D is the "sweet spot" where the cross product is well-defined.
+
+## Summary and Next Steps
+
+In this page, we introduced the cross product as a way to multiply vectors.
+We discussed the conditions that a vector product should satisfy and saw how the cross product meets these conditions.
+We also explored the magnitude and direction of the cross product and discussed the right-hand rule.
+
+Here are the key points to remember:
+
+- The cross product is a vector product that takes two vectors and outputs a vector.
+- The magnitude of the cross product is the area of the parallelogram spanned by the two vectors:
+
+    $$
+    \begin{equation}
+    \norm{\va{v} \cross \va{w}} = \norm{\va{v}} \norm{\va{w}} \sin \theta \tag{\ref{eq:cross-product-magnitude}}
+    \end{equation}
+    $$
+
+- The direction of the cross product is given by the right-hand rule.
+
+If all of this screams "determinant" to you, you're on the right track.
+In the next section, we will explore the cross product in terms of determinants and matrices, and see how this leads us to an explicit formula for the cross product.
+
+## Appendix: The Geometric Product
+
+We discussed the cross product as a vector product, but there is another way to multiply vectors that is even more general.
+Imagine if we can combine the dot product and the cross product into a single operation.
+This operation is called the **geometric product** and is simply denoted by $\va{v}\va{w}$.
+
+The geometric product has many interesting properties, and it is the basis of a mathematical system called **geometric algebra**, or **Clifford algebra**.
+In Clifford algebra, we can represent scalars, vectors, and even higher-dimensional objects like planes and volumes using a single mathematical object called a **multivector**.
+This system is very powerful and has applications in physics, computer graphics, and robotics.
+
+The geometric product is a very deep topic, and we will not delve into it in this note.
+We will just discuss two important things about the geometric product:
+
+1. In Clifford algebra, cross products are replaced by the **wedge product**.
+    Since Clifford algebra allows us to represent planes, it makes sense for the product to just be a plane (the parallelogram spanned by the vectors).
+    The wedge product is denoted by $\va{v} \wedge \va{w}$.
+2. The geometric product is the sum of the dot product and the wedge product:
+
+    $$
+    \begin{equation}
+    \va{v}\va{w} = \va{v} \cdot \va{w} + \va{v} \wedge \va{w}
+    \end{equation}
+    $$

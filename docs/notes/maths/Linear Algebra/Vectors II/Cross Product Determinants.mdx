@@ -1,0 +1,220 @@
+---
+sidebar_position: 6
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+
+# Cross Product: Determinants
+
+Previously, we introduced the cross product of two vectors in 3D space.
+In this section, we will explore the cross product in more detail and show how it can be computed using determinants.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Warmup: Cross Products in 2D
+
+In 2D space, the cross product of two vectors is not defined.
+However, we can make a modified definition of the cross product that does make sense in 2D space; one that just gives us the area of the parallelogram, but does not have a direction.
+
+Then, this modified cross product of two vectors $\va{v}$ and $\va{w}$ in 2D space is simply the determinant of the matrix formed by the two vectors:
+
+$$
+\begin{equation}
+\va{v} \times \va{w} = \det(\mqty[ v_x & w_x \\ v_y & w_y ])
+\end{equation}
+$$
+
+This gives us the area of the parallelogram spanned by the two vectors.
+
+## Cross Products in 3D
+
+As we discussed in the previous section, the cross product of two vectors $\va{v}$ and $\va{w}$ in 3D space is a vector that is orthogonal to both $\va{v}$ and $\va{w}$.
+
+Trying to compute the cross product of two vectors directly can be quite cumbersome.
+However, we can use the determinant to compute the cross product in a more elegant way.
+
+Recall that the determinant, in 3D, gives the volume of the parallelepiped spanned by the three vectors.
+Given three vectors $\va{u}$, $\va{v}$, and $\va{w}$, the determinant of the matrix can be written as:
+
+$$
+\det(\mqty[ u_x & v_x & w_x \\ u_y & v_y & w_y \\ u_z & v_z & w_z ])
+$$
+
+Next, let's consider how this determinant can be computed geometrically:
+
+<CustomMathbox onInitialized={(mathbox) => {
+    const add = ([x, y, z], [x2, y2, z2]) => [x + x2, y + y2, z + z2];
+    const zero = [0, 0, 0];
+    const v = [1, 1.2, 0];
+    const w = [-1.5, 0.5, 0];
+    const u = [0.3, 0.3, 1.5];
+    const vMag = Math.sqrt(v[0] ** 2 + v[1] ** 2 + v[2] ** 2);
+    const wMag = Math.sqrt(w[0] ** 2 + w[1] ** 2 + w[2] ** 2);
+    const uMag = Math.sqrt(u[0] ** 2 + u[1] ** 2 + u[2] ** 2);
+    // Parallelogram of v and w
+    const parallelogramPoints = [
+        zero,
+        v,
+        add(v, w),
+        w
+    ];
+    const polyShape = new THREE.Shape(parallelogramPoints.map(([x, y]) => new THREE.Vector2(x, y)));
+    const polyGeometry = new THREE.ShapeGeometry(polyShape);
+    const polyMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide, opacity: 0.5, transparent: true });
+    const polyMesh = new THREE.Mesh(polyGeometry, polyMaterial);
+    mathbox.three.scene.add(polyMesh);
+
+    // Camera
+    mathbox.three.camera.position.set(2 * 0.75, -2 * 0.75, 3.25 * 0.75);
+}}
+>
+    <MB.Cartesian>
+        <MB.Axis axis="z" range={[-2, 2]} />
+
+        {/* V */}
+        <MB.Array id="v" items={1} channels={3} data={[1, 1.2, 0]} />
+        <MB.Array id="v_vec" items={2} channels={3} data={[[0, 0, 0], [1, 1.2, 0]]} />
+        <MB.Vector points="#v_vec" color={color("red")} width={5} end={true} />
+        <MB.Text id="v_text" expr={(emit) => { emit("v"); }} />
+        <MB.Label points="#v" text="#v_text" />
+
+        {/* W */}
+        <MB.Array id="w" items={1} channels={3} data={[-1.5, 0.5, 0]} />
+        <MB.Array id="w_vec" items={2} channels={3} data={[[0, 0, 0], [-1.5, 0.5, 0]]} />
+        <MB.Vector points="#w_vec" color={color("blue")} width={5} end={true} />
+        <MB.Text id="w_text" expr={(emit) => { emit("w"); }} />
+        <MB.Label points="#w" text="#w_text" />
+
+        {/* U */}
+        <MB.Array id="u" items={1} channels={3} data={[0.3, 0.3, 1.5]} />
+        <MB.Array id="u_vec" items={2} channels={3} data={[[0, 0, 0], [0.3, 0.3, 1.5]]} />
+        <MB.Vector points="#u_vec" color={color("green")} width={5} end={true} />
+        <MB.Text id="u_text" expr={(emit) => { emit("u"); }} />
+        <MB.Label points="#u" text="#u_text" />
+
+        {/* U projected onto z axis */}
+        <MB.Array id="u_proj" items={1} channels={3} data={[0, 0, 1.5]} />
+        <MB.Array id="u_proj_vec" items={2} channels={3} data={[[0, 0, 0], [0, 0, 1.5]]} />
+        <MB.Vector points="#u_proj_vec" color={color("green")} width={5} end={true} />
+        <MB.Text id="u_proj_text" expr={(emit) => { emit("u ⋅ n"); }} />
+        <MB.Label points="#u_proj" text="#u_proj_text" />
+
+        {/* Parallelogram */}
+        <DeterminantCube
+            T={([x, y, z]) => {
+                // Multiply [x, y, z] by a matrix formed by v, w, and u
+                const u = [0.3, 0.3, 1.5];
+                const v = [1, 1.2, 0];
+                const w = [-1.5, 0.5, 0];
+                const matrix = [
+                    [v[0], w[0], u[0]],
+                    [v[1], w[1], u[1]],
+                    [v[2], w[2], u[2]]
+                ];
+                return [
+                    x * matrix[0][0] + y * matrix[0][1] + z * matrix[0][2],
+                    x * matrix[1][0] + y * matrix[1][1] + z * matrix[1][2],
+                    x * matrix[2][0] + y * matrix[2][1] + z * matrix[2][2]
+                ];
+            }}
+            faceProps={{
+                color: 0x909090
+            }}
+        />
+    </MB.Cartesian>
+</CustomMathbox>
+
+Like a parallelogram, the volume of the parallelepiped won't change if you "tilt" it.
+This means that the volume of the parallelepiped is the same as the product of (1) the area of the base parallelogram, and (2) the vertical height of the parallelepiped:
+
+$$
+\begin{equation}
+\text{Volume} = \text{Area of base} \times \text{Height}
+\end{equation}
+$$
+
+The height is just the length of the projection of $\va{u}$ onto the normal, $\vu{n}$:
+
+$$
+\begin{equation}
+V = A \qty(\va{u} \cdot \vu{n})
+\end{equation}
+$$
+
+This is the best part - we can group $A$ and $\vu{n}$ together to get a new vector, $\va{P}$:
+
+$$
+\begin{equation}
+V = \va{P} \cdot \va{u}, \quad \text{where } \va{P} \equiv A\vu{n}
+\end{equation}
+$$
+
+But wait... what is $\va{P}$? Its magnitude is the area of the parallelogram, and its direction is the normal to the parallelogram.
+This is exactly the cross product of $\va{v}$ and $\va{w}$!
+
+$$
+\begin{equation}
+V = \va{P} \cdot \va{u} = \qty(\va{v} \times \va{w}) \cdot \va{u}
+\end{equation}
+$$
+
+This means that the cross product of $\va{v}$ and $\va{w}$ is the vector that, when dotted with a third vector, gives the volume of the parallelepiped spanned by the three vectors.
+We already have another formula for this volume from the determinant, so we can equate the two:
+
+$$
+\begin{align}
+\va{P} \cdot \va{u} &= \det(\mqty[ u_x & v_x & w_x \\ u_y & v_y & w_y \\ u_z & v_z & w_z ]) \\
+P_x u_x + P_y u_y + P_z u_z &= u_x(v_y w_z - v_z w_y) + u_y(v_z w_x - v_x w_z) + u_z(v_x w_y - v_y w_x) \label{eq:cross-product-determinant-expanded}
+\end{align}
+$$
+
+This gives us the components of the cross product of $\va{v}$ and $\va{w}$:
+
+$$
+\begin{align}
+P_x &= v_y w_z - v_z w_y \\
+P_y &= v_z w_x - v_x w_z \\
+P_z &= v_x w_y - v_y w_x
+\end{align}
+$$
+
+We can then write the cross product of $\va{v}$ and $\va{w}$ as:
+
+$$
+\begin{equation}
+\va{v} \times \va{w} = \mqty[ v_y w_z - v_z w_y \\ v_z w_x - v_x w_z \\ v_x w_y - v_y w_x ]
+\end{equation}
+$$
+
+Alternatively, going back to the determinant form, we can write the cross product as:
+
+$$
+\begin{align}
+P_x u_x + P_y u_y + P_z u_z &= u_x(v_y w_z - v_z w_y) + u_y(v_z w_x - v_x w_z) + u_z(v_x w_y - v_y w_x) \tag{\ref{eq:cross-product-determinant-expanded}} \\
+\therefore P_x \ihatc + P_y \jhatc + P_z \khatc &= \ihatc(v_y w_z - v_z w_y) + \jhatc(v_z w_x - v_x w_z) + \khatc(v_x w_y - v_y w_x) \\
+&= \det(\mqty[ \ihatc & v_x & w_x \\ \jhatc & v_y & w_y \\ \khatc & v_z & w_z ]) \nonumber
+\end{align}
+$$
+
+(Of course you can't place basis vectors in the elements of a matrix; this is just a notational trick to help us remember the formula.)
+
+Finally, putting it all together, we have the formula for the cross product of two vectors in 3D space:
+
+<Boxed>
+$$
+\begin{equation}
+\va{v} \times \va{w} = \det(\mqty[ \ihatc & v_x & w_x \\ \jhatc & v_y & w_y \\ \khatc & v_z & w_z ]) = \mqty[ v_y w_z - v_z w_y \\ v_z w_x - v_x w_z \\ v_x w_y - v_y w_x ]
+\end{equation}
+$$
+</Boxed>
