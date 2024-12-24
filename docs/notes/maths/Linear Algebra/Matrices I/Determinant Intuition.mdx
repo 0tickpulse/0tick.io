@@ -15,12 +15,14 @@ import range from "lodash/range";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Determinant
+# Determinant: Intuition
 
 In this section, we will introduce the concept of the determinant of a matrix.
 It is a scalar value that can be thought of as a geometric scaling factor.
 It will be helpful to first understand the determinant in the context of 2D space before we generalize it to higher dimensions.
-Then, we will derive a formula to find this determinant.
+
+This page will focus on the geometric intuition behind the determinant.
+The next page will dive into the derivation for the formula to compute determinants.
 
 ## Table of Contents
 
@@ -280,7 +282,69 @@ If space is negatively oriented, your thumb will point in the opposite direction
     </div>
 </div>
 
-## Deriving the 2D Determinant
+## Implications on Linear Transformations
 
-Now that we know what the determinant geometrically represents, we also need to be able to compute it.
+Consider a linear transformation that maps everything in 2D space to a single line on that space.
+We have already seen that this transformation can be represented by a matrix whose columns are linearly dependent.
 
+Since the determinant of a matrix represents how space is scaled, then if the transformation squishes space to a line, the determinant must be $0$; the line has no area:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [3, 2], jhat: [-1.5, -1] }}
+    transformedItems={<Polygon points={[[0, 0], [1, 0], [1, 1], [0, 1]]} color={color("green")} />}
+/>
+
+It also works the other way around: if the determinant of a matrix is $0$, then the transformation must squish space to either a single point (the origin) or a line.
+In both cases, the columns of the matrix are linearly dependent.
+
+Hence:
+
+<Boxed>
+The determinant of a matrix is $0$ if and only if the columns of the matrix are linearly dependent.
+</Boxed>
+
+Additionally, when the determinant is $0$, it also means that there are multiple vectors that get mapped to the same vector.
+Take the same transformation as above, and consider the following vectors in the space:
+
+<LinearTransformationVisualizer
+    to={{ ihat: [3, 2], jhat: [-1.5, -1] }}
+    transformedItems={range(-5, 5).map(y => (
+        <Vector tip={[(4 + y) / 2, y]} color={gradient(color("red"), color("pink"), (y + 5) / 10)} />
+    ))}
+/>
+
+We say that this transformation has a mapping that is not one-to-one (or **injective**) because multiple vectors get mapped to the same vector.
+This will be very important when we discuss the concept of invertibility of matrices.
+
+## Multiplied Determinants
+
+When we multiply two matrices, the determinant of the product is the product of the determinants of the individual matrices.
+
+$$
+\begin{equation}
+\det(\vb{A}\vb{B}) = \det(\vb{A}) \cdot \det(\vb{B})
+\end{equation}
+$$
+
+We can formally prove this, but there's a very simple geometric intuition behind this.
+
+Recall that multiplying two matrices is equivalent to applying two transformations in sequence, called a composite transformation.
+The determinant of a matrix represents how space is scaled by that matrix.
+
+When we multiply two matrices, we are applying two transformations in sequence.
+If the first transformation scales space by $2$, and the second transformation scales space by $3$, then the composite transformation scales space by $6$.
+Following this logic, the first transformation, $\vb{A}$, scales space by $\det(\vb{A})$, and the second transformation, $\vb{B}$, scales space by $\det(\vb{B})$.
+Then the overall transformation scales space by $\det(\vb{A}) \cdot \det(\vb{B})$.
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of the determinant of a matrix.
+
+Here are the key points to remember:
+
+- The determinant of a matrix represents how space is scaled by the matrix.
+- The determinant is positive if space is not "flipped", and negative if it is.
+- A space can be seen as "flipped" if the orientation of the basis vectors is reversed. In 2D, this is when $\ihatc$ is to the left of $\jhatc$. In 3D, this is determined by the right-hand rule.
+- The determinant of a matrix is $0$ if and only if the columns of the matrix are linearly dependent.
+
+In the next section, we will actually derive the formula to compute the determinant of a matrix.

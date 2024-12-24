@@ -1,0 +1,33 @@
+---
+sidebar_position: 6
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Evaluating Limits: Summary
+
+In the previous sections, we discussed how to evaluate limits using different algebraic methods.
+Of course, there are many more methods to evaluate limits, but the ones we discussed are the most common and useful.
+Here is a summary of the methods we discussed:
+
+```mermaid
+flowchart TB
+    Limit["Limit of f(x) as x approaches a"] --> DS["Direct Substitution: f(a)"]
+    DS --> DSYes["f(a) is defined"] --> DSYesContinuous["f is continuous at a"] --> DSYesContinuousYes["Limit = f(a)"]
+           DSYes --> DSYesDiscontinuous["f is discontinuous at a"]
+    DS --> DSAsymptote["f(a) = something/0 (Probably an asymptote)"] --> DSAsymptoteYes["Limit = ∞ or -∞"]
+    DS --> DSIndeterminate["Indeterminate Form: 0/0 or ∞/∞"]
+    DSIndeterminate ---> Algebra["Algebraic Manipulation"] --> Factoring["Factor and simplify"]
+    Algebra --> Rationalize["Rationalize the expression"]
+    Algebra --> Trig["Use trigonometric identities"]
+    Algebra ---> Fails["When everything fails"] --> Advanced["More advanced methods"]
+    Fails --> Approximation["Approximation"]
+```
+
+In the next sections, we will explore the "more advanced methods" to evaluate limits, such as the Squeeze Theorem.

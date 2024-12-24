@@ -4,13 +4,14 @@ sidebar_position: 4
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef, createRef } from "react";
 import { lineLabel } from "@site/src/utilities/lines";
 import { color } from "@site/src/utilities/colors"
 import TOCInline from '@theme/TOCInline';
 import * as MB from "mathbox-react"
 import * as THREE from "three"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
 
 # Dot Product: Applications
 
@@ -85,7 +86,215 @@ $$
 The work is an extremely important concept in Physics, and the dot product is the key to understanding it.
 It's relevant to understanding how energy is transferred in various systems, which in turn is crucial for understanding the behavior of physical systems.
 
-## Graphics
+## Graphical Projection
+
+We know that the dot product can act as a way to project one vector onto another.
+This property is used in Computer Graphics to determine the position of objects on the screen.
+
+Think about it: when you're looking at a 3D scene on a screen, the computer is essentially projecting a 3D scene onto a 2D plane.
+There are different ways to project a 3D scene onto a 2D plane, but many of them involve the dot product.
+
+## Lighting in Graphics
+
+In Computer Graphics, the dot product is used to determine the intensity of light on a surface.
+When light hits a surface, the intensity of the light is determined by the angle between the light source and the surface.
+
+Imagine a scene with a ground, a ball, a lamp, and a camera.
+The lamp emits light rays in all directions, and some of these rays hit the ball or the ground.
+Some others hit the ground, bounce off, and hit the ball.
+
+For our purposes, treat the camera as simply a grid of pixels.
+The goal of rendering is simply to determine the color of each of those pixels.
+
+{(() => {
+    const [lampPosition, setLampPosition] = useState([0, 0, 0.8]);
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox
+                    options={{
+                        plugins: ["core", "controls", "cursor"],
+                        controls: {
+                            klass: OrbitControls,
+                        },
+                        camera: {
+                            up: new THREE.Vector3(0, 0, 1),
+                            lookAt: [0, -1, 0.5],
+                        },
+                    }}
+                    onInitialized={(mathbox) => {
+                        // Ball
+                        const mesh = new THREE.Mesh(
+                            new THREE.SphereGeometry(0.5, 32, 32), // args: radius, widthSegments, heightSegments
+                            new THREE.MeshPhysicalMaterial()
+                        );
+                        mesh.position.set(0, 1, 0);
+                        mathbox.three.scene.add(mesh);
+
+                        // Ground
+                        const ground = new THREE.Mesh(
+                            new THREE.PlaneGeometry(10, 10, 32, 32),
+                            new THREE.MeshPhysicalMaterial()
+                        );
+                        // Set rotation to be flat, z is up
+                        ground.rotation.z = -Math.PI / 2;
+                        // Move the ground down so it's below the ball
+                        ground.position.z = -0.5;
+
+                        mathbox.three.scene.add(ground);
+
+                        // Lamp
+                        const lamp = new THREE.PointLight(0xffffff, 1, 100);
+                        lamp.add(new THREE.Mesh(
+                            new THREE.SphereGeometry(0.1, 32, 32),
+                            new THREE.MeshBasicMaterial({ color: 0xffffff })
+                        ));
+                        lamp.position.set(0, 0, 0.8);
+                        lamp.name = "lamp";
+                        mathbox.three.scene.add(lamp);
+
+                        // Lamp controls
+                        const control = new TransformControls(mathbox.three.camera, mathbox.three.renderer.domElement);
+                        control.attach(lamp);
+                        control.addEventListener("dragging-changed", (event) => {
+                            // Disable orbit controls when dragging the lamp
+                            mathbox.three.controls.enabled = !event.value;
+                        });
+                        // Update lamp position
+                        control.addEventListener("objectChange", () => {
+                            setLampPosition(lamp.position.toArray());
+                        });
+                        mathbox.three.scene.add(control);
+
+                        // Camera - not an actual camera, just a grid of pixels
+                        const pixel = new THREE.Mesh(
+                            new THREE.PlaneGeometry(0.1, 0.1),
+                            new THREE.MeshBasicMaterial({ color: 0xffffff })
+                        );
+                        // Rotate the pixel to vertical
+                        pixel.rotation.x = -Math.PI / 2;
+                        pixel.position.set(0, -1, 0.25);
+                        mathbox.three.scene.add(pixel);
+
+                        // Camera controls
+                        mathbox.three.camera.position.set(2, 0, 0.5);
+                    }}
+                >
+                    {/* Vector from pixel to ball */}
+                    <MB.Array
+                        items={2}
+                        channels={3}
+                        data={[
+                            [0, -1, 0.25],
+                            [0, 1 - 0.87 / 2, 0.25],
+                        ]}
+                        id="pixel-to-ball"
+                    />
+                    <MB.Vector
+                        points="#pixel-to-ball"
+                    />
+                    {/* Vector from ball to lamp */}
+                    <MB.Array
+                        items={2}
+                        channels={3}
+                        data={[
+                            [0, 1 - 0.87 / 2, 0.25],
+                            lampPosition,
+                        ]}
+                        id="ball-to-lamp"
+                    />
+                    <MB.Vector
+                        points="#ball-to-lamp"
+                    />
+                </CustomMathbox>
+            </div>
+        </div>
+    )
+})()}
+
+The above scene is a simplified version of a rendering setup, with only one pixel on the camera.
+Let's assume a pixel can only have one color, so the only data is the intensity of light.
+
+The way we begin to calculate the intensity of light on a pixel is by imagining the pixel shooting a beam towards the ball.
+We're essentially working backwards from the camera to the light source.
+The light hits a point on the ball, denoted by $\va{x}$. Denote the vector going from the ball back to the pixel as $\omega_0$.
+Denote the the intensity at the point $\va{x}$ as $L_o(\va{x}, \omega_0)$.
+
+The first contribution to the intensity at $\va{x}$ is the light emitted from the ball itself.
+While it does not emit light in this case, in other cases, it would glow with a certain intensity.
+This can be denoted as $L_e(\va{x}, \omega_0)$.
+
+Hence:
+
+$$
+\begin{equation}
+L_o(\va{x}, \omega_0) = L_e(\va{x}, \omega_0) + (\text{other contributions})
+\end{equation}
+$$
+
+For the other contributions, we keep working backwards. Starting at point $\va{x}$, we consider all the light that hits it by shooting rays from the point in all directions.
+For example, consider the light that hits $\va{x}$ directly from the lamp. It comes from a direction $\omega_1$.
+Now, we need to think about the contributions from the lamp to the intensity at $\va{x}$:
+
+1. How reflective the ball is; this is denoted by the **reflectance** of the ball, $f_r(\va{x}, \omega_1 \to \omega_0)$, where $\omega_1 \to \omega_0$ just means the light comes from $\omega_1$ and reflects to $\omega_0$.
+2. The intensity of light at the point on the ball where the light hits, $L_i(x, \omega_1)$.
+
+The third factor is the angle between the light source and the point on the ball where the light hits. This is the key part.
+If the light was closer to the normal of the surface, it would be more intense, and vice versa.
+Wait... that's just a dot product:
+
+<Mafs>
+    <Circle center={[2, 0]} radius={2} />
+    {/* Point is at -0.66, 0.75 */}
+
+    {/* Normal vector */}
+    <Vector tail={vec.scale([-0.66 + 1, 0.75], 2)} tip={vec.scale([-0.66 + 2 / 3, 0.75], 3)} />
+    <LaTeX tex="\mathbf{n}" at={[-0.66 + 0.8, 1.75]} />
+
+    {/* Light vector */}
+    <Vector tail={[0, 5]} tip={vec.scale([-0.66 + 1, 0.75], 2)} />
+</Mafs>
+
+So we add a factor of $\omega_1 \cdot \vu{n}$ to the equation.
+Hence, the intensity at $\va{x}$ due to the light from the lamp is:
+
+$$
+\begin{equation}
+L_i(x, \omega_1) = f_r(\va{x}, \omega_1 \to \omega_0) L_e(\va{x}, \omega_1) (\omega_1 \cdot \vu{n})
+\end{equation}
+$$
+
+That's just the light coming from one specific direction (the lamp).
+To get the total intensity at $\va{x}$, we need to consider all the light coming from all directions.
+More specifically, all directions from which light can hit $\va{x}$ - a hemisphere around the point, denoted by $\Omega$.
+Since we are going towards a continuous case (all directions), instead of thinking about individual directions $\omega_1$, it's better to think of $\omega_1$ as a small cone of directions.
+The intensity at $\va{x}$ due to the light from the lamp is then the sum of the intensities from all these cones:
+
+$$
+\begin{equation}
+L_i(\va{x}) = \sum_{\Omega} f_r(\va{x}, \omega_i \to \omega_0) L_e(\va{x}, \omega_i) (\omega_i \cdot \vu{n}) \Delta \omega_i
+\end{equation}
+$$
+
+As we make the cones smaller and smaller, this sum becomes an integral:
+
+$$
+\begin{equation}
+L_i(\va{x}) = \int_{\Omega} f_r(\va{x}, \omega_i \to \omega_0) L_e(\va{x}, \omega_i) (\omega_i \cdot \vu{n}) \dd{\omega_i}
+\end{equation}
+$$
+
+Finally, the total intensity at $\va{x}$ is the emitted light plus the light from all other sources (which is the integral above):
+
+<Boxed>
+$$
+\begin{equation}
+L_o(\va{x}, \omega_0) = L_e(\va{x}, \omega_0) + \int_{\Omega} f_r(\va{x}, \omega_i \to \omega_0) L_e(\va{x}, \omega_i) (\omega_i \cdot \vu{n}) \dd{\omega_i}
+\end{equation}
+$$
+</Boxed>
+
+What we have just derived is known as the **rendering equation**.
 
 ## Language
 

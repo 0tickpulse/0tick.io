@@ -1,0 +1,613 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi, Point } from "mafs";
+
+import { useState, useCallback, createElement } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Underlying Algebraic Structures
+
+We begin our journey into linear algebra by discussing the most fundamental building block: vector spaces.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Modules
+
+Vector spaces, while fundamental in linear algebra, are actually a part of a larger structure known as a module.
+A module is a generalization of a vector space, where the scalars come from a ring instead of a field.
+
+To refresh your memory, a ring is a set with two operations: addition and multiplication.
+A field is a ring where every nonzero element has a multiplicative inverse; i.e., you can divide by any nonzero element.
+Common fields we encounter are the real numbers $\mathbb{R}$ and the complex numbers $\mathbb{C}$.
+
+Modules show up in many areas of mathematics;
+
+- A vector space is just a module over a field.
+- An abelian group is a module over the integers $\mathbb{Z}$.
+
+    Recall that abelian groups are groups where the group operation is commutative, i.e., $a \cdot b = b \cdot a$.
+
+- And a lot of other structures can be thought of as modules over some ring.
+
+With this in mind, it is sometimes useful to think of vector spaces as modules, especially when we want to generalize the concept to other structures.
+Then, instead of proving a theorem for each structure, we can prove it once for modules and apply it to all structures that are modules.
+
+In this page, we will discuss the underlying algebraic structures that form the basis of linear algebra.
+
+## Groups
+
+A group is a set $G$ equipped with a binary operation $*$ that satisfies a few properties:
+
+$$
+\begin{align}
+\text{Closure:} & \quad \forall a, b \in G, a * b \in G \\
+\text{Associativity:} & \quad \forall a, b, c \in G, (a * b) * c = a * (b * c) \\
+\text{Identity:} & \quad \exists e \in G \text{ such that } \forall a \in G, e * a = a * e = a \\
+\text{Inverse:} & \quad \forall a \in G, \exists a^{-1} \in G \text{ such that } a * a^{-1} = a^{-1} * a = e
+\end{align}
+$$
+
+The identity element $e$ is unique, and the inverse of an element $a$ is unique.
+
+Groups are a fundamental concept in mathematics because **groups fundamentally describe symmetry**.
+Imagine a group as a set of transformations that preserve some structure.
+
+For instance, consider the group of rotations of a square. Denote a rotation by $R_\theta$, where $\theta$ is the angle of rotation.
+Then, the group of rotations of a square is the set $\{R_0, R_{90}, R_{180}, R_{270}\}$. We can see that it satisfies the group axioms:
+
+1. **Closure**: Rotating a square by $90^\circ$ and then by $180^\circ$ is the same as rotating it by $270^\circ$.
+2. **Associativity**: Rotating a square by $90^\circ$ and then by $180^\circ$ and then by $270^\circ$ is the same as rotating it by $90^\circ$ and then by $180^\circ$ and then by $270^\circ$.
+3. **Identity**: Rotating a square by $0^\circ$ doesn't change it.
+4. **Inverse**: Rotating a square by $90^\circ$ and then by $270^\circ$ is the same as rotating it by $0^\circ$.
+
+Hopefully this sheds some light on why these axioms are defined the way they are, instead of just being arbitrary rules.
+
+### Example Problem: Integers under Addition
+
+> Now consider an infinite chain of beads, and let $a$ be the operation of shifting all beads one position to the right.
+> Then, the set of operations $\{\ldots, a^{-2}, a^{-1}, a^0, a^1, a^2, \ldots\}$ forms a group under the operation $*$, where $a^n$ shifts all beads $n$ positions to the right.
+> Does this group have an identity element? Does it have inverses?
+
+1. **Closure**: Shifting all beads one position to the right and then shifting them again is the same as shifting them two positions to the right.
+2. **Associativity**: Shifting all beads one position to the right and then shifting them two positions to the right and then shifting them three positions to the right is the same as shifting them one position to the right and then shifting them two positions to the right and then shifting them three positions to the right;
+    $$
+    \begin{equation}
+    a * (a^2 * a^3) = (a * a^2) * a^3
+    \end{equation}
+    $$
+3. **Identity**: Shifting all beads zero positions to the right doesn't change them.
+4. **Inverse**: Shifting all beads one position to the right and then shifting them one position to the left is the same as shifting them zero positions to the right;
+    $$
+    \begin{equation}
+    a * a^{-1} = a^{-1} * a = e
+    \end{equation}
+    $$
+
+But wait: shifting a chain of beads... isn't that just addition?
+Indeed, addition is a group operation on the integers $\mathbb{Z}$.
+
+### Addition and Multiplication
+
+The integers $\mathbb{Z}$ form a group under addition, and the nonzero integers $\mathbb{Z} \setminus \{0\}$ *almost* form a group under multiplication.
+(The notation $A \setminus B$ denotes the set of elements in $A$ that are not in $B$. It's analogus to "subtracting" the elements in $B$ from $A$.)
+We do not include $0$ in the set of nonzero integers because $0$ does not have a multiplicative inverse. That is, there's no $a$ such that $0 \cdot a = 1$.
+
+The multiplicative inverse of an integer $a$ is $\frac{1}{a}$, but this is not an integer for all $a$.
+Hence, the nonzero integers $\mathbb{Z} \setminus \{0\}$ do not form a group under multiplication.
+
+Subtraction does not form a group because it is non-associative. That is to say, $(a - b) - c \neq a - (b - c)$.
+
+### Example Problem: Rational Numbers under Addition
+
+> Consider the set of rational numbers $\mathbb{Q}$.
+> Prove that the rational numbers form a group under addition.
+
+Define $\mathbb{Q} = \{a/b \mid a, b \in \mathbb{Z}, b \neq 0\}$. All this is saying is that a rational number is a fraction of two integers.
+Then, if we can write any number as a fraction, we know that it is a rational number.
+
+1. **Closure**: The sum of two rational numbers is a rational number.
+
+    $$
+    \begin{equation}
+    \frac{a}{b} + \frac{c}{d} = \frac{ad + bc}{bd} \in \mathbb{Q}
+    \end{equation}
+    $$
+
+2. **Associativity**: The sum of three rational numbers is the same regardless of how we group them.
+
+    $$
+    \begin{equation}
+    \left(\frac{a}{b} + \frac{c}{d}\right) + \frac{e}{f} = \frac{a}{b} + \left(\frac{c}{d} + \frac{e}{f}\right)
+    \end{equation}
+    $$
+
+3. **Identity**: The identity element is $0 = \frac{0}{1}$.
+
+    $$
+    \begin{equation}
+    \frac{a}{b} + 0 = \frac{a}{b}
+    \end{equation}
+    $$
+
+4. **Inverse**: The inverse of a rational number is its negation.
+
+    $$
+    \begin{equation}
+    \frac{a}{b} + \left(-\frac{a}{b}\right) = 0
+    \end{equation}
+    $$
+
+Therefore, the rational numbers form a group under addition. $\blacksquare$
+
+### Abelian Groups
+
+Often, we are interested in groups where the group operation is commutative.
+That is, $a * b = b * a$ for all $a, b \in G$. This is very common in different areas of mathematics, so we give these groups a special name: abelian groups.
+
+The name comes from the mathematician Niels Henrik Abel, who was one of the first to prove that there are no general solutions to fifth-degree polynomial equations.
+(It's super fascinating to look at that proof, and one can check out the [Abel-Ruffini theorem](https://en.wikipedia.org/wiki/Abel%E2%80%93Ruffini_theorem) for more information.)
+
+### Example Problem: Symmetries of a Square
+
+> Consider the group of rotations of a square.
+> Show that this group is abelian.
+
+(Just a side note: the terms "prove" and "show" are deliberately used differently here.
+When we say "prove," we mean that we need to show that something is true using a rigorous argument.
+When we say "show," we mean that we need to demonstrate something, but it doesn't have to be as rigorous; rather, it's more about understanding the concept, or giving an intuition to *why* something is true.
+Then the proof shows *how* it is true. This distinction is subtle but important.)
+
+The group of rotations of a square is $\{R_0, R_{90}, R_{180}, R_{270}\}$, where $R_\theta$ denotes a rotation by $\theta$ degrees.
+
+We can think of this group as an abelian group if we consider the rotations as addition modulo $360^\circ$.
+If you rotate by $\theta$, that's equivalent to adding $\theta$ to the current angle.
+Hence, we can shift our perspective to think of this group as the integers modulo $360$ under addition.
+(When two groups are essentially the same, like this, we call them **isomorphic**.)
+
+We know that addition is commutative, so the group of rotations of a square is abelian. $\blacksquare$
+
+## Fields
+
+A group gives you a set with a single operation. A *field*, on the other hand, gives you a set with two operations: addition and multiplication.
+Each of them have an identity element which we denote as $0$ and $1$ respectively. Importantly, the identity elements are different.
+The criteria for a set $\mathbb{F}$ to be a field are:
+
+- $\mathbb{F}$ is an abelian group under addition.
+- $\mathbb{F} \setminus \{0\}$ is an abelian group under multiplication.
+- Multiplication distributes over addition. That is, for any $a, b, c \in \mathbb{F}$, $a \cdot (b + c) = a \cdot b + a \cdot c$.
+
+What these mean more concretely is that, for any $a, b \in \mathbb{F}$:
+
+1. $a + b \in \mathbb{F}$ (closure under addition).
+2. $-a, a - b \in \mathbb{F}$ (existence of additive inverses).
+3. $a \cdot b \in \mathbb{F}$ (closure under multiplication).
+4. $\frac{1}{a}, \frac{1}{b} \in \mathbb{F}$ (existence of multiplicative inverses).
+5. $\frac{a}{b} = a \cdot \frac{1}{b}$ (distributive property).
+
+These should look familiar to you, as they are the properties of the real numbers $\mathbb{R}$ and the complex numbers $\mathbb{C}$.
+Hence, the real numbers and the complex numbers are fields.
+
+### Example Problem: These Are Fields
+
+> Prove that the following sets are fields:
+>
+> 1. The rational numbers $\mathbb{Q}$.
+> 2. The real numbers $\mathbb{R}$.
+> 3. The complex numbers $\mathbb{C}$.
+> 4. The integers modulo $p$, where $p$ is a prime number. (Why does $p$ have to be prime?)
+> 5. $\mathbb{Q}(\sqrt{2}) \equiv \{a + b\sqrt{2} \mid a, b \in \mathbb{Q}\}$. (This is known as the rational numbers *adjoined* with $\sqrt{2}$.)
+
+To save space, we will only prove the last two sets because the first three are well-known fields.
+
+4. **Integers modulo $p$**: Let $\mathbb{Z}_p = \{0, 1, 2, \ldots, p - 1\}$.
+    - **Closure under addition**: The sum of two integers modulo $p$ is an integer modulo $p$.
+    - **Additive inverses**: For any integer $a$, $-a \equiv p - a \pmod{p}$.
+    - **Closure under multiplication**: The product of two integers modulo $p$ is an integer modulo $p$.
+
+    - **Multiplicative inverses**: For the multiplicative inverse, things get a bit tricky. We want to show that for any $a \in \mathbb{Z}_p \setminus \{0\}$, there exists a $b \in \mathbb{Z}_p$ such that $a \cdot b \equiv 1 \pmod{p}$.
+        Since $p$ is prime, then any integer $a \in \mathbb{Z}_p \setminus \{0\}$ is coprime to $p$, meaning that $\gcd(a, p) = 1$.
+
+        The Extended Euclidean Algorithm tells us that we can find integers $x, y$ such that $ax + py = \gcd(a, p) = 1$.
+        Then, $ax \equiv 1 \pmod{p}$, so $x$ is the multiplicative inverse of $a$ modulo $p$.
+
+    - **Distributive property**: This is inherited from the integers.
+
+5. **Rational numbers adjoined with $\sqrt{2}$**: Let $\mathbb{Q}(\sqrt{2}) = \{a + b\sqrt{2} \mid a, b \in \mathbb{Q}\}$.
+    Let's define two numbers in $\mathbb{Q}(\sqrt{2})$: $a + b\sqrt{2}$ and $c + d\sqrt{2}$.
+
+    - **Closure under addition**:
+
+        $$
+        \begin{equation}
+        (a + b\sqrt{2}) + (c + d\sqrt{2}) = (a + c) + (b + d)\sqrt{2} \in \mathbb{Q}(\sqrt{2})
+        \end{equation}
+        $$
+
+    - **Additive inverses**:
+
+        $$
+        \begin{equation}
+        -(a + b\sqrt{2}) = -a - b\sqrt{2} \in \mathbb{Q}(\sqrt{2})
+        \end{equation}
+        $$
+
+    - **Closure under multiplication**:
+
+        $$
+        \begin{equation}
+        (a + b\sqrt{2}) \cdot (c + d\sqrt{2}) = (ac + 2bd) + (ad + bc)\sqrt{2} \in \mathbb{Q}(\sqrt{2})
+        \end{equation}
+        $$
+
+    - **Multiplicative inverses**: We can show that the multiplicative inverse of $a + b\sqrt{2}$ is $\frac{1}{a + b\sqrt{2}}$ by rationalizing the denominator.
+
+        $$
+        \begin{equation}
+        \frac{1}{a + b\sqrt{2}} = \frac{a - b\sqrt{2}}{a^2 - 2b^2} = \qty(\frac{a}{a^2 - 2b^2}) - \qty(\frac{b}{a^2 - 2b^2})\sqrt{2} \in \mathbb{Q}(\sqrt{2})
+        \end{equation}
+        $$
+
+    - **Distributive property**: This is inherited from the real numbers.
+
+Therefore, the integers modulo $p$ and the rational numbers adjoined with $\sqrt{2}$ are fields. $\blacksquare$
+
+### Example Problem: These Are Not Fields
+
+> Prove that the following sets are not fields:
+>
+> 1. The integers $\mathbb{Z}$.
+> 2. The integers modulo $n$, $\mathbb{Z}_n$, where $n$ is composite (not prime).
+
+1. **Integers**: The integers are not a field because they do not have multiplicative inverses.
+    For example, there is no integer $a$ such that $2 \cdot a = 1$.
+2. **Integers modulo $n$**: If $n$ is composite, then $\mathbb{Z}_n$ is not a field because it does not have multiplicative inverses.
+    For example, in $\mathbb{Z}_6$, there is no integer $a$ such that $2 \cdot a \equiv 1 \pmod{6}$.
+
+    To see why this is the case, consider the prime factorization of $n$.
+    If $n = ab$, then $a$ and $b$ are not coprime, so there is no multiplicative inverse for $a$ or $b$.
+
+Therefore, the integers and the integers modulo $n$ where $n$ is composite are not fields. $\blacksquare$
+
+## Vector Spaces
+
+Now that we have a good understanding of groups and fields, we can finally go back into linear algebra and discuss vector spaces.
+Vector spaces have two "components": an abelian group $V$ of objects called **vectors**, and a field $\mathbb{F}$ of **scalars**.
+They contain two operations alongside each other: addition of vectors and scalar multiplication.
+This definition requires a few properties:
+
+- $V$ is an abelian group under addition.
+- $V$ is closed under scalar multiplication. That is, for any $\va{v} \in V$ and $a \in \mathbb{F}$, $a\va{v} \in V$.
+- $+$ and $\cdot$ satisfy associative and distributive properties that relate the two operations:
+
+    $$
+    \begin{align}
+    a(\va{v} + \va{w}) &= a\va{v} + a\va{w} &&\qquad \forall a \in \mathbb{F}, \va{v}, \va{w} \in V \\
+    (a + b)\va{v} &= a\va{v} + b\va{v} &&\qquad \forall a, b \in \mathbb{F}, \va{v} \in V \\
+    a(b\va{v}) &= (ab)\va{v} &&\qquad \forall a, b \in \mathbb{F}, \va{v} \in V \\
+    1\va{v} &= \va{v} &&\qquad \forall \va{v} \in V
+    \end{align}
+    $$
+
+These properties are what make vector spaces such a powerful tool in mathematics.
+
+### Example Problem: Proving Vector Space Properties
+
+> Let $V$ be a vector space over the field $\mathbb{F}$.
+> Prove that the following properties hold:
+>
+> 1. The zero vector, denoted $\va{0}$, is unique.
+> 2. $0\va{v} = \va{0}$ for all $\va{v} \in V$.
+> 3. $(-1)\va{v} = -\va{v}$ for all $\va{v} \in V$.
+
+These properties seem very obvious, but they are actually quite miraculous when you consider the fact that they relate two different distinct sets.
+For instance, the third property states that the additive inverse of the field times a vector is the same as the additive inverse of the vector.
+
+1. **Uniqueness of the zero vector**: We need to leverage the fact that $\va{0}$ is the additive identity in $V$. This means that for any $\va{v} \in V$, $\va{v} + \va{0} = \va{v}$.
+    Suppose there are two zero vectors $\va{0}_1$ and $\va{0}_2$.
+    Then:
+
+    $$
+    \begin{equation}
+    \va{0}_1 = \va{0}_1 + \va{0}_2 = \va{0}_2
+    \end{equation}
+    $$
+
+    Hence, given any two zero vectors, they must be the same.
+    Thus, the zero vector is unique.
+2. **Scalar multiplication by zero**: We know that $\va{0}$ is the additive identity in $V$.
+    Then:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    0\va{v} &= (0 + 0)\va{v} = 0\va{v} + 0\va{v} \\
+    0\va{v} - 0\va{v} &= 0\va{v} + 0\va{v} - 0\va{v} \\
+    0\va{v} &= \va{0}
+    \end{split}
+    \end{equation}
+    $$
+3. **Scalar multiplication by $-1$**: We know that $1\va{v} = \va{v}$.
+    Then:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \va{v} + (-1)\va{v} &= 1\va{v} + (-1)\va{v} \\
+    \va{v} + (-1)\va{v} &= (1 + (-1))\va{v} \\
+    \va{v} + (-1)\va{v} &= 0\va{v} = \va{0} \\
+    \va{v} + (-1)\va{v} - \va{v} &= \va{0} - \va{v} \\
+    (-1)\va{v} &= -\va{v}
+    \end{split}
+    \end{equation}
+    $$
+
+Therefore, the zero vector is unique, $0\va{v} = \va{0}$, and $(-1)\va{v} = -\va{v}$. $\blacksquare$
+
+### Problem: Are These Vector Spaces?
+
+> Determine whether the following sets are vector spaces:
+>
+> 1. $K^n = \{(x_1, x_2, \ldots, x_n) \mid x_i \in K\}$, where $K$ is a field. The operations are component-wise addition and scalar multiplication.
+> 2. The set of all functions $f: \mathbb{R} \to \mathbb{R}$ (where $K = \mathbb{R}$).
+> 3. The set of all functions $f: S \to K$, where $S$ is an arbitrary set and $K$ is a field.
+> 4. The set of all polynomials of degree at most $n$ with coefficients in $K$.
+
+## Linear Maps
+
+Now that we have a good understanding of vector spaces, we can move on to linear maps, or linear transformations.
+Given two vector spaces $V$ and $W$ over the same field $\mathbb{F}$, a linear map $\varphi: V \to W$ is a function that preserves the structure of the vector space.
+
+Generally, in algebra, given an object, there exists a map that transforms it into another object:
+
+| Object | Map |
+| --- | --- |
+| Group | Group homomorphism |
+| Ring | Ring homomorphism |
+| Metric space | Continuous map |
+| Topological space | Continuous map |
+| Manifold | Diffeomorphism |
+
+There are many different types of objects and maps. Particularly, **category theory** seeks to generalize these concepts; objects are just called "objects" and maps are called "morphisms."
+
+Since we have already discussed linear maps in the previous course, we will not delve into the intuition behind them here.
+We know that linear maps have the following properties:
+
+1. $\varphi(\va{v} + \va{w}) = \varphi(\va{v}) + \varphi(\va{w})$ for all $\va{v}, \va{w} \in V$.
+2. $\varphi(a\va{v}) = a\varphi(\va{v})$ for all $a \in \mathbb{F}$ and $\va{v} \in V$.
+
+These can also be written as one property:
+
+$$
+\begin{equation}
+\varphi(a\va{v} + b\va{w}) = a\varphi(\va{v}) + b\varphi(\va{w}) \quad \forall a, b \in \mathbb{F}, \va{v}, \va{w} \in V
+\end{equation}
+$$
+
+These properties greatly simplify the study of linear maps, as they allow us to understand the map by just looking at its action on the basis vectors.
+
+If a map $\varphi: V \to W$ is bijective, meaning that (1) it is injective (one-to-one) and (2) it is surjective (onto), then it is called an **isomorphism**.
+
+### Example Problem: Are These Maps Linear?
+
+> Are the following maps linear?
+>
+> 1. Matrix multiplication.
+> 2. Differential operators over functions.
+> 3. Integration operators over functions.
+
+1. **Matrix multiplication**: Let $\vb{A}$ and $\vb{B}$ be matrices.
+    We know that matrix multiplication is linear because it satisfies:
+
+    $$
+    \begin{equation}
+    \vb{A}(a\vb{v} + b\vb{w}) = a\vb{A}\vb{v} + b\vb{A}\vb{w}
+    \end{equation}
+    $$
+
+    This is extensively discussed in the previous course.
+2. **Differential operators**: Let $\dv{x}$ be the differential operator, and $\phi(x), \psi(x)$ be functions.
+    We know that the derivative operator is linear because it satisfies:
+
+    $$
+    \begin{equation}
+    \dv{x} (a\phi(x) + b\psi(x)) = a\dv{x}\phi(x) + b\dv{x}\psi(x)
+    \end{equation}
+    $$
+
+    This is actually harder to prove than it seems; first, we need to use the formal definnition of the derivative, and then we need to use some analysis to show that limits are linear.
+
+3. **Integration operators**: Let $\int$ be the integration operator.
+    We know that the integration operator is linear because it satisfies:
+
+    $$
+    \begin{equation}
+    \int (a\phi(x) + b\psi(x)) \dd{x} = a\int \phi(x) \dd{x} + b\int \psi(x) \dd{x}
+    \end{equation}
+    $$
+
+    This can be proven using the fundamental theorem of calculus. Let $\phi'(x)$ and $\psi'(x)$ be the derivatives of $\phi(x)$ and $\psi(x)$, respectively.
+    Then:
+
+    $$
+    \begin{align}
+    a\phi(x) + b\psi(x) &= \int (a\phi'(x) + b\psi'(x)) \dd{x} \\
+    a\phi(x) + b\psi(x) &= a\int \phi'(x) \dd{x} + b\int \psi'(x) \dd{x}
+    \end{align}
+    $$
+
+    Where the first line uses the FTOC for the entire function, and the second line uses the FTOC for the individual functions
+
+The last two maps are not as straightforward as matrix multiplication, but they are indeed linear. $\blacksquare$
+
+### Example Problem: Isomorphism
+
+> Going back to [this problem](#problem-are-these-vector-spaces), hopefully you have determined that all of the sets are vector spaces.
+> Show that:
+>
+> 1. $K^n$ is isomorphic to the set of polynomials of degree at most $n$ with coefficients in $K$.
+> 2. $K^n$ is isomorphic to the set of functions $f: S \to K$ if $|S| = n$.
+
+1. **$K^n$ is isomorphic to the set of polynomials**: Let $\va{v} = (a_1, a_2, \ldots, a_n) \in K^n$.
+    Then, we can associate $\va{v}$ with the polynomial $p(x) = a_1 + a_2x + \ldots + a_nx^{n - 1}$.
+    We can construct a map $\varphi: K^n \to P_n(K)$ that sends $\va{v}$ to $p(x)$:
+
+    $$
+    \begin{equation}
+    \varphi(a_1, a_2, \ldots, a_n) = a_1 + a_2x + \ldots + a_nx^{n - 1}
+    \end{equation}
+    $$
+
+    To show that this map is an isomorphism, we need to show that it is bijective and linear.
+
+    1. **Bijective**: The map is clearly surjective because every polynomial of degree at most $n$ can be written as $p(x)$.
+        To show that it is injective, we need to show that if $\varphi(\va{v}) = \varphi(\va{w})$, then $\va{v} = \va{w}$.
+        This is true because the coefficients of the polynomials are unique.
+    2. **Linear**: The map is linear because it satisfies:
+
+        $$
+        \begin{equation}
+        \varphi(a\va{v} + b\va{w}) = a\varphi(\va{v}) + b\varphi(\va{w})
+        \end{equation}
+        $$
+
+        To show this, we need to leverage the linearity of polynomial addition and scalar multiplication.
+        Let $p(x) = \varphi(v_1, v_2, \ldots, v_n)$ and $q(x) = \varphi(w_1, w_2, \ldots, w_n)$.
+        Then:
+
+        $$
+        \begin{equation}
+        \begin{split}
+        \varphi(a\va{v} + b\va{w}) &= \varphi(av_1 + bw_1, av_2 + bw_2, \ldots, av_n + bw_n) \\
+        &= (av_1 + bw_1) + (av_2 + bw_2)x + \ldots + (av_n + bw_n)x^{n - 1} \\
+        &= a(v_1 + v_2x + \ldots + v_nx^{n - 1}) + b(w_1 + w_2x + \ldots + w_nx^{n - 1}) \\
+        &= a\varphi(\va{v}) + b\varphi(\va{w})
+        \end{split}
+        \end{equation}
+        $$
+
+2. **$K^n$ is isomorphic to the set of functions**: Let $\va{v} = (a_1, a_2, \ldots, a_n) \in K^n$.
+    Then, we can associate $\va{v}$ with the function $f: S \to K$ where $S = \{s_1, s_2, \ldots, s_n\}$.
+    To completely define $f$, we simply need to know the values of $f$ at each element of $S$. Siince there are $n$ elements in $S$, this is equivalent to knowing $n$ things - which is exactly what $\va{v}$ gives us.
+
+    We can construct a map $\varphi: K^n \to F(S, K)$ that sends $\va{v}$ to $f$:
+
+    $$
+    \begin{equation}
+    \varphi(a_1, a_2, \ldots, a_n) = f, \quad f(s_1) = a_1, f(s_2) = a_2, \ldots, f(s_n) = a_n
+    \end{equation}
+    $$
+
+    To show that this map is an isomorphism, we need to show that it is bijective and linear.
+
+    1. **Bijective**: The map is surjective because every function $f: S \to K$ can be written as $f$.
+        To show that it is injective, we need to show that if $\varphi(\va{v}) = \varphi(\va{w})$, then $\va{v} = \va{w}$.
+        This is true because the values of the functions are unique.
+    2. **Linear**: The map is linear because it satisfies:
+
+        $$
+        \begin{equation}
+        \varphi(a\va{v} + b\va{w}) = a\varphi(\va{v}) + b\varphi(\va{w})
+        \end{equation}
+        $$
+
+        To show this, we need to leverage the linearity of function addition and scalar multiplication.
+        Let $f = \varphi(v_1, v_2, \ldots, v_n)$ and $g = \varphi(w_1, w_2, \ldots, w_n)$.
+        Then:
+
+        $$
+        \begin{equation}
+        \begin{split}
+        \varphi(a\va{v} + b\va{w}) &= \varphi(av_1 + bw_1, av_2 + bw_2, \ldots, av_n + bw_n) \\
+        &= f, \quad f(s_i) = av_i + bw_i \\
+        &= a\varphi(\va{v}) + b\varphi(\va{w})
+        \end{split}
+        \end{equation}
+        $$
+
+Therefore, $K^n$ is isomorphic to the set of polynomials of degree at most $n$ with coefficients in $K$, and $K^n$ is isomorphic to the set of functions $f: S \to K$ if $|S| = n$. $\blacksquare$
+
+## Subspaces
+
+A subspace of a vector space $V$ is a subset $U \subseteq V$ that is itself a vector space.
+That is, $U$ is closed under addition and scalar multiplication, and it contains the zero vector.
+
+These are extremely important in linear algebra because they show up everywhere.
+For instance, if you have a system of linear equations, the solutions form a subspace of the vector space of all possible solutions.
+
+We already know the basics of subspaces, so let's move on to some less obvious aspects.
+
+**The intersection of two subspaces is also a subspace.**
+To show this, we need to show that the intersection is closed under addition and scalar multiplication.
+Let $U$ and $W$ be subspaces of $V$.
+Then, for any $\va{u}, \va{v} \in U \cap W$ and $a \in \mathbb{F}$:
+
+1. **Closure under addition**: Since $\va{u}, \va{v} \in U$ and $U$ is a subspace, then $\va{u} + \va{v} \in U$.
+    Similarly, $\va{u}, \va{v} \in W$ and $W$ is a subspace, so $\va{u} + \va{v} \in W$.
+    Hence, $\va{u} + \va{v} \in U \cap W$.
+2. **Closure under scalar multiplication**: Since $\va{u} \in U$ and $U$ is a subspace, then $a\va{u} \in U$.
+    Similarly, $\va{u} \in W$ and $W$ is a subspace, so $a\va{u} \in W$.
+    Hence, $a\va{u} \in U \cap W$.
+
+Therefore, $U \cap W$ is a subspace of $V$. $\blacksquare$
+
+**The union of two subspaces is not necessarily a subspace.**
+For instance, consider the $x$-axis and the $y$-axis in $\mathbb{R}^2$.
+The union of these two subspaces is not a subspace because it is not closed under addition.
+You can add some $x$-axis vector and some $y$-axis vector, but the result will not be on either axis.
+
+**The sum of two subspaces is also a subspace.**
+The sum of two subspaces $U$ and $W$ is the set of all vectors that can be written as the sum of a vector in $U$ and a vector in $W$.
+That is, $U + W = \{\va{u} + \va{w} \mid \va{u} \in U, \va{w} \in W\}$.
+
+To show that $U + W$ is a subspace, we need to show that it is closed under addition and scalar multiplication.
+Let $\va{u}_1, \va{u}_2 \in U$ and $\va{w}_1, \va{w}_2 \in W$.
+Then, for any $a, b \in \mathbb{F}$:
+
+1. **Closure under addition**: Since $\va{u}_1, \va{u}_2 \in U$ and $U$ is a subspace, then $\va{u}_1 + \va{u}_2 \in U$.
+    Similarly, $\va{w}_1, \va{w}_2 \in W$ and $W$ is a subspace, so $\va{w}_1 + \va{w}_2 \in W$.
+    Hence, $(\va{u}_1 + \va{w}_1) + (\va{u}_2 + \va{w}_2) \in U + W$.
+2. **Closure under scalar multiplication**: Since $\va{u}_1 \in U$ and $U$ is a subspace, then $a\va{u}_1 \in U$.
+    Similarly, $\va{w}_1 \in W$ and $W$ is a subspace, so $a\va{w}_1 \in W$.
+    Hence, $a(\va{u}_1 + \va{w}_1) \in U + W$.
+
+As always, the advantage of abstraction is that we can prove general results that apply to all vector spaces, not just specific examples.
+For example, consider the following subspace:
+
+$$
+\begin{equation}
+U \equiv \qty{\text{Functions that cycles every } n\pi, n \in \mathbb{Z}^{+}} \subseteq \qty{\text{Functions } f: \mathbb{R} \to \mathbb{R}}
+\end{equation}
+$$
+
+This is a subspace because it is closed under addition and scalar multiplication.
+$U$ describes functions that are periodic with periods that are a factor of $\pi$. For example, $\sin(x)$ is in $U$ because it cycles every $2\pi$.
+The basis of $U$ is $\{\sin(nx)\}$, which is *amazing* because it shows that the sine functions are the building blocks of all periodic functions.
+This is the basis (get it?) of Fourier series, which is a way to represent any periodic function as a sum of sines and cosines.
+$U$ is also infinite-dimensional because there are infinitely many sine functions.
+
+## Summary and Next Steps
+
+In this page, we discussed the fundamental concepts of linear algebra, going from the basic building blocks of groups and fields to the more complex structures of vector spaces and linear maps.
+
+Here are the key points to remember:
+
+- A group $G$ is a set with a single operation that satisfies closure, associativity, identity, and inverses. They represent symmetry and transformations.
+- A field $\mathbb{F}$ is a set with two operations, addition and multiplication, such that $\mathbb{F}$ is an abelian group under addition and $\mathbb{F} \setminus \{0\}$ is an abelian group under multiplication.
+- A vector space $V$ is a set of vectors with two operations, addition and scalar multiplication, such that $V$ is an abelian group under addition and is closed under scalar multiplication.
+- Vector spaces are special cases of modules, which allow the scalars to come from a ring instead of just a field.
+- A linear map $\varphi: V \to W$ is a function that preserves the structure of the vector space. It is linear if it satisfies $\varphi(a\va{v} + b\va{w}) = a\varphi(\va{v}) + b\varphi(\va{w})$.
+- If a linear map is bijective, it is called an isomorphism.
+- A subspace of a vector space is a subset that is itself a vector space.
+- The intersection of two subspaces is a subspace, but the union of two subspaces is not necessarily a subspace.
+- The sum of two subspaces is a subspace.
+
+In the next page, we will delve into the concept of linear independence and bases, which are crucial for understanding the structure of vector spaces.

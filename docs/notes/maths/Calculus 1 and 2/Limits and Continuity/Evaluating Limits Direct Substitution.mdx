@@ -1,0 +1,151 @@
+---
+sidebar_position: 5
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Evaluating Limits: Direct Substitution
+
+In the previous sections, we discussed the concept of limits and how they can be used to describe the behavior of a function as the input approaches a certain value.
+We will now explore the first method to evaluate limits: **direct substitution**.
+
+This method is extremely straightforward and can work for many simple limits.
+Most of this section will actually be dedicated to discussing the limitations of this method.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Direct Substitution
+
+The simplest way to evaluate a limit is to substitute the value into the function and see what we get.
+Known as **direct substitution**, it is the most straightforward method to evaluate limits.
+
+For example, consider the following limit:
+
+$$
+\begin{equation}
+\lim_{x \to 2} (x^2 + 3x - 2)
+\end{equation}
+$$
+
+To evaluate this limit using direct substitution, we substitute $x = 2$ into the function:
+
+$$
+\begin{equation}
+\lim_{x \to 2} (x^2 + 3x - 2) = 2^2 + 3 \cdot 2 - 2 = 4 + 6 - 2 = 8
+\end{equation}
+$$
+
+Therefore, the limit is $8$.
+
+## The Flaws and Assumptions
+
+While direct substitution is a simple and effective method to evaluate limits, it has its limitations.
+
+### Discontinuities
+
+One would assume that if you can just plug in the value, then the limit should be the value you get.
+However, this is not always the case.
+
+Consider the following graph:
+
+<Mafs pan={false}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => x ** 2} />
+    <Circle center={[1, 1]} radius={0.1} fillOpacity={1} strokeOpacity={0} color="black" />
+    <Circle center={[1, 1]} radius={0.1} fillOpacity={0} color="white" />
+    <Circle center={[1, -1]} radius={0.1} fillOpacity={1} color="white" />
+</Mafs>
+
+This function can be defined as a piecewise function:
+
+$$
+\begin{equation}
+f(x) = \begin{cases}
+x^2 & \text{if } x \neq 1 \\
+-1 & \text{if } x = 1
+\end{cases}
+\end{equation}
+$$
+
+Let's evaluate this limit as $x$ approaches $1$. Using direct substitution, we would get that the limit is just $-1$ (the second case).
+However, if we look at the graph, we can see that the limit is actually $1$ because the function approaches $1$ from both sides as $x$ approaches $1$.
+Hence, direct substitution gave us the wrong answer.
+
+When the limit exists, but the function has a different value *at that point*, we say that the function is **discontinuous** at that point.
+This will be discussed in more detail in the next sections.
+For now, we need to understand that **direct substitution assumes that the function is continuous at the point we are evaluating the limit**.
+
+### Indeterminate Forms
+
+In some cases, substituting the value into the function may result in an **indeterminate form**.
+An indeterminate form is an expression that does not have a definite value when evaluated directly.
+
+Consider the following limit:
+
+$$
+\begin{equation}
+\lim_{x \to 0} \frac{\sin(x)}{x}
+\end{equation}
+$$
+
+If we substitute $x = 0$ directly, we get:
+
+$$
+\begin{equation}
+\lim_{x \to 0} \frac{\sin(x)}{x} = \frac{\sin(0)}{0} = \frac{0}{0}
+\end{equation}
+$$
+
+The expression $\frac{0}{0}$ is an indeterminate form.
+(This limit actually evaluates to $1$, and there's a very beautiful proof for it, which we will discuss in the next sections.)
+
+Here's another example:
+
+$$
+\begin{equation}
+\lim_{x \to \infty} \qty[\frac{2x^2 + 3x - 2}{x + 1} - (2x + 1)]
+\end{equation}
+$$
+
+If we substitute $x = \infty$ directly, we get:
+
+$$
+\begin{equation}
+\lim_{x \to \infty} \qty[\frac{2x^2 + 3x - 2}{x + 1} - (2x + 1)] = \frac{\infty}{\infty} - \infty
+\end{equation}
+$$
+
+The expression $\frac{\infty}{\infty} - \infty$ is another indeterminate form.
+(For this limit, the answer is $0$; $2x + 1$ is an asymptote for the function.)
+
+Some other common indeterminate forms are:
+
+- $0 / 0$
+- $\infty / \infty$
+- $0 \cdot \infty$
+- $\infty - \infty$
+- $0^0$
+- $\infty^0$
+
+When you encounter an indeterminate form, you will need to use other methods to evaluate the limit, such as factoring, rationalizing, or something known as L'Hôpital's Rule.
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of direct substitution as a method to evaluate limits.
+
+Here are the key points to remember:
+
+- Direct substitution is the simplest method to evaluate limits.
+- It involves substituting the value into the function and evaluating the result.
+- Direct substitution assumes that the function is continuous at the point we are evaluating the limit.
+- Indeterminate forms are expressions that do not have a definite value when evaluated directly.
+
+In the next section, we will explore how to evaluate limits when direct substitution fails, particularly when the function is not defined or discontinuous at the value we are evaluating the limit for.

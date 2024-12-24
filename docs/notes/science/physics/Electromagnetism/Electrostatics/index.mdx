@@ -1,7 +1,9 @@
 # Electrostatics
 
 All matter possess a fundamental property known as **charge**.
-We will explore the nature of charges, the forces they exert on each other, and the fields they create, all in the context of static situations:
+We will explore the nature of charges, the forces they exert on each other, and the fields they create, all in the context of static situations.
+Electrostatics primarily deals with three quantities: the charge density $\rho$, the electric field $\va{E}$, and the electric potential $\phi$.
+By the end, we will have a complete understanding of how these quantities are related and how they can be used to solve problems.
 
 - We will begin with a discussion of how charge works, as well as the basic principles of electrostatics (and its position in modern physics).
 - We will then move on to Coulomb's law, which describes the force between two charges.
@@ -10,3 +12,69 @@ We will explore the nature of charges, the forces they exert on each other, and 
     However, this is not always the most efficient way to solve problems.
     Hence, we will introduce the concept of the electric field, and along with it, Gauss's law.
 - Gauss's law is a powerful tool that allows us to calculate electric fields in situations with high symmetry.
+- Next, we will discuss the electric potential, which is a scalar field that is related to the electric field.
+    We will see how it can be used to simplify calculations and provide a new perspective on electrostatics.
+- We will explore some mathematical tools related to the electric potential, such as the method images, separation of variables, and the multipole expansion.
+    Through this exploration, we will also derive certain things such as the uniqueness theorem.
+- Finally, we will discuss the properties of conductors and capacitors, and how they can be used to store and manipulate charge.
+
+As mentioned earlier, we will be able to relate all three quantities together:
+
+<table>
+    <tr>
+        <th></th>
+        <th>$\rho$</th>
+        <th>$\va{E}$</th>
+        <th>$\phi$</th>
+    </tr>
+    <tr>
+        <td>$\rho$</td>
+        <td></td>
+        <td>
+            $$
+            \rho = \varepsilon_0 \div{\va{E}}
+            $$
+        </td>
+        <td>
+            $$
+            \rho = -\varepsilon_0 \laplacian{\phi}
+            $$
+        </td>
+    </tr>
+    <tr>
+        <td>
+            $$
+            \va{E}
+            $$
+        </td>
+        <td>
+            $$
+            \va{E} = \frac{1}{4\pi \varepsilon_0} \iiint_V \frac{\rho}{r^2} \dd{V}
+            $$
+        </td>
+        <td></td>
+        <td>
+            $$
+            \va{E} = -\grad{\phi}
+            $$
+        </td>
+    </tr>
+    <tr>
+        <td>
+            $$
+            \phi
+            $$
+        </td>
+        <td>
+            $$
+            \phi = \frac{1}{4\pi \varepsilon_0} \iiint_V \frac{\rho}{r} \dd{V}
+            $$
+        </td>
+        <td>
+            $$
+            \phi = -\int_C \va{E} \vdot \dd{\va{r}}
+            $$
+        </td>
+        <td></td>
+    </tr>
+</table>

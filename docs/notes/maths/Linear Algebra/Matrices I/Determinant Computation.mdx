@@ -1,0 +1,33 @@
+---
+sidebar_position: 6
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import range from "lodash/range";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Determinant: Computation
+
+Previously, we discussed the concept of the determinant of a matrix and its geometric interpretation.
+In this section, we will learn how to compute the determinant of a matrix, which is a crucial skill in linear algebra.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## 2D Determinant
+
+Let's start by computing the determinant of a $2 \times 2$ matrix.
+Recall that the determinant represents how much the matrix scales the area of a parallelogram spanned by its columns.
+In this case we can just perform simple geometric calculations to find the determinant.
+
+

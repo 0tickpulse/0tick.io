@@ -215,23 +215,158 @@ Hence, the equivalence is proven. $\blacksquare$
 As mentioned earlier, this proof can be generalized to any dimension using the same principles.
 The key idea is to expand the dot product of two vectors into the sum of the dot products of their components, and then use the properties of the dot product to simplify the expression.
 
-Notice that this is independent of the cosine rule.
-This means that we can actually *derive the cosine rule from the dot product*, rather than the other way around.
+There are a few interesting things to note about this proof:
+
+1. Notice that this is independent of the cosine rule.
+    This means that we can actually *derive the cosine rule from the dot product*, rather than the other way around.
+2. This proof gives you an explicit formula to get the magnitude of a vector.
+    In the previous proof, we just assumed that the magnitude squared gives you $v_1^2 + v_2^2 + v_3^2$.
+    But this proof shows this independently.
+
+    Not only is this also a proof of the Pythagorean theorem, but this proof is also especially important when we consider vector spaces without an orthonormal basis.
+    In such cases, the magnitude is not just $\sqrt{v_1^2 + v_2^2 + v_3^2}$, but something else.
+    These situations are more common than one would think, especially in fields such as relativity and quantum mechanics.
+    With that in mind, we say that the magnitude, or norm, of a vector is actually *defined* via the dot product.
 
 ## Dot Product as a Linear Transformation
 
 :::info Brief Overview
 
 This proof assumes we don't know the geometric or component definitions of the dot product.
-Instead, it treats the act of projection as a linear transformatior and shows that the computation of this transformation is equivalent to the component definition of the dot product.
+Instead, it treats the act of projection as a linear transformation and shows that the computation of this transformation is equivalent to the component definition of the dot product.
 
 :::
 
-This is the most mind-blowing proof in my opinion, originating from 3b1b's series on linear algebra.
+This proof originates from 3b1b's series on linear algebra. It's a very interesting way to think about the dot product.
 
 Imagine that we do not know anything about the dot product, only that it does some kind of projection.
 Let $\vu{u}$ be some unit vector that we want to project $\va{v}$ onto. Essentially, we are turning this two-dimensional $\va{v}$ onto a line defined by $\vu{u}$.
 Hence, this is a transformation from $\mathbb{R}^2$ to $\mathbb{R}$.
 
+<LinearTransformationVisualizer
+    to={{
+        ihat: vec.withMag([3, 2], vec.dot(vec.normalize([3, 2]), vec.normalize([1, 0]))),
+        jhat: vec.withMag([3, 2], vec.dot(vec.normalize([3, 2]), vec.normalize([0, 1])))
+    }}
+>
+    <Plot.OfX y={x => (2 / 3) * x} />
+</LinearTransformationVisualizer>
+
+(Note that this line is just a visual representation of the projection; it does not actually "sit" in this 2D space.)
+
 Recall that linear transformations are defined by how they act on the basis vectors.
 Since we want to project it onto a line, each column in the matrix representing the transformation would only have one entry.
+Call this matrix $\vb{P}$:
+
+$$
+\begin{equation}
+\vb{P} = \mqty[? & ?]
+\end{equation}
+$$
+
+Recall that each column in the matrix represents the result of applying the transformation to the basis vectors.
+To find these columns, we can zoom in on the diagram above. Below is the projection of $\ihatc$ onto the line:
+
+<Mafs viewBox={{ x: [0, 1], y: [0, 0.5] }}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={x => (2 / 3) * x} />
+
+    {/* ihat */}
+    <Vector tip={[1, 0]} color={color("blue")} />
+    <LaTeX tex="\mathbf{\hat{i}}" at={[0.5, -0.1]} color={color("blue")} />
+
+    {/* uhat */}
+    <Vector tip={vec.normalize([3, 2])} color={color("green")} weight={3} />
+    <LaTeX tex="\mathbf{\hat{u}}" at={[0.7, 0.6]} color={color("green")} />
+
+    {/* projection */}
+    <Vector tip={vec.withMag([3, 2], vec.dot([1, 0], [3, 2]) / vec.mag([3, 2]))} color={color("red")} />
+    <LaTeX tex="T(\mathbf{\hat{i}})" at={[0.5, 0.45]} color={color("red")} />
+
+    {/* dotted line connecting the two */}
+    <Line.Segment point1={[1, 0]} point2={vec.withMag([3, 2], vec.dot([1, 0], [3, 2]) / vec.mag([3, 2]))} style="dashed" />
+</Mafs>
+
+Here's the key part: the projection of $\ihatc$ onto the line, $\vu{u}$, is *exactly* the same as the projection of $\vu{u}$ onto $\ihatc$.
+We can see this visually by creating a line of symmetry between the two vectors:
+
+<Mafs viewBox={{ x: [0, 1], y: [0, 0.5] }}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={x => (2 / 3) * x} />
+
+    {/* line of symmetry, halfway angle between x-axis and y = 2/3 x */}
+    <Plot.OfX y={x => Math.tan(Math.atan(2 / 3) / 2) * x} style="dashed" />
+
+    {/* ihat */}
+    <Vector tip={[1, 0]} color={color("blue")} />
+    <LaTeX tex="\mathbf{\hat{i}}" at={[0.5, -0.1]} color={color("blue")} />
+
+    {/* uhat */}
+    <Vector tip={vec.normalize([3, 2])} color={color("green")} weight={3} />
+    <LaTeX tex="\mathbf{\hat{u}}" at={[0.7, 0.6]} color={color("green")} />
+
+    {/* projection of i onto u */}
+    <Vector tip={vec.withMag([3, 2], vec.dot([1, 0], [3, 2]) / vec.mag([3, 2]))} color={color("red")} />
+    <LaTeX tex="\mathbf{\hat{i}} \text{ on } \mathbf{\hat{u}}" at={[0.5, 0.45]} color={color("red")} />
+
+    {/* projection of u onto i */}
+    <Vector tip={vec.withMag([1, 0], vec.dot(vec.normalize([3, 2]), vec.normalize([1, 0])))} color={color("purple")} />
+    <LaTeX tex="\mathbf{\hat{u}} \text{ on } \mathbf{\hat{i}}" at={[0.6, 0.1]} color={color("purple")} />
+
+    <Line.Segment point1={[1, 0]} point2={vec.withMag([3, 2], vec.dot([1, 0], [3, 2]) / vec.mag([3, 2]))} style="dashed" />
+    <Line.Segment point1={vec.normalize([3, 2])} point2={vec.withMag([1, 0], vec.dot(vec.normalize([3, 2]), vec.normalize([1, 0])))} style="dashed" />
+</Mafs>
+
+But the projection of $\vu{u}$ onto $\ihatc$ is just the $x$-component of $\vu{u}$:
+
+<Mafs viewBox={{ x: [0, 1], y: [0, 0.5] }}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={x => (2 / 3) * x} />
+
+    {/* uhat */}
+    <Vector tip={vec.normalize([3, 2])} color={color("green")} weight={3} />
+    <LaTeX tex="\mathbf{\hat{u}}" at={[0.7, 0.6]} color={color("green")} />
+
+    {/* projection of u onto i */}
+    <Vector tip={vec.withMag([1, 0], vec.dot(vec.normalize([3, 2]), vec.normalize([1, 0])))} color={color("purple")} />
+    <LaTeX tex="u_x" at={[0.6, 0.1]} color={color("purple")} />
+
+    <Line.Segment point1={vec.normalize([3, 2])} point2={vec.withMag([1, 0], vec.dot(vec.normalize([3, 2]), vec.normalize([1, 0])))} style="dashed" />
+</Mafs>
+
+Thus, the projection of $\ihatc$ onto $\vu{u}$ is the same as the projection of $\vu{u}$ onto $\ihatc$, which is $u_x$.
+The same applies for the projection of $\jhatc$ onto $\vu{u}$, which is $u_y$.
+Thus, the matrix $\vb{P}$ is:
+
+$$
+\begin{equation}
+\vb{P} = \mqty[u_x & u_y]
+\end{equation}
+$$
+
+Notice what happened here: we have a transformation that takes a vector and projects it onto a line.
+This transformation is represented by a matrix, and the matrix is the dot product of the vector with the basis vectors.
+But notice that this transformation is exactly the same as what the dot product does.
+
+Now, we can apply this transformation to any arbitrary vector $\va{v} = v_1 \ihatc + v_2 \jhatc$.
+
+$$
+\begin{equation}
+\vb{P} \mqty[v_1 \\ v_2] = \mqty[u_x & u_y] \mqty[v_1 \\ v_2] = u_x v_1 + u_y v_2
+\end{equation}
+$$
+
+This is the same as the component definition of the dot product.
+
+Hence, the equivalence is proven. $\blacksquare$
+
+Note: What we have derived here has a name: covectors, or dual vectors.
+These are vectors that take in a vector and output a scalar.
+Covectors are very important in the fields of differential geometry and general relativity.
+
+## Summary and Next Steps
+
+In this section, we have shown that the two definitions of the dot product are equivalent.
+This is a very important result, as it shows that the dot product is a very fundamental operation in linear algebra.
+
+In the next section, we will end our introduction to the dot product by exploring some of its real-world applications.

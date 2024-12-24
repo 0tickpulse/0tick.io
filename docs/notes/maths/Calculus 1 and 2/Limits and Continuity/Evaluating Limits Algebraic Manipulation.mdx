@@ -1,0 +1,323 @@
+---
+sidebar_position: 6
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Evaluating Limits: Algebraic Manipulation
+
+In the previous section, we introduced the first method to algebraically evaluate limits: direct substitution.
+We also discussed the limitations of this method, particularly when the function is not defined or discontinuous at the value we are evaluating the limit for.
+We will now explore different ways to manipulate the function algebraically to evaluate the limit.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Factoring
+
+Before we delve into the method of factoring, note this very important fact: factoring is not some magical technique that you should memorize for evaluating limits.
+In all of the "algebraic limit" techniques, *it's just algebraic manipulation*.
+Think of these more as some examples of how you can manipulate the function to make it easier to evaluate the limit.
+
+With that said, let's consider the following limit:
+
+$$
+\begin{equation}
+\lim_{x \to 3} \frac{x^2 - 9}{x - 3} = \lim_{x \to 3} f(x)
+\end{equation}
+$$
+
+If we try to evaluate this limit using direct substitution, we get $\frac{0}{0}$, which is undefined.
+This function has a discontinuity at $x = 3$, and we need to simplify it before we can evaluate the limit.
+This is a clear indication that we need to simplify the function before we can evaluate the limit.
+
+The numerator is a difference of squares, which can be factored as $(x - 3)(x + 3)$.
+Then, we can cancel out the common factor of $(x - 3)$ in the numerator and denominator:
+
+$$
+\begin{equation}
+\frac{x^2 - 9}{x - 3} = \frac{(x - 3)(x + 3)}{x - 3} = x + 3
+\end{equation}
+$$
+
+**But wait!** We can't just cancel out the $(x - 3)$.
+When we cancel something out, we are dividing both the numerator and the denominator by that factor.
+But at $x = 3$, this factor is $0$, so we're dividing the numerator and denominator by $0$.
+We will need to address this by adding a condition to our simplification.
+The following is the correct simplification (and a new function):
+
+$$
+\begin{equation}
+g(x) = x + 3, \qand f(x) = g(x) \qq{when} x \neq 3
+\end{equation}
+$$
+
+(This doesn't actually affect our calculations, but it's good to be aware of this.)
+
+Here's the key point: even though $x + 3$ is not defined at $x = 3$, *the limit is*.
+Hence, the limit is just $x + 3$ evaluated at $x = 3$, which is $6$.
+
+<Mafs viewBox={{ x: [0, 3], y: [0, 6] }}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => x + 3} />
+    <Circle center={[3, 6]} radius={0.1} fillOpacity={1} strokeOpacity={0} color="black" />
+    <Circle center={[3, 6]} radius={0.1} fillOpacity={0} color="white" />
+</Mafs>
+
+Therefore, the limit is $6$.
+
+To summarize what we did:
+
+1. We want to evaluate the limit $\lim_{x \to 3} \frac{x^2 - 9}{x - 3}$.
+2. We simplified the function by factoring the numerator for all $x$ except $x = 3$.
+3. This gave us a new function $g(x) = x + 3$. We say that $f(x) = g(x)$ when $x \neq 3$.
+4. Because $f(x) = g(x)$ everywhere other than $x = 3$, we say that $\lim_{x \to 3} f(x) = \lim_{x \to 3} g(x) = 6$.
+
+It's important to emphasize this again: $f(x)$ and $g(x)$ are *not* the same function.
+Given $f(x)$, we found a new function, $g(x)$, that is equal to $f(x)$ everywhere except at $x = 3$.
+
+## Rationalizing
+
+Another common technique to simplify functions is rationalizing.
+This is particularly useful when you have a square root in the denominator.
+Let's consider the following limit:
+
+$$
+\begin{equation}
+\lim_{x \to 0} \frac{\sqrt{x + 9} - 3}{x}
+\end{equation}
+$$
+
+If we try to evaluate this limit using direct substitution, we get $\frac{0}{0}$, which is undefined.
+
+To simplify this function, we can rationalize the numerator.
+To recap, rationalizing something involves multiplying by a clever form of $1$ to get rid of the square root.
+In this case, we can multiply by the **conjugate** of the numerator:
+
+$$
+\begin{equation}
+\frac{\sqrt{x + 9} - 3}{x} \times \frac{\sqrt{x + 9} + 3}{\sqrt{x + 9} + 3}
+\end{equation}
+$$
+
+This simplifies to:
+
+$$
+\begin{equation}
+\frac{(\sqrt{x + 9})^2 - 3^2}{x(\sqrt{x + 9} + 3)} = \frac{x + 9 - 9}{x(\sqrt{x + 9} + 3)} = \frac{x}{x(\sqrt{x + 9} + 3)}
+\end{equation}
+$$
+
+Now, we can cancel out the $x$ in the numerator and denominator, making sure to add a condition for $x = 0$:
+
+$$
+\begin{equation}
+\frac{x}{x(\sqrt{x + 9} + 3)} = \frac{1}{\sqrt{x + 9} + 3} \qq{when} x \neq 0
+\end{equation}
+$$
+
+Now, we can just evaluate the limit by substituting $x = 0$ into the simplified function:
+
+$$
+\begin{equation}
+\lim_{x \to 0} \frac{\sqrt{x + 9} - 3}{x} = \lim_{x \to 0} \frac{1}{\sqrt{x + 9} + 3} = \frac{1}{\sqrt{9} + 3} = \frac{1}{6}
+\end{equation}
+$$
+
+To summarize what we did:
+
+1. We want to evaluate the limit $\lim_{x \to 0} \frac{\sqrt{x + 9} - 3}{x}$.
+2. We rationalized the numerator by multiplying by the conjugate of the numerator.
+3. This gave us a new function $\frac{1}{\sqrt{x + 9} + 3}$. We say that $f(x) = \frac{1}{\sqrt{x + 9} + 3}$ when $x \neq 0$.
+4. Because $f(x) = \frac{1}{\sqrt{x + 9} + 3}$ everywhere other than $x = 0$, we say that $\lim_{x \to 0} f(x) = \frac{1}{6}$.
+
+## Trigonometric Limits
+
+Trigonometric limits are a common type of limit that can be simplified using trigonometric identities.
+Let's consider the following limit:
+
+$$
+\begin{equation}
+\lim_{\theta \to -\pi/4} \frac{1 + \sqrt{2} \sin(\theta)}{\cos(2\theta)}
+\end{equation}
+$$
+
+([Source](https://www.khanacademy.org/math/ap-calculus-bc/bc-limits-new/bc-1-6/v/trig-limit-using-double-angle-identity))
+
+If we try to evaluate this limit using direct substitution:
+
+$$
+\begin{equation}
+\begin{split}
+\lim_{\theta \to -\pi/4} \frac{1 + \sqrt{2} \sin(\theta)}{\cos(2\theta)} &= \frac{1 + \sqrt{2} \sin(-\pi/4)}{\cos(2(-\pi/4))} \\
+&= \frac{1 - \sqrt{2}(\sqrt{2}/2)}{\cos(-\pi/2)} \\
+&= \frac{1 - 1}{0} = \frac{0}{0}
+\end{split}
+\end{equation}
+$$
+
+This is undefined, so we need to simplify the function.
+We can use the double-angle identity for cosine to simplify the denominator:
+
+$$
+\begin{equation}
+\cos(2\theta) = 2\cos^2(\theta) - 1
+\end{equation}
+$$
+
+(There is a proof for this in the Appendix section.)
+By the Pythagorean identity, we know that $\cos^2(\theta) + \sin^2(\theta) = 1$.
+Hence:
+
+$$
+\begin{equation}
+\begin{split}
+\cos(2\theta) &= 2(1 - \sin^2(\theta)) - 1 \\
+&= 2 - 2\sin^2(\theta) - 1 \\
+&= 1 - 2\sin^2(\theta) \\
+&= \qty(1 + \sqrt{2}\sin(\theta))\qty(1 - \sqrt{2}\sin(\theta))
+\end{split}
+\end{equation}
+$$
+
+We are now ready to simplify the original function:
+
+$$
+\begin{equation}
+\begin{split}
+\frac{1 + \sqrt{2} \sin(\theta)}{\cos(2\theta)} &= \frac{1 + \sqrt{2} \sin(\theta)}{(1 + \sqrt{2}\sin(\theta))(1 - \sqrt{2}\sin(\theta))} \\
+&= \frac{1}{1 - \sqrt{2}\sin(\theta)} \qq{when} \theta \neq -\pi/4
+\end{split}
+\end{equation}
+$$
+
+Now, we can evaluate the limit by substituting $\theta = -\pi/4$ into the simplified function:
+
+$$
+\begin{equation}
+\begin{split}
+\lim_{\theta \to -\pi/4} \frac{1 + \sqrt{2} \sin(\theta)}{\cos(2\theta)} &= \lim_{\theta \to -\pi/4} \frac{1}{1 - \sqrt{2}\sin(\theta)} \\
+&= \frac{1}{1 - \sqrt{2}(-\sqrt{2}/2)} \\
+&= \frac{1}{1 + 1} = \frac{1}{2}
+\end{split}
+\end{equation}
+$$
+
+## Formalizing our Approach
+
+Here's a general approach to evaluating limits algebraically:
+
+1. We want to evaluate the limit $\lim_{x \to a} f(x)$.
+2. Through manipulation, we find a new function $g(x)$ that is equal to $f(x)$ everywhere except at $x = a$.
+3. We say that $f(x) = g(x)$ when $x \neq a$.
+4. Because $f(x) = g(x)$ everywhere other than $x = a$, we say that $\lim_{x \to a} f(x) = \lim_{x \to a} g(x)$.
+
+The underlying mathematical principle here is that the limit of a function at a point is determined by the function's behavior around that point, not at that point itself.
+That's why the equality doesn't matter at the point $x = a$; it only matters in the neighborhood of $x = a$.
+We can write this more formally as:
+
+<Boxed>
+For a function $f(x)$ and a limit $\lim_{x \to a} f(x)$, if there exists a function $g(x)$ such that $f(x) = g(x)$ for all $x \neq a$, then:
+
+$$
+\begin{equation}
+\lim_{x \to a} f(x) = \lim_{x \to a} g(x)
+\end{equation}
+$$
+</Boxed>
+
+## Summary and Next Steps
+
+In this section, we explored different algebraic techniques to evaluate limits.
+
+Here are the key points to remember:
+
+- Factoring, rationalizing, and trigonometric identities are common techniques to simplify functions for limit evaluation.
+- The key idea is to find a new function that is equal to the original function everywhere except at the point where the limit is being evaluated.
+- The limit of a function at a point is determined by the function's behavior around that point, not at that point itself.
+
+
+
+## Appendix: Double-Angle Identity for Cosine
+
+Here's a quick geometric proof of the double-angle identity for cosine.
+Draw a circle with radius $1$, and a horizontal line that splits the circle into two equal halves.
+Then, place a point somewhere on the circle and draw a line from the both ends of the horizontal line to the point.
+
+<Mafs viewBox={{ y: [-0.5, 0.5], padding: 0 }}>
+    <Circle radius={0.5} fillOpacity={0} center={[0, 0]} />
+    <Line.Segment point1={[-0.5, 0]} point2={[0.5, 0]} />
+    <Text x={-0.5} y={0} attach="w" >A</Text>
+    <Text x={0.5} y={0} attach="e" >E</Text>
+
+    <Point x={2 / (Math.sqrt(13) * 2)} y={3 / (Math.sqrt(13) * 2)} />
+    <Text x={2 / (Math.sqrt(13) * 2)} y={3 / (Math.sqrt(13) * 2)} attach="ne" >B</Text>
+
+    <Angle at={[-0.5, 0]} fromRad={0} toRad={Math.atan(3 / 2) / 2} label="\theta" radius={0.1} />
+    <Angle at={[0, 0]} fromRad={0} toRad={Math.atan(3 / 2)} label="2\theta" radius={0.1} />
+
+    <Line.Segment point1={[-0.5, 0]} point2={[2 / (Math.sqrt(13) * 2), 3 / (Math.sqrt(13) * 2)]} />
+    <LaTeX at={[0, 0.3]} tex="\cos(\theta)" />
+    <Line.Segment point1={[0.5, 0]} point2={[2 / (Math.sqrt(13) * 2), 3 / (Math.sqrt(13) * 2)]} />
+    <Line.Segment point1={[0, 0]} point2={[2 / (Math.sqrt(13) * 2), 3 / (Math.sqrt(13) * 2)]} style="dashed" />
+    <Text x={0} y={0} attach="s" >C</Text>
+    <Line.Segment point1={[2 / (Math.sqrt(13) * 2), 0]} point2={[2 / (Math.sqrt(13) * 2), 3 / (Math.sqrt(13) * 2)]} style="dashed" />
+    <Text x={2 / (Math.sqrt(13) * 2)} y={0} attach="s">D</Text>
+</Mafs>
+
+First, consider the triangle $\triangle ABE$.
+Its hypotenuse is the horizontal line, $AB = 1$.
+By SOHCAHTOA, we have $AB = \cos(\theta)$ and $BE = \sin(\theta)$.
+
+Next, consider the triangle $\triangle ABD$.
+Its hypotenuse is the line from the left to the point, $AB = \cos(\theta)$.
+By SOHCAHTOA again, we see that $\cos(\theta) = \frac{AD}{AB} = \frac{AD}{\cos(\theta)}$.
+Hence, $AD = \cos^2(\theta)$.
+
+Finally, consider the triangle $\triangle BCD$.
+The length $CD$ is equal to $AD - AC = \cos^2(\theta) - \frac{1}{2}$.
+Apply SOHCAHTOA again on this triangle to get $\cos(2\theta) = \frac{CD}{BC}$.
+$BC$ is just the radius of the circle, which is $1/2$.
+Hence:
+
+$$
+\begin{equation}
+\begin{split}
+\cos(2\theta) &= \frac{\cos^2(\theta) - \frac{1}{2}}{1/2} \\
+&= 2\cos^2(\theta) - 1
+\end{split}
+\end{equation}
+$$
+
+This is the double-angle identity for cosine. $\blacksquare$
+
+## Appendix: Proof of our General Approach
+
+Let's prove the general approach we outlined earlier.
+We want to show that if $f(x) = g(x)$ for all $x \neq a$, then $\lim_{x \to a} f(x) = \lim_{x \to a} g(x)$.
+Before proceeding, note:
+
+1. One should not need this proof to convince oneself of this fact. It should make complete sense intuitively.
+2. This proof is more for the sake of completeness and rigor.
+
+Let $\lim_{x \to a} f(x) = L$. This means that for every $\epsilon > 0$, there exists a $\delta > 0$ such that if $0 < |x - a| < \delta$, then $|f(x) - L| < \epsilon$.
+The proof is simply to show that the same $\delta$ works for $g(x)$ as well.
+
+Since $f(x) = g(x)$ for all $x \neq a$, we know that $|f(x) - L| = |g(x) - L|$ for all $x \neq a$.
+Then:
+
+$$
+\begin{equation}
+|f(x) - L| < \epsilon \implies |g(x) - L| < \epsilon
+\end{equation}
+$$
+
+This is true for all $x \neq a$, so the same $\delta$ that works for $f(x)$ also works for $g(x)$.
+Hence, $\lim_{x \to a} f(x) = \lim_{x \to a} g(x)$. $\blacksquare$

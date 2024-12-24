@@ -1,0 +1,43 @@
+---
+sidebar_position: 7
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Squeeze Theorem
+
+The **Squeeze Theorem** is a powerful tool in calculus that allows us to evaluate limits of functions that are "sandwiched" between two other functions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+To understand the Squeeze Theorem, let's consider the following scenario:
+you are working with a list of items to deliver to a customer. These items are sorted by how heavy they are.
+Let's say you want to know the weight of the fifth item in the list, but you don't know the exact weight of the item.
+However, you do know that the fourth item weighs 10 kg and the sixth item weighs 10 kg as well.
+Well, you can conclude that the weight of the fifth item must be 10 kg as well, since it is "sandwiched" between the fourth and sixth items.
+
+The Squeeze Theorem works in a similar way. If you have a function $f(x)$ that is "sandwiched" between two other functions $g(x)$ and $h(x)$, and the limits of $g(x)$ and $h(x)$ as $x$ approaches a certain value are equal, then the limit of $f(x)$ as $x$ approaches the same value must also be equal to that limit.
+We shall now explore this concept in more detail with an example:
+
+$$
+\begin{equation}
+\lim_{\theta \to 0} \frac{\sin(\theta)}{\theta}
+\end{equation}
+$$
+
+Recall that when we tried to evaluate this limit using direct substitution, we encountered an indeterminate form of $\frac{0}{0}$.
+It's also not immediately clear how we can algebraically manipulate the expression to evaluate the limit (although it is possible, say by using the Taylor series expansion of $\sin(\theta)$).
+However, we can use the Squeeze Theorem to evaluate this limit.
+
+We will need to find two functions that "sandwich" $\frac{\sin(\theta)}{\theta}$ and whose limits as $\theta$ approaches $0$ are known.
+To do this, we can make use of some geometry and trigonometry.

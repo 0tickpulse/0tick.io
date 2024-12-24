@@ -104,6 +104,10 @@ const config = {
                             return rehypeMathjax(config.customFields.mathJaxOptions);
                         },
                     ],
+                    admonitions: {
+                        keywords: ["problem"],
+                        extendDefaults: true,
+                    },
                 },
                 blog: {
                     showReadingTime: true,
