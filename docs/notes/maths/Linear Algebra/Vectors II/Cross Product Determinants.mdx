@@ -214,7 +214,24 @@ Finally, putting it all together, we have the formula for the cross product of t
 <Boxed>
 $$
 \begin{equation}
-\va{v} \times \va{w} = \det(\mqty[ \ihatc & v_x & w_x \\ \jhatc & v_y & w_y \\ \khatc & v_z & w_z ]) = \mqty[ v_y w_z - v_z w_y \\ v_z w_x - v_x w_z \\ v_x w_y - v_y w_x ]
+\va{v} \times \va{w} = \det(\mqty[ \ihatc & v_x & w_x \\ \jhatc & v_y & w_y \\ \khatc & v_z & w_z ]) = \mqty[ v_y w_z - v_z w_y \\ v_z w_x - v_x w_z \\ v_x w_y - v_y w_x ] \label{eq:cross-product-determinant}
 \end{equation}
 $$
 </Boxed>
+
+## Summary and Next Steps
+
+In this section, we derived the formula for the cross product of two vectors in 3D space using determinants.
+
+Here are the key points to remember:
+
+- In 2D, while the cross product is not defined, we can use the determinant of the matrix formed by the two vectors to get the area of the parallelogram.
+- In 3D, the cross product of two vectors can be obtained with a determinant, giving the vector that is orthogonal to both vectors:
+
+    $$
+    \begin{equation}
+    \va{v} \times \va{w} = \det(\mqty[ \ihatc & v_x & w_x \\ \jhatc & v_y & w_y \\ \khatc & v_z & w_z ]) = \mqty[ v_y w_z - v_z w_y \\ v_z w_x - v_x w_z \\ v_x w_y - v_y w_x ] \tag{\ref{eq:cross-product-determinant}}
+    \end{equation}
+    $$
+
+In the next section, we will, just like with the dot product, explore some properties and corollaries of the cross product.
