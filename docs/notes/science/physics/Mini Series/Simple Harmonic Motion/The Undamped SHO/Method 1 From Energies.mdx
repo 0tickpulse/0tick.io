@@ -30,3 +30,208 @@ In this section, we will explore the first method to solve this differential equ
 ## Table of Contents
 
 <TOCInline toc={toc} />
+
+## Setting it Up
+
+The total mechanical energy of the system is the sum of the kinetic energy and the potential energy.
+
+The kinetic energy of the system is given by $T = \frac{1}{2} m v^2$, where $m$ is the mass of the object and $v$ is its velocity.
+This is the same for most systems, but the potential energy of the system is different for different systems.
+In the case of a mass-spring system, the potential energy is given by $V = \frac{1}{2} k x^2$, where $k$ is the spring constant and $x$ is the displacement of the object from the equilibrium position.
+
+The total mechanical energy of the system is thus given by:
+
+$$
+\begin{equation}
+E = \class{blue}{T} + \class{yellow}{V} = \class{blue}{\frac{1}{2} m v^2} + \class{yellow}{\frac{1}{2} k x^2} \label{eq:total-energy}
+\end{equation}
+$$
+
+We can use this to rewrite $v$ in terms of $x$ and $E$ (which is just a constant):
+
+$$
+\begin{equation}
+v^2 = \frac{2E}{m} - \frac{k x^2}{m} = \frac{2E}{m} \qty(1 - \frac{k}{2E} x^2)
+\end{equation}
+$$
+
+Then, taking the square root of both sides, we get:
+
+$$
+\begin{equation}
+v = \sqrt{\frac{2E}{m} \qty(1 - \frac{k}{2E} x^2)}
+\end{equation}
+$$
+
+Let's introduce the new variables $\alpha = \frac{2E}{m}$ and $\beta = \frac{k}{2E}$, both of which are positive, to simplify the equation:
+
+$$
+\begin{equation}
+v = \sqrt{\alpha (1 - \beta x^2)}
+\end{equation}
+$$
+
+## Solving the Differential Equation
+
+(The astute reader will notice that this implies $v$ is always positive. We will address this later.)
+Since $v$ is just $\dv{x}{t}$, this is a first-order differential equation that we can solve by separating variables:
+
+$$
+\begin{align}
+\dv{x}{t} &= \sqrt{\alpha (1 - \beta x^2)} \\
+\frac{1}{\sqrt{1 - \beta x^2}} \dd{x} &= \alpha \dd{t} \\
+\int \frac{1}{\sqrt{1 - \beta x^2}} \dd{x} &= \int \alpha \dd{t} \\
+\end{align}
+$$
+
+From here we can use a trigonometric substitution to solve the integral on the left-hand side.
+When using trig substitutions, it's often helpful to draw a right triangle.
+From our integrand, we can see that $1 - \beta x^2$ is akin to using the Pythagorean theorem to find a missing side of a right triangle.
+
+<Mafs>
+    <Polygon points={[[-4, -2], [4, -2], [4, 2]]} />
+    <Angle at={[-4, -2]} fromRad={0} toRad={Math.atan2(1, 2)} radius={0.7} label="\theta" />
+    <LaTeX tex="\sqrt{\beta} x" at={[0, -2.3]} />
+    <LaTeX tex="1" at={[0, 0.5]} />
+</Mafs>
+
+In this triangle, the hypotenuse is $1$, the adjacent side is $\sqrt{\beta} x$, and the opposite side is $\sqrt{1 - \beta x^2}$.
+We can see that $\cos(\theta) = \sqrt{\beta}x$. Then, by implicit differentiation, we have $-\sin(\theta) \dd{\theta} = \sqrt{\beta} \dd{x}$.
+Plugging both of these into our integral, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\int \frac{1}{\sqrt{1 - \beta x^2}} \dd{x} &= \int - \frac{1}{\sqrt{1 - \cos^2(\theta)}} \frac{\sin(\theta)}{\sqrt{\beta}} \dd{\theta} \\
+&= \int - \frac{1}{\sin(\theta)} \frac{\sin(\theta)}{\sqrt{\beta}} \dd{\theta} \\
+&= \int - \frac{1}{\sqrt{\beta}} \dd{\theta}
+\end{split}
+\end{equation}
+$$
+
+Plugging this back into our equation, we get:
+
+$$
+\begin{equation}
+\int - \frac{1}{\sqrt{\beta}} \dd{\theta} = \int \alpha \dd{t}'
+\end{equation}
+$$
+
+Adding integral bounds:
+
+- At $t' = 0$, $\theta = \theta_0$ is the initial angle.
+- At $t' = t$, $\theta = \theta$ is the angle at time $t$.
+
+$$
+\begin{equation}
+\int_{\theta_0}^{\theta} - \frac{1}{\sqrt{\beta}} \dd{\theta} = \int_{0}^{t} \alpha \dd{t}'
+\end{equation}
+$$
+
+Solving the integrals, we get:
+
+$$
+\begin{equation}
+\theta - \theta_0 = -\sqrt{\beta} \alpha t
+\end{equation}
+$$
+
+The coefficient of $t$ is $\sqrt{\beta} \alpha$, which we can denote as $\omega_0 \equiv \sqrt{\beta} \alpha$.
+
+$$
+\begin{equation}
+\theta - \theta_0 = -\omega_0 t
+\end{equation}
+$$
+
+Recall that $\theta = \arccos(\sqrt{\beta} x)$, so we can rewrite this as:
+
+$$
+\begin{equation}
+\arccos(\sqrt{\beta} x) = \theta_0 - \omega_0 t
+\end{equation}
+$$
+
+Let $\phi = -\theta_0$. Then:
+
+$$
+\begin{equation}
+\arccos(\sqrt{\beta} x) = -(\omega_0 t + \phi)
+\end{equation}
+$$
+
+Taking the cosine of both sides, we get:
+
+$$
+\begin{equation}
+\sqrt{\beta} x = \cos(\omega_0 t + \phi)
+\end{equation}
+$$
+
+Finally, we can solve for $x$:
+
+$$
+\begin{equation}
+x = \frac{1}{\sqrt{\beta}} \cos(\omega_0 t + \phi)
+\end{equation}
+$$
+
+Since $\beta = \frac{k}{2E}$, we can rewrite this as:
+
+$$
+\begin{equation}
+x = \sqrt{\frac{2E}{k}} \cos(\omega_0 t + \phi)
+\end{equation}
+$$
+
+Differentiating this equation with respect to $t$, we also get the velocity:
+
+$$
+\begin{equation}
+v = -\sqrt{\frac{2E}{k}} \omega_0 \sin(\omega_0 t + \phi)
+\end{equation}
+$$
+
+## Initial Conditions
+
+We can find the initial conditions by looking at the initial position and velocity of the object.
+
+At $t = 0$, $x = x_0$ and $v = v_0$.
+Plugging $t = 0$ into our equation for $x$ and $v$, we get:
+
+$$
+\begin{align}
+x(t = 0) &= \sqrt{\frac{2E}{k}} \cos(\phi) = x_0 \label{eq:initial-position} \\
+v(t = 0) &= -\sqrt{\frac{2E}{k}} \omega_0 \sin(\phi) = v_0 \label{eq:initial-velocity}
+\end{align}
+$$
+
+We can also take the ratio of these two equations to get $\tan(\phi)$:
+
+$$
+\begin{equation}
+\tan(\phi) = -\frac{v_0}{\omega_0 x_0}
+\end{equation}
+$$
+
+Finally, take our equation for $x$, use a cosine addition identity, and plug in the initial conditions to get the final equation:
+
+$$
+\begin{equation}
+\begin{split}
+x(t) &= \sqrt{\frac{2E}{k}} \cos(\omega_0 t + \phi) \\
+&= \sqrt{\frac{2E}{k}} \cos(\omega_0 t) \cos(\phi) - \sqrt{\frac{2E}{k}} \sin(\omega_0 t) \sin(\phi) \\
+&= \class{yellow}{\sqrt{\frac{2E}{k}} \cos(\phi)} \cos(\omega_0 t) + \frac{1}{\omega_0} \qty(\class{green}{-\sqrt{\frac{2E}{k}} \omega_0 \sin(\phi)} \sin(\omega_0 t)) \\
+&= \class{yellow}{x_0} \cos(\omega_0 t) + \frac{\class{green}{v_0}}{\omega_0} \sin(\omega_0 t)
+\end{split}
+\end{equation}
+$$
+
+This is the equation of motion for the undamped simple harmonic oscillator.
+
+## Summary and Next Steps
+
+In this section, we derived the equation of motion for the undamped simple harmonic oscillator using the conservation of energy.
+We did not have to solve the differential equation directly, but instead used the total mechanical energy of the system to find the position and velocity of the object at any time $t$.
+
+In the next section, we will explore the second method to solve the differential equation, which is probably much faster than this method.

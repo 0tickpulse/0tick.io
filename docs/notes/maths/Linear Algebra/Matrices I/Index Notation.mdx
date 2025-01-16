@@ -1,0 +1,224 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color, gradient } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import range from "lodash/range"
+
+# Index Notation
+
+Previously, we introduced matrices and how they can be used to represent linear transformations.
+We will now introduce a new notation that simplifies the representation of matrices and vectors (sometimes): **index notation**.
+
+This is usually not used in introductory linear algebra courses, but it is widely used in physics and engineering.
+Especially in higher-level courses like tensor calculus, index notation is used extensively, so it's good to get a head start.
+
+This page is completely optional, and you can skip it if you're not interested in the topic.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Vectors in Index Notation
+
+As we know, a vector can be represented as a list of numbers.
+They represent the coefficients of the basis vectors in the vector space.
+
+For example, in $\mathbb{R}^3$, a vector $\va{v}$ can be represented as:
+
+$$
+\begin{equation}
+\va{v} = \begin{bmatrix} v_1 \\ v_2 \\ v_3 \end{bmatrix} = v_1\ihatc + v_2\jhatc + v_3\khatc
+\end{equation}
+$$
+
+For the purposes of this page, we can use a more general notation for the basis vectors.
+We will use $\va{e}_i$ to represent the $i$-th basis vector.
+So instead of $\ihatc$, $\jhatc$, and $\khatc$, we can write $\va{e}_1$, $\va{e}_2$, and $\va{e}_3$.
+
+Then, the vector $\va{v}$ can be written as:
+
+$$
+\begin{equation}
+\va{v} = v_1 \va{e}_1 + v_2 \va{e}_2 + v_3 \va{e}_3
+\end{equation}
+$$
+
+Notice that we can write this in a more compact form using a summation:
+
+$$
+\begin{equation}
+\va{v} = \sum_{i=1}^3 v_i \va{e}_i
+\end{equation}
+$$
+
+In $n$-dimensional space, we can write this as:
+
+$$
+\begin{equation}
+\va{v} = \sum_{i=1}^n v_i \va{e}_i
+\end{equation}
+$$
+
+## Linear Transformations in Index Notation
+
+Matrices can also be represented in index notation.
+A matrix $A$ can be represented as a two-dimensional array of numbers.
+
+To index the elements of the matrix, we use two indices: one for the row and one for the column.
+**Remember: first count the rows (from top to bottom) and then the columns (from left to right).**
+
+The $3 \times 3$ matrix $\vb{A}$ can be represented as:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[A_{11} & A_{12} & A_{13} \\ A_{21} & A_{22} & A_{23} \\ A_{31} & A_{32} & A_{33}]
+\end{equation}
+$$
+
+In general, an $m \times n$ matrix $\vb{A}$ can be represented as:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[A_{11} & A_{12} & \cdots & A_{1n} \\ A_{21} & A_{22} & \cdots & A_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ A_{m1} & A_{m2} & \cdots & A_{mn}]
+\end{equation}
+$$
+
+Now let's think about how we can write the rules for linear transformations (matrix-vector multiplication) in index notation.
+When we multiply a matrix $\vb{A}$ with a vector $\va{v}$, we get a new vector $\va{w}$. This can be written as:
+
+$$
+\begin{equation}
+\va{w} = \vb{A} \va{v} = \mqty[A_{11} & A_{12} & \cdots & A_{1n} \\ A_{21} & A_{22} & \cdots & A_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ A_{m1} & A_{m2} & \cdots & A_{mn}] \mqty[v_1 \\ v_2 \\ \vdots \\ v_n]
+\end{equation}
+$$
+
+Recall that each column in the matrix $\vb{A}$ represents the image of the corresponding basis vector under the transformation.
+This means that $\va{w}$ can be written as:
+
+$$
+\begin{equation}
+\va{w} = v_1 \mqty[A_{11} \\ A_{21} \\ \vdots \\ A_{m1}] + v_2 \mqty[A_{12} \\ A_{22} \\ \vdots \\ A_{m2}] + \cdots + v_n \mqty[A_{1n} \\ A_{2n} \\ \vdots \\ A_{mn}]
+\end{equation}
+$$
+
+Then, we can write that the first component of $\va{w}$ is:
+
+$$
+\begin{equation}
+w_1 = A_{11} v_1 + A_{21} v_2 + \cdots + A_{m1} v_n = \sum_{j=1}^n A_{1j} v_j
+\end{equation}
+$$
+
+Likewise, the second and third components of $\va{w}$ can be written as:
+
+$$
+\begin{align}
+w_2 &= A_{12} v_1 + A_{22} v_2 + \cdots + A_{m2} v_n = \sum_{j=1}^n A_{2j} v_j \\
+w_3 &= A_{13} v_1 + A_{23} v_2 + \cdots + A_{m3} v_n = \sum_{j=1}^n A_{3j} v_j
+\end{align}
+$$
+
+If we call this component of $\va{w}$ as $w_i$, we can write this more generally as:
+
+<Boxed>
+$$
+\begin{equation}
+w_i = \sum_{j=1}^n A_{ij} v_j \label{eq:matrix-vector-index}
+\end{equation}
+$$
+</Boxed>
+
+Then, the entire vector $\va{w}$ can be written as:
+
+$$
+\begin{equation}
+\va{w} = \sum_{i=1}^m w_i \va{e}_i = \sum_{i=1}^m \qty(\sum_{j=1}^n A_{ij} v_j) \va{e}_i
+\end{equation}
+$$
+
+Often, in higher-level courses, these summations are very, very common.
+For example, in tensor calculus, you will regularly see expressios with three, four, or more indices.
+Hence, the summation notation is often dropped, and the summation is implied.
+This means that the above equation $\eqref{eq:matrix-vector-index}$ can be written as:
+
+$$
+\begin{equation}
+w_i = A_{ij} v_j
+\end{equation}
+$$
+
+The index $j$ is called a **dummy index**.
+This means that it is summed over, and it doesn't matter what letter we use.
+In contrast, the index $i$ is a **free index**, and it is not summed over.x
+This notion of omitting the summation symbol is called **Einstein summation convention**.
+
+## Matrix Multiplication in Index Notation
+
+Now, let's think about how we can write the rules for multiplying two matrices in index notation.
+When we multiply two matrices $\vb{A}$ and $\vb{B}$, we get a new matrix $\vb{C}$.
+Recall that this represents the composition of two linear transformations.
+
+We have previously discussed the intuition and the rules for multiplying matrices together.
+To summarize, for a $3 \times 3$ matrix $\vb{A}$ and a $3 \times 3$ matrix $\vb{B}$, the product $\vb{C} = \vb{A} \vb{B}$ can be written as:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{C} &= \mqty[A_{11} & A_{12} & A_{13} \\ A_{21} & A_{22} & A_{23} \\ A_{31} & A_{32} & A_{33}] \mqty[B_{11} & B_{12} & B_{13} \\ B_{21} & B_{22} & B_{23} \\ B_{31} & B_{32} & B_{33}] \\
+&= \mqty[A_{11}B_{11} + A_{12}B_{21} + A_{13}B_{31} & A_{11}B_{12} + A_{12}B_{22} + A_{13}B_{32} & A_{11}B_{13} + A_{12}B_{23} + A_{13}B_{33} \\ A_{21}B_{11} + A_{22}B_{21} + A_{23}B_{31} & A_{21}B_{12} + A_{22}B_{22} + A_{23}B_{32} & A_{21}B_{13} + A_{22}B_{23} + A_{23}B_{33} \\ A_{31}B_{11} + A_{32}B_{21} + A_{33}B_{31} & A_{31}B_{12} + A_{32}B_{22} + A_{33}B_{32} & A_{31}B_{13} + A_{32}B_{23} + A_{33}B_{33}]
+\end{split}
+\end{equation}
+$$
+
+We can notice that the first element of the matrix $\vb{C}$ is:
+
+$$
+\begin{equation}
+C_{11} = A_{11}B_{11} + A_{12}B_{21} + A_{13}B_{31}
+\end{equation}
+$$
+
+The second and third elements of the matrix $\vb{C}$ in the first row can be written as:
+
+$$
+\begin{align}
+C_{12} &= A_{11}B_{12} + A_{12}B_{22} + A_{13}B_{32} \\
+C_{13} &= A_{11}B_{13} + A_{12}B_{23} + A_{13}B_{33}
+\end{align}
+$$
+
+Here are more examples:
+
+$$
+\begin{align}
+C_{\class{blue}{2}\class{green}{1}} &= A_{\class{blue}{2}\class{yellow}{1}}B_{\class{yellow}{1}{\class{green}{1}}} + A_{\class{blue}{2}\class{yellow}{2}}B_{\class{yellow}{2}{\class{green}{1}}} + A_{\class{blue}{2}\class{yellow}{3}}B_{\class{yellow}{3}{\class{green}{1}}} \\
+C_{\class{blue}{2}\class{green}{2}} &= A_{\class{blue}{2}\class{yellow}{1}}B_{\class{yellow}{1}{\class{green}{2}}} + A_{\class{blue}{2}\class{yellow}{2}}B_{\class{yellow}{2}{\class{green}{2}}} + A_{\class{blue}{2}\class{yellow}{3}}B_{\class{yellow}{3}{\class{green}{2}}} \\
+C_{\class{blue}{2}\class{green}{3}} &= A_{\class{blue}{2}\class{yellow}{1}}B_{\class{yellow}{1}{\class{green}{3}}} + A_{\class{blue}{2}\class{yellow}{2}}B_{\class{yellow}{2}{\class{green}{3}}} + A_{\class{blue}{2}\class{yellow}{3}}B_{\class{yellow}{3}{\class{green}{3}}}
+\end{align}
+$$
+
+Notice the numbers that are colored;
+the $\class{blue}{2}$ and $\class{green}{1}$ indices are the indices we are using to access the matrix $\vb{C}$.
+These are the **free indices**.
+In contrast, the $\class{yellow}{1}$ indices are summed over, so they are the dummy indices.
+
+If we generalize this, we can write the element $C_{ij}$ of the matrix $\vb{C}$ as:
+
+$$
+\begin{equation}
+C_{ij} = \sum_{k=1}^n A_{ik} B_{kj}
+\end{equation}
+$$
+
+And in the Einstein summation convention, this can be written as:
+
+$$
+\begin{equation}
+C_{ij} = A_{ik} B_{kj}
+\end{equation}
+$$

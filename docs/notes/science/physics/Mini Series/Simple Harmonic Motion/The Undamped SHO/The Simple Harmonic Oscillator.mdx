@@ -1,0 +1,228 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform, labelPi } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { Fragment } from "react";
+import { sphericalToCartesian } from "@site/src/utilities/geometry"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# The Simple Harmonic Oscillator
+
+As previously mentioned, in almost all of physics, we encounter a phenomenon called **simple harmonic motion**.
+In everyday life, we see simple harmonic motion in many systems, from the motion of a pendulum to the vibrations of a guitar string.
+On an atomic scale, simple harmonic motion is found in the vibrations of atoms and molecules, and on a cosmic scale, it is found in the oscillations of stars and galaxies.
+So it really is everywhere.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## A Spring and a Mass
+
+To introduce simple harmonic motion (which we will abbreviate as SHM), we will use a simple system consisting of a spring and a mass.
+In principle, this system is very simple: a mass $m$ is attached to a spring with spring constant $k$.
+When the mass is displaced from its equilibrium position, the spring exerts a force on the mass that tries to restore it to the equilibrium position.
+
+If we use $x$ to denote the displacement of the mass from the equilibrium position, the force exerted by the spring is given by Hooke's law:
+
+$$
+\begin{equation}
+\va{F} = -k x \vu{x}
+\end{equation}
+$$
+
+where $\vu{x}$ is the unit vector in the direction of the displacement.
+
+Recall from Newton's second law that the force is equal to the mass times the acceleration:
+
+$$
+\begin{equation}
+ma = -kx
+\end{equation}
+$$
+
+And that the acceleration is the second derivative of the position with respect to time:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} = -kx
+\end{equation}
+$$
+
+We have a second derivative of the position, and hence, this is a second-order ordinary differential equation (ODE).
+This is the differential equation that describes the motion of a mass-spring system, and it is the starting point for our exploration of simple harmonic motion.
+
+## A Simple Pendulum
+
+Another system that exhibits simple harmonic motion is a simple pendulum.
+
+A simple pendulum consists of a mass $m$ attached to a string of length $L$.
+When the mass is displaced from its equilibrium position, the force of gravity exerts a torque on the mass that tries to restore it to the equilibrium position.
+
+If we use $\theta$ to denote the angle of the pendulum with respect to the vertical, the torque exerted by gravity is given by:
+
+$$
+\begin{equation}
+\va{\tau} = (L \vu{r}) \cross (-mg \vu{k}) = -mgL \sin(\theta) \vu{\theta}
+\end{equation}
+$$
+
+The torque is equal to the moment of inertia times the angular acceleration:
+
+$$
+\begin{equation}
+I \dv[2]{\theta}{t} = -mgL \sin(\theta)
+\end{equation}
+$$
+
+Since the moment of inertia of a single point mass is just $I = m L^2$, we can substitute this in:
+
+$$
+\begin{equation}
+m L^2 \dv[2]{\theta}{t} = -mgL \sin(\theta)
+\end{equation}
+$$
+
+Dividing by $mL$ and rearranging, we get:
+
+$$
+\begin{equation}
+\dv[2]{\theta}{t} = -\frac{g}{L} \sin(\theta)
+\end{equation}
+$$
+
+This is the differential equation that describes the motion of a simple pendulum, and it is also a second-order ODE.
+This ODE is very difficult to solve analytically, involving elliptic integrals, so we will explore it in more detail in a future post.
+For now, at small angles ($\theta \ll 1$), the sine function can be approximated as $\sin(\theta) \approx \theta$, and the differential equation simplifies to:
+
+$$
+\begin{equation}
+\dv[2]{\theta}{t} = -\frac{g}{L} \theta
+\end{equation}
+$$
+
+This is the differential equation that describes the motion of a simple pendulum in the small angle approximation, and it is equivalent to the differential equation for a mass-spring system.
+
+## Comparing the Two Systems
+
+Put side by side, the differential equations for the mass-spring system and the simple pendulum are:
+
+$$
+\begin{align}
+\dv[2]{x}{t} &= -\frac{k}{m} x \\
+\dv[2]{\theta}{t} &= -\frac{g}{L} \theta
+\end{align}
+$$
+
+The terms $\frac{k}{m}$ and $\frac{g}{L}$ are both positive constants, and the differential equations are structurally identical.
+Let $\omega_0^2$ represent these constants. Then, we can write the differential equations as:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} = -\omega_0^2 x \quad \text{and} \quad \dv[2]{\theta}{t} = -\omega_0^2 \theta
+\end{equation}
+$$
+
+This is known as the equation of a **simple harmonic oscillator** (SHO).
+
+## Qualitative Analysis
+
+Before we dive into solving this differential equation, let's take a moment to understand what it means.
+The differential equation $m \dv[2]{x}{t} = -kx$ tells us that the acceleration of the mass is proportional to its displacement from the equilibrium position, with a negative sign.
+
+This means that when a mass is displaced from its equilibrium position, the spring exerts a force on it that tries to restore it to the equilibrium position.
+Then, as the mass moves back towards the equilibrium position, it overshoots and moves past it to the other side.
+This repeats, causing the mass to oscillate back and forth around the equilibrium position.
+
+The same applies to the pendulum; when it is displaced from the vertical, gravity exerts a torque on it that tries to restore it to the vertical.
+The only difference is that instead of the spring force being the restoring force, it is the gravitational force.
+
+The table below summarizes the behavior of the mass at different points in its motion:
+
+| Displacement | Velocity | Acceleration | Spring/Pendulum |
+|--------------|----------|--------------|-----------------|
+| Zero         | Maximum  | Zero         | Equilibrium     |
+| Maximum      | Zero     | Minimum      | One end         |
+| Zero         | Minimum  | Zero         | Equilibrium     |
+| Minimum      | Zero     | Maximum      | The other end   |
+
+(Take a moment to internalize this behavior and think about (1) why it makes sense and (2) how it relates to the differential equation $m \dv[2]{x}{t} = -kx$.)
+
+## Sinusoidal Functions
+
+As one could've guessed, SHM is related to sinusoidal functions, so we can expect the solution to the differential equation to be a sinusoidal function of time.
+
+To prepare for the mathematical analysis, let's first review the properties of sinusoidal functions.
+
+Take a function $x(t) = A \sin(\omega_0 t + \phi)$. We define the following quantities:
+
+- $A$ is the **amplitude** of the oscillation, which is the maximum displacement from the equilibrium position.
+- $f$ is the **frequency** of the oscillation, which is the number of oscillations per unit time.
+- $\omega_0$ is the **angular frequency** of the oscillation, which is the rate at which the object oscillates back and forth.
+
+    The difference between the frequency and the angular frequency is that the angular frequency is in radians per unit time, while the frequency is in cycles per unit time.
+    In one cycle, the object goes through $2\pi$ radians, so the angular frequency is related to the frequency by $\omega_0 = 2\pi f$.
+- $\phi$ is the **phase shift** of the oscillation, which is the initial angle of the object at $t = 0$. It determines the starting point of the oscillation.
+- $T$ is the **period** of the oscillation, which is the time it takes for the object to complete one full oscillation.
+    The period is related to the frequency by $T = \frac{1}{f}$, and to the angular frequency by $T = \frac{2\pi}{\omega_0}$.
+
+{(() => {
+    const [A, setA] = useState(1);
+    const [omega, setOmega] = useState(1);
+    const [phi, setPhi] = useState(0);
+    const [functionName, setFunctionName] = useState("sin");
+
+    const x = (t) => A * (functionName === "cos" ? Math.cos(omega * t + phi) : Math.sin(omega * t + phi));
+
+    return (
+        <div className="card">
+            <div className="card__header">
+                <h3>Sinusoidal Function (zoomable)</h3>
+            </div>
+            <div className="card__body">
+                <Mafs
+                    viewBox={{ x: [-Math.PI * 6, Math.PI * 6], y: [-2, 2], padding: Math.PI / 2, }}
+                    preserveAspectRatio={false}
+                    zoom={true}
+                >
+                    <Coordinates.Cartesian
+                        xAxis={{
+                            lines: Math.PI,
+                            labels: labelPi,
+                        }}
+                    />
+                    <Plot.OfX y={x} color={color("blue")} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <div className="row">
+                    <div className="col">
+                        <ControlPanel>
+                            <Pills label="Function" value={functionName} options={{sin: <MathEquation inline={true}>\sin</MathEquation>, cos: <MathEquation inline={true}>\cos</MathEquation>}} onChange={setFunctionName} />
+                            <SliderInput latex label="A" value={A} onChange={setA} min={0} max={2} step={0.1} />
+                            <SliderInput latex label="\omega_0" value={omega} onChange={setOmega} min={0} max={2} step={0.1} />
+                            <SliderInput latex label="\phi" value={phi} onChange={setPhi} min={-Math.PI} max={Math.PI} step={2 * Math.PI / 100} />
+
+                        </ControlPanel>
+                    </div>
+                    <div className="col">
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+})()}
+
+Without a phase shift, the function $x(t) = A \sin(\omega_0 t)$ starts at $x = 0$ and oscillates back and forth around the equilibrium position.
+$x(t)$ is an odd function, meaning that it has rotational symmetry about the origin.
+This is in contrast to the cosine function, which is an *even* function and starts at $x = A$.
+
+Both $\sin(\omega_0 t)$ and $\cos(\omega_0 t)$ have a maximum value of $1$. Hence, when multiplied by $A$, $A\sin(\omega_0 t)$ and $A\cos(\omega_0 t)$ oscillate between $-A$ and $A$.

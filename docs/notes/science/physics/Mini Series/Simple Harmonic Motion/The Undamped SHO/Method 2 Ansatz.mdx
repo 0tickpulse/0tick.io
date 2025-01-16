@@ -1,0 +1,185 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { Fragment } from "react";
+import { sphericalToCartesian } from "@site/src/utilities/geometry"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Method 2: Ansatz
+
+In the previous section, we derived the differential equation that describes the motion of a mass-spring system.
+This differential equation is a second-order ordinary differential equation (ODE) that can be written as:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \omega_0^2 x = 0 \label{eq:undamped-sho-ode}
+\end{equation}
+$$
+
+In this section, we will explore the second method to solve this differential equation, which uses the ansatz method.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Ansatz Method
+
+"Ansatz" is a German word that means "approach" or "attempt".
+In mathematics, the ansatz method is a method of solving differential equations by guessing a solution and then verifying that it satisfies the differential equation.
+
+The ansatz method is particularly useful for solving linear differential equations, such as the one we have here.
+
+In order to make an educated guess for the solution of the differential equation, we can use both the form of the differential equation and our knowledge of the system:
+
+- In a spring-mass system, or any other system that exhibits simple harmonic motion, we know that the system oscillates back and forth around the equilibrium position.
+- We also know that the second derivative of the position with respect to time is proportional to the position itself, with a negative sign.
+
+Based on this knowledge, we can guess that the solution to the differential equation can take two forms:
+
+1. A sinusoidal function of time, such as $\sin(\omega_0 t)$ or $\cos(\omega_0 t)$.
+2. An exponential function of time, such as $e^{\alpha t}$.
+
+:::info Sines and Exponentials are the Same
+
+It's not a coincidence that both of these functions are solutions to the differential equation.
+In fact, they fundamentally describe the same motion, just in different ways, which deserves a deeper discussion.
+
+Consider the function $e^{\alpha x}$. Its derivative is $\alpha e^{\alpha x}$, meaning that the derivative is proportional to the function itself.
+If we think of the function as a position and the derivative as a velocity, this means that the velocity is proportional to the position.
+As the position increases, the velocity increases, and it grows exponentially.
+
+Now if we put an imaginary term in the exponent, we get $e^{ix}$.
+Recall that $i$ fundamentally represents a $90^\circ$ rotation in the complex plane.
+Its derivative is $i e^{ix}$, which is $i$ times the function itself.
+This means that the velocity is not only proportional to the position, but it is also rotated by $90^\circ$.
+Hence, the velocity is perpendicular to the position - i.e. circular motion.
+
+Now recall that the trigonometric functions $\sin(x)$ and $\cos(x)$ are just the coordinates of a point on the unit circle.
+It should be clear that the exponential function $e^{ix}$ describes the same motion as the trigonometric functions, just in a different way.
+This is quantatively described via Euler's formula, which states that $e^{i \theta} = \cos(\theta) + i \sin(\theta)$.
+
+:::
+
+We will try both of these forms and see that they are indeed solutions to the differential equation.
+Before that, we need to remind ourselves of the initial conditions of the system:
+
+- The position of the object at $t = 0$ is $x(0) = x_0$.
+- The velocity of the object at $t = 0$ is $v(0) = v_0$.
+
+## Trying the Sinusoidal Function
+
+Let's first try the sinusoidal function $x(t) = A \sin(\omega_0 t)$.
+We can differentiate this function twice to get the acceleration and then substitute it into the differential equation to see if it holds.
+
+The acceleration is given by:
+
+$$
+\begin{equation}
+a(t) = \dv[2]{x}{t} = -A \omega_0^2 \sin(\omega_0 t) = -\omega_0^2 x(t)
+\end{equation}
+$$
+
+So this indeed holds true for the differential equation.
+
+We can also try the cosine function $x(t) = A \cos(\omega_0 t)$ and see that it also satisfies the differential equation:
+
+$$
+\begin{equation}
+a(t) = \dv[2]{x}{t} = -A \omega_0^2 \cos(\omega_0 t) = -\omega_0^2 x(t)
+\end{equation}
+$$
+
+This corresponds to the fact that the sine and cosine functions both describe the same motion, just with different phase offsets.
+
+## Trying the Exponential Function
+
+Now let's try the exponential function $x(t) = A e^{\alpha t}$.
+
+The acceleration is given by:
+
+$$
+\begin{equation}
+a(t) = \dv[2]{x}{t} = A \alpha^2 e^{\alpha t} = \alpha^2 x(t)
+\end{equation}
+$$
+
+Now we can substitute this into the differential equation:
+
+$$
+\begin{equation}
+a(t) = \alpha^2 x(t) = -\omega_0^2 x(t)
+\end{equation}
+$$
+
+Hence $\alpha^2 = -\omega_0^2$, which means that $\alpha = \pm i \omega_0$.
+
+Plugging this back into the exponential function, we get:
+
+$$
+\begin{equation}
+x(t) = A e^{i \omega_0 t}
+\end{equation}
+$$
+
+Since this is complex-valued, we can take the real part of this function to get a real-valued solution:
+
+$$
+\begin{equation}
+x(t) = \Re(A e^{i \omega_0 t}) = \Re(A \cos(\omega_0 t) + i A \sin(\omega_0 t)) = A \cos(\omega_0 t)
+\end{equation}
+$$
+
+## General Solution
+
+From the above analysis, we see that the general solution is either a sine function or a cosine function:
+
+$$
+\begin{align}
+x(t) &= A \sin(\omega_0 t) \\
+x(t) &= A \cos(\omega_0 t)
+\end{align}
+$$
+
+Which one is correct?
+It turns out, both are correct, but the general solution is more than just one of these functions.
+
+Consider two solutions $x_1(t)$ and $x_2(t)$ to the differential equation.
+Then the sum of these two solutions is also a solution:
+
+$$
+\begin{align}
+x(t) &= x_1(t) + x_2(t) \\
+\dv[2]{x}{t} &= \dv[2]{x_1}{t} + \dv[2]{x_2}{t} \nonumber \\
+&= -\omega_0^2 x_1(t) - \omega_0^2 x_2(t) = -\omega_0^2 x(t)
+\end{align}
+$$
+
+Similarly, multiplying a solution by a constant also gives a solution:
+
+$$
+\begin{align}
+x(t) &= A x_1(t) \\
+\dv[2]{x}{t} &= A \dv[2]{x_1}{t} = -\omega_0^2 x(t)
+\end{align}
+$$
+
+This means that if we have the sine and cosine solutions, we can freely add and multiply them to get another solution.
+This is known as a **linear combination** of the solutions:
+
+$$
+\begin{equation}
+x(t) = A \sin(\omega_0 t) + B \cos(\omega_0 t)
+\end{equation}
+$$
+
+This is the most general solution to the differential equation; any other solution can be written in this form.
+

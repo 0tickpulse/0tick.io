@@ -1,5 +1,5 @@
 ---
-sidebar_position: 3
+sidebar_position: 4
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
@@ -25,7 +25,7 @@ $$
 \end{equation}
 $$
 
-In this section, we will explore the third method of solving this differential equation: transforming it into a system of first-order ODEs and then using linear algebra to solve it.
+In this section, we will explore the third method of solving this differential equation: using the powerful tools of phase space and linear algebra.
 
 ## Table of Contents
 
@@ -53,9 +53,12 @@ $$
 $$
 
 This is the fun part - now imagine we have a coordinate system with two axes: one for $x$ and one for $v$.
-This is known as a **phase space**.
 Each point $(x, v)$ in this coordinate system represents a state of the system at a given time $t$.
 Let $\va{s} = \mqty[x \\ v]$ be the state vector of the system.
+
+Notice that this coordinate system is not a physical space, unlike the usual $xy$-plane.
+When we have a system like this, we call it the **phase space** of the system.
+
 Then, the system of first-order ODEs can be written as:
 
 $$
@@ -134,7 +137,7 @@ $$
 
 This should look familiar if you've studied any differential equations.
 It resembles exponential growth and decay equations, where we have $\dv{y}{t} = k y$.
-In that case, the solution is $y(t) = C e^{k(t + \phi)}$.
+In that case, the solution is $y(t) = C e^{k(t + \phi)}$ ($\phi$ is added to account for the initial conditions. It's the same thing as multiplying the constant $C$ by $e^{k \phi}$, which is another constant).
 Similarly, we can guess the solution to the system of ODEs as:
 
 $$
