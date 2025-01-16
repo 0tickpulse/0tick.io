@@ -1,0 +1,61 @@
+---
+sidebar_position: 3
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { useState } from "react";
+import range from "lodash/range";
+import { gamma } from "mathjs";
+import TOCInline from "@theme/TOCInline";
+
+# Linearity of the Derivative
+
+In the previous sections, we discussed the concept of the derivative of a function and how it can be used to describe the rate of change of the function at a specific point.
+In this section, we will explore some properties of the derivative that are crucial in calculus.
+Specifically, we will discuss the **linearity of the derivative**.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Adding Functions
+
+Suppose we have two functions, $f(x)$ and $g(x)$, and we want to find the derivative of their sum, $f(x) + g(x)$.
+
+Recall that the derivative is essentially a limit of an average rate of change, which is a ratio of the change of the function to the change in the input.
+Therefore, we can write the derivative of $f(x) + g(x)$ as:
+
+$$
+\begin{equation}
+\dv{x} (f(x) + g(x)) = \lim_{{h \to 0}} \frac{\Delta (f(x) + g(x))}{\Delta x}
+\end{equation}
+$$
+
+So, the question is, what is $\Delta (f(x) + g(x))$?
+Well, it is simply the sum of the changes in $f(x)$ and $g(x)$: $\Delta f(x) + \Delta g(x)$.
+
+One can easily show this by expanding the expression:
+
+$$
+\begin{equation}
+\begin{aligned}
+\Delta (f(x) + g(x)) &= f(x + h) + g(x + h) - f(x) - g(x) \\
+&= f(x + h) - f(x) + g(x + h) - g(x) \\
+&= \Delta f(x) + \Delta g(x)
+\end{equation}
+$$
+
+However, we can also see this on a graph. Let's consider the graph of $f(x) = \frac{1}{2} x^2$ and $g(x) = \frac{1}{2} x$, as well as their sum:
+
+<div className="card">
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <Mafs></Mafs>
+            </div>
+            <div className="col"></div>
+        </div>
+    </div>
+</div>

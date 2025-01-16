@@ -1,12 +1,10 @@
-import { COLORS } from "@site/colors";
 import rgba from "color-rgba";
 import convert from "color-convert";
-import { clamp } from "lodash";
 
 export function color(name: string) {
     // get CSS variable --custom-color-<name>
-    // return getComputedStyle(document.documentElement).getPropertyValue(`--custom-color-${name}`);
-    return COLORS[name];
+    return getComputedStyle(document.documentElement).getPropertyValue(`--custom-color-${name}`);
+    // return COLORS[name];
 }
 
 export function getColorFromMagnitude(magnitude: number, minMagnitude = 0, maxMagnitude = 20) {

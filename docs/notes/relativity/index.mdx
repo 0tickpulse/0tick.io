@@ -1,0 +1,214 @@
+# Relativity
+
+"Relativity" is a term that refers to a few things.
+Most fundamentally, it refers to the idea that there exists different frames of reference in which physical laws can be described.
+Intuitively, each frame of reference is like a different way of looking at the world, be it a person standing still, on a moving train, or in a spaceship traveling at the speed of light.
+Each of these frames of reference will see the world differently - for example, the person on the train will see the person standing still as moving backwards, while the person standing still will see the person on the train as moving forwards.
+
+We will cover some main topics in this section, each building on the previous one.
+Below is a brief overview of what we will cover.
+
+## 1. Galilean Relativity
+
+Galilean relativity is the simplest form of relativity, and is also the oldest.
+It was first proposed by Galileo Galilei in the 17th century, and is based on the idea that the laws of physics are the same in all inertial frames of reference.
+
+An **inertial frame of reference** is, roughly speaking, a frame of reference that is not accelerating.
+For example, a person standing still on the ground is in an inertial frame of reference, while a person in a car that is accelerating is not.
+
+In inertial frames of reference, the laws of physics are the same.
+Roughly speaking, that means that the frames of reference are "equivalent" in some sense and agree on the following:
+
+-   The passage of time, $\Delta t$.
+-   The physical space between two points, $\Delta \va{r}$.
+-   The mass of an object, $m$.
+-   Newton's laws of motion - $\va{F} = m\va{a}$ and $\va{F}_G = \frac{Gm_1m_2}{r^2}$.
+
+While they disagree on:
+
+-   The position of an object, $\va{r}$.
+-   The velocity of an object, $\va{v}$.
+-   The momentum of an object, $\va{p}$.
+-   The kinetic energy of an object, $K = \frac{1}{2}mv^2$.
+
+The way we switch between different frames of reference mathematically is through **coordinate transformations**.
+These are mathematical operations that change the coordinates of an object from one frame of reference to another.
+
+Certain objects, like vectors, do not change under coordinate transformations - they are **invariant**.
+However, their components do change - the components are a *representation* of the vector in a particular frame of reference.
+We call a mathematical object that (1) does not change under coordinate transformations and (2) has components that transform in a particular way a **tensor**.
+
+## 2. Special Relativity
+
+Special relativity is a more advanced form of relativity that was developed by Albert Einstein in the early 20th century.
+There are a few reasons that Galilean relativity is not sufficient to describe the universe, but the most fundamental one is the speed of light.
+
+Essentially, from Maxwell's equations, we can derive the wave equation for light, which gives us the following:
+
+$$
+\begin{equation}
+\laplacian{\va{E}} = \mu_0\epsilon_0 \pdv[2]{\va{E}}{t}
+\end{equation}
+$$
+
+(To derive this, assume we are in a vacuum where $\rho = 0$ and $\va{J} = 0$. Then, start with Faraday's law, take the curl of both sides, use the identity $\curl{\curl{\va{E}}} = \grad(\div{\va{E}}) - \laplacian{\va{E}}$. Then apply the Ampère-Maxwell law and cancel out the term with $\va{J}$ since it is zero.)
+
+Following this, we can derive that the speed of light is $c = \frac{1}{\sqrt{\mu_0\epsilon_0}}$ in a vacuum.
+But $\mu_0$ and $\epsilon_0$ are fundamental constants of nature, so $c$ is also a fundamental constant of nature.
+(Additionally, unlike other waves, light does not require a medium to propagate through, so it doesn't have anything to measure its speed against.)
+This contradicts Galilean relativity, which, if you remember, allows frames of reference to disagree on speeds.
+
+Another reason is that electromagnetism is not invariant under Galilean transformations.
+Specifically, the Lorentz force law $\va{F} = q(\va{E} + \va{v} \cross \va{B})$ is not invariant under Galilean transformations.
+
+Einstein's solution was to "add" the speed of light to the list of physical laws.
+In other words, the speed of light is the same in all inertial frames of reference.
+This leads to the following postulates of special relativity:
+
+1. The laws of physics are the same in all inertial frames of reference. (Same as Galilean relativity)
+2. The speed of light is the same in all inertial frames of reference. (New)
+
+Because we have to agree on the speed of light, we have to "sacrifice" some other things:
+
+| Galilean Relativity                                           | Special Relativity                                                                           |
+| ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Frames disagree on position                                   | Still disagree on position                                                                   |
+| Frames agree on time                                          | No longer agree on time - $\Delta \tilde{t} = \gamma \Delta t$                               |
+| $\va{v} = \dv{\va{r}}{t}$, $\va{a} = \dv[2]{\va{r}}{t}$, etc. | No longer valid - the time variable is different, so we cannot differentiate in the same way |
+| Velocities add simply                                         | No, since there is a "speed limit"                                                           |
+| Laws of motion work in all inertial frames                    | Needs rethinking                                                                             |
+
+The consequences of special relativity are often extremely counterintuitive because it challenges our fundamental notions of space and time.
+These include time dilation (moving clocks run slower), length contraction (moving objects are shorter), and the relativity of simultaneity (events that are simultaneous in one frame are not in another).
+However, these consequences only become significant at speeds close to the speed of light; at everyday speeds, the effects are completely negligible.
+
+It must be noted that the reasons for the origin of special relativity are definitely not, by any means, obvious.
+It challenges Galilean relativity, which not only has been around for centuries but also seems to rely on nothing but common sense.
+Because of the counterintuitive nature of special relativity, Einstein's theory was not immediately accepted by the scientific community.
+In fact, his Nobel Prize was not for special relativity, but for his work on the photoelectric effect.
+
+What I've described so far is most of what students learn in a first course on special relativity.
+However, things run much deeper than that, and there are many more interesting consequences and implications of special relativity.
+
+Firstly, we will make the observation that a noninertial reference frame can be treated as a series of inertial reference frames.
+Essentially, if we divide the noninertial frame into small pieces, each piece can be treated as an inertial frame, and as we take the limit as the pieces become infinitesimally small, we can treat the entire noninertial frame as an inertial frame.
+An accelerating object, in the reference frame of a stationary observer, traces out a hyperbolic path in spacetime.
+
+Accelerating objects have a few interesting properties.
+For example, an accelerating object will see a "Rindler horizon" - a boundary beyond which it cannot see.
+This is because light from beyond the horizon cannot reach the accelerating object.
+It's also very similar to the event horizon of a black hole, hence the shared title of "horizon".
+
+We will need a curvilinear coordinate system that is appropriate for describing the motion of an accelerating object - the Rindler coordinates.
+These coordinates are notably more difficult to work with than the previous transformations we've seen, but they are necessary for describing the motion of an accelerating object.
+We will "upgrade" our current mathematical toolkit to be able to handle these more complex transformations:
+
+-   The basis vectors can be written as a tangent vector - $\tilde{\va{e}}_x = \dv{\va{r}}{\tilde{x}}$. This allows them to change as we move along the curve.
+-   The transformations can no longer be described by a simple matrix - we need to use the **Jacobian**, which, in short, is a linear map that is different at each point.
+-   The notions of straight lines and circles are no longer valid - we need to use **geodesics**, which are the straightest possible lines in curved space.
+    To do this, we will introduce some concepts from differential geometry, including the covariant derivative.
+
+While it may seem like we are going off on a tangent, these concepts give us a headstart into the next topic - general relativity.
+
+## 3. General Relativity
+
+General relativity is a form of relativity, developed by Albert Einstein in the early 20th century, that extends special relativity to include gravity.
+
+The fundamental idea behind general relativity comes from the **equivalence principle**, which states (roughly speaking) that the effects of gravity are indistinguishable from the effects of acceleration.
+This is a very powerful idea because it means that gravity is "special", unlike other forces like electromagnetism or the strong force.
+
+Over large distances, the equivalence principle no longer holds, because the forces will be different at different points.
+This leads to the existence of **tidal forces**, which are the differences in gravitational forces at different points in space.
+For example, the Moon exerts a stronger gravitational force on the side of the Earth facing it than on the side facing away from it, leading to the tides.
+In special relativity, there is no reference frame that you can be in where you can "replicate" tidal forces - tidal forces cannot be explained with flat spacetime.
+Thus, we need a new theory of gravity that can explain tidal forces.
+
+General relativity treats spacetime as a four-dimensional pseudo-Riemannian manifold.
+While these words sound complicated, they are actually quite simple in principle.
+Essentially, instead of treating gravity as a force, general relativity treats gravity as a curvature in spacetime.
+If spacetime is a sheet of paper, then gravity is like placing a heavy ball in the middle of the paper - it curves the paper around it.
+The mathematics of general relativity is quite complex, and involves a lot of differential geometry.
+
+A manifold is a curved space that is locally flat, meaning that if you zoom in close enough, it looks like a flat space.
+A simple example is the surface of the Earth, which is curved but looks flat when you're standing on it.
+We will first explore manifolds in more detail, starting from the distinction between the intrinsic and extrinsic views of a manifold.
+The intrinsic view is the view from being "on top of" the manifold (or a bug's eye view), while the extrinsic view is the view from "outside" the manifold (or a bird's eye view).
+To build on this, we will introduce the tangent space, which is a vector space that is "attached" to each point on the manifold.
+Using the concept of manifolds, we will extend concepts like arc lengths, gradients, geodesics, and the covariant derivative to curved spaces.
+
+There are three mathematical objects that describe the curvature of a manifold: the Riemann curvature tensor $R_{\mu\nu\sigma}^\rho$, the Ricci tensor $R_{\mu\nu}$, and the Ricci scalar $R$.
+The Riemann curvature tensor describes the curvature of spacetime at each point. It can be interpreted with a concept called **holonomy** - if a vector is parallel transported around a closed loop, it will change direction if the space is curved.
+The Ricci tensor is a contraction of the Riemann curvature tensor, and describes the "average" curvature at each point.
+The Ricci scalar is then a contraction of the Ricci tensor, and describes the overall curvature of spacetime.
+
+We will introduce the Newton-Cartan theory as a stepping stone, which is a simpler version of general relativity that is easier to work with.
+By starting with Newton's law of gravity, we can derive Poisson's equation $\laplacian{\Phi} = 4\pi G\rho$.
+When one writes the Laplacian out in an orthonormal basis, one can see that this equation closely resembles a geodesic equation.
+Specifically, if we let the parameter of the geodesic be time (which is invariant here because we are in a nonrelativistic setting) and adjust the connection coefficients properly, it *is* a geodesic equation.
+Because the connection coefficients are defined, we can then derive the Riemann curvature tensor, the Ricci tensor, and the Ricci scalar.
+Finally, by seeing that $R_{00}$ is equal to the Laplacian of the gravitational potential, then $R_{00} = 4\pi G\rho$.
+This theory is good and also explains tidal forces, but it is not compatible with special relativity.
+Specifically, $\rho$ is not invariant under Lorentz transformations. It is a measure of mass over volume, but as we know, length contraction can change the volume.
+This will lead to the thought that perhaps $\rho$ is part of a larger object, one that is invariant under Lorentz transformations, just like $R_{00}$.
+
+It turns out that this object is the **energy-momentum tensor** $T_{\mu\nu}$, which is a mathematical object that describes the distribution of energy and momentum in spacetime.
+It is related to the concept of flux.
+
+Finally, after all this time, we have every piece of the puzzle to assemble Einstein's field equations.
+Making the adjustment from the Newton-Cartan theory, we can replace $\rho$ and $R_{00}$ with their tensor counterparts: $R_{\mu\nu} = \kappa T_{\mu\nu}$.
+There is a problem, however - the right hand side, due to conservation of energy and momentum, must have zero divergence.
+But by the Bianchi identity, the left hand side does not have zero divergence. Instead, by adding a term $-\frac{1}{2}Rg_{\mu\nu}$ to the left hand side, we can satisfy the conservation of energy and momentum.
+Additionally, by metric compatibility, we can add a constant $\Lambda g_{\mu\nu}$ to the left hand side without affecting the divergence. (This is known as the cosmological constant, and it is a constant that is added to the left hand side of the field equations to account for the expansion of the universe.)
+Finally, we can calculate the proportionality constant $\kappa$ to be $\frac{8\pi G}{c^4}$ by approximating the equation in the weak field limit and comparing it to Newton's law of gravity.
+Then, we have the final form of Einstein's field equations:
+
+$$
+\begin{equation}
+R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} + \Lambda g_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu}
+\end{equation}
+$$
+
+These equations are the cornerstone of general relativity, and describe how spacetime is curved by the presence of mass and energy.
+Because this is a tensor equation, there are 16 equations in total (4 for each $\mu$ and $\nu$), but they are not all independent.
+Specifically, the metric tensor $g_{\mu\nu}$ is symmetric, so there are only 10 independent equations.
+
+The rest of the course will be spent exploring the consequences and implications of general relativity.
+
+## 4. Black Holes and the Schwarzschild Metric
+
+When Einstein first derived his field equations, he relied on numerical solutions to understand them.
+It was Karl Schwarzschild who first found an exact solution to the field equations, which described the spacetime around a spherically symmetric, non-rotating mass.
+This solution is now known as the Schwarzschild metric:
+
+$$
+\begin{equation}
+g_{\mu\nu} \rightarrow \mqty[ -\qty(1 - \frac{r_s}{r}) & 0 & 0 & 0 \\ 0 & \qty(1 - \frac{r_s}{r})^{-1} & 0 & 0 \\ 0 & 0 & r^2 & 0 \\ 0 & 0 & 0 & r^2\sin^2\theta ]
+\end{equation}
+$$
+
+where $r_s = \frac{2GM}{c^2}$ is a quantity known as the Schwarzschild radius.
+Notice that when $r = r_s$, interesting things happen. The $g_{00}$ component of the metric becomes zero, while the $g_{11}$ component becomes infinite.
+This is known as a **coordinate singularity** (not to be confused with a physical singularity), and it is a point where the coordinates of the metric become ill-defined.
+Furthermore, the coordinates change such that the radial coordinate becomes time-like and the time coordinate becomes space-like, creating a fundamental shift in the nature of spacetime.
+This is known as the **event horizon**, and it is the boundary beyond which light cannot escape.
+
+The Schwarzschild metric does not only describe the spacetime around a black hole, but also the spacetime around any spherically symmetric mass.
+It can be used to derive other interesting phenomena, such as gravitational time dilation, gravitational redshift, and the perihelion precession of Mercury.
+The perihelion precession of Mercury is a particularly interesting phenomenon, as it was one of the first experimental confirmations of general relativity.
+
+Another interesting thing about black holes is that they have a temperature and an entropy.
+General relativity alone predicts that black holes will always absorb matter and energy, and never emit anything, eventually growing to infinite size.
+This is one of the few places where general relativity and quantum mechanics clash.
+According to quantum mechanics, at the event horizon of a black hole, virtual particles can be created on either side.
+If one of these particles falls into the black hole, the other can escape to become a real particle.
+This incurs a loss of mass for the black hole. By the equivalence of mass and energy, this means that the black hole emits radiation.
+This radiation is known as Hawking radiation.
+
+## Resources
+
+This "thing" is mainly based on [this YouTube playlist](https://www.youtube.com/playlist?list=PLJHszsWbB6hqlw73QjgZcFh4DrkQLSCQa).
+It's a great resource for learning about relativity, but I don't know if it's the best (because I haven't watched any other videos on relativity).
+
+*Why would you remake the playlist in text form?* I like to have a written version of things I learn, and I thought it would be a good exercise to write it all out.
+Writing something in an explanatory way is an excellent way to really understand it.
+Additionally, I want to experiment with some animations and interactive elements.

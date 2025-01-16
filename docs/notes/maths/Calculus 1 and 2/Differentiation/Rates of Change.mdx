@@ -1,0 +1,561 @@
+---
+sidebar_position: 2
+---
+
+import { useMovablePoint, useStopwatch, vec } from "mafs";
+import * as vec3 from "@site/src/utilities/vec3";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import { useState } from "react";
+import range from "lodash/range";
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { gamma } from "mathjs";
+import TOCInline from '@theme/TOCInline';
+
+# Rates of Change
+
+In this section, we introduce the derivative as a measure of the instantaneous rate of change of a function.
+The central idea of differential calculus is a measure of change, and specifically, how fast a function is changing at a particular point.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Average Rate of Change
+
+Imagine you throw a ball up into the air.
+The ball's height above the ground, $h(t)$, can be modelled by a function of time, $t$.
+
+<Mafs>
+    <Plot.OfX y={(x) => -(x ** 2) + 3} />
+</Mafs>
+
+The graph above shows the height of the ball as a function of time.
+Note that the left-right axis does not represent left-right motion; it represents time - rightwards is the future, and leftwards is the past.
+
+Now imagine you want to know how fast the ball is moving.
+One way to do this is to calculate the average rate of change of the height function over a small interval of time.
+This means we take the difference in height between two points on the graph, $\Delta h$, and divide it by the difference in time, $\Delta t$.
+
+To calculate these differences, denote the starting time as $T$ and the ending time as $T + \Delta t$.
+Then, we can calculate the difference in height as $h(T + \Delta t) - h(T)$, and the difference in time as simply $\Delta t$.
+The average rate of change is then given by:
+
+$$
+\begin{equation}
+\text{Average Rate of Change} = \frac{h(T + \Delta t) - h(T)}{\Delta t}
+\end{equation}
+$$
+
+The expression on the right is sometimes called the **difference quotient**.
+
+We can model this as the *slope* of a line connecting the two points on the graph.
+This line is called the *secant line*:
+
+{(() => {
+    const f = (x) => -((x - 2) ** 2) + 4;
+    const x1 = useMovablePoint([1, f(1)], {
+        constrain: ([x, y]) => [x, f(x)],
+    });
+    const x2 = useMovablePoint([2, f(2)], {
+        constrain: ([x, y]) => [x, f(x)],
+    });
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs viewBox={{ x: [-1, 5], y: [0, 5] }}>
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={f} />
+                    {x1.element}
+                    {x2.element}
+                    <Line.ThroughPoints
+                        point1={x1.point}
+                        point2={x2.point}
+                        color={color("blue")}
+                    />
+                    <Line.Segment point1={[x1.point[0], 0]} point2={x1.point} style="dashed" />
+                    <Line.Segment point1={[x2.point[0], 0]} point2={x2.point} style="dashed" />
+                    <Vector tail={[x1.point[0], x1.point[1]]} tip={[x2.point[0], x1.point[1]]} color={color("blue")} />
+                    <LaTeX tex="\Delta t" at={[(x1.point[0] + x2.point[0]) / 2, x1.point[1] + (x2.point[1] > x1.point[1] ? -0.3 : 0.3)]} />
+                    <Vector tail={[x2.point[0], x1.point[1]]} tip={[x2.point[0], x2.point[1]]} color={color("yellow")} />
+                    <LaTeX tex="\Delta h" at={[x2.point[0] + (x1.point[0] > x2.point[0] ? -0.3 : 0.3), (x1.point[1] + x2.point[1]) / 2]} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <MathEquation>{String.raw`
+                    \begin{split}
+                        \text{Slope} &= \frac{\class{yellow}{\Delta h}}{\class{blue}{\Delta t}} = \frac{\class{yellow}{h(T + \Delta t) - h(T)}}{\class{blue}{\Delta t}} \\
+                        &= \frac{${x2.point[1].toFixed(2)} - ${x1.point[1].toFixed(2)}}{${x2.point[0].toFixed(2)} - ${x1.point[0].toFixed(2)}} \\
+                        &= \frac{${(x2.point[1] - x1.point[1]).toFixed(2)}}{${(x2.point[0] - x1.point[0]).toFixed(2)}} \\
+                        &= ${((x2.point[1] - x1.point[1]) / (x2.point[0] - x1.point[0])).toFixed(2)}
+                    \end{split}
+                `}</MathEquation>
+            </div>
+        </div>
+    );
+})()}
+
+There are two important points to note about the average rate of change:
+
+- The rate of change isn't just the slope; the slope is a **representation** of the rate of change.
+    When we study higher-level mathematics, such as multivariable calculus, we will see that the rate of change can be more complex than just measuring slopes.
+
+    The way we can think of it is that the answer to "how fast is the ball moving between $T$ and $T + \Delta t$" is "it's equal to the slope of the secant line between $T$ and $T + \Delta t$".
+    It's just a way to calculate the rate of change.
+- Sometimes we hear the word "gradient" used instead of "slope".
+    In calculus, the gradient is actually a different term reserved for a different concept (multivariable calculus).
+    Hence, it's better to stick with "slope" when talking about the rate of change of a function to avoid confusion.
+
+## Instantaneous Rate of Change
+
+The average rate of change gives us a good idea of how fast something is changing over a period of time.
+However, what if we want to know how fast something is changing at a **single instant** in time?
+
+Before even considering how to calculate this, let's first think about what it means.
+The question "how fast is something changing at a single instant" is a bit of a paradox.
+After all, how can something change at a single instant?
+It's like asking how fast a car is moving at a single point in time - it doesn't make sense.
+
+Speedometers in cars don't measure speed at a single instant; they measure speed over a very short period of time.
+Think of it like this: the speedometer measures the position now, as well as the position $0.1$ seconds ago.
+Then, it calculates the average speed over that time period.
+
+Let's take the same approach with the height of the ball - make $\Delta t$ very small.
+Go back to the graph of the ball's height above the ground, and drag the second point closer to the first point.
+As the two points get closer together, the secant line becomes more and more like a **tangent line**, which touches the curve at a single point.
+
+In order to calculate the instantaneous rate of change, we need to make $\Delta t$ as small as possible.
+Of course, we can't make it exactly zero, because then we'd be dividing by zero.
+This should immediately ring a bell - limits.
+Although we cannot set $\Delta t$ to $0$, we can **take the limit** as $\Delta t$ approaches $0$:
+
+$$
+\lim_{\Delta t \to 0} \frac{\Delta h}{\Delta t} = \lim_{\Delta t \to 0} \frac{h(T + \Delta t) - h(T)}{\Delta t}
+$$
+
+This limit of the difference quotient gives us the **instantaneous rate of change** of the function at a particular point.
+It's also called the **derivative** of the function at that point.
+The key point is that *instantaneous* really just means *very, very close to 0*.
+
+We denote the derivative of this function as $\dv{h}{t}$, which reads as "the derivative of $h$ with respect to $t$".
+Using $d$ instead of $\Delta$ indicates that the limit is "built in" into the expression.
+This notation is called Leibniz notation, named after the mathematician Gottfried Wilhelm Leibniz.
+
+Another common notation for the derivative is $h'(t)$, which reads the same as "the derivative of $h$ with respect to $t$".
+This is called prime notation, and is a shorthand for the derivative.
+It's a bit more concise than Leibniz notation, but it doesn't explicitly show the variable with respect to which the derivative is taken, which can be a disadvantage especially in the future when we deal with functions of multiple variables.
+
+This gives us the formal definition of the derivative, sometimes called the first principle of differentiation:
+
+<Boxed>
+The derivative of a function $h(t)$ at a point $t$ is given by:
+
+$$
+\begin{equation}
+\dv{h}{t} = h'(t) = \lim_{\Delta t \to 0} \frac{h(t + \Delta t) - h(t)}{\Delta t} \label{eq:derivative}
+\end{equation}
+$$
+</Boxed>
+
+It's important to note that the derivative of a function is another function.
+It gives the rate of change of the original function at every point.
+For example, $\dv{h}{t}(2)$ gives the rate of change of the height of the ball at time $t = 2$.
+
+If a function is explicitly stated, we can substitute the $h$ in the notation with the expression of the function.
+For example, if $h(t) = t^2$, then the derivative can be written as $\dv{t^2}{t}$ or $\dv{t} t^2$, where $\dv{t}$ can be though of as an operator that transforms a function into its derivative.
+
+## Power Rule: Algebraically
+
+We will try to answer the following question algebraically:
+
+> Calculate the derivative of the following functions:
+>
+> 1. $f(x) = x^2$
+> 2. $g(x) = x^3$
+> 3. $h(x) = x^n$, where $n$ is a positive integer
+
+To calculate the derivative of $f(x)$, we need to use the definition of the derivative.
+Substitute $f(x) = x^2$ into the definition:
+
+$$
+\begin{equation}
+\begin{split}
+f'(x) &= \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{(x + \Delta x)^2 - x^2}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{x^2 + 2x\Delta x + (\Delta x)^2 - x^2}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{2x\Delta x + (\Delta x)^2}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \qty(2x + \Delta x) \\
+&= 2x
+\end{split}
+\end{equation}
+$$
+
+Next, calculate the derivative of $g(x) = x^3$ with the same procedure:
+
+$$
+\begin{equation}
+\begin{split}
+g'(x) &= \lim_{\Delta x \to 0} \frac{g(x + \Delta x) - g(x)}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{(x + \Delta x)^3 - x^3}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{x^3 + 3x^2\Delta x + 3x(\Delta x)^2 + (\Delta x)^3 - x^3}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{3x^2\Delta x + 3x(\Delta x)^2 + (\Delta x)^3}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \qty(3x^2 + 3x\Delta x + (\Delta x)^2) \\
+&= 3x^2
+\end{split}
+\end{equation}
+$$
+
+Finally, we need to calculate the derivative of $h(x) = x^n$.
+This will let us generalize the results for $x^2$ and $x^3$ to any positive integer $n$.
+Substitute $h(x) = x^n$ into the definition of the derivative:
+
+$$
+\begin{equation}
+\begin{split}
+h'(x) &= \lim_{\Delta x \to 0} \frac{h(x + \Delta x) - h(x)}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{(x + \Delta x)^n - x^n}{\Delta x}
+\end{split}
+\end{equation}
+$$
+
+This expression is a bit more difficult than the previous ones, but we can still calculate it.
+We can expand $(x + \Delta x)^n$ using the **binomial theorem**.
+(The appendix contains a short review of the binomial theorem.)
+Using the binomial theorem, we can expand $(x + \Delta x)^n$ as a sum of terms:
+
+$$
+\begin{equation}
+\begin{split}
+(x + \Delta x)^n &= \binom{n}{0} x^n (\Delta x)^0 + \binom{n}{1} x^{n - 1} (\Delta x)^1 + \binom{n}{2} x^{n - 2} (\Delta x)^2 + \ldots + \binom{n}{n} x^0 (\Delta x)^n \\
+&= x^n + nx^{n - 1} \Delta x + (\Delta x)^2 (\ldots)
+\end{split}
+\end{equation}
+$$
+
+In the second line, I simply grouped the terms with $(\Delta x)^2$ and higher.
+
+Then, we can substitute this expansion into the derivative expression:
+
+$$
+\begin{equation}
+\begin{split}
+h'(x) &= \lim_{\Delta x \to 0} \frac{\class{yellow}{(x + \Delta x)^n} - x^n}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \frac{\class{yellow}{x^n + nx^{n - 1} \Delta x + (\Delta x)^2 (\ldots)} - x^n}{\Delta x}
+\end{split}
+\end{equation}
+$$
+
+Once again, the $x^n$ terms cancel out, leaving us with:
+
+$$
+\begin{equation}
+\begin{split}
+h'(x) &= \lim_{\Delta x \to 0} \frac{nx^{n - 1} \Delta x + (\Delta x)^2 (\ldots)}{\Delta x} \\
+&= \lim_{\Delta x \to 0} \qty(nx^{n - 1} + \Delta x (\ldots)) \\
+&= nx^{n - 1}
+\end{split}
+\end{equation}
+$$
+
+This result shows that the derivative of $x^n$ is $nx^{n - 1}$.
+This is known as the **power rule**:
+
+<Boxed>
+**Power Rule**: The derivative of a function, $f(x) = x^n$, is given by:
+
+$$
+\begin{equation}
+\dv{(x^n)}{x} = nx^{n - 1}
+\end{equation}
+$$
+</Boxed>
+
+(Note that our approach using the binomial theorem only works for positive integer values of $n$.
+However, the power rule actually holds for any real number $n$, not just integers.
+The proof for non-integer values of $n$ requires more advanced techniques including the chain rule and exponential functions:
+$\dv{x} x^n = \dv{x} e^{n \ln x} = e^{n \ln x} \dv{x} n \ln x = x^n \frac{n}{x} = nx^{n - 1}$)
+
+## Power Rule: Geometrically
+
+We used the limit definition to derive the derivative of $x^2$ and $x^3$.
+We can also understand these geometrically - it would be a good way to emphasize that the derivative is *not* a slope, but a rate of change.
+
+### Derivative of x²
+
+We can visualize $x^2$ as the area of a square with side length $x$.
+Then, the derivative of $x^2$ is the rate at which the area of the square changes as we change the side length.
+So all we have to do is increase the side length by a small amount $\Delta x$ and see how much the area changes:
+
+{(() => {
+    const [deltaX, setDeltaX] = useState(0.3);
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs>
+                    <Transform translate={[-1, -1]}>
+                        <Polygon points={[
+                            [0, 0],
+                            [2 + deltaX, 0],
+                            [2 + deltaX, 2 + deltaX],
+                            [0, 2 + deltaX],
+                        ]} color={color("green")} />
+                        <Polygon points={[
+                            [2, 2],
+                            [2 + deltaX, 2],
+                            [2 + deltaX, 2 + deltaX],
+                            [2, 2 + deltaX],
+                        ]} color={color("red")} />
+                        <Polygon points={[
+                            [0, 0],
+                            [2, 0],
+                            [2, 2],
+                            [0, 2],
+                        ]} />
+                        <LaTeX tex="x^2" at={[1, 1]} />
+
+                        {/* Labels */}
+                        <Vector tail={[0, -0.3]} tip={[2, -0.3]} />
+                        <LaTeX tex="x" at={[1, -0.5]} />
+                        <Vector tail={[2, -0.3]} tip={[2 + deltaX, -0.3]} />
+                        <LaTeX tex="\Delta x" at={[2 + deltaX / 2, -0.7]} />
+
+                        <Vector tail={[-0.3, 0]} tip={[-0.3, 2]} />
+                        <LaTeX tex="x" at={[-0.5, 1]} />
+                        <Vector tail={[-0.3, 2]} tip={[-0.3, 2 + deltaX]} />
+                        <LaTeX tex="\Delta x" at={[-0.7, 2 + deltaX / 2]} />
+
+                    </Transform>
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput latex label="\Delta x" value={deltaX} onChange={setDeltaX} min={0.1} max={1} step={0.01} />
+                </ControlPanel>
+            </div>
+        </div>
+    );
+})()}
+
+Looking at the diagram, we can see that the change in the area can be divided into the green areas and the red area.
+Each green area has a width of $x$ and a height of $\Delta x$, so the total 2 green areas is $2x \Delta x$.
+The red area is a square with side length $\Delta x$, so its area is $(\Delta x)^2$.
+
+Thus, $\Delta (x^2) = 2x \Delta x + (\Delta x)^2$.
+Dividing by $\Delta x$:
+
+$$
+\begin{equation}
+\begin{split}
+\frac{\Delta (x^2)}{\Delta x} &= \frac{2x \Delta x + (\Delta x)^2}{\Delta x} \\
+&= 2x + \Delta x
+\end{split}
+\end{equation}
+$$
+
+And, of course, as $\Delta x$ approaches $0$, the $\Delta x$ term disappears, leaving us with $2x$.
+
+### Derivative of x³
+
+Similarly, we can visualize $x^3$ as the volume of a cube with side length $x$.
+Then, the derivative of $x^3$ is the rate at which the volume of the cube changes as we change the side length.
+
+{(() => {
+    const [deltaX, setDeltaX] = useState(0.3);
+    return (
+        <div className="card">
+            <div className="card__body">
+                <CustomMathbox>
+                    <MB.Transform position={[-1.5, -1.5, -1.5]}>
+                        <DeterminantCube
+                            T={([x, y, z]) => [2 * x, 2 * y, 2 * z]}
+                            faceProps={{ color: "#909090", zOrder: 1, zIndex: 1, opacity: 0.5 }}
+                            idBase="before"
+                        />
+                        {/* 3 scales-by-dx segments */}
+                        <DeterminantCube
+                            T={(v) => {
+                                // x length: dx; y/z length: 2. then translate by [2, 0, 0]
+                                return [v[0] * deltaX + 2, v[1] * 2, v[2] * 2];
+                            }}
+                            faceProps={{ color: color("green"), zOrder: -1 }}
+                            idBase="big_scales_dx_1"
+                        />
+                        <DeterminantCube
+                            T={(v) => {
+                                return [v[0] * 2, v[1] * deltaX + 2, v[2] * 2];
+                            }}
+                            faceProps={{ color: color("green"), zOrder: -1 }}
+                            idBase="big_scales_dx_2"
+                        />
+                        <DeterminantCube
+                            T={(v) => {
+                                return [v[0] * 2, v[1] * 2, v[2] * deltaX + 2];
+                            }}
+                            faceProps={{ color: color("green"), zOrder: -1 }}
+                            idBase="big_scales_dx_3"
+                        />
+
+                        {/* 3 scales-by-dx^2 segments */}
+                        <DeterminantCube
+                            T={(v) => {
+                                // x length: dx; y length: dx, z length: 2. then translate by [2, 2, 0]
+                                return [v[0] * deltaX + 2, v[1] * deltaX + 2, v[2] * 2];
+                            }}
+                            faceProps={{ color: color("yellow"), zOrder: -1 }}
+                            idBase="small_scales_dx_1"
+                        />
+                        <DeterminantCube
+                            T={(v) => {
+                                return [v[0] * 2, v[1] * deltaX + 2, v[2] * deltaX + 2];
+                            }}
+                            faceProps={{ color: color("yellow"), zOrder: -1 }}
+                            idBase="small_scales_dx_2"
+                        />
+                        <DeterminantCube
+                            T={(v) => {
+                                return [v[0] * deltaX + 2, v[1] * 2, v[2] * deltaX + 2];
+                            }}
+                            faceProps={{ color: color("yellow"), zOrder: -1 }}
+                            idBase="small_scales_dx_3"
+                        />
+                        {/* 1 scales-by-dx^3 segments */}
+                        <DeterminantCube
+                            T={(v) => {
+                                // x/y/z length: dx. then translate by [2, 2, 2]
+                                return [v[0] * deltaX + 2, v[1] * deltaX + 2, v[2] * deltaX + 2];
+                            }}
+                            faceProps={{ color: color("red"), zOrder: -1 }}
+                            idBase="tiny_scales_dx"
+                        />
+                    </MB.Transform>
+                </CustomMathbox>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput latex label="\Delta x" value={deltaX} onChange={setDeltaX} min={0.1} max={1} step={0.01} />
+                </ControlPanel>
+            </div>
+        </div>
+    );
+})()}
+
+In the diagram above, if we increase the side length, the volume of the cube changes.
+This change can be divided into 3 parts: the green parts, the yellow parts, and the red part:
+
+- The green parts are 3 rectangles with dimensions $x \times x \times \Delta x$, so the total volume of the green parts is $3x^2 \Delta x$.
+- The yellow parts are 3 rectangles with dimensions $x \times \Delta x \times \Delta x$, so the total volume of the yellow parts is $3x \Delta x^2$.
+- The red part is a cube with side length $\Delta x$, so its volume is $(\Delta x)^3$.
+
+Thus:
+
+$$
+\begin{equation}
+\Delta (x^3) = 3x^2 \Delta x + 3x \Delta x^2 + (\Delta x)^3
+\end{equation}
+$$
+
+Dividing by $\Delta x$:
+
+$$
+\begin{equation}
+\begin{split}
+\frac{\Delta (x^3)}{\Delta x} &= \frac{3x^2 \Delta x + 3x \Delta x^2 + (\Delta x)^3}{\Delta x} \\
+&= 3x^2 + 3x \Delta x + (\Delta x)^2
+\end{split}
+\end{equation}
+$$
+
+Once again, as $\Delta x$ approaches $0$, the $\Delta x$ terms disappear, leaving us with $3x^2$.
+
+### Generalizing to xⁿ
+
+This is where things get difficult.
+In order to visualize $x^n$, we need to think of it as the volume of a "hypercube" in $n$ dimensions.
+This is difficult to visualize, but we can still think of it as the volume of a cube in 3D space, a "hypercube" in 4D space, and so on.
+
+In the $x^3$ case, we had different parts of the volume change as we increased the side length.
+$3$ of them scaled linearly with $\Delta x$, $3$ of them scaled quadratically with $\Delta x$, and $1$ of them scaled cubically with $\Delta x$.
+This corresponds with the binomial theorem expansion of $(x + \Delta x)^3 = x^3 + 3x^2 \Delta x + 3x \Delta x^2 + \Delta x^3$.
+
+Hence, the binomial expansion of higher powers can give us a geometric sense of how hypercubes work in higher dimensions.
+
+## Summary and Next Steps
+
+In this section, we introduced the concept of the derivative as a measure of the instantaneous rate of change of a function.
+We explored how the derivative can be calculated using the definition of the derivative, and derived the power rule for derivatives of functions of the form $x^n$.
+
+Here are the key points to remember:
+
+- The average rate of change of a function over an interval is given by the difference in the function values divided by the difference in the input values.
+- The derivative of a function at a point gives the instantaneous rate of change of the function at that point.
+    It is *not* a slope, but a tangent line witih the slope as the derivative can be used to represent it.
+- The derivative of a function is another function that gives the rate of change of the original function at every point.
+    Denoted as $\dv{f}{x}$ or $f'(x)$, it is formally defined as:
+
+    $$
+    \begin{equation}
+    \dv{f}{x} = f'(x) = \lim_{\Delta x \to 0} \frac{f(x + \Delta x) - f(x)}{\Delta x} \tag{\ref{eq:derivative}}
+    \end{equation}
+    $$
+- The power rule states that the derivative of $x^n$ is $nx^{n - 1}$.
+
+In the next section, we will explore certain properties of derivatives that make them easy to calculate and manipulate.
+
+## Appendix: Binomial Theorem Review
+
+The binomial theorem is a formula that allows us to expand expressions of the form $(a + b)^n$.
+We can first expand $(a + b)^2$ and $(a + b)^3$ to see the pattern:
+
+$$
+\begin{align}
+(a + b)^2 &= (a + b)(a + b) \nonumber \\
+&= a^2 + ab + ba + b^2 \nonumber \\
+&= a^2 + 2ab + b^2 \\
+(a + b)^3 &= (a + b)(a + b)(a + b) \nonumber \\
+&= a^2(a + b) + ab(a + b) + ba(a + b) + b^2(a + b) \nonumber \\
+&= a^3 + a^2b + a^2b + ab^2 + a^2b + ab^2 + b^2a + b^3 \nonumber \\
+&= a^3 + 3a^2b + 3ab^2 + b^3
+\end{align}
+$$
+
+Notice that during the expansion of something like $(a + b)(a + b)(a + b)$, we are essentially choosing all possible combinations of $a$ and $b$ from each term:
+
+| Chosen terms | Result |
+|--------------|--------|
+| $(\class{red}{a} + b)(\class{red}{a} + b)(\class{red}{a} + b)$ | $a^3$ |
+| $(\class{red}{a} + b)(\class{red}{a} + b)(a + \class{red}{b})$ | $a^2b$ |
+| $(\class{red}{a} + b)(a + \class{red}{b})(\class{red}{a} + b)$ | $a^2b$ |
+| $(a + \class{red}{b})(\class{red}{a} + b)(\class{red}{a} + b)$ | $ab^2$ |
+| $(\class{red}{a} + b)(a + \class{red}{b})(a + \class{red}{b})$ | $a^2b$ |
+| $(a + \class{red}{b})(\class{red}{a} + b)(a + \class{red}{b})$ | $ab^2$ |
+| $(a + \class{red}{b})(a + \class{red}{b})(\class{red}{a} + b)$ | $b^2a$ |
+| $(a + \class{red}{b})(a + \class{red}{b})(a + \class{red}{b})$ | $b^3$ |
+| Total | $a^3 + 3a^2b + 3ab^2 + b^3$ |
+
+Therefore, if, for example, we want to know the term with $a^2 b^1$ (notice how the powers always add up to $3$) in the expansion of $(a + b)^3$, we can just count the number of ways we can choose two $a$s and one $b$ from the terms.
+That is just the combination $\binom{3}{2} = 3$.
+
+Generalizing, in the expansion of $(a + b)^n$, if we want to know the term with $a^k b^{n - k}$, we can count the number of ways we can choose $k$ $a$s and $n - k$ $b$s from the terms, which is $\binom{n}{k}$.
+Then, the term is $\binom{n}{k} a^k b^{n - k}$.
+
+Finally, we can add up all the terms from $a^0 b^n \quad (k = 0)$ to $a^n b^0 \quad (k = n)$ to get the full expansion of $(a + b)^n$:
+
+$$
+\begin{equation}
+(a + b)^n = \binom{n}{0} a^n b^0 + \binom{n}{1} a^{n - 1} b^1 + \binom{n}{2} a^{n - 2} b^2 + \ldots + \binom{n}{n} a^0 b^n
+\end{equation}
+$$
+
+We can also write this in a more compact form using the summation notation:
+
+<Boxed>
+$$
+\begin{equation}
+(a + b)^n = \sum_{k = 0}^{n} \binom{n}{k} a^{n - k} b^k
+\end{equation}
+$$
+</Boxed>
+
+This is known as the binomial theorem.
