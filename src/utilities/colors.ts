@@ -3,7 +3,10 @@ import convert from "color-convert";
 
 export function color(name: string) {
     // get CSS variable --custom-color-<name>
-    return getComputedStyle(document.documentElement).getPropertyValue(`--custom-color-${name}`);
+    if (typeof window !== "undefined") {
+        return getComputedStyle(document.documentElement).getPropertyValue(`--custom-color-${name}`);
+    }
+    return "";
     // return COLORS[name];
 }
 
@@ -11,11 +14,7 @@ export function getColorFromMagnitude(magnitude: number, minMagnitude = 0, maxMa
     // Normalize the magnitude to a 0-1 scale
     const normalizedMagnitude = (magnitude - minMagnitude) / (maxMagnitude - minMagnitude);
 
-    const [red, green, blue] = convert.hsl.rgb([
-        240 - normalizedMagnitude * 240,
-        100,
-        50,
-    ]);
+    const [red, green, blue] = convert.hsl.rgb([240 - normalizedMagnitude * 240, 100, 50]);
 
     return [red / 255, green / 255, blue / 255];
 }
