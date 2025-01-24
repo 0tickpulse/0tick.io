@@ -116,6 +116,10 @@ General relativity is a form of relativity, developed by Albert Einstein in the 
 
 The fundamental idea behind general relativity comes from the **equivalence principle**, which states (roughly speaking) that the effects of gravity are indistinguishable from the effects of acceleration.
 This is a very powerful idea because it means that gravity is "special", unlike other forces like electromagnetism or the strong force.
+It comes from the observation that the gravitational force is $\va{F} = m_g\va{g}$ and $\va{F} = m_i\va{a}$.
+By many experiments, we know that $m_g = m_i$ - the inertial mass is equal to the gravitational mass.
+Substituting one into the other, we get $\va{g} = \va{a}$ - the acceleration due to gravity is the same as the acceleration due to a force.
+This means that the acceleration is the same regardless of mass, shape, or composition of the object, which is different from every other force.
 
 Over large distances, the equivalence principle no longer holds, because the forces will be different at different points.
 This leads to the existence of **tidal forces**, which are the differences in gravitational forces at different points in space.
@@ -168,13 +172,21 @@ R_{\mu\nu} - \frac{1}{2}Rg_{\mu\nu} + \Lambda g_{\mu\nu} = \frac{8\pi G}{c^4} T_
 \end{equation}
 $$
 
+An alternative approach to derive the field equations is to start with the action principle.
+To recap, the action is something that is minimized (or more precisely, stationary) along the path that the system takes.
+It is defined as the integral of the Lagrangian over time.
+In general relativity, the action is called the **Einstein-Hilbert action**, and it is defined as the integral of the Ricci scalar over spacetime.
+By varying the action with respect to the metric tensor, we can derive the field equations.
+
 These equations are the cornerstone of general relativity, and describe how spacetime is curved by the presence of mass and energy.
 Because this is a tensor equation, there are 16 equations in total (4 for each $\mu$ and $\nu$), but they are not all independent.
 Specifically, the metric tensor $g_{\mu\nu}$ is symmetric, so there are only 10 independent equations.
 
 The rest of the course will be spent exploring the consequences and implications of general relativity.
 
-## 4. Black Holes and the Schwarzschild Metric
+## 4. Consequences of General Relativity
+
+### Black Holes and the Schwarzschild Metric
 
 When Einstein first derived his field equations, he relied on numerical solutions to understand them.
 It was Karl Schwarzschild who first found an exact solution to the field equations, which described the spacetime around a spherically symmetric, non-rotating mass.
@@ -203,6 +215,17 @@ According to quantum mechanics, at the event horizon of a black hole, virtual pa
 If one of these particles falls into the black hole, the other can escape to become a real particle.
 This incurs a loss of mass for the black hole. By the equivalence of mass and energy, this means that the black hole emits radiation.
 This radiation is known as Hawking radiation.
+
+### Gravitational Waves
+
+The wave equation applies when the Laplacian of a function is proportional to the second derivative of the function with respect to time.
+This results in a wave-like solution, where the function oscillates in space and time.
+The medium in which the wave propagates depends on the type of wave.
+
+A gravitational wave is a wave in spacetime itself, caused by the acceleration of massive objects.
+Specifically, it is the disturbance of the metric tensor $g_{\mu\nu}$.
+
+### Cosmology
 
 ## Resources
 
