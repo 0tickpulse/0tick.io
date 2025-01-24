@@ -1,0 +1,141 @@
+# Introductory Quantum Mechanics
+
+Quantum mechanics arose in the early 20th century as a response to the failure of classical mechanics to explain the behavior of certain things.
+It is a fundamental theory in physics that describes the behavior of matter and energy on the smallest scales.
+
+Here, we outline some fundamental concepts in quantum mechanics to provide a basic understanding of the theory.
+In the later sections, we will delve deeper into the mathematical formalism and applications of quantum mechanics.
+
+## How do We Represent States?
+
+Classical physics relies on a set of assumptions about how states of a system are represented.
+These include:
+
+- A quantity like $x$ (position) is just a single number.
+- Quantities can never have multiple values simultaneously. A particle cannot be at two places at once, nor can it have two different momenta.
+- The state of a system is completely determined by specifying the values of all such quantities.
+- These quantities are continuous, meaning that there are no gaps between possible values.
+    This is intuitively true because particles cannot just jump instantly from one position to another.
+- The state of a system can be known with arbitrary precision.
+
+These assumptions make it natural to represent the state of a system using a **continous function**.
+For example, the position of a particle can be represented by a function $x(t)$ that gives the position of the particle at each time $t$.
+
+Quantum mechanics, however, challenges these assumptions:
+
+- It introduces the concept of **superposition**, where a particle can exist in multiple states at once.
+    For example, a particle can be in a superposition of being at two different positions simultaneously.
+- It introduces the concept of **quantization**, where certain quantities can only take on discrete values.
+    For example, the energy of an electron in an atom can only take on certain discrete values.
+    The differences between these values determine how the atom interacts with light.
+    This is why certain atoms absorb and emit light at specific wavelengths.
+- It introduces the concept of **uncertainty**, where the state of a system cannot be known with arbitrary precision.
+    This is encapsulated in Heisenberg's uncertainty principle, which is a result of 
+
+Clearly, we cannot use continuous functions to represent the state of a system in quantum mechanics.
+
+Suppose that we want to write down the state of a particle using its energy (for example, the energy of an electron in an atom).
+Assume that, at an energy level of exactly $E_1$, the particle's state is described by some object $\ket{1}$.
+We do not currently know what this object is, but we know that it represents the state of the particle at energy level $E_1$.
+
+Of course, there are multiple outcomes for the energy of the particle, each corresponding to a different state $\ket{i}$.
+We can write the state of the particle by combining these states with an unknown operation:
+
+$$
+\ket{1} \cdot \ket{2} \cdot \ket{3} \cdot \ldots
+$$
+
+Each state also has its own probability - some states are more likely than others.
+Hence, it's also appropriate to introduce a scaling factor $c_i$ for each state $\ket{i}$:
+
+$$
+c_1 \ket{1} \cdot c_2 \ket{2} \cdot c_3 \ket{3} \cdot \ldots
+$$
+
+It turns out, the operation is just addition, and introducing scale factors makes the state a **linear combination** of the states $\ket{i}$.
+Since we can add and scale the states $\ket{i}$, they form a **vector space**, and $\ket{i}$ is a **vector** in this space.
+A vector inside these brackets, $\ket{a}$, is called a **ket**.
+
+This is the fundamental idea behind the **state vector** formalism in quantum mechanics.
+The state of a system is represented by a vector in a vector space, and the state can be a linear combination of multiple basis states.
+The reason we do not use the usual notation for vectors (like $\vec{\psi}$) will become clear later.
+
+## The Wavefunction (and a Need for Cauchy Completeness)
+
+In quantum mechanics, we represent physical quantities like position, momentum, and energy using **operators**.
+As shown previously, the state of a system is represented by a state vector $\ket{\psi}$.
+One might guess that to find some physical quantity of the system, we can use a matrix to operate on the state vector.
+This matrix is called an **operator**.
+
+For example, the position operator $\hat{x}$ acts on the state vector $\ket{\psi}$ to give the position of the particle.
+It is denoted as $\hat{x} \ket{\psi}$.
+
+The wavefunction $\ket{\psi}$ is a complex-valued function that represents the state of a system.
+As shown previously, it is formed by combining different states $\ket{i}$ with scaling factors $c_i$:
+
+$$
+\begin{equation}
+\ket{\psi} = c_1 \ket{E_1} + c_2 \ket{E_2} + c_3 \ket{E_3} + c_4 \ket{E_4}
+\end{equation}
+$$
+
+This sum is called a **superposition** of states.
+
+But of course, some quantities can take on an infinite number of values.
+A particle can theoretically take on any energy level, so we need to sum over an infinite number of states:
+
+$$
+\begin{equation}
+\ket{\psi} = c_1 \ket{E_1} + c_2 \ket{E_2} + c_3 \ket{E_3} + \ldots = \sum_i c_i \ket{E_i}
+\end{equation}
+$$
+
+For a continuous quantity, like position, we need to sum over an uncountably infinite number of states.
+This means that the sum becomes an integral:
+
+$$
+\begin{equation}
+\ket{\psi} = \int c(x) \ket{x} \dd{x}
+\end{equation}
+$$
+
+It turns out that $c(x)$ is the **position wavefunction**, $\psi(x)$.
+For another quantity, like momentum, we would have a different wavefunction $\psi(p)$, called the **momentum wavefunction**.
+Therefore, for any physical quantity $q$, we can define a wavefunction that represents the state of the system in that quantity's space:
+
+<Boxed>
+$$
+\begin{equation}
+\ket{\psi} = \int \psi(q) \ket{q} \dd{q}
+\end{equation}
+$$
+</Boxed>
+
+The state vectors that are used to represent the state of the system are called **basis states**.
+Recall from linear algebra that the dimensionality of a vector space is the number of basis states required to span the space.
+But if there are an infinite number of basis states, the vector space is infinite-dimensional.
+This raises a problem. To illustrate, consider a vector space represented by the set of all polynomials.
+The basis states are the monomials $1, x, x^2, x^3, \ldots$, and polynomials are linear combinations of these basis states.
+But observe this following infinite polynomial:
+
+$$
+1 + \frac{1}{2!} x + \frac{1}{3!} x^2 + \frac{1}{4!} x^3 + \ldots
+$$
+
+This infinite polynomial turns out to be $e^x$, which is **not a polynomial**.
+Hence, an infinite sum of polynomials can give a function that is not a polynomial.
+
+In order for the wavefunction $\psi(q)$ to be a valid representation of the state of the system, we must add one more condition: a limit of a sequence/series of state vectors must converge to a state vector in the space.
+This is known as **Cauchy completeness**, and it ensures that the space of state vectors is valid.
+
+Let's summarize the properties of the vector space of state vectors:
+
+- The state of a system is represented by a state vector $\ket{\psi}$.
+- The state vector is a linear combination of basis states $\ket{q}$.
+- The basis states form an infinite-dimensional vector space.
+- The vector space is Cauchy complete, meaning that the limit of a sequence of state vectors converges to a state vector in the space.
+
+This vector space that we have just described is *almost* the definition of a **Hilbert space** $\mathcal{H}$.
+We need to add one more property to make it a Hilbert space: the space has a well-defined **inner product**.
+
+## The Inner Product

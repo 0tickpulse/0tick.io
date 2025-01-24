@@ -1,0 +1,89 @@
+---
+sidebar_position: 2
+---
+
+# Principle of Least Action
+
+Pierre Louis Maupertuis proposed that the path taken by a particle between two points in space is such that certain quantities are minimized.
+He named this quantity the "action" of the path. His definition of action was the following:
+
+$$
+\begin{equation}
+S = mv \Delta s
+\end{equation}
+$$
+
+where $m$ is the mass of the particle, $v$ is the velocity of the particle, and $\Delta s$ is the distance traveled by the particle.
+
+Essentially, if the object is heavier, it will have a greater action, and if it moves faster, it will also have a greater action.
+The principle of least action states that the path taken by a particle between two points in space is such that this action is minimized.
+
+## Deriving the Lagrangian
+
+The definition of $mv \Delta s$ is not the most general form of the principle of least action, but it is a good starting point to understand the concept.
+
+Imagine a particle moving from point $A$ to point $B$ in space, where the path is expressed as $x(t)$.
+In order to allow for continuous paths, we integrate over the velocity and displacement instead of just multiplying them:
+
+$$
+\begin{equation}
+S[x(t)] = m \int v \dd{s}
+\end{equation}
+$$
+
+Next, since $\dd{s} = v \dd{t}$, we can rewrite the action as:
+
+$$
+\begin{equation}
+S[x(t)] = m \int v \cdot v \dd{t} = m \int \frac{1}{2} v^2 \dd{t}
+\end{equation}
+$$
+
+Notice that $mv^2$ is just double the kinetic energy $T$ of the particle:
+
+$$
+\begin{equation}
+S[x(t)] = \int 2T \dd{t}
+\end{equation}
+$$
+
+Next, $T$ is equal to the total energy $E$ minus the potential energy $V$:
+
+$$
+\begin{equation}
+S[x(t)] = \int (T + E - V) \dd{t} = \int (T - V) \dd{t} + \int E \dd{t}
+\end{equation}
+$$
+
+The second term, $\int E \dd{t}$, is just the total energy of the system multiplied by the time taken to travel the path.
+If we assume that the total energy of the system is constant, then this term is just a constant and does not affect the path taken by the particle.
+Hence, we can ignore this term and focus on the first term, which is the difference between the kinetic and potential energies of the system.
+We call this quantity the **Lagrangian** of the system:
+
+$$
+\begin{equation}
+\mathcal{L}(x, \dot{x}, t) := T - V
+\end{equation}
+$$
+
+The inputs to the Lagrangian are the position $x$, the velocity $\dot{x}$, and the time $t$.
+The action can then be stated as follows:
+
+$$
+\begin{equation}
+S[x(t)] = \int \mathcal{L}(x, \dot{x}, t) \dd{t}
+\end{equation}
+$$
+
+## The Principle of Least Action
+
+The principle of least action states that the path taken by a particle between two points in space is such that the action is minimized (more accurately, it is stationary).
+How do we write this mathematically?
+
+In normal calculus, a stationary point of $f(x)$ is one where the derivative of the function $f'(x)$ is zero.
+This means that at the stationary point, an infinitesimal change in the input $x$ does not change the output $f(x)$.
+We can apply a similar concept to the action $S[x(t)]$. This time, instead of a function of a single variable, it has a *function as an input*.
+$S$ is hence called a **functional**.
+
+Imagine adding a small perturbation to the path $x(t)$, denoted as $\epsilon(t)$.
+It is zero at the ends of the path, so that the path still starts at $A$ and ends at $B$.
