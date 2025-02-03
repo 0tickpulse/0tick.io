@@ -69,14 +69,6 @@ export default function LinearTransformationVisualizer({
     const mafsMatrix: vec.Matrix = [ihat[0], jhat[0], 0, ihat[1], jhat[1], 0];
     const svgMatrix = `matrix(${ihat[0]} ${-ihat[1]} ${jhat[0]} ${-jhat[1]} 0 0)`;
 
-    console.log({
-        ihat,
-        jhat,
-        mafsMatrix,
-        svgMatrix,
-        evaluatedIHat: vec.transform([1, 0], mafsMatrix),
-    });
-
     const transformFn = (v: vec.Vector2) => vec.transform(v, mafsMatrix);
 
     return (

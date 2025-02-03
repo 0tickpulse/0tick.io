@@ -46,7 +46,6 @@ export function BlackbodySpectrum() {
         return (lambda) => {
             // Frequency
             const f = c / lambda;
-            console.log({ lambda, f });
             // Intensity
             return (((2 * h * f ** 3) / c ** 2) * 1) / (Math.exp((h * f) / (k * T)) - 1);
         };
@@ -63,7 +62,6 @@ export function BlackbodySpectrum() {
                 maxLambda = lambda;
             }
         }
-        console.log({ T, maxLambda, max });
         return [maxLambda, max];
     }
     function generatePlot(T) {
