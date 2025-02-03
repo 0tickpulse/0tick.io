@@ -40,14 +40,6 @@ export function LightPolarizationPlayground({}: LightPolarizationPlayground.Prop
         ];
     };
 
-    const { start, stop, time } = useStopwatch();
-    useEffect(() => {
-        start();
-        return stop;
-    }, []);
-
-    const slicedVector = E(positionSlice, time);
-
     return (
         <div className="card">
             <div className="card__body">
@@ -62,7 +54,7 @@ export function LightPolarizationPlayground({}: LightPolarizationPlayground.Prop
                                 range={[-3, 3]}
                                 items={2}
                                 width={samples}
-                                expr={(emit, z) => {
+                                expr={(emit, z, _, time) => {
                                     // emit a point for the origin
                                     emit(z, 0, 0);
                                     // emit a point for the tip of the vector
@@ -91,30 +83,48 @@ export function LightPolarizationPlayground({}: LightPolarizationPlayground.Prop
                                 id="vector_at_slice"
                                 items={2}
                                 channels={3}
-                                data={[
-                                    [positionSlice, 0, 0],
-                                    [positionSlice, slicedVector[0], slicedVector[1]],
-                                ]}
+                                // data={[
+                                //     [positionSlice, 0, 0],
+                                //     [positionSlice, slicedVector[0], slicedVector[1]],
+                                // ]}
+                                expr={(emit, i, time) => {
+                                    const z = positionSlice;
+                                    const E_val = E(z, time);
+                                    emit(z, 0, 0);
+                                    emit(z, E_val[0], E_val[1]);
+                                }}
                             />
                             <MB.Vector points="#vector_at_slice" color={color("red")} width={8} end={true} zIndex={5} />
                             <MB.Array
                                 id="vector_at_slice_x"
                                 items={2}
                                 channels={3}
-                                data={[
-                                    [positionSlice, 0, 0],
-                                    [positionSlice, slicedVector[0], 0],
-                                ]}
+                                // data={[
+                                //     [positionSlice, 0, 0],
+                                //     [positionSlice, slicedVector[0], 0],
+                                // ]}
+                                expr={(emit, i, time) => {
+                                    const z = positionSlice;
+                                    const E_val = E(z, time);
+                                    emit(z, 0, 0);
+                                    emit(z, E_val[0], 0);
+                                }}
                             />
                             <MB.Vector points="#vector_at_slice_x" color={color("blue")} width={8} end={true} zIndex={5} stroke="dashed" />
                             <MB.Array
                                 id="vector_at_slice_y"
                                 items={2}
                                 channels={3}
-                                data={[
-                                    [positionSlice, slicedVector[0], 0],
-                                    [positionSlice, slicedVector[0], slicedVector[1]],
-                                ]}
+                                // data={[
+                                //     [positionSlice, slicedVector[0], 0],
+                                //     [positionSlice, slicedVector[0], slicedVector[1]],
+                                // ]}
+                                expr={(emit, i, time) => {
+                                    const z = positionSlice;
+                                    const E_val = E(z, time);
+                                    emit(z, E_val[0], 0);
+                                    emit(z, E_val[0], E_val[1]);
+                                }}
                             />
                             <MB.Vector points="#vector_at_slice_y" color={color("yellow")} width={8} end={true} zIndex={5} stroke="dashed" />
                         </MB.Group>
@@ -155,7 +165,7 @@ export function LightPolarizationPlayground({}: LightPolarizationPlayground.Prop
                         Jones vector:
                     </p>
                     <p>
-                        <MathEquation>{String.raw`\va{J} = \mqty[E_x e^{i\phi_x} \\ E_y e^{i\phi_y}] = \mqty[${jonesVector[0][0]} e^{i${phaseShift_x}} \\ ${jonesVector[1][0]} e^{i${phaseShift_y}}]`}</MathEquation>
+                        <MathEquation>{String.raw`\va{J} = \mqty[E_x e^{i\phi_x} \\ E_y e^{i\phi_y}] = \mqty[${amplitudeX} e^{i${phaseShift_x}} \\ ${amplitudeY} e^{i${phaseShift_y}}]`}</MathEquation>
                     </p>
                 </div>
             </div>
