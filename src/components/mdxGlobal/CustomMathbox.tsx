@@ -33,11 +33,8 @@ const CustomMathbox = forwardRef((props: Props, ref: React.Ref<MathboxSelection<
     const { children, containerId, containerClass, containerStyle, onInitialized, ...others } = { ...MATHBOX_DEFAULT_PROPS, ...props };
     const [container, setContainer] = useState<HTMLDivElement | null>(null);
 
-    console.log({ props, ref })
-
     const internalRef = useCallback((mathbox: MathboxSelection<"root"> | null) => {
         if (mathbox) {
-            console.log("Setting selection");
             mathbox.three.renderer.setClearColor(new Color(0x000000), 1.0);
             mathbox.three.camera.position.set(1, 1, 2);
             onInitialized?.(mathbox);
@@ -75,7 +72,6 @@ const OldMathbox = (props: Props) => {
 
     const ref = useCallback((mathbox: MathboxSelection<"root"> | null) => {
         if (mathbox) {
-            console.log("Setting selection");
             mathbox.three.renderer.setClearColor(new Color(0x000000), 1.0);
             mathbox.three.camera.position.set(1, 1, 2);
 

@@ -1,0 +1,617 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Commutators and Uncertainty
+
+Uncertainty is one of the most puzzling, yet most fundamental, aspects of quantum mechanics.
+It initially seems counterintuitive that it is impossible, not practically, but *in-principle*, to know both the position and momentum of a particle with arbitrary precision.
+I want to emphasize that this is not a limitation of our measuring devices, but a fundamental property of the universe itself.
+Even if we had perfect ideal measuring devices, we would still be unable to know both the position and momentum of a particle with arbitrary precision.
+
+There are a few ways to approach the Uncertainty Principle.
+Here, we will use various concepts from linear algebra to derive the Uncertainty Principle.
+Sometimes, the Uncertainty Principle is derived from Fourier analysis, which deserves its own discussion.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Poisson Brackets in Classical Mechanics
+
+A bit of background knowledge is required.
+Hamiltonian mechanics is a reformulation of classical mechanics, and many concepts in Hamiltonian mechanics are directly applicable to quantum mechanics.
+One of these is the concept of the **Poisson bracket**.
+
+Hamiltonian mechanics is based around the concept of the Hamiltonian, which is a function that describes the total energy of a system.
+The Hamiltonian is a function of the generalized coordinates $q_i$ and generalized momenta $p_i$, which are related to the position and momentum of the particles in the system.
+
+The total mechanical energy of a system is given by the sum of the kinetic and potential energies:
+
+$$
+\begin{equation}
+H(x, p) = T + V = \frac{1}{2} m v^2 + V(x) = \frac{p^2}{2m} + V(x)
+\end{equation}
+$$
+
+In Hamiltonian mechanics, it is convenient to visualize $x$ and $p$ as a pair of coordinates on a plane known as the **Phase space**.
+The phase space is a 2D space where each point represents a possible state of the system.
+Over time, the system moves through the phase space, tracing out a path known as the **trajectory**.
+
+We can define any quantity based on the position and momentum of the system.
+For instance, for a mass-spring system, we can define the potential as $V(x) = \frac{1}{2} k x^2$.
+
+The **Poisson bracket** is a mathematical operation that describes how two quantities evolve over time.
+For two quantities $Q_1$ and $Q_2$, the Poisson bracket is defined as:
+
+$$
+\begin{equation}
+\{Q_1, Q_2\} := \pdv{Q_1}{x} \pdv{Q_2}{p} - \pdv{Q_1}{p} \pdv{Q_2}{x} \label{eq:poisson-bracket}
+\end{equation}
+$$
+
+The Poisson bracket is a measure of how two quantities change with respect to each other.
+There are a few reasons we use the Poisson bracket in Hamiltonian mechanics - they reveal deep connections in the system.
+
+For example, consider the poisson bracket $\{p, H\}$:
+
+$$
+\begin{equation}
+\begin{split}
+\{p, H\} &= \pdv{p}{x} \pdv{H}{p} - \pdv{p}{p} \pdv{H}{x} \\
+&= 0 - 1 \dv{V}{x} \\
+&= -\dv{V}{x} = F \\
+&= \dv{p}{t}
+\end{split}
+\end{equation}
+$$
+
+where we have used the fact that $\pdv{H}{x} = \dv{V}{x}$ (since $T$ is independent of $x$) and Newton's second law $F = \dv{p}{t}$.
+In fact, $\{p, H\} = \dv{p}{t}$ is a valid representation of Newton's second law in Hamiltonian mechanics.
+
+Let's take another example: $\{x, H\}$.
+
+$$
+\begin{equation}
+\begin{split}
+\{x, H\} &= \pdv{x}{x} \pdv{H}{p} - \pdv{x}{p} \pdv{H}{x} \\
+&= 1 \dv{p} \qty(\frac{p^2}{2m}) - 0 \\
+&= \frac{p}{m} = v \\
+&= \dv{x}{t}
+\end{split}
+\end{equation}
+$$
+
+More generally, the Poisson bracket $\{Q, H\}$ is a measure of how the quantity $Q$ changes over time.
+To see this, consider the time evolution of $Q$. We can use the multivariable chain rule to write:
+
+$$
+\begin{equation}
+\dv{Q(x(t), p(t))}{t} = \pdv{Q}{x} \dv{x}{t} + \pdv{Q}{p} \dv{p}{t}
+\end{equation}
+$$
+
+From our previous results, $\dv{x}{t} = \pdv{H}{p}$ and $\dv{p}{t} = -\pdv{H}{x}$. Thus:
+
+$$
+\begin{equation}
+\dv{Q(x(t), p(t))}{t} = \pdv{Q}{x} \pdv{H}{p} - \pdv{Q}{p} \pdv{H}{x} = \{Q, H\}
+\end{equation}
+$$
+
+This is the first important result of the Poisson bracket - it describes how a quantity changes over time.
+Another one comes from the conservation of a quantity. If a quantity $Q$ is conserved, then $\dv{Q}{t} = 0$, and hence $\{Q, H\} = 0$.
+When this happens, we say that $Q$ **commutes** with the Hamiltonian $H$.
+
+The Poisson bracket's connection to conserved quantities is important, and it leads to the Hamiltonian version of Noether's theorem.
+
+## The Commutator
+
+In quantum mechanics, we replace the Poisson bracket with the **commutator**.
+The commutator of two operators $A$ and $B$ is defined as:
+
+$$
+\begin{equation}
+\qty[\hat{A}, \hat{B}] := \hat{A}\hat{B} - \hat{B}\hat{A} \label{eq:commutator}
+\end{equation}
+$$
+
+If both operators commute, then $[\hat{A}, \hat{B}] = 0$, just like in classical mechanics.
+If the commutator is nonzero, then the operators do not commute.
+
+If we add instead of subtracting, we get the **anti-commutator**, another important operation, defined as:
+
+$$
+\begin{equation}
+\qty{\hat{A}, \hat{B}} := \hat{A}\hat{B} + \hat{B}\hat{A} \label{eq:anticommutator}
+\end{equation}
+$$
+
+With both the commutator and anti-commutator, we can write a general property of operators:
+
+$$
+\begin{equation}
+\hat{A}\hat{B} = \frac{1}{2} (\hat{A}\hat{B} + \hat{B}\hat{A}) + \frac{1}{2} (\hat{A}\hat{B} - \hat{B}\hat{A}) = \frac{1}{2} \qty{\hat{A}, \hat{B}} + \frac{1}{2} \qty[\hat{A}, \hat{B}] \label{eq:commutator-anticommutator}
+\end{equation}
+$$
+
+### Eigenvalue Properties
+
+Suppose two operators $\hat{A}$ and $\hat{B}$ represent two observables in quantum mechanics, and they happen to commute.
+We can make some interesting observations about the system.
+
+First, suppose $\ket{\alpha}$ is an eigenvector of $\hat{A}$ with eigenvalue $a$.
+In other words, $\hat{A}\ket{\alpha} = \lambda\ket{\alpha}$.
+Then, we can act on both sides of this equation with $\hat{B}$:
+
+$$
+\begin{equation}
+\hat{B}\hat{A}\ket{\alpha} = \lambda\hat{B}\ket{\alpha}
+\end{equation}
+$$
+
+But since the operators commute, $\hat{A}\hat{B} = \hat{B}\hat{A}$, so we can rewrite the right-hand side as $\hat{A}\hat{B}\ket{\alpha}$.
+Thus:
+
+$$
+\begin{equation}
+\lambda\hat{B}\ket{\alpha} = \hat{A}\hat{B}\ket{\alpha} \label{eq:commutator-eigenvalue}
+\end{equation}
+$$
+
+In other words, $\hat{B}\ket{\alpha}$ is also an eigenvector of $\hat{A}$ with the same eigenvalue $\lambda$.
+
+There are two types of eigenvalues: degenerate and non-degenerate.
+If $\hat{A}$ has a non-degenerate eigenvalue, then that eigenvalue only has one corresponding eigenvector.
+Otherwise, if $\hat{A}$ has a degenerate eigenvalue, then there are multiple eigenvectors corresponding to that eigenvalue.
+
+In our case, if $\lambda$ is non-degenerate, then it only has one eigenvector $\ket{\alpha}$.
+But that means $\hat{B}\ket{\alpha}$ is nothing but a scalar multiple of $\ket{\alpha}$, which means $\hat{B}\ket{\alpha} = \mu\ket{\alpha}$.
+In other words, $\ket{\alpha}$ is also an eigenvector of $\hat{B}$!
+
+For degenerate eigenvalues, the situation is a bit more complicated.
+Suppose $\lambda$ is degenerate. The eigenvectors of $\lambda$ form a basis for the **degenerate eigenspace**; acting $\hat{A}$ on any vector in this eigenspace scales it by $\lambda$.
+
+First, suppose $\ket{\epsilon}$ lies within this eigenspace. As we know from Equation $\eqref{eq:commutator-eigenvalue}$, $\hat{A}\hat{B}\ket{\epsilon} = \lambda\hat{B}\ket{\epsilon}$.
+So $\hat{B}\ket{\epsilon}$ is also an eigenvector of $\hat{A}$ with eigenvalue $\lambda$. But that means that $\hat{B}\ket{\epsilon}$ *is* inside the degenerate eigenspace.
+**Vectors within the degenerate eigenspace of $\hat{A}$ remain within said eigenspace when acted upon by $\hat{B}$**.
+
+Second, suppose $\ket{\phi}$ is orthogonal to this eigenspace. If the eigenspace is a plane, for example, $\ket{\phi}$ is a vector perpendicular to this plane.
+What happens when we act $\hat{B}$ on $\ket{\phi}$?
+To find out, we can try taking the inner product $\mel{\epsilon}{\hat{B}}{\phi}$.
+Since $\hat{B}$ is a Hermitian operator, we can write this as $\braket{\hat{B}\epsilon}{\phi}$.
+Here's the key insight: since $\epsilon$ is within the degenerate eigenspace, $\hat{B}\epsilon$ is also within the degenerate eigenspace (check the previous paragraph).
+And hence, since $\phi$ is orthogonal to the eigenspace, $\braket{\hat{B}\epsilon}{\phi} = \mel{\epsilon}{\hat{B}}{\phi} = 0$.
+**Vectors orthogonal to the degenerate eigenspace of $\hat{A}$ remain orthogonal to said eigenspace when acted upon by $\hat{B}$**.
+
+Combining the two, let $\ket{r}$ be any arbitrary eigenvector of $\hat{B}$. It can be written out as a linear combination of vectors within the eigenspace and orthogonal to it:
+
+$$
+\begin{equation}
+\ket{r} = \ket{r_{\parallel}} + \ket{r_{\perp}}
+\end{equation}
+$$
+
+Acting $\hat{B}$ on this vector, we get by linearity:
+
+$$
+\begin{equation}
+\hat{B}\ket{r} = \hat{B}\ket{r_{\parallel}} + \hat{B}\ket{r_{\perp}}
+\end{equation}
+$$
+
+But we know that $\ket{r}$ is an eigenvector of $\hat{B}$, so $\hat{B}\ket{r} = \mu\ket{r}$.
+Furthermore, we know that $\ket{r_{\parallel}}$ and $\ket{r_{\perp}}$ must stay inside and orthogonal to the degenerate eigenspace of $\hat{A}$, respectively.
+As such, the only way for this equation to hold is if both $\ket{r_{\parallel}}$ and $\ket{r_{\perp}}$ are scaled by the same factor $\mu$:
+
+$$
+\begin{equation}
+\hat{B}\ket{r} = \mu\ket{r} = \mu\ket{r_{\parallel}} + \mu\ket{r_{\perp}}
+\end{equation}
+$$
+
+Hence, both $\ket{r_{\parallel}}$ and $\ket{r_{\perp}}$ are eigenvectors of $\hat{B}$ with the same eigenvalue $\mu$.
+**The eigenvectors of $\hat{B}$ are either within the degenerate eigenspace of $\hat{A}$ or orthogonal to it**.
+
+In order for $\hat{B}$'s eigenvectors to span the eigenspace of $\hat{A}$, they must be within the eigenspace.
+If they're orthogonal, then they can't span the eigenspace.
+But if they are within the eigenspace, then by definition, they are eigenvectors of $\hat{A}$.
+As such, the eigenvalue property holds even for degenerate eigenvalues.
+
+The conclusion is the following:
+
+<Boxed>
+If two operators $\hat{A}$ and $\hat{B}$ commute, then they share a common eigenvector basis.
+</Boxed>
+
+This is a powerful result, and it has deep implications in quantum mechanics.
+Let $\hat{p}$ and $\hat{E}$ be the momentum and energy operators, and suppose they commute (and hence share a simultaneous eigenbasis).
+Then, if we make a measurement of the momentum of the particle, the state vector $\ket{\psi}$ collapses to an eigenstate of $\hat{p}$.
+But we know that the eigenvector for $\hat{p}$ is also an eigenvector for $\hat{E}$.
+Hence, if we make a measurement for the energy immediately after the momentum measurement, we will still get a definite value.
+In other words, we can measure the momentum and energy of a particle simultaneously with arbitrary precision:
+
+<Boxed>
+If two operators $\hat{A}$ and $\hat{B}$ commute, a particle can have a definite value for both observables simultaneously.
+</Boxed>
+
+### Non-Commuting Operators
+
+Now, let's consider the case where two operators do not commute.
+Once again, let $\hat{A}$ and $\hat{B}$ be two operators. This time, suppose they do not commute.
+In this case, they cannot share a common eigenvector basis.
+
+We can make a proof by contradiction.
+
+Suppose they *did* share a common eigenvector basis $\ket{c_i}$.
+Then, we can write both operators as linear combinations of projectors onto these eigenvectors:
+
+$$
+\begin{align}
+\hat{A} &= \sum_i A_i \dyad{c_i} \\
+\hat{B} &= \sum_j B_j \dyad{c_j}
+\end{align}
+$$
+
+Next, apply $\hat{A}$ to $\hat{B}$:
+
+$$
+\begin{equation}
+\begin{split}
+\hat{A}\hat{B} &= \qty(\sum_i A_i \dyad{c_i}) \qty(\sum_j B_j \dyad{c_j}) \\
+&= \sum_{i, j} A_i B_j \dyad{c_i} \dyad{c_j}
+\end{split}
+\end{equation}
+$$
+
+Similarly, apply $\hat{B}$ to $\hat{A}$:
+
+$$
+\begin{equation}
+\begin{split}
+\hat{B}\hat{A} &= \qty(\sum_j B_j \dyad{c_j}) \qty(\sum_i A_i \dyad{c_i}) \\
+&= \sum_{j, i} B_j A_i \dyad{c_j} \dyad{c_i}
+\end{split}
+\end{equation}
+$$
+
+Since $A_i$ and $B_j$ are just scalars, multiplication between them is commutative and we can switch them around.
+Other than that, since $i$ and $j$ are just indices, we can switch them around as well.
+Hence, we can rewrite the second equation as:
+
+$$
+\begin{equation}
+\hat{B}\hat{A} = \sum_{i, j} A_i B_j \dyad{c_i} \dyad{c_j} = \hat{A}\hat{B}
+\end{equation}
+$$
+
+Thus, we have shown that $\hat{A}\hat{B} = \hat{B}\hat{A}$.
+But this contradicts our initial assumption that $\hat{A}$ and $\hat{B}$ do not commute.
+Hence, our assumption that they share a common eigenvector basis is false.
+Therefore, if two operators do not commute, they do not share a common eigenvector basis. $\blacksquare$
+
+If two operators don't commute, then, there exists eigenvectors of one operator that are linear combinations of eigenvectors of the other operator.
+If $\hat{x}$ and $\hat{p}$ are the position and momentum operators, and if they do not commute, then it means that there exists eigenvectors of $\hat{x}$ that are superpositions of eigenvectors of $\hat{p}$.
+
+In other words, if one measures the position of a particle, the state vector will collapse onto the eigenvector of the position operator.
+However, it will still be in a superposition of momentum eigenstates, and hence, will require multiple measurements to determine the momentum of the particle.
+
+<Boxed>
+If two operators $\hat{A}$ and $\hat{B}$ do not commute, then a particle cannot have a definite value for both observables simultaneously.
+</Boxed>
+
+This motivates the Uncertainty Principle, which states that the position and momentum of a particle cannot be known with arbitrary precision.
+
+### Hermiticity
+
+Let's consider what happens if we take the Hermitian adjoint of the commutator:
+
+$$
+\begin{equation}
+\qty[\hat{A}, \hat{B}]^\dagger = \qty(\hat{A}\hat{B} - \hat{B}\hat{A})^\dagger = \hat{B}^\dagger\hat{A}^\dagger - \hat{A}^\dagger\hat{B}^\dagger
+\end{equation}
+$$
+
+If $\hat{A}$ and $\hat{B}$ are Hermitian operators, then $\hat{A}^\dagger = \hat{A}$ and $\hat{B}^\dagger = \hat{B}$.
+Hence, the commutator of two Hermitian operators is:
+
+$$
+\begin{equation}
+\qty[\hat{A}, \hat{B}]^\dagger = \hat{B}\hat{A} - \hat{A}\hat{B} = -\qty[\hat{A}, \hat{B}]
+\end{equation}
+$$
+
+If an operator is equal to the *negative* of its Hermitian adjoint, then it is known as an **anti-Hermitian** operator.
+As such, the commutator of two Hermitian operators is an anti-Hermitian operator.
+
+The anti-commutator of two Hermitian operators, on the other hand, is a Hermitian operator.
+This can be seen by taking the Hermitian adjoint of the anti-commutator:
+
+$$
+\begin{equation}
+\qty{\hat{A}, \hat{B}}^\dagger = \qty(\hat{A}\hat{B} + \hat{B}\hat{A})^\dagger = \hat{B}^\dagger\hat{A}^\dagger + \hat{A}^\dagger\hat{B}^\dagger = \hat{B}\hat{A} + \hat{A}\hat{B} = \qty{\hat{A}, \hat{B}}
+\end{equation}
+$$
+
+Hence, the anti-commutator of two Hermitian operators is a Hermitian operator.
+
+In conclusion:
+
+<Boxed>
+If two operators $\hat{A}$ and $\hat{B}$ are Hermitian, then the commutator $[\hat{A}, \hat{B}]$ is anti-Hermitian, and the anti-commutator $\{\hat{A}, \hat{B}\}$ is Hermitian.
+</Boxed>
+
+## The Uncertainty Principle
+
+The Uncertainty Principle is a fundamental property of quantum mechanics.
+
+First, let's define the following operator:
+
+$$
+\begin{equation}
+\Delta \hat{A} := \hat{A} - \expval{\hat{A}}
+\end{equation}
+$$
+
+This operator represents the deviation of the observable $\hat{A}$ from its expectation value $\expval{\hat{A}}$.
+The expectation value of $(\Delta \hat{A})^2$ is known as the **variance** of $\hat{A}$.
+We can show that this indeed matches the definition of variance:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{(\Delta \hat{A})^2} &= \expval{\qty(\hat{A} - \expval{\hat{A}})^2} \\
+&= \expval{\hat{A}^2 - 2\hat{A}\expval{\hat{A}} + \expval{\hat{A}}^2} \\
+&= \expval{\hat{A}^2} - 2\expval{\hat{A}}^2 + \expval{\hat{A}}^2 \\
+&= \expval{\hat{A}^2} - \expval{\hat{A}}^2
+\end{split}
+\end{equation}
+$$
+
+When a state vector collapses onto an eigenvector, then this variance is zero.
+
+The general form of the Uncertainty Principle is given by the following inequality:
+
+<Boxed>
+
+**Uncertainty Principle**: For any two observables with operators $\hat{A}$ and $\hat{B}$:
+
+$$
+\begin{equation}
+\expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2} \geq \frac{1}{4} \abs{\expval{[\hat{A}, \hat{B}]}}^2 \label{eq:uncertainty-principle}
+\end{equation}
+$$
+
+</Boxed>
+
+We will now derive this inequality.
+
+### Derivation
+
+We follow the derivation given in Sakurai's book.
+First, recall that the Cauchy-Schwarz inequality states that for any two vectors $\va{a}$ and $\va{b}$:
+
+$$
+\begin{equation}
+\abs{\va{a} \cdot \va{b}}^2 \leq \abs{\va{a}}^2 \abs{\va{b}}^2
+\end{equation}
+$$
+
+Using Dirac notation:
+
+$$
+\begin{equation}
+\abs{\braket{\alpha}{\beta}}^2 \leq \braket{\alpha}{\alpha} \braket{\beta}{\beta} \label{eq:cauchy-schwarz-dirac}
+\end{equation}
+$$
+
+(If you read my [notes on linear algebra](/notes/maths/Linear%20Algebra/Vectors%20II/Dot%20Product%20Corollaries#cauchy-schwarz-inequality), I told you we would use it to prove the uncertainty principle! 😉)
+
+Sakurai has a very short proof for the Cauchy-Schwarz inequality:
+
+:::info Sakurai's Proof
+
+Let $\ket{\alpha}$ and $\ket{\beta}$ be two arbitrary vectors, and $\lambda$ be an arbitrary complex number.
+We can see that:
+
+$$
+\begin{equation}
+(\bra{\alpha} + \lambda^*\bra{\beta}) \cdot (\ket{\alpha} + \lambda\ket{\beta}) \geq 0
+\end{equation}
+$$
+
+since the dot product of any vector with itself is nonnegative.
+Since this holds for any complex $\lambda$, we can choose $\lambda = -\frac{\braket{\beta}{\alpha}}{\braket{\beta}{\beta}}$.
+This yields:
+
+$$
+\begin{equation}
+\begin{split}
+0 &\leq \qty(\bra{\alpha} \class{yellow}{- \frac{\braket{\beta}{\alpha}^*}{\braket{\beta}{\beta}^*}} \bra{\beta}) \cdot \qty(\ket{\alpha} \class{yellow}{- \frac{\braket{\beta}{\alpha}}{\braket{\beta}{\beta}}} \ket{\beta}) \\
+&= \braket{\alpha}{\alpha} - \bra{\alpha} \frac{\braket{\beta}{\alpha}}{\braket{\beta}{\beta}} \ket{\beta} - \frac{\braket{\beta}{\alpha}^*}{\braket{\beta}{\beta}^*} \braket{\beta}{\alpha} + \frac{\abs{\braket{\beta}{\alpha}}^2}{\abs{\braket{\beta}{\beta}}^2} \braket{\beta}{\beta} \\
+&= \braket{\alpha}{\alpha} - \frac{\abs{\braket{\beta}{\alpha}}^2}{\braket{\beta}{\beta}} \cancel{- \frac{\abs{\braket{\beta}{\alpha}}^2}{\braket{\beta}{\beta}^*} + \frac{\abs{\braket{\beta}{\alpha}}^2}{\braket{\beta}{\beta}^*}}
+\end{split}
+\end{equation}
+$$
+
+Multiplying both sides by $\braket{\beta}{\beta}$ and rearranging gives the Cauchy-Schwarz inequality:
+
+$$
+\begin{align}
+\braket{\alpha}{\alpha} \braket{\beta}{\beta} - \abs{\braket{\beta}{\alpha}}^2 &\geq 0 \\
+\abs{\braket{\alpha}{\beta}}^2 &\leq \braket{\alpha}{\alpha} \braket{\beta}{\beta} \tag{\ref{eq:cauchy-schwarz-dirac}}
+\end{align}
+$$
+
+Thus the Cauchy-Schwarz inequality is proven. $\blacksquare$
+
+:::
+
+Next, we need another result: the expectation value of a Hermitian operator is always real, and the expectation value of an anti-Hermitian operator is always imaginary.
+
+We know that Hermitian operators represent observables in quantum mechanics.
+As such, they *have* to have real expectation values by definition.
+Mathematically, the expectation value of $\hat{A}$ is $\expval{\hat{A}} = \expval{\hat{A}}{\psi} = \braket{\psi}{\hat{A}\psi}$.
+By the definition of Hermitian operators, $\hat{A} = \hat{A}^\dagger$, and hence $\braket{\psi}{\hat{A}\psi} = \braket{\hat{A}\psi}{\psi} = \expval{\hat{A}}^*$.
+If a complex number is equal to its complex conjugate, then it must be real.
+
+Similarly, the expectation value of an anti-Hermitian operator is $\expval{\hat{B}} = \expval{\hat{B}}{\psi} = \braket{\psi}{\hat{B}\psi}$.
+Applying the same logic, $\braket{\psi}{\hat{B}\psi} = \braket{-\hat{B}\psi}{\psi} = -\expval{\hat{B}}^*$.
+If a complex number is equal to the negative of its complex conjugate, then it must be imaginary.
+
+Now, let's prove the Uncertainty Principle.
+
+First, define two kets $\ket{\alpha}$ and $\ket{\beta}$ as follows:
+
+$$
+\begin{align}
+\ket{\alpha} &:= \Delta \hat{A}\ket{\psi} \\
+\ket{\beta} &:= \Delta \hat{B}\ket{\psi}
+\end{align}
+$$
+
+where $\ket{\psi}$ can be any arbitrary ket.
+By the Cauchy-Schwarz inequality applied to these kets:
+
+$$
+\begin{align}
+\abs{\braket{\alpha}{\beta}}^2 &\leq \braket{\alpha}{\alpha} \braket{\beta}{\beta} \tag{\ref{eq:cauchy-schwarz-dirac}} \\
+\abs{\braket{\Delta \hat{A}\psi}{\Delta \hat{B}\psi}}^2 &\leq \braket{\Delta \hat{A}\psi}{\Delta \hat{A}\psi} \braket{\Delta \hat{B}\psi}{\Delta \hat{B}\psi}
+\end{align}
+$$
+
+Since $\Delta \hat{A}$ and $\Delta \hat{B}$ are Hermitian operators, we can freely interchange the order of the bras and kets.
+The inner product $\braket{\Delta \hat{A}\psi}{\Delta \hat{B}\psi}$ is then $\braket{\psi}{\Delta \hat{A}\Delta \hat{B}\psi}$, which is equal to the expectation value of $\Delta \hat{A}\Delta \hat{B}$.
+Similarly, the inner products $\braket{\Delta \hat{A}\psi}{\Delta \hat{A}\psi}$ and $\braket{\Delta \hat{B}\psi}{\Delta \hat{B}\psi}$ are the expectation values of $(\Delta \hat{A})^2$ and $(\Delta \hat{B})^2$.
+Hence, we can rewrite the Cauchy-Schwarz inequality as:
+
+$$
+\begin{equation}
+\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2} \label{eq:uncertainty-proof-1}
+\end{equation}
+$$
+
+By Equation $\eqref{eq:commutator-anticommutator}$, we can write $\Delta \hat{A}\Delta \hat{B}$ as:
+
+$$
+\begin{equation}
+\Delta \hat{A}\Delta \hat{B} = \frac{1}{2} \qty{\Delta \hat{A}, \Delta \hat{B}} + \frac{1}{2} \qty[\Delta \hat{A}, \Delta \hat{B}]
+\end{equation}
+$$
+
+Taking the expectation values of both sides gives:
+
+$$
+\begin{equation}
+\expval{\Delta \hat{A}\Delta \hat{B}} = \frac{1}{2} \expval{\qty{\Delta \hat{A}, \Delta \hat{B}}} + \frac{1}{2} \expval{\qty[\Delta \hat{A}, \Delta \hat{B}]}
+\end{equation}
+$$
+
+We know from [Hermiticity](#hermiticity) that the commutator of two Hermitian operators is anti-Hermitian, and the anti-commutator is Hermitian.
+As such, the expectation value of $\qty[\Delta \hat{A}, \Delta \hat{B}]$ is imaginary, and the expectation value of $\qty{\Delta \hat{A}, \Delta \hat{B}}$ is real.
+Hence, the square of the magnitude of the expectation value of the commutator is:
+
+$$
+\begin{equation}
+\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 = \frac{1}{4} \abs{\expval{\qty{\Delta \hat{A}, \Delta \hat{B}}}}^2 + \frac{1}{4} \abs{\expval{\qty[\Delta \hat{A}, \Delta \hat{B}]}^2}
+\end{equation}
+$$
+
+The commutator $\qty[\Delta \hat{A}, \Delta \hat{B}]$ is simply equal to $\qty[\hat{A}, \hat{B}]$.
+(To see this, expand $\Delta \hat{A}$ and $\Delta \hat{B}$ in terms of $\hat{A}$ and $\hat{B}$, and then subtract them.)
+Thus:
+
+$$
+\begin{equation}
+\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 = \frac{1}{4} \abs{\expval{\qty{\Delta \hat{A}, \Delta \hat{B}}}^2} + \frac{1}{4} \abs{\expval{\qty[\hat{A}, \hat{B}]}^2}
+\end{equation}
+$$
+
+Plugging this back into Equation $\eqref{eq:uncertainty-proof-1}$ gives:
+
+$$
+\begin{equation}
+\frac{1}{4} \abs{\expval{\qty{\Delta \hat{A}, \Delta \hat{B}}}^2} + \frac{1}{4} \abs{\expval{\qty[\hat{A}, \hat{B}]}^2} \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2}
+\end{equation}
+$$
+
+Finally, we can get rid of the first term on the left - it does not change the inequality. This gives
+
+$$
+\begin{equation}
+\frac{1}{4} \abs{\expval{\qty[\hat{A}, \hat{B}]}^2} \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2} \tag{\ref{eq:uncertainty-principle}}
+\end{equation}
+$$
+
+which is the Uncertainty Principle. $\blacksquare$
+
+There are actually other "uncertainty principles"; this is not the only one.
+For example, the Maccone-Pati uncertainty relation describes the *sum* of variances instead of the product.
+
+## Summary and Next Steps
+
+In this note, we derived the Uncertainty Principle using the commutator of two operators.
+
+Here are the key things to remember:
+
+- The Poisson bracket in classical mechanics is defined as:
+
+    $$
+    \begin{equation}
+    \{Q_1, Q_2\} := \pdv{Q_1}{x} \pdv{Q_2}{p} - \pdv{Q_1}{p} \pdv{Q_2}{x} \tag{\ref{eq:poisson-bracket}}
+    \end{equation}
+    $$
+
+    - The Poisson bracket of any quantity $Q$ with the Hamiltonian $H$ is a measure of how $Q$ changes over time.
+    - If the Poisson bracket of a quantity $Q$ with the Hamiltonian is zero, then $Q$ is conserved.
+
+- The commutator in quantum mechanics is defined as:
+
+    $$
+    \begin{equation}
+    \qty[\hat{A}, \hat{B}] := \hat{A}\hat{B} - \hat{B}\hat{A} \tag{\ref{eq:commutator}}
+    \end{equation}
+    $$
+
+- The anti-commutator in quantum mechanics is defined as:
+
+    $$
+    \begin{equation}
+    \qty{\hat{A}, \hat{B}} := \hat{A}\hat{B} + \hat{B}\hat{A} \tag{\ref{eq:anticommutator}}
+    \end{equation}
+    $$
+
+- The composition of the commutator and anti-commutator is:
+
+    $$
+    \begin{equation}
+    \hat{A}\hat{B} = \frac{1}{2} \qty{\hat{A}, \hat{B}} + \frac{1}{2} \qty[\hat{A}, \hat{B}] \tag{\ref{eq:commutator-anticommutator}}
+    \end{equation}
+    $$
+
+- An anti-Hermitian operator is equal to the negative of its Hermitian adjoint, and a Hermitian operator is equal to its Hermitian adjoint.
+- The commutator of two Hermitian operators is anti-Hermitian, and the anti-commutator of two Hermitian operators is Hermitian.
+- If two operators commute, then they share a common eigenvector basis, whether degenerate or non-degenerate.
+    As a result, if two operators commute, a particle can have a definite value for both observables simultaneously.
+- If two operators do not commute, then they do not share a common eigenvector basis.
+    As a result, if two operators do not commute, a particle cannot have a definite value for both observables simultaneously.
+    This leads to the Uncertainty Principle.
+- The Uncertainty Principle states:
+
+    $$
+    \begin{equation}
+    \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2} \geq \frac{1}{4} \abs{\expval{[\hat{A}, \hat{B}]}^2} \tag{\ref{eq:uncertainty-principle}}
+    \end{equation}
+    $$
+
+In the next section, we will explore matrix representations of operators and how they can be used.

@@ -1,0 +1,78 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Introduction
+
+*Classical field theory* is a generalization of classical mechanics that describes fields, which are functions of space and time.
+
+In "regular" classical mechanics, we have particles moving around in space, characterized by their positions and momentums.
+For example, the Sun-Earth system can be described by the positions and momentums of the Sun and the Earth.
+Then, we introduce various forces that act on these particles. In the Sun-Earth system, the gravitational force acts on both the Sun and the Earth.
+It is equal to $F = G \frac{m_1 m_2}{r^2}$, i.e. inversely proportional to the square of the distance between the two objects.
+
+Suppose that the Sun mysteriously disappears at some point in time $t_0$.
+Using what we know so far, we would say that at exactly $t_0$, the force would vanish, and the Earth will start moving in a straight line (because there are no external forces left).
+However, the Sun and Earth have a distance of $1 \text{ AU}$, and light takes $8$ minutes to travel that distance.
+From special relativity, we know that information cannot travel faster than the speed of light, or else there would be reference frames in which the information is received before it is sent.
+But in this case, the Earth would start moving in a straight line *before* the information that the Sun disappeared reaches it.
+Hence, there is an inherent contradiction, and something is wrong with our current description of the system.
+
+What I just described is known as *action-at-a-distance*, where the force acts instantaneously across space.
+Any interaction between two objects only requires that objects are there, and that there is empty space between them.
+Mutual forces are instantaneously transmitted across space, regardless of the distance between the objects.
+
+This is not how the universe works.
+
+In order to fix this, we introduce the concept of *field theory*.
+It comes with the restriction of **locality**, which states that interactions between objects can only occur at the same point in space and time.
+For instance, when we apply locality and special relativity to gravity, we get general relativity.
+
+## Overview
+
+In this set of notes, we will explore classical field theory.
+We will start by a brief overview of classical mechanics and the Lagrangian formalism, which are the basis of classical field theory.
+When whifting to fields, we will deal with *densities* rather than "point" quantities - for example, we will introduce concepts like energy density and the Lagrangian density.
+The Euler-Langrange equations will be generalized to be able to deal with fields and densities.
+
+A specific "field theory" is defined by its Lagrangian density.
+Hence, we will explore a few examples of field theories, such as the following, based on the spin of the field:
+
+- Spin-0 - Klein-Gordon Equation:
+
+    $$
+    \begin{equation}
+    \qty(\partial^\mu \partial_\mu + m^2) \phi = 0
+    \end{equation}
+    $$
+- Spin-1/2 - Dirac Equation:
+
+    $$
+    \begin{equation}
+    (i \gamma^\mu \partial_\mu - m) \psi = 0
+    \end{equation}
+    $$
+- Spin-1 - Proca Equation:
+
+    $$
+    \begin{equation}
+    \qty(\partial^\mu \partial_\mu + m^2) A^\mu = 0
+    \end{equation}
+    $$
+- Spin-1 (massless) - Maxwell's Equations:
+
+    $$
+    \begin{equation}
+    \partial_\mu \qty(\partial^\mu A^\nu - \partial^\nu A^\mu) = 0
+    \end{equation}
+    $$

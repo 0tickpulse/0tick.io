@@ -27,6 +27,7 @@ import { LineIntegralVisualizer3D } from "@site/src/components/mdxGlobal/LineInt
 import LinearTransformationVisualizer3D from "@site/src/components/mdxGlobal/LinearTransformationVisualizer3D";
 import { DeterminantCube } from "@site/src/components/mdxGlobal/DeterminantCube";
 import { CoulombLawVisualizer } from "@site/src/components/mdxGlobal/CoulombLawVisualizer";
+import { LightPolarizationPlayground } from "../components/mdxGlobal/LightPolarizationPlayground";
 
 export default {
     ...MDXComponents,
@@ -47,6 +48,8 @@ export default {
     PolarCoordinateVisualizer,
     ArcLengthVisualizer,
     LineIntegralVisualizer3D,
+
+    LightPolarizationPlayground,
 
     ControlPanel,
     SliderInput,

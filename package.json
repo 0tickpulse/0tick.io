@@ -31,7 +31,7 @@
         "katex": "^0.16.18",
         "lodash": "^4.17.21",
         "mafs": "^0.18.8",
-        "mathbox": "github:0tickpulse/mathbox",
+        "mathbox": "2.3.2-rc1",
         "mathbox-react": "^0.3.0",
         "mathjax-full": "^3.2.2",
         "mathjs": "^12.4.3",

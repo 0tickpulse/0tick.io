@@ -1,0 +1,50 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Quantum Field Theory from the Ground Up
+
+Modern particle physics posits that the fundamental constituents of the universe are not particles but fields.
+Instead, particles are merely excitations of these fields.
+Quantum Field Theory (QFT) is a theoretical framework that combines quantum mechanics and special relativity to study these fields and their interactions.
+Our current understanding of the universe is based on the Standard Model of particle physics, which is a quantum field theory that describes the electromagnetic, weak, and strong nuclear forces.
+It is defined by the Standard Model Lagrangian:
+
+$$
+\begin{equation}
+\mathcal{L}_{\text{SM}} = -\frac{1}{4} F_{\mu\nu}^a F^{a\mu\nu} + \bar{\psi} (i \gamma^\mu D_\mu - m) \psi + \mathcal{L}_{\text{Yukawa}} + \mathcal{L}_{\text{Higgs}}
+\end{equation}
+$$
+
+As one can see, there are a bunch of probably unfamiliar symbols in the equation above.
+Being very abstract and mathematical, QFT is often considered one of the most challenging subjects in theoretical physics, and it is usually taught at the graduate level.
+(The other challenging subject being General Relativity. Personally I find QFT more challenging.)
+
+However, QFT is incredibly successful in describing the behavior of elementary particles and their interactions.
+
+This set of notes aims to introduce the basics of quantum field theory from the ground up.
+The goal is to start from high-school level physics and mathematics and build up all the way to the full theory of quantum field theory, with all of its complexities and subtleties.
+The main topics covered will be:
+
+- Quantum mechanics arose in the early 20th century as a response to the failure of classical mechanics to explain the behavior of certain things.
+    It is a fundamental theory in physics that describes the behavior of matter and energy on the smallest scales.
+
+- Classical field theory is a generalization of classical mechanics that describes fields, which are functions of space and time.
+    It is generally described by the Lagrangian density, which is a function of the fields and their derivatives.
+
+- Special relativity is a theory that describes the relationship between space and time.
+    Starting from the postulates of special relativity, we can derive the Lorentz transformations, which describe how coordinates change under a change of reference frame.
+
+These are then combined into relativistic field theory, relativistic quantum mechanics, and nonrelativistic quantum field theory, which are then finally combined into quantum field theory.
+
+This will be a very long set of notes, starting from the foundations of all these theories and building up to the full theory of quantum field theory.

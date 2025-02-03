@@ -57,11 +57,11 @@ importers:
         specifier: ^0.18.8
         version: 0.18.8(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       mathbox:
-        specifier: github:0tickpulse/mathbox
-        version: https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9(three@0.157.0)
+        specifier: 2.3.2-rc1
+        version: 2.3.2-rc1(three@0.157.0)
       mathbox-react:
         specifier: ^0.3.0
-        version: 0.3.0(mathbox@https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9(three@0.157.0))(react@18.3.1)(three@0.157.0)
+        version: 0.3.0(mathbox@2.3.2-rc1(three@0.157.0))(react@18.3.1)(three@0.157.0)
       mathjax-full:
         specifier: ^3.2.2
         version: 3.2.2
@@ -4022,15 +4022,13 @@ packages:
 
   mathbox-react@0.3.0:
     resolution: {integrity: sha512-rre4C+7bO/MFGnK/rnwMBESPmMfm0n827Bt5Xes4W5bVwFbCIoj5hch9dRiUAgtCvFo6Ug08HqydtFW7siB7oQ==}
-    version: 0.3.0
     peerDependencies:
       mathbox: ^2.3.1
       react: ^17.0.2 || ^18.0.0
       three: '>=0.118.0'
 
-  mathbox@https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9:
-    resolution: {tarball: https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9}
-    version: 2.3.1
+  mathbox@2.3.2-rc1:
+    resolution: {integrity: sha512-gZDYNAmrLaey3iVyrwI4wqkjRT65NhxNXIEzjqEPxNKLsxvbIqI1U2o1U97qmB60RH6zw4LrbijnagpjV0ARmA==}
     peerDependencies:
       three: '>=0.118.0'
 
@@ -11191,14 +11189,14 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  mathbox-react@0.3.0(mathbox@https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9(three@0.157.0))(react@18.3.1)(three@0.157.0):
+  mathbox-react@0.3.0(mathbox@2.3.2-rc1(three@0.157.0))(react@18.3.1)(three@0.157.0):
     dependencies:
       lodash: 4.17.21
-      mathbox: https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9(three@0.157.0)
+      mathbox: 2.3.2-rc1(three@0.157.0)
       react: 18.3.1
       three: 0.157.0
 
-  mathbox@https://codeload.github.com/0tickpulse/mathbox/tar.gz/795d63d24464e4e86e44134f363050bce2cec2d9(three@0.157.0):
+  mathbox@2.3.2-rc1(three@0.157.0):
     dependencies:
       css-select: 4.3.0
       lodash: 4.17.21

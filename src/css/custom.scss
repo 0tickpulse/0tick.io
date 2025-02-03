@@ -23,6 +23,7 @@
 
     --custom-color-gray: #636363;
     --custom-color-blue: #0080a8;
+    --custom-color-darkblue: #00587a;
     --custom-color-red: #a40013;
     --custom-color-yellow: #b88b04;
     --custom-color-green: #499528;
@@ -49,6 +50,7 @@
 
     --custom-color-gray: #44546a;
     --custom-color-blue: #00c5ff;
+    --custom-color-darkblue: #0078a0;
     --custom-color-red: #fe2e46;
     --custom-color-yellow: #ffc51d;
     --custom-color-green: #7ef84a;
@@ -66,6 +68,9 @@ label {
 
 .blue {
     color: var(--custom-color-blue);
+}
+.darkblue {
+    color: var(--custom-color-darkblue);
 }
 .red {
     color: var(--custom-color-red);

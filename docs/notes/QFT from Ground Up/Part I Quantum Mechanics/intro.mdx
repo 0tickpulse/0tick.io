@@ -1,0 +1,92 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Introduction
+
+This first set of notes will introduce the basic concepts of quantum mechanics, starting with the state vector formalism.
+The main mathematical tools that we need are:
+
+- Linear algebra, especially eigenvectors and eigenvalues.
+- Complex numbers.
+- Probability theory.
+- Differential equations, including eigenfunctions.
+- Fourier analysis.
+
+We will assume knowledge of the basics of these topics (excluding Fourier analysis), but we will review them as needed.
+
+I want to emphasize that we are going to eventually lead up to quantum field theory.
+Thus, we will not shy away from any of the mathematical tools that is needed to understand the subject.
+Even in these introductory notes, we will see Dirac deltas, Feynman path integrals, Hamiltonians, tensor products, U(2)/SU(2)/O(3)/SO(3) groups, spinors, Clifford algebras, Lie algebras, and more.
+Of course, this is not to scare anyone away - we will build up to these concepts from the ground up, and we will try to motivate them as much as possible.
+Mathematical tools are supposed to make things *easier*, not harder, and we will see how they can simplify the understanding of quantum mechanics and quantum field theory.
+
+## Overview
+
+It is assumed that the reader at least knows the very basics of quantum mechanics from a qualitative perspective.
+That is, the reader should know that QM describes things at the smallest scale and that measurements are probabilistic.
+That's it.
+
+The first part of these notes will cover the mathematical formalism of quantum mechanics, including the state vector formalism, operators, and measurements.
+The "physics" begins when we first discuss the Stern-Gerlach (SG) experiment, a simple experiment that demonstrates the inadequacy of classical physics in explaining the behavior of particles.
+We will also take a look at how the SG experiment parallels light polarization, from which we introduce the mathematical object called a spinor.
+These objects will be very important later on when we discuss quantum field theory.
+Light polarization can be modeled with SU(2) matrices, which are a subset of the unitary matrices that we will encounter in quantum mechanics.
+
+The reader might choose to first read about the SG experiment and then come back to the mathematical formalism.
+This could provide a motivation for the mathematical formalism, as the SG experiment demonstrates the inadequacy of classical physics in explaining the behavior of particles.
+
+The mathematical formalism is primarily based on the three postulates of quantum mechanics:
+
+1. The state of a quantum system is described by a state vector $\ket{\psi}$ in a Hilbert space $\mathcal{H}$. The state vector contains all the information about the system, and the space is known as the state space.
+
+    For a composite system, the state space is the tensor product of the state spaces of the individual systems.
+2. An observable $A$ is represented by a Hermitian operator $\hat{A}$ acting on the state space. The eigenvalues of the operator correspond to the possible outcomes of a measurement of the observable, and the eigenvectors correspond to the states of the system after the measurement.
+
+    The probability of measuring a particular eigenvalue is given by the Born rule, which states that the probability is the square of the absolute value of the inner product of the state vector with the eigenvector corresponding to that eigenvalue.
+3. The time evolution of a quantum system is described by the Schrödinger equation, which is a linear partial differential equation that describes how the state vector changes with time.
+
+    The Schrödinger equation is given by:
+
+    $$
+    i\hbar \dv{t} \ket{\psi(t)} = \hat{H} \ket{\psi(t)}
+    $$
+
+    where $\hbar$ is the reduced Planck constant, $\hat{H}$ is the Hamiltonian operator, and $\ket{\psi(t)}$ is the state vector at time $t$.
+
+It's important to consider what a postulate is - it is a statement that is assumed to be true without proof.
+This might make it seem like a theory like QM is built on some arbitrary assumptions that come from nowhere, and many courses and textbooks do make it seem that way.
+However, the postulates of QM are not arbitrary - they are based on experimental evidence and are the simplest set of assumptions that can explain the phenomena we observe.
+In other words, the postulates are the result of the scientific method, not the starting point.
+
+An analogy is the axioms of Euclidean geometry. For example, "two points determine a line" is an axiom of Euclidean geometry.
+This is not something that Euclid just made up - it is a statement that is based on observation and is the simplest assumption that can explain the properties of lines in geometry.
+
+In the same way, the postulates of QM are based on experimental evidence and are the simplest assumptions that can explain the behavior of particles on the quantum scale.
+We will try to motivate these postulates as we go along, but it's important to remember that they are not arbitrary.
+
+## Resources
+
+The main resources used for these notes are:
+
+- [Youtube Series: "Maths of Quantum Mechanics"](https://www.youtube.com/playlist?list=PL8ER5-vAoiHAWm1UcZsiauUGPlJChgNXC) by Brandon Sandoval.
+    It is a great introductory resource that covers the basics of QM in a clear and concise manner.
+    I like its focus on justifying the postulates with physical intuition. At the same time, it doesn't shy away from the mathematical rigor.
+- [J.J. Sakurai's "Modern Quantum Mechanics"](https://www.cambridge.org/highereducation/books/modern-quantum-mechanics/DF43277E8AEDF83CC12EA62887C277DC#overview) is a classic textbook on quantum mechanics.
+    It is much more comprehensive than the YouTube playlist (since the YT playlist just covers the maths), and it goes into more depth on the physics.
+    This textbook is about early-graduate level, so we will eventually go beyond the scope of this book.
+    I like its flow of topics, but sometimes it can skip over a lot of details - for example, it might not explain all the steps in a derivation, instead labeling them as "obvious" or "trivial".
+- [Youtube Series: "Spinors for Beginners"](https://www.youtube.com/playlist?list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs) by Eigenchris.
+    This is a great series that does not necessarily focus on QM, but instead focuses on a mathematical object called a spinor.
+    While spinors are extremely important in advanced QM, they are (1) not usually covered in introductory QM courses, and (2) usually glossed over in QM textbooks.
+    This series introduces spinors in five different "levels", starting from some motivation from physics, then spinors as square roots of vectors, then spinors in the context of Clifford algebras, then spinors in the context of Lie algebras, and finally appliactions in quantum field theory.
