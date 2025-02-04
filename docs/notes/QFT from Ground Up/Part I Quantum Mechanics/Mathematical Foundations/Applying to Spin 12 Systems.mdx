@@ -1,0 +1,391 @@
+---
+sidebar_position: 7
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Applying to Spin 1/2 Systems
+
+In the previous sections, we introduced the main concepts of the state vector formalism in quantum mechanics.
+This included state vectors, Hilbert spaces, observables, eigenstates, Hermitian operators, commutators, the uncertainty principle, tensor products, and more.
+If one has made it this far, one deserves commendation. These are some of the most abstract and counterintuitive concepts in physics, and the mathematics can be challenging.
+Now, we will apply these concepts to a specific system: spin-1/2 particles.
+
+Before reading this, one should have read the [Stern Gerlach Experiment](../Stern%20Gerlach%20Experiment) section.
+The SG experiment is very nice as an introduction to quantum mechanics; it is so obviously different from the classical prediction, and it also provides motivation for a specifically *complex* vector space.
+
+Lastly, this will only be the first part of the discussion on spin-1/2 systems.
+In fact, this is pretty much just a brief introduction to the analysis of such systems.
+After discussing more topics relating to quantum dynamics, we will fully flesh out our theory of angular momentum.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Basics
+
+We have seen that the spin of the electron on a silver atom is quantized.
+This was shown through the fact that the electron could only be deflected in two directions when passing through a magnetic field.
+
+This calls, then, for a two-dimensional Hilbert space to describe the state of the electron.
+The eigenbasis of this space are the spin-up and spin-down states, denoted by $\ket{S_z; +}$ and $\ket{S_z; -}$ respectively, or $\ket{+z}$ and $\ket{-z}$ for short.
+
+The spin operators are the operators that measure the spin of the electron.
+As eigenvectors, the spin states will simply scale by a factor when acted upon by the spin operators.
+In our case, the factor happens to be $\frac{\hbar}{2}$:
+
+$$
+\begin{equation}
+\hat{S}_z \ket{S_z; +} = \frac{\hbar}{2} \ket{S_z; +} \qand \hat{S}_z \ket{S_z; -} = -\frac{\hbar}{2} \ket{S_z; -}
+\end{equation}
+$$
+
+Recall that the completeness relation states:
+
+$$
+\begin{equation}
+\sum_i \dyad{E_i} = \hat{I}
+\end{equation}
+$$
+
+We can apply this to the spin states:
+
+$$
+\begin{equation}
+\dyad{+z} + \dyad{-z} = \hat{I}
+\end{equation}
+$$
+
+Furthermore, recall that we can write an operator as a sum of projection operators:
+
+$$
+\begin{equation}
+\hat{A} = \sum_i a_i \dyad{E_i}
+\end{equation}
+$$
+
+We can similarly apply this to the spin operator $\hat{S}_z$:
+
+$$
+\begin{equation}
+\hat{S}_z = \frac{\hbar}{2} \dyad{+z} - \frac{\hbar}{2} \dyad{-z} \label{eq:sz_as_operators}
+\end{equation}
+$$
+
+### Matrix Representations
+
+The spin states $\ket{+z}$ and $\ket{-z}$ are often represented as column vectors:
+
+$$
+\begin{equation}
+\ket{+z} \overset{.}{=} \mqty[1 \\ 0] \qand \ket{-z} \overset{.}{=} \mqty[0 \\ 1]
+\end{equation}
+$$
+
+This comes simply from the fact that they act as the basis vectors of the Hilbert space.
+
+The spin operator $\hat{S}_z$ can be represented as a matrix acting on these vectors.
+We can find its components by using Equation $\eqref{eq:sz_as_operators}$:
+
+$$
+\begin{equation}
+\hat{S}_z \overset{.}{=} \frac{\hbar}{2} \dyad{+z} - \frac{\hbar}{2} \dyad{-z} = \frac{\hbar}{2} \mqty[1 \\ 0] \mqty[1 & 0] - \frac{\hbar}{2} \mqty[0 \\ 1] \mqty[0 & 1] = \frac{\hbar}{2} \mqty[1 & 0 \\ 0 & -1]
+\end{equation}
+$$
+
+## Observables and Probabilities
+
+We can now discuss the probabilities of the different spin states of the electron.
+Recall that, from the Born rule, the probability of measuring a state $\ket{\psi}$ in an eigenstate $\ket{E_i}$ is given by:
+
+$$
+\begin{equation}
+P(E_i) = \abs{\braket{E_i}{\psi}}^2
+\end{equation}
+$$
+
+For the spin states, we can write the probability of measuring the electron in the spin-up state as:
+
+$$
+\begin{equation}
+P(+z) = \abs{\braket{+z}{\psi}}^2
+\end{equation}
+$$
+
+We now analyze the different sequential SG experiments as we did in the previous section.
+
+1. z-z
+
+    The electron is first passed through a $z$-SG apparatus, then through another $z$-SG apparatus.
+
+    Suppose after the first SG apparatus, the electron has collapsed to the state $\ket{+z}$.
+    The probability of measuring the electron in the spin-up state after the second SG apparatus is:
+
+    $$
+    \begin{equation}
+    P(+z) = \abs{\braket{+z}{+z}}^2 = 1
+    \end{equation}
+    $$
+
+    Conversely, the probability of measuring the electron in the spin-down state is:
+
+    $$
+    \begin{equation}
+    P(-z) = \abs{\braket{-z}{+z}}^2 = 0
+    \end{equation}
+    $$
+
+    In other words, the electron will always be measured in the spin-up state in the second $z$-SG apparatus.
+    This aligns with what was observed in the SG experiment.
+
+2. z-x
+
+    The electron is first passed through a $z$-SG apparatus, then through an $x$-SG apparatus.
+
+    The key is that $S_z$ and $S_x$ do not commute, and as such, do not share a common eigenbasis.
+    This means that after obtaining a definite state from the first $z$-SG apparatus, the electron would be in a superposition of the $x$-SG eigenstates.
+
+3. z-x-z
+
+    This was the most interesting case; even after collapsing to a definite state after the first $z$-SG apparatus, the electron would still be in a superposition of the $z$-SG eigenstates after the $x$-SG apparatus.
+
+    We now know that after passing through $x$-SG, the electron will collapse to $\ket{\pm x}$, which is a superposition of $\ket{\pm z}$ because $S_z$ and $S_x$ do not commute.
+    In other words:
+
+    $$
+    \begin{equation}
+    \ket{\pm x} = \alpha \ket{+z} + \beta \ket{-z}
+    \end{equation}
+    $$
+
+    This is why the $z$-SG apparatus will see both spin-up and spin-down states.
+    Since the probabilities are equal, and since the Born rule requires that $|\alpha|^2 = |\beta|^2 = \frac{1}{2}$, we have:
+
+    $$
+    \begin{equation}
+    \ket{+x} = \frac{1}{\sqrt{2}} \ket{+z} + \frac{1}{\sqrt{2}}e^{i\phi_1}\ket{-z}
+    \end{equation}
+    $$
+
+    which, if you remember, was similar to what we postulated in the SG experiment section from the analogy with the polarixation of light.
+    $e^{i\phi_1}$ is a phase factor that does not affect the magnitude of the coefficients.
+    Since $\ket{+x}$ and $\ket{-x}$ are orthogonal, $\ket{-x}$ must be:
+
+    $$
+    \begin{equation}
+    \ket{-x} = \frac{1}{\sqrt{2}} \ket{+z} - \frac{1}{\sqrt{2}}e^{i\phi_1}\ket{-z}
+    \end{equation}
+    $$
+
+    The choice of coefficient for $\ket{+z}$ is arbitrary by convention.
+
+For the $y$ case, we can first write the spin states in terms of the $z$ states:
+
+$$
+\begin{equation}
+\ket{\pm y} = \frac{1}{\sqrt{2}} \ket{+z} \pm \frac{1}{\sqrt{2}} e^{i\phi_2} \ket{-z}
+\end{equation}
+$$
+
+The key is that performing sequential x-y and y-x SG experiments will yield the following:
+
+$$
+\begin{equation}
+\abs{\braket{\pm y}{+x}} = \abs{\braket{\pm y}{-x}} = \frac{1}{\sqrt{2}}
+\end{equation}
+$$
+
+We already have expressions for $\pm x$ and $\pm y$ in terms of $\pm z$.
+We can plug these in:
+
+$$
+\begin{equation}
+\abs{\braket{\pm y}{-x}} = \abs{\braket{\frac{1}{\sqrt{2}} \ket{+z} \pm \frac{1}{\sqrt{2}} e^{i\phi_2} \ket{-z}}{\frac{1}{\sqrt{2}} \ket{+z} - \frac{1}{\sqrt{2}}e^{i\phi_1}\ket{-z}}} = \frac{1}{\sqrt{2}}
+\end{equation}
+$$
+
+Distributing the inner product, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\abs{\braket{\pm y}{-x}} &= \abs{\braket{\frac{1}{\sqrt{2}} \ket{+z} \pm \frac{1}{\sqrt{2}} e^{i\phi_2} \ket{-z}}{\frac{1}{\sqrt{2}} \ket{+z} - \frac{1}{\sqrt{2}}e^{i\phi_1}\ket{-z}}} \\
+&= \frac{1}{2} \qty(\braket{+z}{+z} - \braket{+z}{-z}e^{i\phi_1} - \braket{-z}{+z}e^{-i\phi_2} + \braket{-z}{-z}e^{i(\phi_2 - \phi_1)}) \\
+&= \frac{1}{2} \abs{1 - e^{i(\phi_2 - \phi_1)}} = \frac{1}{\sqrt{2}}
+\end{split}
+\end{equation}
+$$
+
+Rearranging gives:
+
+$$
+\begin{equation}
+\abs{1 - e^{i(\phi_2 - \phi_1)}} = \sqrt{2}
+\end{equation}
+$$
+
+This equation is satisfied when $\phi_2 - \phi_1 = \pm\frac{\pi}{2}$.
+What this means is that for $\ket{\pm y}$ and $\ket{\pm x}$, the relative phase difference is $\pm\frac{\pi}{2}$, and at least one of the coefficients is complex.
+
+For example, we can use the convention to set $\phi_1 = 0$ or $\phi_1 = \pi$.
+Then, $\phi_2 = \pm\frac{\pi}{2}$, and we have:
+
+$$
+\begin{align}
+\ket{\pm x} &= \frac{1}{\sqrt{2}} \ket{+z} \pm \frac{1}{\sqrt{2}} \ket{-z} \\
+\ket{\pm y} &= \frac{1}{\sqrt{2}} \ket{+z} \pm \frac{i}{\sqrt{2}} \ket{-z}
+\end{align}
+$$
+
+The operators are then:
+
+$$
+\begin{align}
+\hat{S}_x &= \frac{\hbar}{2} \qty(\dyad{+z}{-z} + \dyad{-z}{+z}) \\
+\hat{S}_y &= \frac{\hbar}{2} \qty(-i\dyad{+z}{-z} + i\dyad{-z}{+z})
+\end{align}
+$$
+
+We note that this is very similar to the Jones vectors that we discussed in the section on the Stern-Gerlach experiment:
+
+| Jones Vector                                                                 | Spin State                                                                         |
+|------------------------------------------------------------------------------|------------------------------------------------------------------------------------|
+| $\displaystyle \va{D} = \frac{1}{\sqrt{2}}\va{H} + \frac{1}{\sqrt{2}}\va{V}$ | $\displaystyle \ket{+x} = \frac{1}{\sqrt{2}}\ket{+z} + \frac{1}{\sqrt{2}}\ket{-z}$ |
+| $\displaystyle \va{A} = \frac{1}{\sqrt{2}}\va{H} - \frac{1}{\sqrt{2}}\va{V}$ | $\displaystyle \ket{-x} = \frac{1}{\sqrt{2}}\ket{+z} - \frac{1}{\sqrt{2}}\ket{-z}$ |
+| $\displaystyle \va{L} = \frac{1}{\sqrt{2}}\va{H} + \frac{i}{\sqrt{2}}\va{V}$ | $\displaystyle \ket{+y} = \frac{1}{\sqrt{2}}\ket{+z} + \frac{i}{\sqrt{2}}\ket{-z}$ |
+| $\displaystyle \va{R} = \frac{1}{\sqrt{2}}\va{H} - \frac{i}{\sqrt{2}}\va{V}$ | $\displaystyle \ket{-y} = \frac{1}{\sqrt{2}}\ket{+z} - \frac{i}{\sqrt{2}}\ket{-z}$ |
+
+Additionally, if one works it out, it turns out that the spin operators follow the following commutation relations:
+
+$$
+\begin{equation}
+[S_i, S_j] = i\hbar \epsilon_{ijk} S_k
+\end{equation}
+$$
+
+where $\epsilon_{ijk}$ is the Levi-Civita symbol, and there is an implied sum over $k$.
+$\epsilon_{ijk}$ is $1$ if $ijk$ is an even permutation of $123$, $-1$ if it is an odd permutation, and $0$ otherwise.
+$\epsilon_{123} = \epsilon_{231} = \epsilon_{312} = 1$, $\epsilon_{132} = \epsilon_{213} = \epsilon_{321} = -1$, and $\epsilon_{ijk} = 0$ if any of the indices are repeated.
+
+## Transformation of Spin States
+
+Let us now explore how we can transform between different spin states.
+
+Just like with the Jones vectors, rotations between the spin states are members of the $SU(2)$ group.
+This is to make sure that the magnitudes of the coefficients are preserved ($U(2)$) and there is one unique transformation for each rotation ($S$ - special; with all the transformation that correspond to a rotation, choose the one that has a determinant of $1$).
+To see why we want the determinant to be $1$, we need to consider the Born rule.
+
+The probability of measuring a state $\ket{\psi}$ in an eigenstate $\ket{E_i}$ is given by $\abs{\braket{E_i}{\psi}}^2$.
+If $\psi$ was transformed by a phase shift to $\ket{\psi'} = e^{i\phi}\ket{\psi}$, then the probability of measuring $\ket{\psi'}$ in $\ket{E_i}$ would be $\abs{\braket{E_i}{\psi'}}^2 = \abs{e^{i\phi}}^2\abs{\braket{E_i}{\psi}}^2 = \abs{\braket{E_i}{\psi}}^2$.
+In other words, the phase shift does not affect the probabilities.
+This is analogous to the transformation of the Jones vectors.
+Global phase shifts do not change the polarization of light; they only change the overall phase of the wave.
+
+The set of Jones vectors can be represented as a sphere called the Poincaré sphere.
+Similarly, the set of spin states can be represented as a sphere called the **Bloch sphere**.
+
+<CustomMathbox
+    onInitialized={(mathbox) => {
+        const three = mathbox.three;
+        // Add a sphere of radius 1, 25% opacity, no fill
+        const sphereMesh = new THREE.Mesh(
+            new THREE.SphereGeometry(1, 32, 32),
+            new THREE.MeshMatcapMaterial({ color: 0x909090, transparent: true, opacity: 0.25, side: THREE.DoubleSide })
+        );
+        three.scene.add(sphereMesh);
+    }}
+>
+    <MB.Cartesian>
+        <MB.Axis axis="x" range={[-2, 2]} />
+        <MB.Axis axis="y" range={[-2, 2]} />
+        <MB.Axis axis="z" range={[-2, 2]} />
+
+        <MB.Interval
+            id="circle_z"
+            channels={3}
+            range={[0, 2 * Math.PI]}
+            width={80}
+            expr={(emit, t) => {
+                emit(Math.cos(-t), Math.sin(-t), 0);
+            }}
+        />
+        <MB.Line
+            points="#circle_z"
+            color={color("blue")}
+            width={5}
+            end={true}
+        />
+
+        <MB.Interval
+            id="circle_x"
+            channels={3}
+            range={[0, 2 * Math.PI]}
+            width={80}
+            expr={(emit, t) => {
+                emit(0, Math.cos(-t), Math.sin(-t));
+            }}
+        />
+        <MB.Line
+            points="#circle_x"
+            color={color("yellow")}
+            width={5}
+            end={true}
+        />
+
+        <MB.Interval
+            id="circle_y"
+            channels={3}
+            range={[0, 2 * Math.PI]}
+            width={80}
+            expr={(emit, t) => {
+                emit(Math.cos(-t), 0, Math.sin(-t));
+            }}
+        />
+        <MB.Line
+            points="#circle_y"
+            color={color("green")}
+            width={5}
+            end={true}
+            zIndex={4}
+        />
+
+        {[
+            ["|+x⟩", [1, 0, 0]],
+            ["|-x⟩", [-1, 0, 0]],
+            ["|+y⟩", [0, 1, 0]],
+            ["|-y⟩", [0, -1, 0]],
+            ["|+z⟩", [0, 0, 1]],
+            ["|-z⟩", [0, 0, -1]]
+        ].map(([label, position], i) => (
+            <>
+                <MB.Array key={label} id={`position_${i}`} items={1} channels={3} data={[position]} />
+                <MB.Text key={label} id={`text_${i}`} expr={(emit) => emit(label)} />
+                <MB.Label key={label} id={`label_${i}`} points={`#position_${i}`} text={`#text_${i}`} zIndex={5} size={30} />
+            </>
+        ))}
+    </MB.Cartesian>
+</CustomMathbox>
+
+Notice that in the Bloch sphere, $\ket{+z}$ and $\ket{-z}$ are $180^\circ$ apart, yet in physical space, they are orthogonal.
+In other words, there is an angle-doubling effect when mapping the Bloch sphere to physical space.
+This makes the spin state ket a **spinor**.
+
+I claimed that both the Jones vectors and spin states are spinors, but we have not yet defined what a spinor is.
+What we have seen so far is that a spinor does not care about its phase and that it transforms using a specific set of matrices.
+This leads us to a preliminary definition:
+
+<Boxed>
+A **spinor** is a $2 \times 1$ column vector that (1) has phase ambiguity and (2) transforms using $SU(2)$ matrices.
+</Boxed>
+
+I use the word "preliminary" because this definition is not complete.
+It is analogous to the definition of a vector as a quantity with magnitude and direction - it is "somewhat" correct, but it is not the full story.
+

@@ -36,7 +36,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
       - name: Build website
-        run: pnpm run build
+        run: NODE_OPTIONS=--max-old-space-size=4096 pnpm run build
 
 
       # Popular action to deploy to GitHub Pages:

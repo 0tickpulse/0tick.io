@@ -1,0 +1,291 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Matrix Representations of Operators
+
+In the previous sections, we introduced the state vector formalism of quantum mechanics, as well as some important results derived from it.
+In this section, we will explore how operators in quantum mechanics can be represented as matrices.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Operators as Matrices
+
+Recall from the completeness relation that the identity operator can be written as a sum of projection operators:
+
+$$
+\begin{equation}
+\hat{I} = \sum_i \dyad{E_i}
+\end{equation}
+$$
+
+For an operator $\hat{A}$, we can apply this relation twice to obtain:
+
+$$
+\begin{equation}
+\hat{A} = \class{blue}{\sum_i \dyad{E_i}} \hat{A} = \class{blue}{\sum_i} \class{yellow}{\sum_j} \class{blue}{\dyad{E_i}} \hat{A} \class{yellow}{\dyad{E_j}}
+\end{equation}
+$$
+
+If the ket space is $N$-dimensional, then the quantity in the middle, $\mel{E_i}{\hat{A}}{E_j}$, has $N^2$ possible values.
+Furthermore, given all of these values, we can uniquely determine the operator $\hat{A}$.
+As such, to a certain extent, $\hat{A}$ can be *represented* by these values. We can put these values in a matrix, where the $i$-th row and $j$-th column contains the value $\mel{E_i}{\hat{A}}{E_j}$:
+
+$$
+\begin{equation}
+\hat{A} \overset{.}{=} \mqty[
+    \mel{E_1}{\hat{A}}{E_1} & \mel{E_1}{\hat{A}}{E_2} & \cdots & \mel{E_1}{\hat{A}}{E_N} \\
+    \mel{E_2}{\hat{A}}{E_1} & \mel{E_2}{\hat{A}}{E_2} & \cdots & \mel{E_2}{\hat{A}}{E_N} \\
+    \vdots & \vdots & \ddots & \vdots \\
+    \mel{E_N}{\hat{A}}{E_1} & \mel{E_N}{\hat{A}}{E_2} & \cdots & \mel{E_N}{\hat{A}}{E_N}
+]
+\end{equation}
+$$
+
+I, along with Sakurai, will use the notation $\overset{.}{=}$ to mean that $\hat{A}$ is *represented* by the matrix on the right-hand side.
+
+An important property of these matrices is as follows: Take $\mel{E_i}{\hat{A}}{E_j}$ and move $\hat{A}$ to the left (and take its Hermitian adjoint) to get $\braket{\hat{A}^\dagger E_i}{E_j}$.
+Then, by the conjugate symmetry of the inner product, it is equal to $\braket{E_j}{\hat{A}^\dagger E_i}^* = \mel{E_j}{\hat{A}^\dagger}{E_i}^*$.
+
+As such, the $ji$-th element of $\hat{A}^\dagger$ is the complex conjugate of the $ij$-th element of $\hat{A}$.
+In other words, $\hat{A}^\dagger$ is the **conjugate transpose** of $\hat{A}$.
+
+### Matrix Multiplication
+
+Given two operators $\hat{A}$ and $\hat{B}$, we can multiply them to get a new operator $\hat{C} = \hat{A}\hat{B}$.
+Now we shall show that the matrix representations with $\mel{E_i}{\hat{A}}{E_j}$ follow the same rules as matrix multiplication.
+
+Normally, for two matrices $\vb{A}$ and $\vb{B}$, the $ij$-th element of the product $\vb{C} = \vb{A}\vb{B}$ is given by:
+
+$$
+\begin{equation}
+C_{ij} = \sum_k A_{ik} B_{kj}
+\end{equation}
+$$
+
+Thus, we would want to show the following:
+
+$$
+\begin{equation}
+\mel{E_i}{\hat{C}}{E_j} = \sum_k \mel{E_i}{\hat{A}}{E_k} \mel{E_k}{\hat{B}}{E_j}
+\end{equation}
+$$
+
+This is much easier to prove than it seems.
+Since $\hat{C} = \hat{A}\hat{B}$, we can write:
+
+$$
+\begin{equation}
+\mel{E_i}{\hat{C}}{E_j} = \mel{E_i}{\hat{A}\hat{B}}{E_j}
+\end{equation}
+$$
+
+Now, simply use the completeness relation between the two operators to insert a sum over $k$:
+
+$$
+\begin{equation}
+\mel{E_i}{\hat{A}\hat{B}}{E_j} = \class{yellow}{\sum_k} \bra{E_i}\hat{A} \class{yellow}{\dyad{E_k}} \hat{B} \ket{E_j}
+\end{equation}
+$$
+
+which is exactly what we needed to show. $\blacksquare$
+
+## Kets as Column Vectors
+
+Kets can also be represented as column vectors.
+
+Recall that kets can be expanded into linear combinations of basis kets:
+
+$$
+\begin{equation}
+\ket{\psi} = \sum_i \braket{E_i}{\psi} \ket{E_i}
+\end{equation}
+$$
+
+This is similar to the Euclidean case where a vector $\va{v}$ can be expanded as a linear combination of basis vectors:
+
+$$
+\begin{equation}
+\va{v} = \sum_i (\va{v} \cdot \va{e}_i) \va{e}_i
+\end{equation}
+$$
+
+In the Euclidean case, we say that $\va{v} \cdot \va{e}_i$ is the $i$-th *component* of $\va{v}$.
+Likewise, we can say that $\braket{E_i}{\psi}$ is the $i$-th *component* of $\ket{\psi}$.
+Then, we can represent $\ket{\psi}$ as a column vector:
+
+$$
+\begin{equation}
+\ket{\psi} \overset{.}{=} \mqty[\braket{E_1}{\psi} \\ \braket{E_2}{\psi} \\ \vdots \\ \braket{E_N}{\psi}]
+\end{equation}
+$$
+
+Next, suppose we apply an operator $\hat{A}$ to $\ket{\psi}$ to get a new ket $\ket{\phi} = \hat{A}\ket{\psi}$.
+By the rules of matrix multiplication, we would expect the $i$-th component of $\ket{\phi}$ to be:
+
+$$
+\begin{equation}
+\braket{E_i}{\phi} = \sum_k \mel{E_i}{\hat{A}}{E_k} \braket{E_k}{\psi}
+\end{equation}
+$$
+
+This is quite similar to the matrix multiplication rule we derived earlier.
+Simply set $\braket{E_i}{\phi} = \mel{E_i}{\hat{A}}{\phi}$ and apply the completeness relation again.
+
+## Bra Vectors as Row Vectors
+
+Bra vectors can be represented as row vectors.
+To find out how, suppose we apply an operator $\hat{A}$ to a bra $\bra{\phi}$ to get a new bra $\bra{\chi} = \bra{\phi}\hat{A}$.
+The inner product of $\bra{\chi}$ with any base ket $\ket{E_i}$ is, by the completeness relation:
+
+$$
+\begin{equation}
+\braket{\chi}{E_i} = \sum_k \braket{\phi}{E_k} \mel{E_k}{\hat{A}}{E_i}
+\end{equation}
+$$
+
+The term $\mel{E_k}{\hat{A}}{E_i}$ is the $ki$-th element of the matrix representation of $\hat{A}$.
+Thus, the other part, $\braket{\phi}{E_k}$, should be the $k$-th component of $\bra{\phi}$.
+This suggests that $\bra{\phi}$ can be represented as a row vector:
+
+$$
+\begin{equation}
+\bra{\phi} \overset{.}{=} \mqty[\braket{\phi}{E_1} & \braket{\phi}{E_2} & \cdots & \braket{\phi}{E_N}]
+\end{equation}
+$$
+
+Since the inner product is conjugate symmetric, we can equivalently write this as:
+
+$$
+\begin{equation}
+\bra{\phi} \overset{.}{=} \mqty[\braket{E_1}{\phi}^* & \braket{E_2}{\phi}^* & \cdots & \braket{E_N}{\phi}^*]
+\end{equation}
+$$
+
+The inner product of $\bra{\phi}$ with a ket $\ket{\psi}$ is then, by the rules of matrix multiplication:
+
+$$
+\begin{equation}
+\begin{split}
+\braket{\phi}{\psi} &= \mqty[\braket{\phi}{E_1} & \braket{\phi}{E_2} & \cdots & \braket{\phi}{E_N}] \mqty[\braket{E_1}{\psi} \\ \braket{E_2}{\psi} \\ \vdots \\ \braket{E_N}{\psi}] \\
+&= \braket{\phi}{E_1} \braket{E_1}{\psi} + \braket{\phi}{E_2} \braket{E_2}{\psi} + \ldots + \braket{\phi}{E_N} \braket{E_N}{\psi} \\
+&= \sum_i \braket{\phi}{E_i} \braket{E_i}{\psi}
+\end{split}
+\end{equation}
+$$
+
+which aligns with simply adding a completeness relation to the original expression.
+
+## Outer Products (and Tensor Products)
+
+An outer product is a product of a ket and a bra in an order such that the ket is on the left.
+We have previously shown that outer products are not scalars (like inner products), but rather operators.
+
+To build intuition, we borrow from Euclidean vectors. Suppose we take the product of $\mqty[1 \\ 4]$ (a ket) and $\mqty[2 & 3]$ (a bra).
+Below I use a trick to perform this multiplication outlined in the appendix.
+
+$$
+\begin{split}
+    &\mqty[2 & 3] \\
+\mqty[1 \\ 4] & \mqty[? & ? \\ ? & ?] \longrightarrow \mqty[2 & 3 \\ 8 & 12] \\
+\end{split}
+$$
+
+So indeed, outer products are operators (matrices) that act on vectors.
+
+In quantum mechanics, then, suppose we want to take the outer product $\dyad{\psi}{\phi}$.
+By matrix multiplication:
+
+$$
+\begin{equation}
+\begin{split}
+\dyad{\psi}{\phi} &= \mqty[\braket{E_1}{\psi} \\ \braket{E_2}{\psi} \\ \vdots \\ \braket{E_N}{\psi}] \mqty[\braket{\phi}{E_1} & \braket{\phi}{E_2} & \cdots & \braket{\phi}{E_N}] \\
+&= \mqty[\braket{E_1}{\psi} \braket{\phi}{E_1} & \braket{E_1}{\psi} \braket{\phi}{E_2} & \cdots & \braket{E_1}{\psi} \braket{\phi}{E_N} \\
+\braket{E_2}{\psi} \braket{\phi}{E_1} & \braket{E_2}{\psi} \braket{\phi}{E_2} & \cdots & \braket{E_2}{\psi} \braket{\phi}{E_N} \\
+\vdots & \vdots & \ddots & \vdots \\
+\braket{E_N}{\psi} \braket{\phi}{E_1} & \braket{E_N}{\psi} \braket{\phi}{E_2} & \cdots & \braket{E_N}{\psi} \braket{\phi}{E_N}]
+\end{split}
+\end{equation}
+$$
+
+There is actually something deeper going on here.
+The outer product $\dyad{\psi}{\phi}$ is a matrix that acts on vectors.
+That begs the question: is there a way to take the product of more complicated things to get another operator?
+For instance, perhaps we could take two matrices and somehow combine them to get a new operator.
+This action is known as the tensor product, denoted by $\otimes$.
+Sometimes, the outer product $\dyad{\psi}{\phi}$ is written as $\ket{\psi} \otimes \bra{\phi}$.
+Virtually any tensor we usually use can be created by taking the tensor products of vectors and linear forms (or bra vectors, 1-forms, covectors, etc.).
+Tensor products will definitely show up later in the course. For instance, the vector space of a system of two particles is the tensor product of the vector spaces of the individual particles.
+
+## Summary and Next Steps
+
+In this rather brief section, we have shown how the various objects in quantum mechanics can be represented as matrices.
+This is a crucial step in understanding how quantum mechanics can be formulated in terms of linear algebra.
+
+Here are the key points to remember:
+
+- Operators in quantum mechanics can be represented as matrices.
+    Specifically, the matrix elements of an operator $\hat{A}$ are given by $\mel{E_i}{\hat{A}}{E_j}$.
+- Kets can be represented as column vectors, and bras as row vectors.
+- Outer products are operators that act on vectors. They can be thought of as the tensor product of a ket and a bra.
+- Tensor products combine vectors and linear forms to create new operators.
+
+In the next section, we continue our exploration of vectors and operators by looking at the change of basis.
+
+### References
+
+- J.J. Sakurai, "Modern Quantum Mechanics", section 1.3.
+
+## Appendix: Quick Trick for Matrix Multiplication
+
+A quick trick to perform matrix multiplication is as follows: Given the product of two matrices $\vb{A} \vb{B}$, shift $\vb{B}$ up and to the right, and then sum the products of the corresponding elements in the two matrices.
+To see what I mean, consider the following matrices:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[1 & 2 \\ 3 & 4] \quad \vb{B} = \mqty[5 & 6 \\ 7 & 8]
+\end{equation}
+$$
+
+To multiply them, we can shift $\vb{B}$ up and to the right:
+
+$$
+\begin{split}
+    &\mqty[5 & 6 \\ 7 & 8] \\
+\mqty[1 & 2 \\ 3 & 4] & \mqty[ ? & ? \\ ? & ? ]
+\end{split}
+$$
+
+Then, the elements in the product matrix are given by the sum of the products of the corresponding elements.
+For example, the element in the first row and first column is:
+
+$$
+\begin{split}
+    &\mqty[\mathrlap{\class{pink}{5}} \phantom{(1)(5) + (2)(7)} & 6 \\ \mathrlap{\class{blue}{7}} \phantom{(1)(5) + (2)(7)} & 8] \\
+\mqty[\class{pink}{1} & \class{blue}{2} \\ 3 & 4] & \mqty[ \class{pink}{(1)(5)} + \class{blue}{(2)(7)} & ? \\ ? & ? ]
+\end{split}
+$$
+
+This also easily allows one to find out whether the dimensions of the matrices are compatible for multiplication.
+For example, the following matrices cannot be multiplied:
+
+$$
+\begin{split}
+    &\mqty[5 & 6 \\ 7 & 8 \\ 9 & 10] \\
+\mqty[1 & 2 \\ 3 & 4] & \mqty[ ? & ? \\ ? & ? \\ X & X ]
+\end{split}
+$$
+
+The $X$'s would require something from a third row in the first matrix, which is not present.
