@@ -1,0 +1,75 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Lagrangian Noether's Theorem ❤️
+
+In the previous sections, we have seen how the Lagrangian formalism can be used to describe the dynamics of a system.
+In this section, we will see how the Lagrangian can be used to derive conservation laws for a system.
+In particular, we will see how symmetries of the Lagrangian lead to conservation laws in the form of **Noether's theorem**.
+
+There are a few reasons why this is important and interesting:
+
+1. As Schneider puts it, it is "one of the most beautiful love stories in the universe".
+    (Therefore, it also makes for a good pick-up line.)
+2. It is also one example of a profound connection in physics that is just not apparent from Newton's laws.
+3. This concept is also exceedingly important in quantum field theory, where symmetries play a central role in the formulation of the theory.
+    The standard model is based around the $SU(3) \times SU(2) \times U(1)$ symmetry group, and the conservation laws that arise from this symmetry are the conservation of electric charge, weak isospin, and color charge.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Symmetries and Conservation Laws
+
+There is a deep connection between symmetries of a system and conservation laws.
+In particular, if a system has a symmetry, then there is a corresponding conservation law.
+
+Here are a few examples of symmetries and their corresponding conservation laws:
+
+| <span className="blue">Symmetry ❤️</span> | <span className="pink">❤️ Conservation Law</span> |
+| ---: | :--- |
+| <span className="blue">Time translation symmetry</span> | <span className="pink">Conservation of energy $E$</span> |
+| <span className="blue">Space translation symmetry</span> | <span className="pink">Conservation of momentum $\va{p}$</span> |
+| <span className="blue">Rotation symmetry</span> | <span className="pink">Conservation of angular momentum $\va{L}$</span> |
+
+Here are some more advanced examples:
+
+| <span className="blue">Symmetry ❤️</span> | <span className="pink">❤️ Conservation Law</span> |
+| ---: | :--- |
+| <span className="blue">Lorentz symmetry</span> | <span className="pink">Conservation of four-momentum $P^\mu$</span> |
+| <span className="blue">Gauge symmetry</span> | <span className="pink">Conservation of electric charge $Q$</span> |
+| <span className="blue">Scale symmetry</span> | <span className="pink">Conservation of dilatation current $D^\mu$</span> |
+
+In the context of the Lagrangian formalism, we can derive these conservation laws using Noether's theorem.
+
+Formally, Noether's theorem mathematically states:
+
+<Boxed>
+**Noether's Theorem**: If a system is defined by a Lagrangian $L(q, \dot{q}, t)$, if, under a continuous infinitesimal transformation $q \to q + \epsilon \delta q$, the Lagrangian changes as $L \to L + \epsilon \dv{F}{t}$, then there exists a conserved quantity $C$:
+
+$$
+\begin{equation}
+C = \sum_i \pdv{F}{\dot{q}_i} \delta q_i + \qty(\pdv{L}{\dot{q}_i} \dot{q}_i - L) \delta t - F
+\end{equation}
+$$
+</Boxed>
+
+### References
+
+- Schneider, Elliot (Physics with Elliot). ["Symmetries & Conservation Laws: A (Physics) Love Story"](https://www.youtube.com/watch?v=O0NYaO_OnH4)

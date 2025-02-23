@@ -18,6 +18,11 @@ export type AngleProps = {
     label?: string;
     labelColor?: string;
     labelOffsetMultiplier?: number;
+
+    /**
+     * Normalize the angle to be between 0 and 2π
+     */
+    normalize?: boolean;
 };
 
 export function Angle({
@@ -31,6 +36,7 @@ export function Angle({
     label,
     labelColor = color,
     labelOffsetMultiplier = 1.4,
+    normalize = false,
 }: AngleProps) {
     const { userTransform } = useTransformContext();
     if ((straightRightAngle && Math.abs(toRad - fromRad) === Math.PI / 2) || forceStraightAngle) {
@@ -52,6 +58,15 @@ export function Angle({
     }
     function parametric(t: number): [number, number] {
         return [Math.cos(t) * radius + at[0], Math.sin(t) * radius + at[1]];
+    }
+
+    if (normalize) {
+        // Take their difference, then mod 2π. Make sure sign stays the same.
+        const diff = toRad - fromRad;
+        const sign = Math.sign(diff);
+        const absDiff = Math.abs(diff);
+        const newDiff = absDiff % (2 * Math.PI);
+        toRad = fromRad + sign * newDiff;
     }
 
     const texPosition = parametric((fromRad + toRad) / 2);

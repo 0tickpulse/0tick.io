@@ -5,7 +5,7 @@ export function ControlPanel({ children, style, title = "Options" }: ControlPane
         <table style={{ ...style, ...ControlPanel.style }} id="control-panel" className={styles["control-panel"]}>
             <tbody>
                 <tr>
-                    <th>
+                    <th colSpan={2}>
                         <h3>{title}</h3>
                     </th>
                 </tr>

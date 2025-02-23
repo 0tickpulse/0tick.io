@@ -1,0 +1,104 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# From Particles to Fields
+
+In the previous section, we discussed the Lagrangian formalism and how it can be used to describe the dynamics of a system of particles.
+In this section, we will discuss a fundamental shift in perspective: from particles to fields.
+We will apply it to an example of the electromagnetic field, from which we will derive the tensor form of Maxwell's equations.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+In classical mechanics, we describe the dynamics of a system by specifying the positions and momenta of particles.
+For example, the Sun-Earth system can be described by the positions and momenta of the Sun and the Earth.
+Then, we introduce forces that act on these particles, such as the gravitational force between the Sun and the Earth:
+
+$$
+\begin{equation}
+\va{F} = -G \frac{m_1 m_2}{r^2} \vu{r}
+\end{equation}
+$$
+
+Likewise, for two charges $q_1$ and $q_2$, the electrostatic force between them is given by Coulomb's law:
+
+$$
+\begin{equation}
+\va{F} = \frac{1}{4\pi\varepsilon_0} \frac{q_1 q_2}{r^2} \vu{r}
+\end{equation}
+$$
+
+In this description, the forces act instantaneously across space.
+Any interaction between two objects only requires that the objects are there, and that there is empty space between them.
+This is known as **action-at-a-distance**.
+
+However, this is not how the universe works.
+There is a fundamental principle in physics known as **locality**, which states that interactions between objects can only occur at the same point in space and time.
+This prevents instantaneous transmission of information across space, as it would violate the principles of special relativity.
+
+To see why action-at-a-distance is problematic, consider two events $A$ and $B$ that are spacelike separated (i.e., light cannot travel between them).
+If event $A$ affects event $B$, then there must be a causal relationship between them.
+If $A$ causes $B$, then we would hope that $A$ always precedes $B$ in all reference frames.
+However, if the events are spacelike separated, there are reference frames in which $B$ precedes $A$.
+This leads to a contradiction, as causality would be violated.
+
+As a step towards resolving this issue, we introduce the concept of **field theory**.
+Instead of describing the dynamics of individual particles, we describe the dynamics of fields, which are functions of space and time.
+
+For example, in the gravitational case, instead of describing the force between two particles, we describe the gravitational field $\va{g}(\va{r}, t)$ at every point in space and time:
+
+$$
+\begin{equation}
+\va{F} = m \va{g}(\va{r}, t)
+\end{equation}
+$$
+
+The field $\va{g}(\va{r}, t)$ tells us how a test mass $m$ would move at the point $\va{r}$ at time $t$.
+Similarly, in the electromagnetic case, we describe the electric and magnetic fields $\va{E}(\va{r}, t)$ and $\va{B}(\va{r}, t)$ at every point in space and time.
+
+These field vectors are functions of space and time and describe the forces that act on charged particles.
+They can be further generalized as potentials, which are scalar and vector fields that describe the forces acting on particles.
+For instance, the electric and magnetic fields $\va{E}(\va{r}, t)$ and $\va{B}(\va{r}, t)$ can be derived from the electric potential $\phi(\va{r}, t)$ and the magnetic vector potential $\va{A}(\va{r}, t)$:
+
+$$
+\begin{align}
+\va{E} &= -\grad{\phi} - \pdv{\va{A}}{t} \\
+\va{B} &= \curl{\va{A}}
+\end{align}
+$$
+
+As a consequence of locality, fields can evolve even in the absence of particles - think of electromagnetic waves propagating through empty space.
+Even when $\rho = 0$ and $\va{J} = \va{0}$, the electromagnetic fields $\va{E}$ and $\va{B}$ can still evolve according to Maxwell's equations.
+
+## Generalizing Electromagnetism
+
+In the familiar formulation of electromagnetism, we describe the electric and magnetic fields $\va{E}$ and $\va{B}$ in terms of the charge density $\rho$ and the current density $\va{J}$.
+The equations that govern the evolution of the fields are Maxwell's equations. In SI units, they are given by:
+
+$$
+\begin{align}
+\div{\va{E}} &= \frac{\rho}{\varepsilon_0} \\
+\div{\va{B}} &= 0 \\
+\curl{\va{E}} &= -\pdv{\va{B}}{t} \\
+\curl{\va{B}} &= \mu_0 \va{J} + \mu_0 \varepsilon_0 \pdv{\va{E}}{t}
+\end{align}
+$$

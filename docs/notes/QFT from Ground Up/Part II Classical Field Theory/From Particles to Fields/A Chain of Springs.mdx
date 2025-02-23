@@ -1,0 +1,537 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# A Chain of Springs
+
+In this note, we will explore a chain of springs, which is a simple example of a system that can be described by a field.
+Analyzing this system will help us understand field theories and eventually lead to the Klein-Gordon equation.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Case 1: Two Springs
+
+Let's start with a simple case: two springs connected to a wall and to each other.
+Suppose the mass-springs both have mass $m$ and spring constant $k$, and the spring connecting them has a spring constant $\class{yellow}{\tilde{k}}$.
+
+Denote the displacement of the first spring as $\class{pink}{x_1}(t)$ and the displacement of the second spring as $\class{blue}{x_2}(t)$.
+The displacement of the spring connecting them is then $\class{blue}{x_2}(t) - \class{pink}{x_1}(t)$.
+
+The kinetic energy of the system is simply given by the sum of the kinetic energies of the two masses:
+
+$$
+\begin{equation}
+T = \frac{1}{2} m \class{pink}{\dot{x}_1}^2 + \frac{1}{2} m \class{blue}{\dot{x}_2}^2
+\end{equation}
+$$
+
+The potential energy of the system is given by the sum of the potential energies of the two springs, plus the potential energy of the spring connecting them:
+
+$$
+\begin{equation}
+V = \frac{1}{2} k \class{pink}{x_1}^2 + \frac{1}{2} k \class{blue}{x_2}^2 + \frac{1}{2} \class{yellow}{\tilde{k}} (\class{blue}{x_2} - \class{pink}{x_1})^2
+\end{equation}
+$$
+
+The Lagrangian of the system is then given by $L = T - V$:
+
+$$
+\begin{equation}
+L = \frac{1}{2} m \class{pink}{\dot{x}_1}^2 + \frac{1}{2} m \class{blue}{\dot{x}_2}^2 - \frac{1}{2} k \class{pink}{x_1}^2 - \frac{1}{2} k \class{blue}{x_2}^2 - \frac{1}{2} \class{yellow}{\tilde{k}} (\class{blue}{x_2} - \class{pink}{x_1})^2
+\end{equation}
+$$
+
+Since we have two generalized coordinates, we will need to use the Euler-Lagrange equations twice to find the equations of motion.
+
+First, the Euler-Lagrange equation for $\class{pink}{x_1}$ is:
+
+$$
+\begin{align}
+\dv{t} \qty(\pdv{L}{\class{pink}{\dot{x}_1}}) &= \pdv{L}{\class{pink}{x_1}} \\
+m \class{pink}{\ddot{x}_1} &= -(k + \class{yellow}{\tilde{k}}) \class{pink}{x_1} + \class{yellow}{\tilde{k}} \class{blue}{x_2}
+\end{align}
+$$
+
+Similarly, the Euler-Lagrange equation for $\class{blue}{x_2}$ is:
+
+$$
+\begin{equation}
+m \class{blue}{\ddot{x}_2} = \class{yellow}{\tilde{k}} \class{pink}{x_1} - (\class{yellow}{\tilde{k}} + k) \class{blue}{x_2}
+\end{equation}
+$$
+
+We can arrange these equations into a matrix form:
+
+$$
+\begin{equation}
+\mqty[-(k + \class{yellow}{\tilde{k}}) & \class{yellow}{\tilde{k}} \\ \class{yellow}{\tilde{k}} & -(\class{yellow}{\tilde{k}} + k)] \mqty[\class{pink}{x_1} \\ \class{blue}{x_2}] = \mqty[m \class{pink}{\ddot{x}_1} \\ m \class{blue}{\ddot{x}_2}]
+\end{equation}
+$$
+
+As always with matrix equations, we can solve this system by finding the eigenvalues and eigenvectors of the matrix.
+The motivation for this is that given a matrix $\vb{A}$, if $\vb{A} \va{v} = \dv{\va{v}}{t}$, it is not immediately clear what $\va{v}$ is.
+However, it does appear to resemble an exponential differential equation like $\lambda u = \dv{u}{t}$, which has the solution $u = e^{\lambda t}$.
+In that case, if we replace $\vb{A} \va{v}$ with $\lambda \va{v}$, it *becomes* an exponential differential equation, and we can solve it.
+
+If we denote the matrix as $\vb{K}$, and the vector $\mqty[\class{pink}{x_1} \\ \class{blue}{x_2}]$ as $\va{s}$, we can write the equation as:
+
+$$
+\begin{equation}
+\vb{K} \va{s} = m \ddot{\va{s}}
+\end{equation}
+$$
+
+In our case, we have a second-order differential equation.
+The eigenvectors of the coefficient matrix, are called the **normal modes** or **eigenmodes** of the system.
+
+I shall employ the following fast trick to find eigenvalues - the determinant of the matrix is equal to the product of the eigenvalues, and the trace is equal to the sum of the eigenvalues.
+Thus, if $M$ is half the trace and $P$ is the determinant, the eigenvalues are $M \pm \sqrt{M^2 - P}$.
+
+The eigenvalue-eigenvector pairs turn out to be:
+
+$$
+\begin{align}
+\vb{K} \mqty[1 \\ 1] &= -k \mqty[1 \\ 1] \\
+\vb{K} \mqty[1 \\ -1] &= -(k + 2\class{yellow}{\tilde{k}}) \mqty[1 \\ -1]
+\end{align}
+$$
+
+In the first case, the eigenvalue is $-k$, and the eigenvector is $\mqty[1 \\ 1]$.
+This means that $\class{pink}{x_1} = \class{blue}{x_2}$, which is the case where the two masses move together.
+
+In the second case, the eigenvalue is $-(k + 2\class{yellow}{\tilde{k}})$, and the eigenvector is $\mqty[1 \\ -1]$.
+This means that $\class{pink}{x_1} = -\class{blue}{x_2}$, which is the case where the two masses move in opposite directions.
+
+For either case, if the eigenvalue is $\lambda$, then plugging this back into the differential equation yields:
+
+$$
+\begin{equation}
+\lambda \va{s} = m \ddot{\va{s}}
+\end{equation}
+$$
+
+This is analogous to the simple harmonic oscillator equation; the solution to this is:
+
+$$
+\begin{equation}
+\va{s}(t) = m \va{s}_0 \cos(\sqrt{\frac{-\lambda}{m}} t + \phi)
+\end{equation}
+$$
+
+Therefore, our two normal modes are:
+
+$$
+\begin{align}
+\va{s}_1(t) &= \mqty[1 \\ 1] \cos(\sqrt{\frac{k}{m}} t + \phi_1) \\
+\va{s}_2(t) &= \mqty[1 \\ -1] \cos(\sqrt{\frac{k + 2\class{yellow}{\tilde{k}}}{m}} t + \phi_2)
+\end{align}
+$$
+
+Our general solution is then a linear combination of these two modes:
+
+$$
+\begin{equation}
+\va{s}(t) = c_1 \va{s}_1(t) + c_2 \va{s}_2(t)
+\end{equation}
+$$
+
+## Case 2: Infinite Springs
+
+Now, let's consider the case where we have an infinite number of springs connected to each other.
+
+Imagine a chain of masses connected by springs attached to the ground. They oscillate up and down (assume gravity does not exist; the upward-downward direction is arbitrary).
+Instead of thikning about the $n$th spring, we can think about the spring at some position $x$.
+The height of the spring at position $x$ is $\phi(x, t)$.
+
+This is where we start to see the connection to fields.
+Instead of thinking about the position of each mass, we think about the displacement of the spring at each position.
+This is a field - a function of position and time.
+
+We will now apply a fundamental shift in our thinking.
+Since kinetic energy is a quantity for a single particle, it does not make sense to talk about the kinetic energy in this case.
+Instead, we will think about the **kinetic energy density** - the kinetic energy per unit length:
+
+$$
+\begin{equation}
+\mathcal{T} = \frac{1}{2} m \qty(\pdv{\phi}{t})^2
+\end{equation}
+$$
+
+Similarly, the potential energy density is the potential energy per unit length:
+
+$$
+\begin{equation}
+\mathcal{V} = \frac{1}{2} k \phi^2 + \frac{1}{2} \class{yellow}{\tilde{k}} \qty(\pdv{\phi}{x})^2
+\end{equation}
+$$
+
+We will make some changes to simplify the problem:
+
+1. Let $\class{yellow}{\tilde{k}} = m$ for simplicity.
+2. Apply a change of variables: $\phi := \sqrt{m} \phi$. This is a simple scaling of the field.
+
+With these changes, the new energy densities are:
+
+$$
+\begin{align}
+\mathcal{T} &= \frac{1}{2} \qty(\pdv{\phi}{t})^2 \\
+\mathcal{V} &= \frac{1}{2} \frac{k}{m} \phi^2 + \frac{1}{2} \qty(\pdv{\phi}{x})^2
+\end{align}
+$$
+
+Lastly, we will define $m^2 := \frac{k}{m}$ (this is a new $m$ variable, no longer the mass of the particles):
+
+$$
+\begin{align}
+\mathcal{T} &= \frac{1}{2} \qty(\pdv{\phi}{t})^2 \\
+\mathcal{V} &= \frac{1}{2} m^2 \phi^2 + \frac{1}{2} \qty(\pdv{\phi}{x})^2
+\end{align}
+$$
+
+Just like with energies, the Lagrangian has a density as well.
+The **Lagrangian density** is the Lagrangian per unit length:
+
+$$
+\begin{equation}
+\mathcal{L} = \mathcal{T} - \mathcal{V}
+\end{equation}
+$$
+
+Substituting the expressions for $\mathcal{T}$ and $\mathcal{V}$, we get:
+
+$$
+\begin{equation}
+\mathcal{L} = \frac{1}{2} (\partial_t \phi)^2 - \frac{1}{2} m^2 \phi^2 - \frac{1}{2} (\partial_x \phi)^2
+\end{equation}
+$$
+
+To convert from densities to total quantities, we integrate over the length of the chain:
+
+$$
+\begin{align}
+T(t) &= \int \mathcal{T}(x, t) \dd{x} \\
+V(t) &= \int \mathcal{V}(x, t) \dd{x} \\
+L(t) &= \int \mathcal{L}(x, t) \dd{x}
+\end{align}
+$$
+
+In order to derive the equations of motion, we will use the Euler-Lagrange equation for fields, a generalization of the Euler-Lagrange equation for particles.
+We shall derive it from Hamilton's principle to find the equations of motion.
+Since the action is the integral of the Lagrangian over time, the action for the field is:
+
+$$
+\begin{equation}
+S = \int_{t_i}^{t_f} \dd{t} L(x, t) = \int_{t_i}^{t_f} \dd{t} \int \dd{x} \mathcal{L}(x, t)
+\end{equation}
+$$
+
+As before, we will vary the function a bit and set the variation to zero.
+In this case, $\phi(x, t) \rightarrow \phi(x, t) + \epsilon \eta(x, t)$.
+
+The key is that unlike our particle case, the Lagrangian has more quantities to vary.
+More specifically, it depends on $\phi$, $\partial_t \phi$, and $\partial_x \phi$.
+As such, we will need to include all of these in the chain rule when varying the Lagrangian.
+
+Below is the expansion of the change in the Lagrangian when varying $\epsilon$. The terms in green are the new terms that did not appear in the particle case.
+
+$$
+\begin{equation}
+\begin{split}
+\dv{\mathcal{L}}{\epsilon} &= \pdv{\mathcal{L}}{\phi} \dv{\phi}{\epsilon} + \pdv{\mathcal{L}}{(\partial_t \phi)} \dv{(\partial_t \phi)}{\epsilon} \class{green}{+ \pdv{\mathcal{L}}{(\partial_x \phi)} \dv{(\partial_x \phi)}{\epsilon}} \\
+&= \pdv{\mathcal{L}}{\phi} \eta + \pdv{\mathcal{L}}{(\partial_t \phi)} \dot{\eta} \class{green}{- \pdv{\mathcal{L}}{(\partial_x \phi)} \partial_x \eta} \\
+&= \pdv{\mathcal{L}}{\phi} \eta + \pdv{t} \qty(\pdv{\mathcal{L}}{(\partial_t \phi)} \eta) - \qty(\pdv{t} \pdv{\mathcal{L}}{(\partial_t \phi)}) \eta \\
+&\qquad \class{green}{{}+ \pdv{x} \qty(\pdv{\mathcal{L}}{(\partial_x \phi)} \eta) - \qty(\pdv{x} \pdv{\mathcal{L}}{(\partial_x \phi)}) \eta} \\
+&= \underbrace{\dv{t} \qty(\pdv{\mathcal{L}}{(\partial_t \phi)} \eta) \class{green}{+ \dv{x} \qty(\pdv{\mathcal{L}}{(\partial_x \phi)} \eta)}}_{\text{vanishes}} + \qty(\pdv{\mathcal{L}}{\phi} - \pdv{t} \pdv{\mathcal{L}}{(\partial_t \phi)} \class{green}{- \pdv{x} \pdv{\mathcal{L}}{(\partial_x \phi)}}) \eta
+\end{split}
+\end{equation}
+$$
+
+Just like before, the first term vanishes when integrated over all spacetime, and we are left with:
+
+$$
+\begin{equation}
+\int_{t_i}^{t_f} \dd{t} \int \dd{x} \qty(\pdv{\mathcal{L}}{\phi} - \dv{t} \pdv{\mathcal{L}}{(\partial_t \phi)} - \dv{x} \pdv{\mathcal{L}}{(\partial_x \phi)}) \eta = 0
+\end{equation}
+$$
+
+This must hold for all $\eta(x, t)$, so the part inside the parentheses must vanish:
+
+<Boxed>
+
+**Euler-Lagrange Equation for x-t Fields**: For a field $\phi(x, t)$, the Euler-Lagrange equation is:
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} - \dv{t} \pdv{\mathcal{L}}{(\partial_t \phi)} - \dv{x} \pdv{\mathcal{L}}{(\partial_x \phi)} = 0
+\end{equation}
+$$
+
+</Boxed>
+
+Plugging in the Lagrangian density, we get:
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} - \dv{t} \pdv{\mathcal{L}}{(\partial_t \phi)} - \dv{x} \pdv{\mathcal{L}}{(\partial_x \phi)} = -m^2 \phi + \partial_t^2 \phi - \partial_x^2 \phi = 0
+\end{equation}
+$$
+
+One solution to this equation is, as one might expect, a wave equation:
+
+$$
+\begin{equation}
+\phi(x, t) = A \cos(\omega t - k x + \varphi)
+\end{equation}
+$$
+
+The constants $\omega$ and $k$ must satisfy $\omega^2 - k^2 = m^2$.
+(You can verify this by plugging in the solution into the equation of motion.)
+
+The general solution is a superposition of these waves, each with different wavenumbers.
+
+$$
+\begin{equation}
+\phi(x, t) = A \cos(\omega t - k x + \varphi) + B \cos(\omega t + k x + \varphi) + \dots
+\end{equation}
+$$
+
+It is often useful to write this in terms of complex exponentials.
+Additionally, since $k$ is continuous, the most general solution is an integral over all possible $k$ values.
+Therefore, the most general solution is:
+
+$$
+\begin{equation}
+\phi(x, t) = \int_{-\infty}^{\infty} \dd{k} \qty(A(k) e^{i(\omega t - k x)} + B(k) e^{i(\omega t + k x)})
+\end{equation}
+$$
+
+This is the solution to the wave equation, and it describes the motion of the chain of springs.
+
+## Case 3: Klein-Gordon Equation
+
+Next, we will add two new dimensions to the system, $y$ and $z$.
+
+The Lagrangian density for this system is:
+
+$$
+\begin{equation}
+\mathcal{L} = \frac{1}{2} \qty(\partial_t \phi)^2 - \frac{1}{2} m^2 \phi^2 - \frac{1}{2} \qty(\partial_x \phi)^2 - \frac{1}{2} \qty(\partial_y \phi)^2 - \frac{1}{2} \qty(\partial_z \phi)^2
+\end{equation}
+$$
+
+Nothing has changed significantly; there are just more terms in the Lagrangian density.
+
+Plugging this into the Euler-Lagrange equation, we get:
+
+$$
+\begin{equation}
+\partial_t^2 \phi - \partial_x^2 \phi - \partial_y^2 \phi - \partial_z^2 \phi + m^2 \phi = 0
+\end{equation}
+$$
+
+This equation is known as the **Klein-Gordon equation**.
+It is a relativistic wave equation that describes scalar particles.
+We will see in the future how this equation arises in quantum field theory.
+
+We can also clean up the notation a bit.
+Recall that for fields, the Euler-Lagrange equation is:
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} - \dv{t} \pdv{\mathcal{L}}{(\partial_t \phi)} - \dv{x} \pdv{\mathcal{L}}{(\partial_x \phi)} - \dv{y} \pdv{\mathcal{L}}{(\partial_y \phi)} - \dv{z} \pdv{\mathcal{L}}{(\partial_z \phi)} = 0
+\end{equation}
+$$
+
+First, notice that for all $t$, $x$, $y$, and $z$, the same term appears in the Lagrangian density.
+We can combine them into a sum over all dimensions $\mu$:
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} - \sum_{\mu = t, x, y, z} \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi)}) = 0
+\end{equation}
+$$
+
+In special relativity, it is often customary to use the coordinate $ct$ instead of $t$ such that all coordinates have the same dimension.
+Changing the coordinate $t$ to $ct$ does not change the physics, but it does make the equations easier to write.
+Often, we use a system called **natural units** in theoretical physics, where $c = \hbar = 1$, to simplify equations.
+
+We will also remove the summation symbol and simply write $\mu$ as the index - the summation is implied.
+This is known as the Einstein summation convention.
+
+Making both of these changes, the Euler-Lagrange equation for fields becomes:
+
+<Boxed>
+
+**Euler-Lagrange Equation for Fields**: Given a field $\phi(x^\mu)$, the Euler-Lagrange equation is:
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} - \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi)}) = 0 \label{eq:el-eqn-field}
+\end{equation}
+$$
+
+</Boxed>
+
+For our Klein-Gordon equation, we know that the equation becomes $\partial_t^2 \phi - \partial_x^2 \phi - \partial_y^2 \phi - \partial_z^2 \phi = -m^2 \phi$.
+In special relativity, we define geometry with the Minkowski metric $\eta_{\mu\nu}$:
+
+$$
+\begin{equation}
+\eta_{\mu\nu} = \mqty[1 & 0 & 0 & 0 \\ 0 & -1 & 0 & 0 \\ 0 & 0 & -1 & 0 \\ 0 & 0 & 0 & -1]
+\end{equation}
+$$
+
+(under the mostly-minus convention)
+Notice that the signs match the signs of the derivatives in the Klein-Gordon equation.
+We can write it as:
+
+$$
+\begin{equation}
+\eta_{tt} \partial_t \partial_t \phi - \eta_{xx} \partial_x \partial_x \phi - \eta_{yy} \partial_y \partial_y \phi - \eta_{zz} \partial_z \partial_z \phi = -m^2 \phi
+\end{equation}
+$$
+
+Using the Einstein summation convention, we can write this as:
+
+$$
+\begin{equation}
+\eta_{\mu\mu} \partial_\mu \partial_\mu \phi = -m^2 \phi
+\end{equation}
+$$
+
+Lastly, if one is familiar with how raising and lowering indices work, we can write this as $\partial_\mu \partial^\mu \phi = -m^2 \phi$.
+The operation $\partial_\mu \partial^\mu$ is known as the **d'Alembertian** operator, and because it is very common, it is often written simply as $\partial^2$ or $\Box$.
+
+<Boxed>
+
+**Klein-Gordon Equation**: The Klein-Gordon equation for a scalar field $\phi(x^\mu)$ is:
+
+$$
+\begin{equation}
+\partial_\mu \partial^\mu \phi = \partial^2 \phi = \Box \phi = -m^2 \phi \label{eq:klein-gordon}
+\end{equation}
+$$
+
+</Boxed>
+
+This is the Klein-Gordon equation in a more compact form, and it is what most textbooks, papers, and researchers use.
+
+It turns out that this equation is very important in quantum field theory.
+It describes scalar particles, and it is the starting point for many quantum field theories.
+
+## Momenta
+
+Recall that in Lagrangian mechanics, we generalize the concept of momentum to the canonical/conjugate momentum:
+
+$$
+\begin{equation}
+p_i := \pdv{L}{\dot{q}^i}
+\end{equation}
+$$
+
+In field theory, we generalize this to the canonical/conjugate momentum density:
+
+$$
+\begin{equation}
+\pi := \pdv{\mathcal{L}}{\dot{\phi}}
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+In this note, we explored a chain of springs and derived the Klein-Gordon equation.
+We saw how the concept of fields arises from a system of particles and how the Lagrangian density is used to describe the system.
+
+Here are the key points to remember:
+
+- A chain of springs can be described by a field, which is a function of position and time.
+- The kinetic energy, potential energy, and Lagrangian of the system can be written as *densities* rather than total quantities:
+
+    | Quantity | Density | Integral |
+    |----------|---------|----------|
+    | Kinetic Energy | $\displaystyle \mathcal{T} = \frac{1}{2} (\partial_t \phi)^2$ | $\displaystyle T = \int \mathcal{T} \dd{x}$ |
+    | Potential Energy | $\displaystyle \mathcal{V} = \frac{1}{2} m^2 \phi^2 + \frac{1}{2} (\partial_x \phi)^2$ | $\displaystyle V = \int \mathcal{V} \dd{x}$ |
+    | Lagrangian | $\displaystyle \mathcal{L} = \mathcal{T} - \mathcal{V}$ | $\displaystyle L = \int \mathcal{L} \dd{x}$ |
+
+- For a matrix differential equation, the eigenvalues and eigenvectors are the normal modes of the system.
+    The general solution is an integral over all possible normal modes.
+
+- Einstein's summation convention simplifies the notation for equations with many indices.
+    It is often used in special relativity and field theory.
+
+- The Euler-Lagrange equation for fields is a generalization of the Euler-Lagrange equation for particles.
+    It is given by $\eqref{eq:el-eqn-field}$:
+
+    $$
+    \begin{equation}
+    \pdv{\mathcal{L}}{\phi} - \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi)}) = 0 \tag{\ref{eq:el-eqn-field}}
+    \end{equation}
+    $$
+
+    We derived it from Hamilton's principle and used it to find the Klein-Gordon equation.
+
+- The Klein-Gordon equation is an equation that describes scalar particles.
+    It is given by $\eqref{eq:klein-gordon}$:
+
+    $$
+    \begin{equation}
+    \partial_\mu \partial^\mu \phi = -m^2 \phi \tag{\ref{eq:klein-gordon}}
+    \end{equation}
+    $$
+
+    where $\partial^\mu = \eta^{\mu\nu} \partial_\nu$, and $\eta^{\mu\nu}$ is the (inverse) Minkowski metric. (The Minkowski metric is self-inverse.)
+
+- The canonical/conjugate momentum density is defined as $\pi = \pdv{\mathcal{L}}{\dot{\phi}}$.
+
+It is important to see that a field theory is *defined* by its Lagrangian density.
+Given an expression for $\mathcal{L}$, all the equations of motion, normal modes, and solutions can be derived.
+Field Theory is not in itself a specific theory; it's more of a class of theories that describe fields.
+
+Different field theories arise from different Lagrangian densities.
+As mentioned, it turns out that the Klein-Gordon equation describes scalar spin-0 particles, and it is the starting point for many quantum field theories.
+Other field theories exist for other types of fields, such as spin-1/2 (Dirac, spinor fields) and spin-1 (Proca, vector fields).
+
+### References
+
+- Eigenchris. Spinors for Beginners 21: ["Quantum Field Theory from the Ground Up"](https://www.youtube.com/watch?v=uE6q-dxjrlA&list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs&index=22)
+- Schneider, Elliot (Physics with Elliot). ["Field Theory Fundamentals in 20 Minutes!"](https://www.youtube.com/watch?v=13hCkUiu_mI)
+
+## Appendix: Eigenvalue Trick
+
+The trick I used to find the eigenvalues of the matrix is a common one.
+Here I will provide justification for it.
+
+The usual way to find the eigenvalues of a matrix is to solve the characteristic equation $\det(\vb{A} - \lambda \vb{I}) = 0$.
+Our trick is a shortcut to find the eigenvalues without explicitly calculating the characteristic equation.
+It relies on two properties of the matrix: the trace and the determinant.
+I will now show why this trick works.
+
+1. The trace of a matrix is the sum of the eigenvalues.
+
+    This is clear when we realize that the trace does not depend on the basis we choose.
+    If we choose a basis where the matrix is diagonal, the trace is the sum of the diagonal elements, which are the eigenvalues.
+    Thus, the trace is the sum of the eigenvalues.
+
+2. The determinant of a matrix is the product of the eigenvalues.
+
+    This has a nice geometric interpretation.
+    Recall that the determinant of a matrix is the volume scaling factor of the matrix.
+    If we imagine a volume that is spanned by the eigenvectors of the matrix, applying the matrix scales the volume by the determinant.
+    But it also scales each eigenvector by the corresponding eigenvalue. Thus, the determinant is the product of the eigenvalues.

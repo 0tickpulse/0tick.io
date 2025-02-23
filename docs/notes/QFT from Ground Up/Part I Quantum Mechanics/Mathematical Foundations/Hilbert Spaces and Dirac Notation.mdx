@@ -151,6 +151,48 @@ Let's summarize the properties of the vector space of state vectors:
 This vector space that we have just described is *almost* the definition of a **Hilbert space** $\mathcal{H}$.
 We need to add one more property to make it a Hilbert space: the space has a well-defined **inner product**.
 
+### States of Coupled Systems
+
+Suppose we have a particle that can be in one of two states, $\ket{\uparrow}$ and $\ket{\downarrow}$. (Think of the spin of an electron.)
+The state of the particle can be represented by a vector in a two-dimensional vector space, where the basis states are $\ket{\uparrow}$ and $\ket{\downarrow}$.
+
+$$
+\begin{equation}
+\ket{\psi} = c_1 \ket{\uparrow} + c_2 \ket{\downarrow}
+\end{equation}
+$$
+
+Now, suppose we add another particle to this system, which can also be in one of two states, $\ket{\uparrow}$ and $\ket{\downarrow}$. (Think of another electron.)
+In this case, then, there are now four possible states to represent all the different combinations of states of the two particles.
+For instance, if both particles are in the $\ket{\uparrow}$ state, the state of the system is $\ket{\uparrow} \otimes \ket{\uparrow}$, where $\otimes$ is something we will define later.
+Hence, the basis states of the system are $\ket{\uparrow} \otimes \ket{\uparrow}$, $\ket{\uparrow} \otimes \ket{\downarrow}$, $\ket{\downarrow} \otimes \ket{\uparrow}$, and $\ket{\downarrow} \otimes \ket{\downarrow}$.
+
+The vector *space* is now four-dimensional, which can be thought of as the "product" of the two two-dimensional spaces.
+If $\ket{\psi}$ is a state vector in this space, it can be written as a linear combination of the basis states:
+
+$$
+\begin{equation}
+\ket{\psi} = c_1 \ket{\uparrow} \otimes \ket{\uparrow} + c_2 \ket{\uparrow} \otimes \ket{\downarrow} + c_3 \ket{\downarrow} \otimes \ket{\uparrow} + c_4 \ket{\downarrow} \otimes \ket{\downarrow}
+\end{equation}
+$$
+
+For brevity, the basis states are often written as $\ket{\uparrow} \ket{\uparrow}$ or simply $\ket{\uparrow \uparrow}$:
+
+$$
+\begin{equation}
+\ket{\psi} = c_1 \ket{\uparrow \uparrow} + c_2 \ket{\uparrow \downarrow} + c_3 \ket{\downarrow \uparrow} + c_4 \ket{\downarrow \downarrow}
+\end{equation}
+$$
+
+In a similar fashion to the vectors, the vector *space* of the system is written as $\mathcal{H}_1 \otimes \mathcal{H}_2$, where $\mathcal{H}_1$ and $\mathcal{H}_2$ are the vector spaces of the two particles.
+
+It turns out that this $\otimes$ operation is the **tensor product**.
+The tensor product of two vector spaces $\mathcal{H}_1$ and $\mathcal{H}_2$ is a vector space $\mathcal{H}_1 \otimes \mathcal{H}_2$ that contains all possible combinations of states of the two vector spaces.
+The basis states of the tensor product space are the tensor products of the basis states of the two vector spaces.
+We will explore the tensor product in more detail later.
+
+This framework is known as the **composite system postulate**.
+
 ## The Inner Product
 
 Another important concept in quantum mechanics is the **inner product**.
@@ -594,6 +636,7 @@ The state of a system is represented by a state vector $\ket{\psi}$, which is a 
 Here are the key points to remember:
 
 - The state of a system is represented by a state vector $\ket{\psi}$ in a Hilbert space $\mathcal{H}$.
+- The state of a coupled system is represented by a state vector in the tensor product space $\mathcal{H}_1 \otimes \mathcal{H}_2$.
 - A Hilbert space is an infinite-dimensional vector space that is Cauchy complete.
 - The state vector is a linear combination of basis states $\ket{i}$.
     In a discrete basis, the state vector is a sum over basis states:

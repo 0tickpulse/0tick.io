@@ -48,31 +48,43 @@ The Euler-Langrange equations will be generalized to be able to deal with fields
 A specific "field theory" is defined by its Lagrangian density.
 Hence, we will explore a few examples of field theories, such as the following, based on the spin of the field:
 
-- Spin-0 - Klein-Gordon Equation:
+- Spin-0 (scalar) - Klein-Gordon Equation:
 
     $$
-    \begin{equation}
-    \qty(\partial^\mu \partial_\mu + m^2) \phi = 0
-    \end{equation}
+    \begin{align}
+    \mathcal{L} &= \frac{1}{2} \partial_\mu \phi \partial^\mu \phi - \frac{1}{2} m^2 \phi^2 \\
+    \qty(\partial^\mu \partial_\mu + m^2) \phi &= 0
+    \end{align}
     $$
-- Spin-1/2 - Dirac Equation:
+- Spin-1/2 (spinor) - Dirac Equation:
 
     $$
-    \begin{equation}
-    (i \gamma^\mu \partial_\mu - m) \psi = 0
-    \end{equation}
+    \begin{align}
+    \mathcal{L} &= \bar{\psi} (i \gamma^\mu \partial_\mu - m) \psi \\
+    (i \gamma^\mu \partial_\mu - m) \psi &= 0
+    \end{align}
     $$
-- Spin-1 - Proca Equation:
+- Spin-1 (vector) - Proca Equation:
 
     $$
-    \begin{equation}
-    \qty(\partial^\mu \partial_\mu + m^2) A^\mu = 0
-    \end{equation}
+    \begin{align}
+    \mathcal{L} &= -\frac{1}{4} F_{\mu\nu} F^{\mu\nu} + \frac{1}{2} m^2 A_\mu A^\mu \\
+    \partial_\mu F^{\mu\nu} + m^2 A^\nu &= 0
+    \end{align}
     $$
-- Spin-1 (massless) - Maxwell's Equations:
+- Spin-1 (vector, massless) - Maxwell's Equations:
 
     $$
-    \begin{equation}
-    \partial_\mu \qty(\partial^\mu A^\nu - \partial^\nu A^\mu) = 0
-    \end{equation}
+    \begin{align}
+    \mathcal{L} &= -\frac{1}{4} F_{\mu\nu} F^{\mu\nu} \\
+    \partial_\mu F^{\mu\nu} &= 0
+    \end{align}
+    $$
+- Spin-2 (tensor) - Einstein's Equations:
+
+    $$
+    \begin{align}
+    \mathcal{L} &= \frac{1}{16 \pi G} g^{\mu\nu} R_{\mu\nu} \\
+    R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} &= 0
+    \end{align}
     $$

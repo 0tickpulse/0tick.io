@@ -27,7 +27,7 @@ Now, we will discuss how we can measure these properties and how they are repres
 In quantum mechanics, an **observable** is a physical quantity that can be measured.
 These are properties of a particle that we can observe, such as position $x$, momentum $p$, energy $E$, and so on.
 Observables are repesented as linear operators acting on the state vector of the particle.
-These oeprators are denoted by a hat, such as $\hat{x}$, $\hat{p}$, $\hat{E}$, and so on.
+These operators are denoted by a hat, such as $\hat{x}$, $\hat{p}$, $\hat{E}$, and so on.
 
 Suppose we have an observable $\hat{E}$ for the energy of a particle.
 How can we find out which energies are possible for the particle?
@@ -894,7 +894,9 @@ This comes from the fact that the trace is the sum of the eigenvalues and the de
 This proof is a bit more abstract, and it comes from [this post](https://math.stackexchange.com/questions/343910/is-a-bra-the-adjoint-of-a-ket) on Math Stack Exchange.
 It borrows idaes from functional analysis and the dual correspondence between vectors and linear functionals.
 
-Recall that Hermitian adjoints act on operators, not vectors.
+**Theorem**: In a finite-dimensional Hilbert space $\mathcal{H}$, the Hermitian adjoint of a ket vector $\ket{\psi}$ is its corresponding bra vector $\bra{\psi}$, which is the linear functional that is dual to the inner product $\braket{\psi}{\cdot}$.
+
+**Proof**. Recall that Hermitian adjoints act on operators, not vectors.
 It would thus seem like we need to somehow interpret a vector as a linear transformation.
 This comes from our dual correspondence, where a vector can be thought of as a linear functional.
 In fact, let's define this formally - for a vector $\ket{\psi}$, we can write its corresponding linear functional as $\Phi[\ket{\psi}] = \bra{\psi}$.
@@ -923,3 +925,11 @@ By the definition of the Hermitian adjoint, this is equal to $\ev{\Psi[\bra{\psi
 But looking at the left-hand side of the inner product, recall that applying the adjoint of a vector to a scalar just scales the vector by the scalar.
 So all this is equal to $\ev{\bra{\psi}, \ket{\phi}}_{\mathcal{H}}$, which is *precisely* the inner product of $\bra{\psi}$ and $\ket{\phi}$.
 Thus, $\braket{\psi}{\phi} = \ket{\psi}^\dagger \ket{\phi}$, and so $\ket{\psi}^\dagger = \bra{\psi}$. $\blacksquare$
+
+One might rightfully ask how this can be extended to infinite-dimensional Hilbert spaces.
+This is easier to see if we restrict ourselves to continuous linear functionals.
+Then, the Riesz representation theorem automatically gives us a bra vector for every ket vector.
+
+Outside of continuous linear functionals, the correspondence is not as clear.
+I will not delve into this, but the author of this post has a good explanation of this in a comment on the linked post.
+It involves concepts like dense subspaces and topologies, so be prepared for some heavy mathematics.

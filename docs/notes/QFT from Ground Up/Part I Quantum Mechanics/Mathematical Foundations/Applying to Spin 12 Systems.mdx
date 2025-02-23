@@ -267,7 +267,7 @@ Additionally, if one works it out, it turns out that the spin operators follow t
 
 $$
 \begin{equation}
-[S_i, S_j] = i\hbar \epsilon_{ijk} S_k
+[S_i, S_j] = i\hbar \epsilon_{ijk} S_k \label{eq:spin_commutation}
 \end{equation}
 $$
 
@@ -389,3 +389,49 @@ A **spinor** is a $2 \times 1$ column vector that (1) has phase ambiguity and (2
 I use the word "preliminary" because this definition is not complete.
 It is analogous to the definition of a vector as a quantity with magnitude and direction - it is "somewhat" correct, but it is not the full story.
 
+## Qubits and Quantum Computing
+
+Outside of the Stern-Gerlach experiment, spin-1/2 systems have many applications in computing.
+Specifically, a **qubit** is a two-level quantum system that can be in a superposition of the two states, just like the electron in the SG experiment.
+Qubits are the fundamental building blocks of quantum computers, and they can be used to perform computations that are infeasible for classical computers.
+
+To see why, consider a classical computer with $n$ bits.
+The computer can be in one of $2^n$ states.
+A quantum computer with $n$ qubits can be in a superposition of these $2^n$ states (which is much more than $2^n$ states).
+Then, if we have multiple qubits (where the whole system is a tensor product of the individual qubits), this scales exponentially.
+
+When we apply an unitary operator - physically, a quantum gate - to a set of qubits, each possible state of the qubits is transformed by the same operator.
+This means that we are essentially performing multiple computations with a single operation.
+Even more interesting things happen when we consider entanglement, where the states of the qubits are correlated with each other, and the whole system cannot be written as a tensor product of the individual qubits.
+
+## Summary and Next Steps
+
+In this section, we applied the state vector formalism to spin-1/2 systems.
+We introduced the spin states, the spin operators, and the probabilities of measuring the electron in different spin states.
+
+Here are the key points to remember:
+
+- The spin of the electron is quantized, and it can only be measured in two directions.
+- There are two spin states per axis: spin-up and spin-down. For the $z$-axis, these are $\ket{+z}$ and $\ket{-z}$.
+- If $\ket{+z}$ and $\ket{-z}$ are the basis vectors of the Hilbert space, then the spin operators can be represented as matrices acting on these vectors:
+
+    $$
+    \begin{equation}
+    \hat{S}_z = \frac{\hbar}{2} \mqty[1 & 0 \\ 0 & -1]
+    \end{equation}
+    $$
+- The probabilities of measuring the electron in different spin states can be calculated using the Born rule.
+- The commutation relations of the spin operators are:
+
+    $$
+    \begin{equation}
+    [S_i, S_j] = i\hbar \epsilon_{ijk} S_k \tag{\ref{eq:spin_commutation}}
+    \end{equation}
+    $$
+
+- The spin states can be represented as a Bloch sphere, and rotations between the spin states are members of the $SU(2)$ group.
+- A **spinor** is a $2 \times 1$ column vector that has phase ambiguity and transforms using $SU(2)$ matrices.
+- Spin-1/2 systems have many applications in quantum computing, where they are used as qubits.
+    They have the potential to perform many computations simultaneously (that are infeasible for classical computers).
+
+In the next section, we will create a preliminary formalism for spinors as members of complex projective space, as well as how they can be visualized as flagpoles.

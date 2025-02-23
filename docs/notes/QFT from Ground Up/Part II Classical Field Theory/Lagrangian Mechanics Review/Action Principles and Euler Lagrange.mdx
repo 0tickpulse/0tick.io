@@ -1,0 +1,414 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Action Principles and Euler-Lagrange Equations
+
+In this section, we will review the Lagrangian formalism, which is the basis of classical field theory.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Action Principles
+
+In classical mechanics, the motion of a particle is determined by the principle of stationary action (also known as the principle of least action).
+Historically, this principle was first formulated by Pierre Louis Maupertuis, where the action is defined as the product of mass, velocity, and distance.
+
+Modern physics uses a more general form of the principle of stationary action, known as the Hamilton's principle.
+William Rowan Hamilton wrote that the action can be expressed as the integral of a quantity called the Lagrangian over time:
+
+$$
+\begin{equation}
+S[q(t)] := \int_{t_i}^{t_f} L(q, \dot{q}, t) \dd{t} \label{eq:action-def}
+\end{equation}
+$$
+
+where $q(t)$ is the path taken by the particle, $L$ is the Lagrangian, and $\dot{q}$ is the derivative of $q$ with respect to time.
+For a more detailed explanation of action principles, I like [this Veritasium video](https://www.youtube.com/watch?v=Q10_srZ-pbs).
+
+The principle of stationary action states that the path taken by a particle between two points in space and time is such that the action is stationary.
+If $q(t)$ is the actual path taken by the particle, then if we perturb the path by a small amount, the action should not change to first order in $\delta q$.
+This is analogous to how a function has a minimum at a stationary point - if you move a little bit away from the stationary point, the function should not change much.
+Mathematically, this is expressed as $\delta S = 0$.
+
+In simple cases, the Lagrangian is defined as the difference between the kinetic and potential energies of the system:
+
+<Boxed>
+
+**Lagrangian**: The Lagrangian of a system is defined as the difference between the kinetic and potential energies:
+
+$$
+\begin{equation}
+L(q, \dot{q}, t) = T(\dot{q}, t) - V(q, t)
+\end{equation}
+$$
+
+</Boxed>
+
+## Euler-Lagrange Equations
+
+The principle of stationary action can be used to derive the Euler-Lagrange equations, which are the equations of motion in the Lagrangian formalism.
+
+The following derivation tries not to use any calculus of variations to keep it simple.
+
+Suppose $q(t)$ is the path taken by the particle, and $q(t) + \epsilon \eta(t)$ is a nearby path.
+We let $\eta(t)$ be a function that vanishes at the endpoints of the path, i.e. $\eta(t_i) = \eta(t_f) = 0$, and $\epsilon$ is a small parameter that we will later set to zero.
+This effectively means that $\eta(t)$ is a small perturbation of the path $q(t)$ that does not chnage the endpoints.
+Call this new path $q^*(t) := q(t) + \epsilon \eta(t)$.
+
+According to the principle of stationary action, the action should be at a stationary value, hence the derivative of the action with respect to $\epsilon$ should vanish at $\epsilon = 0$:
+
+$$
+\begin{equation}
+\eval{\dv{\epsilon} S[q^*(t)]}_{\epsilon = 0} = 0
+\end{equation}
+$$
+
+Plugging the definition (Equation $\eqref{eq:action-def}$) of the action into the above equation, we get:
+
+$$
+\begin{equation}
+\dv{S[q^*(t)]}{\epsilon} = \dv{\epsilon} \int_{t_i}^{t_f} L(q^*, \dot{q}^*, t) \dd{t} = \int_{t_i}^{t_f} \dv{L(q^*, \dot{q}^*, t)}{\epsilon} \dd{t}
+\end{equation}
+$$
+
+$L$ is a function of $q$, $\dot{q}$, and $t$, so we can use the chain rule as follows:
+
+$$
+\begin{equation}
+\dv{L(q^*, \dot{q}^*, t)}{\epsilon} = \pdv{L}{q} \pdv{q^*}{\epsilon} + \pdv{L}{\dot{q}} \pdv{\dot{q}^*}{\epsilon}
+\end{equation}
+$$
+
+(there is no explicit dependence of $L$ on $t$; $t$ changes $L$ only through $q$ and $\dot{q}$).
+Since $q^*(t) := q(t) + \epsilon \eta(t)$, we have $\pdv{q^*}{\epsilon} = \eta(t)$ and $\pdv{\dot{q}^*}{\epsilon} = \dot{\eta}(t)$:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L(q^*, \dot{q}^*, t)}{\epsilon} &= \pdv{L}{q} \pdv{q^*}{\epsilon} + \pdv{L}{\dot{q}} \pdv{\dot{q}^*}{\epsilon} \\
+&= \pdv{L}{q} \eta(t) + \pdv{L}{\dot{q}} \dot{\eta}(t)
+\end{split}
+\end{equation}
+$$
+
+We can use the product rule to simplify the right-most term in the above equation. Doing so and factoring out $\eta(t)$, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L(q^*, \dot{q}^*, t)}{\epsilon} &= \pdv{L}{q} \eta(t) + \pdv{L}{\dot{q}} \dot{\eta}(t) \\
+&= \pdv{L}{q} \eta(t) + \dv{t} \qty(\pdv{L}{\dot{q}} \eta(t)) - \dv{t} \qty(\pdv{L}{\dot{q}}) \eta(t) \\
+&= \dv{t} \qty(\pdv{L}{\dot{q}} \eta(t)) + \qty(\pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}})) \eta(t)
+\end{split}
+\end{equation}
+$$
+
+Plugging this back into the principle of stationary action, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{S[q^*(t)]}{\epsilon} &= \int_{t_i}^{t_f} \dv{L(q^*, \dot{q}^*, t)}{\epsilon} \dd{t} \\
+&= \int_{t_i}^{t_f} \qty[\dv{t} \qty(\pdv{L}{\dot{q}} \eta(t)) + \qty(\pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}})) \eta(t)] \dd{t} \\
+&= \int_{t_i}^{t_f} \dv{t} \qty(\pdv{L}{\dot{q}} \eta(t)) \dd{t} + \int_{t_i}^{t_f} \qty(\pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}})) \eta(t) \dd{t}
+\end{split}
+\end{equation}
+$$
+
+The first term in the above equation can be simplified using the fundamental theorem of calculus to get $\eval{\pdv{L}{\dot{q}} \eta(t)}_{t_i}^{t_f}$.
+But since $\eta(t_i) = \eta(t_f) = 0$, this term vanishes. Hence, the above equation simplifies to:
+
+$$
+\begin{equation}
+\dv{S[q^*(t)]}{\epsilon} = \int_{t_i}^{t_f} \qty(\pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}})) \eta(t) \dd{t}
+\end{equation}
+$$
+
+By the principle of stationary action, this should vanish for all $\eta(t)$, which implies that the integrand should vanish for all $t$.
+Since $\eta(t)$ is arbitrary, the integrand should vanish for all $t$, which gives us the Euler-Lagrange equations:
+
+<Boxed>
+
+**Euler-Lagrange Equations**: For a Lagrangian defined by $L(q, \dot{q}, t)$, the Euler-Lagrange equations are given by:
+
+$$
+\begin{equation}
+\pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}}) = 0 \label{eq:euler-lagrange}
+\end{equation}
+$$
+
+</Boxed>
+
+:::info
+
+The Euler-Lagrange equations are the equations of motion in the Lagrangian formalism.
+We specifically used a derivation that does not impose a specific form of the Lagrangian, so the above equation is quite general.
+
+In principle, it would be easier to plug in the value of the Lagrangian $L = T - V$ and derive the Euler-Lagrange equations.
+The action becomes:
+
+$$
+\begin{equation}
+S[q(t)] = \int_{t_i}^{t_f} \qty(T - V) \dd{t} = \int_{t_i}^{t_f} \qty(\frac{1}{2} m \dot{q}^2 - V) \dd{t}
+\end{equation}
+$$
+
+Then, if $q(t)$ varies by $\epsilon \eta(t)$ to $q^*(t) := q(t) + \epsilon \eta(t)$, the resulting change in the action with respect to $\epsilon$ is:
+
+$$
+\begin{equation}
+\dv{S[q^*(t)]}{\epsilon} = \pdv{\epsilon} \int_{t_i}^{t_f} \qty(\frac{1}{2} m \dot{q}^2 - V) \dd{t} = \int_{t_i}^{t_f} \pdv{\epsilon} \qty(\frac{1}{2} m \dot{q}^2 - V) \dd{t}
+\end{equation}
+$$
+
+Since $\dot{q}^*(t) = \dot{q}(t) + \epsilon \dot{\eta}(t)$, then $\pdv{\dot{q}^*}{\epsilon} = \dot{\eta}(t)$.
+For the $V$ term, $\pdv{V}{\epsilon} = \dv{V}{q} \pdv{q}{\epsilon} = \dv{V}{q} \eta(t)$.
+
+Then, the change in the action is:
+
+$$
+\begin{equation}
+\dv{S[q^*(t)]}{\epsilon} = \int_{t_i}^{t_f} \qty(m \dot{q} \dot{\eta} - \dv{V}{q} \eta) \dd{t}
+\end{equation}
+$$
+
+Using the product rule, $m \dot{q} \dot{\eta} = \dv{t} \qty(m \dot{q} \eta) - \dv{m \dot{q}}{t} \eta$:
+
+$$
+\begin{equation}
+\dv{S[q^*(t)]}{\epsilon} = \int_{t_i}^{t_f} \qty(\dv{t} \qty(m \dot{q} \eta) - \dv{m \dot{q}}{t} \eta - \dv{V}{q} \eta) \dd{t}
+\end{equation}
+$$
+
+Just like before, the first term, when integrated, gives $\eval{m \dot{q} \eta}_{t_i}^{t_f}$, which vanishes since $\eta(t_i) = \eta(t_f) = 0$.
+Hence, the above equation simplifies to:
+
+$$
+\begin{equation}
+\dv{S[q^*(t)]}{\epsilon} = \int_{t_i}^{t_f} \qty(- \dv{m \dot{q}}{t} \eta - \dv{V}{q} \eta) \dd{t}
+\end{equation}
+$$
+
+Since this has to be zero for all $\eta(t)$, the integrand should vanish for all $t$. This gives the following:
+
+$$
+\begin{equation}
+-\dv{m \dot{q}}{t} - \dv{V}{q} = 0
+\end{equation}
+$$
+
+Notice that $\dv{m \dot{q}}{t} = m \ddot{q}$ and $-\dv{V}{q} = F$. Hence:
+
+$$
+\begin{equation}
+m \ddot{q} = F
+\end{equation}
+$$
+
+which is Newton's second law.
+
+It is important to notice the parallel between the Euler-Lagrange equations and Newton's second law:
+
+| Euler-Lagrange | Newton's Second Law |
+|----------------|---------------------|
+| $\pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}}) = 0$ | $F - m \ddot{q} = 0$ |
+| $\pdv{L}{q}$ | $F$ |
+| $\dv{t} \qty(\pdv{L}{\dot{q}})$ | $m \ddot{q}$ |
+
+In other words, Newton's second law is a special case of the Euler-Lagrange equations:
+
+$$
+\begin{equation}
+\underbrace{\pdv{L}{q}}_{F} - \underbrace{\dv{t} \qty(\pdv{L}{\dot{q}})}_{m \ddot{q}} = 0
+\end{equation}
+$$
+
+However, we did not assume that the Lagrangian was of the form $L = T - V$ in the derivation of the Euler-Lagrange equations, so the above equation is quite general.
+In fact, the Lagrangian can be *any* function of $q$, $\dot{q}$, and $t$, and applying Hamilton's principle will lead to the Euler-Lagrange equations.
+
+:::
+
+## Coordinate Systems
+
+Note that the Euler-Lagrange equations are written in terms of the generalized coordinates $q$.
+These are coordinates that describe the configuration of the system, and they are not necessarily the Cartesian coordinates.
+As long as a set of coordinates can uniquely describe the configuration of the system, they can be used as generalized coordinates.
+
+### Canonical Momentum
+
+In Newtonian mechanics, the momentum of a particle is defined as $p = m \dot{x}$.
+Of course, this relies on a few assumptions of the $x$-coordinate.
+If it was another coordinate, such as $\theta$ for a pendulum, the momentum would be $p = m l^2 \dot{\theta}$.
+We need to form a more general definition of momentum that works for any coordinate system.
+
+The **canonical momentum** that is **conjugate** to a generalized coordinate $q$ is defined as:
+
+$$
+\begin{equation}
+p := \pdv{L}{\dot{q}}
+\end{equation}
+$$
+
+## Example Problem: Simple Harmonic Oscillator
+
+> Consider a spring-mass system with mass $m$ and spring constant $k$.
+> Using the Lagrangian formalism, derive the equations of motion for the system.
+
+The Lagrangian for this system is defined as the difference between the kinetic and potential energies:
+
+$$
+\begin{equation}
+L = T - V = \frac{1}{2} m \dot{x}^2 - \frac{1}{2} k x^2
+\end{equation}
+$$
+
+Next, we just need to find the two terms in the Euler-Lagrange equations and plug them in.
+
+First, $\pdv{L}{x}$ is:
+
+$$
+\begin{equation}
+\pdv{L}{x} = -k x
+\end{equation}
+$$
+
+Second, $\dv{t} \qty(\pdv{L}{\dot{x}})$ is:
+
+$$
+\begin{equation}
+\dv{t} \qty(\pdv{L}{\dot{x}}) = \dv{t} \qty(m \dot{x}) = m \ddot{x}
+\end{equation}
+$$
+
+Plugging these into the Euler-Lagrange equations, we get:
+
+$$
+\begin{equation}
+-k x - m \ddot{x} = 0
+\end{equation}
+$$
+
+which is the equation of motion for a simple harmonic oscillator.
+
+## Exercises
+
+1. Show that the Euler-Lagrange equations lead to Newton's second law for a simple one-dimensional system. (i.e. $L = T - V$)
+
+    <details>
+    <summary>Solution</summary>
+
+    Let $L = T - V$, where $T = \frac{1}{2} m \dot{x}^2$ and $V = V(x)$.
+    We just need to find $\pdv{L}{x}$ and $\dv{t} \qty(\pdv{L}{\dot{x}})$ and plug them into the Euler-Lagrange equations.
+
+    First, $\pdv{L}{q}$ is:
+
+    $$
+    \begin{equation}
+    \pdv{L}{x} = \pdv{V}{x}
+    \end{equation}
+    $$
+
+    Second, $\dv{t} \qty(\pdv{L}{\dot{x}})$ is:
+
+    $$
+    \begin{equation}
+    \dv{t} \qty(\pdv{L}{\dot{x}}) = \dv{t} \qty(m \dot{x}) = m \ddot{x}
+    \end{equation}
+    $$
+
+    Thus, the Euler-Lagrange equations become:
+
+    $$
+    \begin{equation}
+    \pdv{V}{x} - m \ddot{x} = 0
+    \end{equation}
+    $$
+
+    Since $\pdv{V}{x}$ is just the force acting on the particle, we get:
+
+    $$
+    \begin{equation}
+    F = m \ddot{x}
+    \end{equation}
+    $$
+
+    which is Newton's second law.
+
+    </details>
+
+2. Derive the equations of motion for a simple pendulum using the Lagrangian formalism.
+
+    <details>
+    <summary>Solution</summary>
+
+    Let's consider a simple pendulum with mass $m$ and length $l$.
+    The Lagrangian for this system is defined as the difference between the kinetic and potential energies:
+
+    $$
+    \begin{equation}
+    L = T - V = \frac{1}{2} m l^2 \dot{\theta}^2 - m g l \cos(\theta)
+    \end{equation}
+    $$
+
+    Next, we just need to find the two terms in the Euler-Lagrange equations and plug them in.
+
+    First, $\pdv{L}{\theta}$ is:
+
+    $$
+    \begin{equation}
+    \pdv{L}{\theta} = m g l \sin(\theta)
+    \end{equation}
+    $$
+
+    Second, $\dv{t} \qty(\pdv{L}{\dot{\theta}})$ is:
+
+    $$
+    \begin{equation}
+    \dv{t} \qty(\pdv{L}{\dot{\theta}}) = \dv{t} \qty(m l^2 \dot{\theta}) = m l^2 \ddot{\theta}
+    \end{equation}
+    $$
+
+    Plugging these into the Euler-Lagrange equations, we get:
+
+    $$
+    \begin{equation}
+    m g l \sin(\theta) - m l^2 \ddot{\theta} = 0
+    \end{equation}
+    $$
+
+    </details>
+
+## Summary and Next Steps
+
+In this section, we briefly reviewed the Lagrangian formalism, which is the basis of most classical field theories.
+
+Here are the key points to remember:
+
+- The principle of stationary action states that the path taken by a particle between two points in space and time is such that the action is stationary.
+- The Lagrangian is defined as the difference between the kinetic and potential energies of the system.
+- The Euler-Lagrange equations are the equations of motion in the Lagrangian formalism:
+
+    $$
+    \begin{equation}
+    \pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}}) = 0 \tag{\ref{eq:euler-lagrange}}
+    \end{equation}
+    $$
+
+The next section is skippable - we apply the Lagrangian formalism to the double pendulum system to demonstrate its power.

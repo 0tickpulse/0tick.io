@@ -28,6 +28,7 @@ import LinearTransformationVisualizer3D from "@site/src/components/mdxGlobal/Lin
 import { DeterminantCube } from "@site/src/components/mdxGlobal/DeterminantCube";
 import { CoulombLawVisualizer } from "@site/src/components/mdxGlobal/CoulombLawVisualizer";
 import { LightPolarizationPlayground } from "../components/mdxGlobal/LightPolarizationPlayground";
+import { DoublePendulumVisualizer } from "../components/mdxGlobal/DoublePendulumVisualizer";
 
 export default {
     ...MDXComponents,
@@ -39,6 +40,7 @@ export default {
     DerivativeFromLimits,
     DivergenceVisualization,
     DeterminantCube,
+    DoublePendulumVisualizer,
     LinearTransformationVisualizer,
     LinearTransformationVisualizer3D,
     NonlinearTransformationVisualizer,

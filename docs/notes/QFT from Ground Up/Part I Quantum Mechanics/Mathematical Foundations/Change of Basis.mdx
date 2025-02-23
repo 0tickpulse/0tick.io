@@ -21,26 +21,31 @@ The change of basis is very important in many areas of physics.
 For instance, the entirety of special relativity just boils down to changing the basis of spacetime vectors.
 We now explore some mathematical concepts that will help us understand how to change the basis of a vector.
 
+In this page, we shall employ a color scheme to help us distinguish between different bases:
+
+- The old basis is dark red, and the new basis is dark blue.
+- The old components are pink, and the new components are light blue.
+
 ## Table of Contents
 
 <TOCInline toc={toc} />
 
 ## The Transformation Matrix
 
-Suppose $\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}$ and $\ket{b_1}, \ket{b_2}, \ldots, \ket{b_n}$ are two sets of orthonormal basis vectors.
+Suppose $\class{red}{\ket{a_1}}, \class{red}{\ket{a_2}}, \ldots, \class{red}{\ket{a_n}}$ and $\class{blue}{\ket{b_1}}, \class{blue}{\ket{b_2}}, \ldots, \class{blue}{\ket{b_n}}$ are two sets of orthonormal basis vectors.
 In order to transform one basis to another, we need to find an operator that can transform the basis vectors.
 
-Denote this operator as $\hat{U}$, such that $U\ket{a_i} = \ket{b_i}$.
+Denote this operator as $\hat{U}$, such that $U\class{red}{\ket{a_i}} = \class{blue}{\ket{b_i}}$.
 In order to find out what this operator is, we can use a neat trick using the outer product.
 
-Consider the following: $\dyad{b_i}{a_i} \ket{a_j}$.
-When $i = j$, this is just $\ket{b_i} \braket{a_i} = \ket{b_i}$.
-When $i \neq j$, this is $\ket{b_i} \braket{a_i}{a_j} = 0$.
+Consider the following: $\dyad{b_i}{a_i} \class{red}{\ket{a_j}}$.
+When $i = j$, this is just $\class{blue}{\ket{b_i}} \braket{a_i} = \class{blue}{\ket{b_i}}$.
+When $i \neq j$, this is $\class{blue}{\ket{b_i}} \braket{a_i}{a_j} = 0$.
 Therefore, we can write $\hat{U}$ as a sum of all of these outer products:
 
 $$
 \begin{equation}
-U = \sum_{i = 1}^{n} \dyad{b_i}{a_i}
+U = \sum_i \dyad{b_i}{a_i}
 \end{equation}
 $$
 
@@ -52,9 +57,9 @@ Let's see what happens when we take the adjoint of $\hat{U}$, remembering the ru
 $$
 \begin{equation}
 \begin{split}
-\hat{U}^\dagger &= \qty(\sum_{i = 1}^{n} \dyad{b_i}{a_i})^\dagger \\
-&= \sum_{i = 1}^{n} \qty(\dyad{b_i}{a_i})^\dagger \\
-&= \sum_{i = 1}^{n} \dyad{a_i}{b_i}
+\hat{U}^\dagger &= \qty(\sum_i \dyad{b_i}{a_i})^\dagger \\
+&= \sum_i \qty(\dyad{b_i}{a_i})^\dagger \\
+&= \sum_i \dyad{a_i}{b_i}
 \end{split}
 \end{equation}
 $$
@@ -64,9 +69,9 @@ Notice what happens when we multiply $\hat{U}$ and $U^\dagger$:
 $$
 \begin{equation}
 \begin{split}
-\hat{U}^\dagger \hat{U} &= \qty(\sum_{i = 1}^{n} \dyad{a_i}{b_i}) \qty(\sum_{j = 1}^{n} \dyad{b_j}{a_j}) \\
-&= \sum_{i = 1}^{n} \sum_{j = 1}^{n} \dyad{a_i}{b_i} \dyad{b_j}{a_j} \\
-&= \sum_{i = 1}^{n} \sum_{j = 1}^{n} \dyad{a_i}{a_i} \delta_{ij}
+\hat{U}^\dagger \hat{U} &= \qty(\sum_i \dyad{a_i}{b_i}) \qty(\sum_{j = 1}^{n} \dyad{b_j}{a_j}) \\
+&= \sum_i \sum_{j = 1}^{n} \dyad{a_i}{b_i} \dyad{b_j}{a_j} \\
+&= \sum_i \sum_{j = 1}^{n} \dyad{a_i}{a_i} \delta_{ij}
 \end{split}
 \end{equation}
 $$
@@ -76,20 +81,20 @@ Since $\delta_{ij}$ ensures that the sum is only nonzero when $i = j$, we can re
 $$
 \begin{equation}
 \begin{split}
-\hat{U}^\dagger \hat{U} &= \sum_{i = 1}^{n} \dyad{a_i}{a_i} \\
+\hat{U}^\dagger \hat{U} &= \sum_i \dyad{a_i}{a_i} \\
 &= I
 \end{split}
 \end{equation}
 $$
 
-where we have used the completeness relation $\sum_{i = 1}^{n} \dyad{a_i}{a_i} = I$.
+where we have used the completeness relation $\sum_i \dyad{a_i}{a_i} = I$.
 Therefore, $\hat{U}^\dagger \hat{U} = I$. We call such an operator $\hat{U}$ an **unitary operator**.
 Unitary operators will be very important when we discuss the time-evolution of quantum states.
 
 We can summarize what we have found in the following theorem:
 
 <Boxed>
-Given two sets of orthonormal and complete basis vectors $\ket{a_i}$ and $\ket{b_i}$, there always exists a unitary operator $\hat{U}$ that transforms one basis to another such that $\hat{U}\ket{a_i} = \ket{b_i}$.
+Given two sets of orthonormal and complete basis vectors $\class{red}{\ket{a_i}}$ and $\class{blue}{\ket{b_i}}$, there always exists a unitary operator $\hat{U}$ that transforms one basis to another such that $\hat{U}\class{red}{\ket{a_i}} = \class{blue}{\ket{b_i}}$.
 </Boxed>
 
 ### Matrix Representation
@@ -122,45 +127,45 @@ If one is familiar with tensors, one might recall that vectors have contravarian
 
 It is easy to see why this is the case.
 I borrow from Eigenchris on YouTube for this explanation.
-Consider a vector $\va{v}$ with components $\class{pink}{x}$, $\class{pink}{y}$, and $\class{pink}{z}$ in the standard basis $\class{red}{\vu{x}}$, $\class{red}{\vu{y}}$, and $\class{red}{\vu{z}}$.
-Then, $\va{v}$ can be written as $\va{v} = \class{pink}{x} \class{red}{\vu{x}} + \class{pink}{y} \class{red}{\vu{y}} + \class{pink}{z} \class{red}{\vu{z}}$.
+Consider a vector $\ket{\psi}$ with components $\class{pink}{\braket{a_1}{\psi}}$, $\class{pink}{\braket{a_2}{\psi}}$, and $\class{pink}{\braket{a_3}{\psi}}$ in the standard basis $\class{red}{\ket{a_1}}$, $\class{red}{\ket{a_2}}$, and $\class{red}{\ket{a_3}}$.
+Then, $\ket{\psi}$ can be written as $\ket{\psi} = \class{pink}{\braket{a_1}{\psi}} \class{red}{\ket{a_1}} + \class{pink}{\braket{a_2}{\psi}} \class{red}{\ket{a_2}} + \class{pink}{\braket{a_3}{\psi}} \class{red}{\ket{a_3}}$.
 
 The key insight is that we can write this as the product of a row vector and a column vector, where the row vector contains the basis vectors and the column vector contains the components:
 
 $$
 \begin{equation}
-\va{v} = \mqty[\class{red}{\vu{x}} & \class{red}{\vu{y}} & \class{red}{\vu{z}}] \mqty[\class{pink}{x} \\ \class{pink}{y} \\ \class{pink}{z}]
+\ket{\psi} = \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \class{red}{\ket{a_3}}] \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \class{pink}{\braket{a_3}{\psi}}]
 \end{equation}
 $$
 
-Next, suppose a new basis $\class{darkblue}{\tilde{\vu{x}}}$, $\class{darkblue}{\tilde{\vu{y}}}$, and $\class{darkblue}{\tilde{\vu{z}}}$ is given and represented by some $3 \times 3$ matrix $\vb{T}$.
+Next, suppose a new basis $\class{darkblue}{\ket{b_1}}$, $\class{darkblue}{\ket{b_2}}$, and $\class{darkblue}{\ket{b_3}}$ is given and represented by some $3 \times 3$ matrix $U$.
 Then, we can write the new basis row vector as the following:
 
 $$
 \begin{equation}
-\mqty[\class{darkblue}{\tilde{\vu{x}}} & \class{darkblue}{\tilde{\vu{y}}} & \class{darkblue}{\tilde{\vu{z}}}] = \mqty[\class{red}{\vu{x}} & \class{red}{\vu{y}} & \class{red}{\vu{z}}] \vb{T}
+\mqty[\class{darkblue}{\ket{b_1}} & \class{darkblue}{\ket{b_2}} & \class{darkblue}{\ket{b_3}}] = \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \class{red}{\ket{a_3}}] U
 \end{equation}
 $$
 
-We want to be able to write $\va{v}$ in terms of the new basis:
+We want to be able to write $\ket{\psi}$ in terms of the new basis:
 
 $$
 \begin{equation}
-\va{v} = \mqty[\class{darkblue}{\tilde{\vu{x}}} & \class{darkblue}{\tilde{\vu{y}}} & \class{darkblue}{\tilde{\vu{z}}}] \mqty[\class{blue}{\tilde{x}} \\ \class{blue}{\tilde{y}} \\ \class{blue}{\tilde{z}}]
+\ket{\psi} = \mqty[\class{darkblue}{\ket{b_1}} & \class{darkblue}{\ket{b_2}} & \class{darkblue}{\ket{b_3}}] \mqty[\class{blue}{\braket{b_1}{\psi}} \\ \class{blue}{\braket{b_2}{\psi}} \\ \class{blue}{\braket{b_3}{\psi}}]
 \end{equation}
 $$
 
 The key insight is that we can start from the original expansion and add anything in the middle that is equal to the identity matrix.
-For instance, we can write $\vb{T} \vb{T}^{-1} = I$:
+For instance, we can write $U U^{-1} = I$:
 
 $$
 \begin{equation}
 \begin{split}
-\va{v} &= \mqty[\class{red}{\vu{x}} & \class{red}{\vu{y}} & \class{red}{\vu{z}}] \mqty[\class{pink}{x} \\ \class{pink}{y} \\ \class{pink}{z}] \\
-&= \mqty[\class{red}{\vu{x}} & \class{red}{\vu{y}} & \class{red}{\vu{z}}] \vb{I} \mqty[\class{pink}{x} \\ \class{pink}{y} \\ \class{pink}{z}] \\
-&= \underbrace{\mqty[\class{red}{\vu{x}} & \class{red}{\vu{y}} & \class{red}{\vu{z}}] \vb{T}} \vb{T}^{-1} \mqty[\class{pink}{x} \\ \class{pink}{y} \\ \class{pink}{z}] \\
-&= \mqty[\class{darkblue}{\tilde{\vu{x}}} & \class{darkblue}{\tilde{\vu{y}}} & \class{darkblue}{\tilde{\vu{z}}}] \vb{T}^{-1} \mqty[\class{pink}{x} \\ \class{pink}{y} \\ \class{pink}{z}] \\
-&= \mqty[\class{darkblue}{\tilde{\vu{x}}} & \class{darkblue}{\tilde{\vu{y}}} & \class{darkblue}{\tilde{\vu{z}}}] \mqty[\class{blue}{\tilde{x}} \\ \class{blue}{\tilde{y}} \\ \class{blue}{\tilde{z}}]
+\ket{\psi} &= \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \class{red}{\ket{a_3}}] \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \class{pink}{\braket{a_3}{\psi}}] \\
+&= \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \class{red}{\ket{a_3}}] I \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \class{pink}{\braket{a_3}{\psi}}] \\
+&= \underbrace{\mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \class{red}{\ket{a_3}}] U} U^{-1} \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \class{pink}{\braket{a_3}{\psi}}] \\
+&= \mqty[\class{darkblue}{\ket{b_1}} & \class{darkblue}{\ket{b_2}} & \class{darkblue}{\ket{b_3}}] U^{-1} \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \class{pink}{\braket{a_3}{\psi}}] \\
+&= \mqty[\class{darkblue}{\ket{b_1}} & \class{darkblue}{\ket{b_2}} & \class{darkblue}{\ket{b_3}}] \mqty[\class{blue}{\braket{b_1}{\psi}} \\ \class{blue}{\braket{b_2}{\psi}} \\ \class{blue}{\braket{b_3}{\psi}}]
 \end{split}
 \end{equation}
 $$
@@ -169,19 +174,132 @@ As such, we can see that:
 
 $$
 \begin{equation}
-\mqty[\class{blue}{\tilde{x}} \\ \class{blue}{\tilde{y}} \\ \class{blue}{\tilde{z}}] = \vb{T}^{-1} \mqty[\class{pink}{x} \\ \class{pink}{y} \\ \class{pink}{z}]
+\mqty[\class{blue}{\braket{b_1}{\psi}} \\ \class{blue}{\braket{b_2}{\psi}} \\ \class{blue}{\braket{b_3}{\psi}}] = U^{-1} \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \class{pink}{\braket{a_3}{\psi}}]
 \end{equation}
 $$
 
-Going back to quantum mechanics, the principle is the same. We can write the components of a vector in the new basis as the inverse of the transformation matrix times the components in the old basis.
 But because the transformation matrix $U$ is unitary, that is the same as taking the adjoint of the transformation matrix.
 Then:
 
 $$
 \begin{equation}
-\mqty[\braket{b_1}{\psi} \\ \braket{b_2}{\psi} \\ \vdots \\ \braket{b_n}{\psi}] = U^\dagger \mqty[\braket{a_1}{\psi} \\ \braket{a_2}{\psi} \\ \vdots \\ \braket{a_n}{\psi}]
+\mqty[\class{blue}{\braket{b_1}{\psi}} \\ \class{blue}{\braket{b_2}{\psi}} \\ \vdots \\ \class{blue}{\braket{b_n}{\psi}}] = U^\dagger \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \vdots \\ \class{pink}{\braket{a_n}{\psi}}]
 \end{equation}
 $$
 
 The fact that basis vectors are covariant (transform with the forward transformation $U$) and components are contravariant (transform with the inverse transformation $U^\dagger$) is why the vector itself $\ket{\psi}$ is **invariant** under a change of basis.
 Intuitively, it makes sense that the components and basis "cancel" each other out.
+
+### Components of Operators Under Change of Basis
+
+The components of operators also transform under a change of basis.
+
+Suppose we have a state vector $\ket{\psi}$ and an operator $\hat{A}$.
+The vector's components are $\class{pink}{\braket{a_i}{\psi}}$ in the old basis $\class{red}{\ket{a_i}}$ and $\class{blue}{\braket{b_i}{\psi}}$ in the new basis $\class{blue}{\ket{b_i}}$.
+Recall that operators act on state vectors to produce new state vectors.
+As such, to act on $\ket{\psi}$ in $\class{blue}{\ket{b_i}}$, we can simply transform $\ket{\psi}$ to the old basis $\class{red}{\ket{a_i}}$, act with the operator $\hat{A}$, and then transform back to the new basis $\class{blue}{\ket{b_i}}$.
+Thus, the operator in the new basis is equal to $U^\dagger \hat{A} U$.
+
+To see this more clearly, recall that $\ket{\psi}$ can be written as a row-vector times a column-vector:
+
+$$
+\begin{equation}
+\ket{\psi} = \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \ldots & \class{red}{\ket{a_n}}] \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \vdots \\ \class{pink}{\braket{a_n}{\psi}}]
+\end{equation}
+$$
+
+Performing an operator $\hat{A}$ is equivalent to multiplying its matrix representation by the column-vector:
+
+$$
+\begin{equation}
+\hat{A}\ket{\psi} = \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \ldots & \class{red}{\ket{a_n}}] A \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \vdots \\ \class{pink}{\braket{a_n}{\psi}}]
+\end{equation}
+$$
+
+As we know, the basis vectors transform with the forward transformation $U$ and the components transform with the inverse transformation $U^\dagger$.
+As such, we can write that:
+
+$$
+\begin{equation}
+\begin{split}
+\hat{A}\ket{\psi} &= \mqty[\class{red}{\ket{a_1}} & \class{red}{\ket{a_2}} & \ldots & \class{red}{\ket{a_n}}] A \mqty[\class{pink}{\braket{a_1}{\psi}} \\ \class{pink}{\braket{a_2}{\psi}} \\ \vdots \\ \class{pink}{\braket{a_n}{\psi}}] \\
+&= \mqty[\class{blue}{\ket{b_1}} & \class{blue}{\ket{b_2}} & \ldots & \class{blue}{\ket{b_n}}] U^\dagger A U \mqty[\class{blue}{\braket{b_1}{\psi}} \\ \class{blue}{\braket{b_2}{\psi}} \\ \vdots \\ \class{blue}{\braket{b_n}{\psi}}]
+\end{split}
+\end{equation}
+$$
+
+Notice that the part in the middle, $U^\dagger A U$, must be the matrix representation of the operator $\hat{A}$ in the new basis.
+The transformation $U^\dagger A U$ is called the **similarity transformation** of the operator $\hat{A}$.
+
+## Trace
+
+The trace of an operator is defined as the sum of the diagonal elements of the matrix representation of the operator.
+In the context of quantum mechanics, the trace of an operator is very important because it is invariant under a change of basis.
+
+Suppose we have an operator $\hat{A}$ with matrix representation $A$.
+Then, the trace of the operator is:
+
+$$
+\begin{equation}
+\Tr(A) = \sum_i A_{ii} = \sum_i \mel{a_i}{\hat{A}}{a_i}
+\end{equation}
+$$
+
+Now, suppose we change the basis from $\class{red}{\ket{a_i}}$ to $\class{blue}{\ket{b_i}}$.
+To show that the trace is invariant under a change of basis, we can use a few completeness relations:
+
+$$
+\begin{equation}
+\begin{split}
+\Tr(A) &= \sum_i \mel{a_i}{\hat{A}}{a_i} \\
+&= \sum_i \class{yellow}{\sum_j} \class{green}{\sum_k} \bra{a_i} \class{yellow}{\dyad{b_j}} \hat{A} \class{green}{\dyad{b_k}} \ket{a_i} \\
+&= \sum_i \sum_j \sum_k \braket{b_j}{a_i} \mel{b_j}{\hat{A}}{b_k} \braket{b_k}{a_i} \\
+&= \sum_i \sum_j \sum_k \delta_{ij} \mel{b_j}{\hat{A}}{b_k} \delta_{ik} \\
+&= \sum_i \sum_k \mel{b_i}{\hat{A}}{b_k} \delta_{ik} \\
+&= \sum_i \mel{b_i}{\hat{A}}{b_i}
+\end{split}
+\end{equation}
+$$
+
+Therefore, the trace of an operator is invariant under a change of basis.
+
+### Properties of the Trace
+
+The trace of an operator has a few properties that are useful to know.
+
+1. **Linearity**: $\Tr(A + B) = \Tr(A) + \Tr(B)$.
+
+    A simple proof of this is to write the matrix representation of $A + B$ and sum the diagonal elements.
+
+2. **Cyclic Property**: $\Tr(ABC) = \Tr(BCA) = \Tr(CAB)$.
+
+    This is a bit more complicated to prove, but it is a useful property to know.
+
+3. **Invariance Under Change of Basis**: As we have shown, the trace of an operator is invariant under a change of basis.
+
+We can also show what happens to a few other quantities with a trace:
+
+1. **Trace of the Similarity Transformation**: $\Tr(U^\dagger A U) = \Tr(A)$.
+
+    This is a direct consequence of the invariance of the trace under a change of basis.
+2. **Trace of an outer product**: $\Tr(\dyad{a_i}{b_j}) = \braket{b_j}{a_i}$.
+
+    This is because $\Tr(\dyad{a_i}{b_j}) = \sum_k \mel{a_k}{\dyad{a_i}{b_j}}{a_k} = \sum_k \delta_{ik} \braket{b_j}{a_k} = \braket{b_j}{a_i}$.
+
+## Diagonalization and Spectral Decomposition
+
+Under a change of basis, we should be able to find a basis in which the operator is diagonal.
+This is a very powerful tool because diagonal operators are very easy to work with.
+Since the diagonal elements of a diagonal operator are the eigenvalues, we can diagonalize an operator by finding its eigenvalues and eigenvectors.
+
+Given an operator $\hat{A}$, any eigenvector $\ket{a_i}$ of $\hat{A}$ satisfies the eigenvalue equation $\hat{A}\ket{a_i} = a_i\ket{a_i}$.
+This can then be rewritten as $A\ket{a_i} - a_i\ket{a_i} = 0$, or $(A - a_i I)\ket{a_i} = 0$.
+In other words, the operator $A - a_i I$ has a nontrivial null space, which is spanned by the eigenvector $\ket{a_i}$.
+For $A - a_i I$ to have a nontrivial null space, it must be singular, which means that $\det(A - a_i I) = 0$.
+Of course, this is the characteristic equation of the operator.
+
+The characteristic equation is a polynomial of degree $n$ in $a_i$.
+If an operator has $n$ distinct eigenvalues, then it can be diagonalized by making the eigenvectors the basis vectors.
+Otherwise, it is not diagonalizable.
+
+

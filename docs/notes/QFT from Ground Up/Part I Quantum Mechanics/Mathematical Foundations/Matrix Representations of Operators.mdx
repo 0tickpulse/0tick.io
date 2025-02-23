@@ -16,6 +16,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 In the previous sections, we introduced the state vector formalism of quantum mechanics, as well as some important results derived from it.
 In this section, we will explore how operators in quantum mechanics can be represented as matrices.
+Additionally, we will discuss shortly on tensor products and entangled composite systems.
 
 ## Table of Contents
 
@@ -132,6 +133,16 @@ $$
 \end{equation}
 $$
 
+It is often very beneficial to include the basis states in row vectors like this:
+
+$$
+\begin{equation}
+\ket{\psi} = \mqty[\ket{E_1} & \ket{E_2} & \cdots & \ket{E_N}] \mqty[\braket{E_1}{\psi} \\ \braket{E_2}{\psi} \\ \vdots \\ \braket{E_N}{\psi}]
+\end{equation}
+$$
+
+(Notice that we no longer use the $\overset{.}{=}$ notation here, as this is not a representation of a ket - this *is* the ket.)
+
 Next, suppose we apply an operator $\hat{A}$ to $\ket{\psi}$ to get a new ket $\ket{\phi} = \hat{A}\ket{\psi}$.
 By the rules of matrix multiplication, we would expect the $i$-th component of $\ket{\phi}$ to be:
 
@@ -166,7 +177,20 @@ $$
 \end{equation}
 $$
 
-Since the inner product is conjugate symmetric, we can equivalently write this as:
+Similarly to vectors, a complete picture of a bra can be obtained with a product of a row vector and a column vector:
+
+$$
+\begin{equation}
+\bra{\phi} = \mqty[\braket{\phi}{E_1} & \braket{\phi}{E_2} & \cdots & \braket{\phi}{E_N}] \mqty[\bra{E_1} \\ \bra{E_2} \\ \vdots \\ \bra{E_N}]
+\end{equation}
+$$
+
+where $\bra{E_i}$ is the $i$-th basis bra, defined such that $\braket{E_i}{E_j} = \delta_{ij}$.
+They are also the Hermitian conjugates of the basis kets (see [this section](./Observables%20and%20Operators#appendix-why-is-the-hermitian-adjoint-of-a-ket-its-corresponding-bra) for more details and proofs).
+Notice that this time, the components are placed in the row matrix, instead of the column matrix like kets.
+This will be important when we discuss change of basis.
+
+Since the inner product is conjugate symmetric, we can equivalently write the components of $\bra{\phi}$ as:
 
 $$
 \begin{equation}
@@ -188,7 +212,20 @@ $$
 
 which aligns with simply adding a completeness relation to the original expression.
 
-## Outer Products (and Tensor Products)
+A more complete way to write the inner product comes from writing both the bra and ket with their bases:
+
+$$
+\begin{equation}
+\begin{split}
+\braket{\phi}{\psi} &= \qty(\sum_i \braket{\phi}{E_i} \bra{E_i}) \qty(\sum_j \ket{E_j} \braket{E_j}{\psi}) \\
+&= \sum_{ij} \braket{\phi}{E_i} \braket{E_j}{\psi} \braket{E_i}{E_j} \\
+&= \sum_{ij} \braket{\phi}{E_i} \braket{E_j}{\psi} \delta_{ij} \\
+&= \sum_i \braket{\phi}{E_i} \braket{E_i}{\psi}
+\end{split}
+\end{equation}
+$$
+
+## Outer Products
 
 An outer product is a product of a ket and a bra in an order such that the ket is on the left.
 We have previously shown that outer products are not scalars (like inner products), but rather operators.
@@ -224,10 +261,111 @@ There is actually something deeper going on here.
 The outer product $\dyad{\psi}{\phi}$ is a matrix that acts on vectors.
 That begs the question: is there a way to take the product of more complicated things to get another operator?
 For instance, perhaps we could take two matrices and somehow combine them to get a new operator.
-This action is known as the tensor product, denoted by $\otimes$.
+This action is actually the tensor product, denoted by $\otimes$.
 Sometimes, the outer product $\dyad{\psi}{\phi}$ is written as $\ket{\psi} \otimes \bra{\phi}$.
+
+### Short Note on Tensor Products
+
+If one recalls, the space of a coupled system is the tensor product of the individual spaces.
 Virtually any tensor we usually use can be created by taking the tensor products of vectors and linear forms (or bra vectors, 1-forms, covectors, etc.).
-Tensor products will definitely show up later in the course. For instance, the vector space of a system of two particles is the tensor product of the vector spaces of the individual particles.
+In fact, this is a way to *define* a tensor - a collection of vectors and linear forms combined by the tensor product.
+
+Most operators cannot be represented as outer products, since they are just projection operators.
+For a more concrete explanation, consider the matrix multiplication that forms the outer product - notice that both columns are scaled versions of the input vector.
+This means that they are linearly dependent, and so the matrix is **singular** (i.e. it has a determinant of zero).
+This is why operators must be represented as a linear combination of outer products, rather than just a single outer product.
+
+Similarly, some coupled systems *cannot* be represented as the tensor product of individual systems.
+Systems that cannot be represented as the tensor product of individual systems are called **entangled** systems.
+Entanglement is a crucial concept in quantum mechanics, and it is a key feature that distinguishes quantum mechanics from classical mechanics.
+We will explore the physical implications of entanglement in more detail in future sections.
+
+## Exercises
+
+1. Suppose we have a system where the state space is two-dimensional with basis states $\ket{0}$ and $\ket{1}$. (Think of spin-1/2 particles or qubits used in quantum computing.)
+
+    - Write down the matrix representation of the operator $\hat{X}$ that flips the state of the system. That is, $\hat{X}\ket{0} = \ket{1}$ and $\hat{X}\ket{1} = \ket{0}$.
+
+        <details>
+        <summary>Solution</summary>
+
+        Before writing the components, consider the dimensions of the matrix.
+        Since the state space is two-dimensional, the matrix will be $2 \times 2$.
+
+        The $ij$-th element of the matrix is given by $\mel{E_i}{\hat{X}}{E_j}$. In this case, we have:
+
+        $$
+        \begin{equation}
+        \hat{X} = \mqty[\mel{0}{\hat{X}}{0} & \mel{0}{\hat{X}}{1} \\ \mel{1}{\hat{X}}{0} & \mel{1}{\hat{X}}{1}]
+        \end{equation}
+        $$
+
+        Now, we can fill in the components. Since $\hat{X}\ket{0} = \ket{1}$ and $\hat{X}\ket{1} = \ket{0}$, we have:
+
+        $$
+        \begin{equation}
+        \hat{X} = \mqty[0 & 1 \\ 1 & 0]
+        \end{equation}
+        $$
+
+        This matrix is known as the Pauli-X matrix.
+        We will see more of these matrices in the future, and analyze them in detail when we discuss angular momentum.
+
+        </details>
+
+    - Suppose theres now two systems coupled together. Show that the Bell state $\ket{\Phi^+} = \frac{1}{\sqrt{2}}(\ket{00} + \ket{11})$ is an entangled state.
+        For this problem, you can assume that tensor products act like normal products, i.e. $(a + b)(c + d) = ac + ad + bc + bd$.
+
+        <details>
+        <summary>Solution</summary>
+
+        We can show this by a proof by contradiction.
+
+        Suppose that $\ket{\Phi^+}$ is not entangled.
+        Then, we can write it as a tensor product of two states $\ket{\psi}$ and $\ket{\phi}$:
+
+        $$
+        \begin{equation}
+        \ket{\Phi^+} = \ket{\psi} \otimes \ket{\phi}
+        \end{equation}
+        $$
+
+        Now, we can expand $\ket{\psi}$ and $\ket{\phi}$ in terms of the basis states $\ket{0}$ and $\ket{1}$:
+
+        $$
+        \begin{align}
+        \ket{\psi} &= a\ket{0} + b\ket{1} \\
+        \ket{\phi} &= c\ket{0} + d\ket{1}
+        \end{align}
+        $$
+
+        Then, the tensor product is:
+
+        $$
+        \begin{equation}
+        \ket{\psi} \otimes \ket{\phi} = (a\ket{0} + b\ket{1}) \otimes (c\ket{0} + d\ket{1})
+        \end{equation}
+        $$
+
+        Expanding this out, we get:
+
+        $$
+        \begin{equation}
+        \ket{\psi} \otimes \ket{\phi} = ac\ket{00} + ad\ket{01} + bc\ket{10} + bd\ket{11}
+        \end{equation}
+        $$
+
+        (where $\ket{ij}$ is shorthand for $\ket{i} \otimes \ket{j}$).
+
+        Now, compare this to the Bell state $\ket{\Phi^+} = \frac{1}{\sqrt{2}}(\ket{00} + \ket{11})$.
+        We need $ac = bd = \frac{1}{\sqrt{2}}$ and $ad = bc = 0$.
+
+        Multiplying the first two equations, we get $acbd = \frac{1}{2}$.
+        But this means that none of $a$, $b$, $c$, or $d$ can be zero, which contradicts $ad = bc = 0$.
+
+        Thus, because we cannot find a way to write $\ket{\Phi^+}$ as a tensor product of two states, it is an entangled state. $\blacksquare$
+
+        </details>
 
 ## Summary and Next Steps
 
@@ -240,7 +378,7 @@ Here are the key points to remember:
     Specifically, the matrix elements of an operator $\hat{A}$ are given by $\mel{E_i}{\hat{A}}{E_j}$.
 - Kets can be represented as column vectors, and bras as row vectors.
 - Outer products are operators that act on vectors. They can be thought of as the tensor product of a ket and a bra.
-- Tensor products combine vectors and linear forms to create new operators.
+- If a system cannot be represented as the tensor product of individual systems, it is an entangled system.
 
 In the next section, we continue our exploration of vectors and operators by looking at the change of basis.
 
