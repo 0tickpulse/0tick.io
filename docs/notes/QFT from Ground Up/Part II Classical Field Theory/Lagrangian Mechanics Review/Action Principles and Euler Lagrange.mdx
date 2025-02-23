@@ -251,6 +251,9 @@ Note that the Euler-Lagrange equations are written in terms of the generalized c
 These are coordinates that describe the configuration of the system, and they are not necessarily the Cartesian coordinates.
 As long as a set of coordinates can uniquely describe the configuration of the system, they can be used as generalized coordinates.
 
+Given a set of coordinates $q = (q_1, q_2, \ldots, q_n)$, the space that these coordinates span is called the **configuration space**.
+It contains all possible configurations of the system; each point in configuration space corresponds to a unique physical state.
+
 ### Canonical Momentum
 
 In Newtonian mechanics, the momentum of a particle is defined as $p = m \dot{x}$.
@@ -262,7 +265,7 @@ The **canonical momentum** that is **conjugate** to a generalized coordinate $q$
 
 $$
 \begin{equation}
-p := \pdv{L}{\dot{q}}
+p := \pdv{L}{\dot{q}} \label{eq:canonical-momentum}
 \end{equation}
 $$
 
@@ -410,5 +413,18 @@ Here are the key points to remember:
     \pdv{L}{q} - \dv{t} \qty(\pdv{L}{\dot{q}}) = 0 \tag{\ref{eq:euler-lagrange}}
     \end{equation}
     $$
+
+    The Euler-Lagrange equations apply to any system as long as Hamilton's principle applies.
+
+- The Euler-Lagrange equations are written in terms of the generalized coordinates $q$, which can be any set of coordinates that describe the configuration of the system.
+- The canonical momentum is defined as:
+
+    $$
+    \begin{equation}
+    p := \pdv{L}{\dot{q}} \tag{\ref{eq:canonical-momentum}}
+    \end{equation}
+    $$
+
+- The configuration space is the space spanned by the generalized coordinates.
 
 The next section is skippable - we apply the Lagrangian formalism to the double pendulum system to demonstrate its power.

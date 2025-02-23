@@ -61,14 +61,87 @@ In the context of the Lagrangian formalism, we can derive these conservation law
 Formally, Noether's theorem mathematically states:
 
 <Boxed>
-**Noether's Theorem**: If a system is defined by a Lagrangian $L(q, \dot{q}, t)$, if, under a continuous infinitesimal transformation $q \to q + \epsilon \delta q$, the Lagrangian changes as $L \to L + \epsilon \dv{F}{t}$, then there exists a conserved quantity $C$:
+**Noether's Theorem**: If a system is defined by a Lagrangian $L(q, \dot{q}, t)$, if, under a continuous infinitesimal transformation $q \to q + \epsilon \delta q$, the Lagrangian changes as $L \to L + \epsilon \dv{F}{t}$, then there exists a quantity $Q$:
 
 $$
 \begin{equation}
-C = \sum_i \pdv{F}{\dot{q}_i} \delta q_i + \qty(\pdv{L}{\dot{q}_i} \dot{q}_i - L) \delta t - F
+Q = \sum_i \pdv{F}{\dot{q}_i} \delta q_i + \qty(\pdv{L}{\dot{q}_i} \dot{q}_i - L) \delta t - F
 \end{equation}
 $$
+
+such that $\dv{Q}{t} = 0$.
 </Boxed>
+
+We will start from the basics and derive this theorem from scratch.
+
+### Free Particle
+
+Let's consider a particle of mass $m$ moving in a zero-force field, i.e., a free particle.
+The Lagrangian for this system is given by:
+
+$$
+\begin{equation}
+L = \frac{1}{2} mv^2 - V(\va{r})
+\end{equation}
+$$
+
+where $V(\va{r})$ is the potential energy of the particle.
+Notice that $V(\va{r})$ is a function of the position $\va{r}$, and not the velocity $\va{v}$.
+Since $\va{F} = -\grad{V}$ and $\va{F} = \va{0}$, we have $\grad{V} = \va{0}$, which implies that $V$ is a constant.
+Therefore, we can write $V(\va{r}) = V_0$, where $V_0$ is a constant:
+
+$$
+\begin{equation}
+L = \frac{1}{2} mv^2 - V_0
+\end{equation}
+$$
+
+We shall take the system to be one-dimensional for simplicity.
+Recall from previous derivations that if the path of the particle is varied by a small amount $q(t) \to q(t) + \epsilon \eta (t)$, then the Lagrangian changes by:
+
+$$
+\begin{equation}
+\dv{L}{\epsilon} = \pdv{L}{x} \eta + \pdv{L}{\dot{x}} \dot{\eta}
+\end{equation}
+$$
+
+Then, by the product rule, we saw that this gave:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L}{\epsilon} &= \pdv{L}{x} \eta + \dv{t} \qty(\pdv{L}{\dot{x}} \eta) - \eta \dv{t} \qty(\pdv{L}{\dot{x}}) \\
+&= -\eta \qty(\dv{t} \qty(\pdv{L}{\dot{x}}) - \pdv{L}{x}) + \dv{t} \qty(\pdv{L}{\dot{x}} \eta)
+\end{split}
+\end{equation}
+$$
+
+The inner-left part of this equation, $\dv{t} \qty(\pdv{L}{\dot{x}}) - \pdv{L}{x}$, equals $m \ddot{x} + \pdv{V}{x}$, and is zero for the real path.
+We will call this part the **equation of motion**.
+We are now interested in the right part of the equation, $\dv{t} \qty(\pdv{L}{\dot{x}} \eta)$.
+We shall now define a symmetry as:
+
+<Boxed>
+**Simple Symmetry**: A symmetry is a transformation of the form $x \to x + \epsilon \eta(t)$, where $\eta(t)$ is an arbitrary function of time, such that the Lagrangian is constant.
+</Boxed>
+
+This is not the most general form of symmetry, but it is the simplest form that we will start with.
+Since the potential energy is constant, we have $L = \frac{1}{2} m \dot{x}^2 - V_0$ (as we derived earlier).
+Notice that this does not have an explicit dependence on $x$ (only $\dot{x}$), and so that is one form of symmetry - spatial translation invariance.
+This occurs when $x \to x + \epsilon \eta_0$, where $\eta_0$ is a constant that represents how much we are translating the system.
+
+When a symmetry occurs, the Lagrangian is invariant under the transformation. This means that $\dv{L}{\epsilon} = 0$.
+For the real path, we already have the equation of motion as zero, so we are left with:
+
+$$
+\begin{equation}
+\dv{t} \qty(\pdv{L}{\dot{x}} \eta) = 0
+\end{equation}
+$$
+
+This means that the quantity $Q = \pdv{L}{\dot{x}} = m \dot{x}$ is conserved.
+In other words, **under spatial translation invariance, momentum is conserved**.
+This is the first example of Noether's theorem in action.
 
 ### References
 

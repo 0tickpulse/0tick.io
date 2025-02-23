@@ -1,0 +1,158 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Action in Minkowski Spacetime
+
+Lagrangian mechanics is very powerful in that it can be used to describe the dynamics of a system in a very general way.
+We will show here that it can be used to describe relativistic systems as well.
+In the future, we will extend this to general relativity, as well as string theory, and then quantum field theory.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Minkowski Geometry Review
+
+Spacetime is a four-dimensional pseudo-Riemannian manifold.
+The metric tensor $g_{\mu\nu}$ is used to define the geometry of spacetime.
+By the equivalence principle, locally, spacetime is flat, and general relativity does not come into play.
+
+When spacetime is flat, the metric tensor is given by the Minkowski metric:
+
+$$
+\begin{equation}
+g_{\mu\nu} = \eta_{\mu\nu} = \text{diag}(1, -1, -1, -1)
+\end{equation}
+$$
+
+(where we have used the mostly-minus convention).
+
+For a straight line in Minkowski spacetime, the metric tells us how to measure distances.
+A straight line can be modeled as a spacetime separation vector $\va{S}$.
+Then, its magnitude is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\va{S}}^2 &= \va{S} \cdot \va{S} \\
+&= \qty(\sum_\mu S^\mu \va{e}_\mu) \cdot \qty(\sum_\nu S^\nu \va{e}_\nu) \\
+&= \sum_{\mu\nu} S^\mu S^\nu \va{e}_\mu \cdot \va{e}_\nu \\
+&= \sum_{\mu\nu} S^\mu S^\nu \eta_{\mu\nu}
+\end{split}
+\end{equation}
+$$
+
+As one can see, the metric tensor is defined in terms of the inner product of the basis products:
+
+$$
+\begin{equation}
+\eta_{\mu\nu} := \va{e}_\mu \cdot \va{e}_\nu
+\end{equation}
+$$
+
+If the line is curved, then we can imagine that it is made up of many infinitesimal straight lines.
+Each of these infinitesimal straight lines has a length of:
+
+$$
+\begin{equation}
+\begin{split}
+\dd{s}^2 &= \dd{S} \cdot \dd{S} \\
+&= \sum_{\mu\nu} \dd{S}^\mu \dd{S}^\nu \eta_{\mu\nu} \\
+&= (\dd{ct})^2 - (\dd{x})^2 - (\dd{y})^2 - (\dd{z})^2
+\end{split}
+\end{equation}
+$$
+
+Then, the total length of the curve is given by the sum (integral) of all these infinitesimal lengths:
+
+$$
+\begin{equation}
+\begin{split}
+S &= \int \dd{s} \\
+&= \int \sqrt{(\dd{ct})^2 - (\dd{x})^2 - (\dd{y})^2 - (\dd{z})^2}
+\end{split}
+\end{equation}
+$$
+
+By the chain rule, we can write this as:
+
+$$
+\begin{equation}
+\begin{split}
+S &= \int \dd{s} \\
+&= \int \sqrt{c^2 \dd{t}^2 - (\dot{x} \dd{t})^2 - (\dot{y} \dd{t})^2 - (\dot{z} \dd{t})^2} \\
+&= \int \dd{t} \sqrt{c^2 - \dot{x}^2 - \dot{y}^2 - \dot{z}^2} \\
+&= c \int \dd{t} \sqrt{1 - \frac{\dot{x}^2}{c^2} - \frac{\dot{y}^2}{c^2} - \frac{\dot{z}^2}{c^2}} \\
+&= c \int \dd{t} \sqrt{1 - \frac{v^2}{c^2}}
+\end{split}
+\end{equation}
+$$
+
+When we have an observer moving along the curve, one question is to measure how much time the observer measures.
+This is known as the **proper time** $\tau$.
+In the observer's frame, the observer is at rest, meaning that $\va{v} = \va{0}$.
+Then, the infinitesimal length is given by:
+
+$$
+\begin{equation}
+\dd{s}^2 = c^2 \dd{\tau}^2
+\end{equation}
+$$
+
+where we have replaced $t$ with $\tau$ to denote the proper time.
+Thus, the length $S$ and the proper time $\tau$ are related by:
+
+$$
+\begin{equation}
+S = c \tau
+\end{equation}
+$$
+
+Since we have also seen that $S = c \int \dd{t} \sqrt{1 - \frac{v^2}{c^2}}$, we can write:
+
+$$
+\begin{equation}
+\tau = \int \dd{t} \sqrt{1 - \frac{v^2}{c^2}}
+\end{equation}
+$$
+
+## Relativistic Action
+
+Notice in the expression for $\tau$ that we have the term $\sqrt{1 - \frac{v^2}{c^2}}$.
+In the observer's frame, the observer is at rest, meaning that $v = 0$.
+However, if we have an observer that is moving differently from the curve, then $v \neq 0$.
+This causes the term $\sqrt{1 - \frac{v^2}{c^2}}$ to be less than $1$, and so the proper time $\tau$ is less than the time $t$ measured by the observer (time dilation).
+In other words:
+
+<Boxed>
+
+The proper time is maximized when the observer is at rest.
+
+</Boxed>
+
+When we have situations like these, we can apply action principles to predict the motion of the system.
+The action $S$ can be then defined as the integral of the length of the curve:
+
+$$
+\begin{equation}
+S = -mc \int \dd{s}
+\end{equation}
+$$
+
+where the negative sign is a convention and $mc$ helps to ensure that the action has dimensions of energy times time.
