@@ -261,7 +261,7 @@ $$
 \dot{p}_1 &= \dv{t} \pdv{L}{\dot{\theta}_1} \\
 &= \dv{t} ((m_1 + m_2) l_1^2 \dot{\theta}_1 + m_2 l_1 l_2 \cos(\theta_1 - \theta_2) \dot{\theta}_2) \\
 &= (m_1 + m_2) l_1^2 \ddot{\theta}_1 + m_2 l_1 l_2 \cos(\theta_1 - \theta_2) \ddot{\theta}_2 \\
-&\qquad {}- m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2 + m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \ddot{\theta}_2 \\
+&\qquad {}- m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2 + m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_2^2
 \end{split} \label{eq:double-pendulum-dv-p-1}
 \end{equation}
 $$
@@ -311,11 +311,13 @@ Putting it all together, we have:
 $$
 \begin{equation}
 \begin{split}
-\dot{p}_1 &= (m_1 + m_2) l_1^2 \ddot{\theta}_1 + m_2 l_1 l_2 \cos(\theta_1 - \theta_2) \ddot{\theta}_2 \\
-&\qquad {}- m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2 + m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \ddot{\theta}_2
-\end{split} \tag{\ref{eq:double-pendulum-dv-p-1}}
+\dv{t} \qty(\cos(\theta_1 - \theta_2) \dot{\theta}_2) &= \cos(\theta_1 - \theta_2) \ddot{\theta}_2 + \dot{\theta}_2 (-\sin(\theta_1 - \theta_2) \dot{\theta}_1 + \sin(\theta_1 - \theta_2) \dot{\theta}_2) \\
+&= \cos(\theta_1 - \theta_2) \ddot{\theta}_2 - \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2 + \sin(\theta_1 - \theta_2) \dot{\theta}_2^2
+\end{split}
 \end{equation}
 $$
+
+This is the result we used in Equation $\eqref{eq:double-pendulum-dv-p-1}$.
 
 </details>
 
@@ -347,9 +349,9 @@ $$
 \begin{equation}
 \begin{split}
 \pdv{L}{\theta_1} - \dot{p}_1 &= 0 \\
--m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2 &- (m_1 + m_2) g l_1 \sin(\theta_1) \\
+-\class{yellow}{m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2} &- (m_1 + m_2) g l_1 \sin(\theta_1) \\
 \qquad {}- (m_1 + m_2) l_1^2 \ddot{\theta}_1 &- m_2 l_1 l_2 \cos(\theta_1 - \theta_2) \ddot{\theta}_2 \\
-\qquad {}+ m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2 &- m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \ddot{\theta}_2 = 0
+\qquad {}+ \class{yellow}{m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_1 \dot{\theta}_2} &- m_2 l_1 l_2 \sin(\theta_1 - \theta_2) \dot{\theta}_2^2 = 0
 \end{split}
 \end{equation}
 $$
