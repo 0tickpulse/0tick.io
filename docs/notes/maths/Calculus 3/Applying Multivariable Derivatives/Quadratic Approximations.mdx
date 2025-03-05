@@ -215,7 +215,6 @@ A graph of the function and its quadratic approximation is shown below:
         const c = 0.5 * d2fdydy(x0, y0);
         return f(x0, y0) + dfdx(x0, y0) * (x - x0) + dfdy(x0, y0) * (y - y0) + a * (x - x0) ** 2 + b * (x - x0) * (y - y0) + c * (y - y0) ** 2;
     };
-    console.log({ approx: approx, Q: Q(approx[0], approx[1]) });
     return (
         <div className="card">
             <div className="card__body">
