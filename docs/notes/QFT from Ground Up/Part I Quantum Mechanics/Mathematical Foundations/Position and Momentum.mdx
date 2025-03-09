@@ -1,0 +1,57 @@
+---
+sidebar_position: 8
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Position and Momentum
+
+In the previous section, we applied the state vector formalism to spin-1/2 particles.
+Notably, it has a discrete spectrum, and the state vector is a two-component column vector.
+
+We shall now apply the state vector formalism to the description of the position and momentum of a particle.
+We shall see that the position and momentum operators are the generators of translations in space and time, respectively.
+Furthermore, we will discuss the canonical commutation relations between the position and momentum operators.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Position Operator
+
+The position observable has a continuous spectrum; its values can be any real number.
+Furthermore, we know that there are three spatial dimensions, so the position operator must be a vector operator.
+We assume that the position eigenkets $\ket{\va{r}}$ form a complete basis for the Hilbert space of the particle (an assumption in non-relativistic quantum mechanics).
+
+For a single dimension, the state vector $\ket{\psi}$ can be expanded as:
+
+$$
+\begin{equation}
+\ket{\psi} = \int \dd{x'} \ket{x'} \braket{x'}{\psi}
+\end{equation}
+$$
+
+In three dimensions, the state vector $\ket{\psi}$ can be expanded as:
+
+$$
+\begin{equation}
+\ket{\psi} = \int \dd[3]{\va{r}'} \ket{\va{r}'} \braket{\va{r}'}{\psi}
+\end{equation}
+$$
+
+In this case, then, $\ket{\va{r}'}$ is an eigenket of all three components of the position operator.
+From what we know about commutators, this means that the position operators in different directions have a commutator of zero:
+
+$$
+\begin{equation}
+\comm{x_i}{x_j} = 0
+\end{equation}
+$$

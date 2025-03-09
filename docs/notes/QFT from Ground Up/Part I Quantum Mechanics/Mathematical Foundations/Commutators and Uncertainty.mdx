@@ -122,7 +122,7 @@ The commutator of two operators $A$ and $B$ is defined as:
 
 $$
 \begin{equation}
-\qty[\hat{A}, \hat{B}] := \hat{A}\hat{B} - \hat{B}\hat{A} \label{eq:commutator}
+\comm{\hat{A}}{\hat{B}} := \hat{A}\hat{B} - \hat{B}\hat{A} \label{eq:commutator}
 \end{equation}
 $$
 
@@ -133,7 +133,7 @@ If we add instead of subtracting, we get the **anti-commutator**, another import
 
 $$
 \begin{equation}
-\qty{\hat{A}, \hat{B}} := \hat{A}\hat{B} + \hat{B}\hat{A} \label{eq:anticommutator}
+\acomm{\hat{A}}{\hat{B}} := \hat{A}\hat{B} + \hat{B}\hat{A} \label{eq:anticommutator}
 \end{equation}
 $$
 
@@ -141,7 +141,7 @@ With both the commutator and anti-commutator, we can write a general property of
 
 $$
 \begin{equation}
-\hat{A}\hat{B} = \frac{1}{2} (\hat{A}\hat{B} + \hat{B}\hat{A}) + \frac{1}{2} (\hat{A}\hat{B} - \hat{B}\hat{A}) = \frac{1}{2} \qty{\hat{A}, \hat{B}} + \frac{1}{2} \qty[\hat{A}, \hat{B}] \label{eq:commutator-anticommutator}
+\hat{A}\hat{B} = \frac{1}{2} (\hat{A}\hat{B} + \hat{B}\hat{A}) + \frac{1}{2} (\hat{A}\hat{B} - \hat{B}\hat{A}) = \frac{1}{2} \acomm{\hat{A}}{\hat{B}} + \frac{1}{2} \comm{\hat{A}}{\hat{B}} \label{eq:commutator-anticommutator}
 \end{equation}
 $$
 
@@ -318,7 +318,7 @@ Let's consider what happens if we take the Hermitian adjoint of the commutator:
 
 $$
 \begin{equation}
-\qty[\hat{A}, \hat{B}]^\dagger = \qty(\hat{A}\hat{B} - \hat{B}\hat{A})^\dagger = \hat{B}^\dagger\hat{A}^\dagger - \hat{A}^\dagger\hat{B}^\dagger
+\comm{\hat{A}}{\hat{B}}^\dagger = \qty(\hat{A}\hat{B} - \hat{B}\hat{A})^\dagger = \hat{B}^\dagger\hat{A}^\dagger - \hat{A}^\dagger\hat{B}^\dagger
 \end{equation}
 $$
 
@@ -327,7 +327,7 @@ Hence, the commutator of two Hermitian operators is:
 
 $$
 \begin{equation}
-\qty[\hat{A}, \hat{B}]^\dagger = \hat{B}\hat{A} - \hat{A}\hat{B} = -\qty[\hat{A}, \hat{B}]
+\comm{\hat{A}, \hat{B}]^\dagger = \hat{B}\hat{A} - \hat{A}\hat{B} = -\qty[\hat{A}}{\hat{B}}
 \end{equation}
 $$
 
@@ -339,7 +339,7 @@ This can be seen by taking the Hermitian adjoint of the anti-commutator:
 
 $$
 \begin{equation}
-\qty{\hat{A}, \hat{B}}^\dagger = \qty(\hat{A}\hat{B} + \hat{B}\hat{A})^\dagger = \hat{B}^\dagger\hat{A}^\dagger + \hat{A}^\dagger\hat{B}^\dagger = \hat{B}\hat{A} + \hat{A}\hat{B} = \qty{\hat{A}, \hat{B}}
+\acomm{\hat{A}, \hat{B}}^\dagger = \qty(\hat{A}\hat{B} + \hat{B}\hat{A})^\dagger = \hat{B}^\dagger\hat{A}^\dagger + \hat{A}^\dagger\hat{B}^\dagger = \hat{B}\hat{A} + \hat{A}\hat{B} = \qty{\hat{A}}{\hat{B}}
 \end{equation}
 $$
 
@@ -505,7 +505,7 @@ By Equation $\eqref{eq:commutator-anticommutator}$, we can write $\Delta \hat{A}
 
 $$
 \begin{equation}
-\Delta \hat{A}\Delta \hat{B} = \frac{1}{2} \qty{\Delta \hat{A}, \Delta \hat{B}} + \frac{1}{2} \qty[\Delta \hat{A}, \Delta \hat{B}]
+\Delta \hat{A}\Delta \hat{B} = \frac{1}{2} \acomm{\Delta \hat{A}}{\Delta \hat{B}} + \frac{1}{2} \comm{\Delta \hat{A}}{\Delta \hat{B}}
 \end{equation}
 $$
 
@@ -513,27 +513,27 @@ Taking the expectation values of both sides gives:
 
 $$
 \begin{equation}
-\expval{\Delta \hat{A}\Delta \hat{B}} = \frac{1}{2} \expval{\qty{\Delta \hat{A}, \Delta \hat{B}}} + \frac{1}{2} \expval{\qty[\Delta \hat{A}, \Delta \hat{B}]}
+\expval{\Delta \hat{A}\Delta \hat{B}} = \frac{1}{2} \expval{\acomm{\Delta \hat{A}}{\Delta \hat{B}}} + \frac{1}{2} \expval{\comm{\Delta \hat{A}}{\Delta \hat{B}}}
 \end{equation}
 $$
 
 We know from [Hermiticity](#hermiticity) that the commutator of two Hermitian operators is anti-Hermitian, and the anti-commutator is Hermitian.
-As such, the expectation value of $\qty[\Delta \hat{A}, \Delta \hat{B}]$ is imaginary, and the expectation value of $\qty{\Delta \hat{A}, \Delta \hat{B}}$ is real.
+As such, the expectation value of $\comm{\Delta \hat{A}}{\Delta \hat{B}}$ is imaginary, and the expectation value of $\acomm{\Delta \hat{A}}{\Delta \hat{B}}$ is real.
 Hence, the square of the magnitude of the expectation value of the commutator is:
 
 $$
 \begin{equation}
-\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 = \frac{1}{4} \abs{\expval{\qty{\Delta \hat{A}, \Delta \hat{B}}}}^2 + \frac{1}{4} \abs{\expval{\qty[\Delta \hat{A}, \Delta \hat{B}]}^2}
+\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 = \frac{1}{4} \abs{\expval{\acomm{\Delta \hat{A}}{\Delta \hat{B}}}}^2 + \frac{1}{4} \abs{\expval{\comm{\Delta \hat{A}}{\Delta \hat{B}}}^2}
 \end{equation}
 $$
 
-The commutator $\qty[\Delta \hat{A}, \Delta \hat{B}]$ is simply equal to $\qty[\hat{A}, \hat{B}]$.
+The commutator $\comm{\Delta \hat{A}, \Delta \hat{B}]$ is simply equal to $\qty[\hat{A}}{\hat{B}}$.
 (To see this, expand $\Delta \hat{A}$ and $\Delta \hat{B}$ in terms of $\hat{A}$ and $\hat{B}$, and then subtract them.)
 Thus:
 
 $$
 \begin{equation}
-\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 = \frac{1}{4} \abs{\expval{\qty{\Delta \hat{A}, \Delta \hat{B}}}^2} + \frac{1}{4} \abs{\expval{\qty[\hat{A}, \hat{B}]}^2}
+\abs{\expval{\Delta \hat{A}\Delta \hat{B}}}^2 = \frac{1}{4} \abs{\expval{\acomm{\Delta \hat{A}}{\Delta \hat{B}}}^2} + \frac{1}{4} \abs{\expval{\comm{\hat{A}}{\hat{B}}}^2}
 \end{equation}
 $$
 
@@ -541,7 +541,7 @@ Plugging this back into Equation $\eqref{eq:uncertainty-proof-1}$ gives:
 
 $$
 \begin{equation}
-\frac{1}{4} \abs{\expval{\qty{\Delta \hat{A}, \Delta \hat{B}}}^2} + \frac{1}{4} \abs{\expval{\qty[\hat{A}, \hat{B}]}^2} \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2}
+\frac{1}{4} \abs{\expval{\acomm{\Delta \hat{A}}{\Delta \hat{B}}}^2} + \frac{1}{4} \abs{\expval{\comm{\hat{A}}{\hat{B}}}^2} \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2}
 \end{equation}
 $$
 
@@ -549,7 +549,7 @@ Finally, we can get rid of the first term on the left - it does not change the i
 
 $$
 \begin{equation}
-\frac{1}{4} \abs{\expval{\qty[\hat{A}, \hat{B}]}^2} \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2} \tag{\ref{eq:uncertainty-principle}}
+\frac{1}{4} \abs{\expval{\comm{\hat{A}}{\hat{B}}}^2} \leq \expval{(\Delta \hat{A})^2} \expval{(\Delta \hat{B})^2} \tag{\ref{eq:uncertainty-principle}}
 \end{equation}
 $$
 
@@ -579,7 +579,7 @@ Here are the key things to remember:
 
     $$
     \begin{equation}
-    \qty[\hat{A}, \hat{B}] := \hat{A}\hat{B} - \hat{B}\hat{A} \tag{\ref{eq:commutator}}
+    \comm{\hat{A}}{\hat{B}} := \hat{A}\hat{B} - \hat{B}\hat{A} \tag{\ref{eq:commutator}}
     \end{equation}
     $$
 
@@ -587,7 +587,7 @@ Here are the key things to remember:
 
     $$
     \begin{equation}
-    \qty{\hat{A}, \hat{B}} := \hat{A}\hat{B} + \hat{B}\hat{A} \tag{\ref{eq:anticommutator}}
+    \acomm{\hat{A}}{\hat{B}} := \hat{A}\hat{B} + \hat{B}\hat{A} \tag{\ref{eq:anticommutator}}
     \end{equation}
     $$
 
@@ -595,7 +595,7 @@ Here are the key things to remember:
 
     $$
     \begin{equation}
-    \hat{A}\hat{B} = \frac{1}{2} \qty{\hat{A}, \hat{B}} + \frac{1}{2} \qty[\hat{A}, \hat{B}] \tag{\ref{eq:commutator-anticommutator}}
+    \hat{A}\hat{B} = \frac{1}{2} \acomm{\hat{A}}{\hat{B}} + \frac{1}{2} \comm{\hat{A}}{\hat{B}} \tag{\ref{eq:commutator-anticommutator}}
     \end{equation}
     $$
 

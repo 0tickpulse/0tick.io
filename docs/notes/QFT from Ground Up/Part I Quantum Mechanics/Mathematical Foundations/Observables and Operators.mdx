@@ -475,6 +475,20 @@ $$
 The above derivation is a heuristic way to understand the Born rule.
 **Gleason's theorem** is a mathematical result that shows that the Born rule is the only way to assign probabilities to the outcomes of a quantum measurement.
 
+For a discrete set of eigenvalues, the Born rule gives the probability of measuring a particular eigenvalue.
+For a continuous set of eigenvalues, the Born rule gives a probability density function for the eigenvalues.
+Thus, the probability of measuring an eigenvalue in a particular range is the integral of the probability density function over that range:
+
+<Boxed>
+**Born Rule for Continuous Eigenvalues**: The probability of measuring an observable with eigenvalue in the range $[a, b]$ is:
+
+$$
+\begin{equation}
+P(a \leq E \leq b) = \int_a^b |\braket{E}{\psi}|^2 \dd{E}
+\end{equation}
+$$
+</Boxed>
+
 ## Hermitian Adjoint and Hermitian Operators
 
 Suppose we have an inner product $\braket{\phi}{\psi}$, then suppose we have an operator $\hat{A}$ acting on the state vector $\ket{\psi}$.

@@ -1,0 +1,417 @@
+---
+sidebar_position: 7
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Time Evolution of Quantum Systems
+
+Up to this point, we have discussed the basic principles of quantum mechanics, including the postulates and mathematical formalism.
+We have not yet discussed how quantum systems evolve in time.
+In this section, we will derive the third postulate of quantum mechanics, which requires that the time evolution of quantum systems be governed by a unitary operator.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Time-Evolution Operator
+
+The time-evolution operator is an operator that describes how a quantum system evolves in time.
+Suppose we have a quantum system described by a state vector $\ket{\psi}$ at time $t_0$.
+At some other time $t > t_0$, the state of the system will be described by another state vector.
+Sakurai uses the notation $\ket{\psi, t_0; t}$ to denote the state of the system at time $t$ given that it was in the state $\ket{\psi}$ at time $t_0$.
+
+First, if $t = t_0$, then the state of the system at time $t$ is the same as the state of the system at time $t_0$.
+Mathematically, this is expressed as:
+
+$$
+\begin{equation}
+\lim_{t \to t_0} \ket{\psi, t_0; t} = \ket{\psi, t_0; t_0} = \ket{\psi, t_0} = \ket{\psi} \label{eq:time-evolution-operator-initial-condition}
+\end{equation}
+$$
+
+Next, suppose we have a time-evolution operator $U(t; t_0)$ that describes how the state of the system evolves from time $t_0$ to time $t$.
+Then, the state of the system at time $t$ is given by:
+
+$$
+\begin{equation}
+\ket{\psi, t_0; t} = U(t; t_0) \ket{\psi, t_0}
+\end{equation}
+$$
+
+From physical intuition, we expect the time-evolution operator to follow the following properties:
+
+- Equation $\eqref{eq:time-evolution-operator-initial-condition}$ can be written as:
+
+    $$
+    \begin{equation}
+    U(t_0, t_0) = I \label{eq:time-evolution-operator-identity}
+    \end{equation}
+    $$
+
+    where $I$ is the identity operator.
+- The time-evolution operator should be invertible because we should be able to evolve the state of the system backwards in time.
+    This means that there should exist an operator $U^{-1}(t; t_0)$ such that:
+
+    $$
+    \begin{equation}
+    U(t; t_0) U^{-1}(t; t_0) = U^{-1}(t; t_0) U(t; t_0) = I
+    \end{equation}
+    $$
+- The operator should follow this composition property:
+
+    $$
+    \begin{equation}
+    U(t_2, t_1) U(t_1, t_0) = U(t_2, t_0)
+    \end{equation}
+    $$
+- The total probability of the system should be conserved.
+    Since the total probability is equal to $\braket{\psi}{\psi}$, we should have:
+
+    $$
+    \begin{equation}
+    \braket{U \psi}{U \psi} = \braket{\psi}{\psi}
+    \end{equation}
+    $$
+
+The last condition is very interesting.
+Recall that the Hermitian conjugate allows us to move $U$ to the right side of the inner product:
+
+$$
+\begin{equation}
+\braket{U \psi}{U \psi} = \braket{\psi}{U^\dagger U \psi}
+\end{equation}
+$$
+
+Since this must be equal to $\braket{\psi}{\psi}$, we must have:
+
+$$
+\begin{equation}
+U^\dagger U = I
+\end{equation}
+$$
+
+This property is very important and it has a name; the time-evolution operator must be an **unitary operator**.
+(Recall that we have already seen unitary operators in the context of the transformations of the Jones vectors in the polarization of light.)
+
+## Schrödinger Equation
+
+Consider a quantum system described by a state vector $\ket{\psi, t_0}$ at time $t_0$.
+Now suppose we want to find the state of the system at time $t_0 + \Delta t$ (a very small time interval after $t_0$).
+
+From Equation $\eqref{eq:time-evolution-operator-initial-condition}$, we have:
+
+$$
+\begin{equation}
+\lim_{\Delta t \to 0} \ket{\psi, t_0; t_0 + \Delta t} = \ket{\psi, t_0}
+\end{equation}
+$$
+
+Therefore, the time-evolution operator $U(t_0 + \Delta t; t_0)$ must be very close to the identity operator:
+
+$$
+\begin{equation}
+\lim_{\Delta t \to 0} U(t_0 + \Delta t; t_0) = I
+\end{equation}
+$$
+
+We can expand $U(t_0 + \Delta t; t_0)$ in a Taylor series about $\Delta t = 0$:
+
+$$
+\begin{equation}
+U(t_0 + \Delta t; t_0) = I + \Delta t \dot{U}(0) + \order{\Delta t^2}
+\end{equation}
+$$
+
+Therefore:
+
+$$
+\begin{equation}
+U(t_0 + \Delta t; t_0) - I = \Delta t \dot{U}(0) + \order{\Delta t^2}
+\end{equation}
+$$
+
+From $\eqref{eq:time-evolution-operator-identity}$, we have $I = U(t_0, t_0)$:
+
+$$
+\begin{equation}
+U(t_0 + \Delta t; t_0) - U(t_0, t_0) = \Delta t \dot{U}(0) + \order{\Delta t^2}
+\end{equation}
+$$
+
+Finally, dividing by $\Delta t$ gives:
+
+$$
+\begin{equation}
+\frac{U(t_0 + \Delta t; t_0) - U(t_0, t_0)}{\Delta t} = \dot{U}(0) + \order{\Delta t}
+\end{equation}
+$$
+
+Now, we apply both sides of the equation to the state vector $\ket{\psi, t_0}$:
+
+$$
+\begin{align}
+\frac{U(t_0 + \Delta t; t_0) - U(t_0, t_0)}{\Delta t} \ket{\psi, t_0} &= \dot{U}(0) \ket{\psi, t_0} \\
+\frac{\ket{\psi, t_0; t_0 + \Delta t} - \ket{\psi, t_0}}{\Delta t} &= \dot{U}(0) \ket{\psi, t_0}
+\end{align}
+$$
+
+Taking the limit as $\Delta t \to 0$ gives:
+
+$$
+\begin{equation}
+\lim_{\Delta t \to 0} \frac{\ket{\psi, t_0; t_0 + \Delta t} - \ket{\psi, t_0}}{\Delta t} = \dot{U}(0) \ket{\psi, t_0}
+\end{equation}
+$$
+
+This is the definition of the derivative of the state vector with respect to time. Thus:
+
+$$
+\begin{equation}
+\dv{t} \ket{\psi, t_0} = \dot{U}(0) \ket{\psi, t_0} \label{eq:schrodinger-equation-derivative}
+\end{equation}
+$$
+
+To continue from here, consider the term $\dot{U}(0)$.
+Since $U$ is a unitary operator, we have $U(t_0 + \Delta t; t_0)^\dagger U(t_0 + \Delta t; t_0) = I$.
+Expanding this out in a Taylor series (about $\Delta t = 0$) gives:
+
+$$
+\begin{equation}
+\begin{split}
+I &= (I + \Delta t \dot{U}(0) + \order{\Delta t^2})^\dagger (I + \Delta t \dot{U}(0) + \order{\Delta t^2}) \\
+&= I + \Delta t \dot{U}(0) + \Delta t \dot{U}(0)^\dagger + \order{\Delta t^2}
+\end{split}
+\end{equation}
+$$
+
+The $I$ terms cancel out, and we are left with (after dividing by $\Delta t$ and taking the limit as $\Delta t \to 0$):
+
+$$
+\begin{equation}
+\dot{U}(0) + \dot{U}(0)^\dagger = 0
+\end{equation}
+$$
+
+Or,
+
+$$
+\begin{equation}
+\dot{U}(0) = -\dot{U}(0)^\dagger
+\end{equation}
+$$
+
+This is the definition of an **anti-Hermitian operator**; we have previously seen it in the context of commutators.
+
+The key insight comes when we try to evaluate $(i\dot{U}(0))^\dagger$.
+From the product rule for the Hermitian conjugate, we have:
+
+$$
+\begin{equation}
+(i\dot{U}(0))^\dagger = i^\dagger \dot{U}(0)^\dagger = (-i)(-\dot{U}(0)) = i\dot{U}(0)
+\end{equation}
+$$
+
+In other words, $(i\dot{U}(0))^\dagger = i\dot{U}(0)$, and so it must be Hermitian.
+Denote this operator as $\Omega$. Thus, we have:
+
+$$
+\begin{equation}
+\Omega = i\dot{U}(0)
+\end{equation}
+$$
+
+So $\dot{U}$ can be written as:
+
+$$
+\begin{equation}
+\dot{U}(0) = \frac{\Omega}{i}
+\end{equation}
+$$
+
+Going back to Equation $\eqref{eq:schrodinger-equation-derivative}$, we have:
+
+$$
+\begin{equation}
+\dv{t} \ket{\psi, t_0} = \frac{\Omega}{i} \ket{\psi, t_0}
+\end{equation}
+$$
+
+Rearranging $i$ to the left gives:
+
+$$
+\begin{equation}
+i \dv{t} \ket{\psi, t_0} = \Omega \ket{\psi, t_0}
+\end{equation}
+$$
+
+The Appendix outlines the connection between the time-evolution operator and the Hamiltonian of a system:
+
+$$
+\begin{equation}
+\pdv{L}{t} = -\dv{H}{t}
+\end{equation}
+$$
+
+It looks very close to the previous equation given above; $L \to \ket{\psi}$ and $H \to \Omega$.
+As such, we can define $\Omega$ as the following:
+
+$$
+\begin{equation}
+\Omega = \frac{H}{\hbar}
+\end{equation}
+$$
+
+Thus, we have:
+
+$$
+\begin{equation}
+i \dv{t} \ket{\psi, t_0} = \frac{H}{\hbar} \ket{\psi, t_0}
+\end{equation}
+$$
+
+Rearranging this gives the **Schrödinger equation**:
+
+<Boxed>
+**Schrödinger Equation**: The time evolution of a quantum system is governed by the Schrödinger equation:
+
+$$
+\begin{equation}
+i \hbar \dv{t} \ket{\psi, t_0} = H \ket{\psi, t_0}
+\end{equation}
+$$
+</Boxed>
+
+Alternatively, we can write the Schrödinger equation in terms of the time-evolution operator $U$:
+
+<Boxed>
+**Schrödinger Equation (Time-Evolution Operator Form)**: The time evolution of a quantum system is governed by the Schrödinger equation:
+
+$$
+\begin{equation}
+i \hbar \dv{t} U(t; t_0) = H U(t; t_0)
+\end{equation}
+$$
+</Boxed>
+
+The reason the $\hbar$ in this context is equal to the $\hbar$ in the translation operator is because it is required to create a relationship like:
+
+$$
+\begin{equation}
+\dv{\va{r}}{t} = \frac{\va{p}}{m}
+\end{equation}
+$$
+
+### Solving the Schrödinger Equation
+
+For the time-evolution operator form of the Schrödinger equation, we can solve it depending on the form of the Hamiltonian.
+
+1. **Time-Independent Hamiltonian**: If the Hamiltonian is time-independent, then the time-evolution operator can be written as:
+
+    $$
+    \begin{equation}
+    U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0))
+    \end{equation}
+    $$
+
+    We can show that this satisfies the Schrödinger equation by taking the Taylor series of the exponential function and using the fact that the Hamiltonian is time-independent.
+
+2. **Time-Dependent, Commuting Hamiltonians**: If the Hamiltonians at different times commute, then the time-evolution operator can be written as:
+
+    $$
+    \begin{equation}
+    U(t; t_0) = \exp(-\frac{i}{\hbar} \int_{t_0}^{t} H(t') \dd{t'})
+    \end{equation}
+    $$
+
+3. **Time-Dependent, Non-Commuting Hamiltonians**: If the Hamiltonians at different times do not commute, then the time-evolution operator can be written as:
+
+    $$
+    \begin{equation}
+    U(t; t_0) = 1 + \sum_{n=1}^{\infty} \qty(-\frac{i}{\hbar})^n \int_{t_0}^{t} \dd{t_1} \int_{t_0}^{t_1} \dd{t_2} \cdots \int_{t_0}^{t_{n-1}} \dd{t_n} H(t_1) H(t_2) \cdots H(t_n)
+    \end{equation}
+    $$
+
+    This is known as the **Dyson series**, named after Freeman J. Dyson.
+
+## Appendix: Generators in Hamiltonian Mechanics
+
+In classical mechanics, we have the concept of a **generator**.
+A generator is a function that generates a transformation of the phase space.
+
+Recall that the Hamiltonian of a system is a function of the generalized coordinates $q_i$ and the generalized momenta $p_i$.
+For simple cases, imagine we just have a Cartesian coordinate $x$ and its conjugate momentum $p$.
+In most simple cases, the Hamiltonian is simply the total energy of the system:
+
+$$
+\begin{equation}
+H = T + V = \frac{p^2}{2m} + V(x)
+\end{equation}
+$$
+
+The Lagrangian of the system is given by the difference between the kinetic and potential energies:
+
+$$
+\begin{equation}
+L = T - V = \frac{p^2}{2m} - V(x)
+\end{equation}
+$$
+
+Observe what happens if we take the derivative of the Lagrangian with respect to time:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L(x, \dot{x})}{t} &= \pdv{L}{t} + \pdv{L}{x} \dv{x}{t} + \pdv{L}{\dot{x}} \dv{\dot{x}}{t} \\
+&= \pdv{L}{t} + \pdv{L}{x} \dot{x} + \pdv{L}{\dot{x}} \ddot{x}
+\end{split}
+\end{equation}
+$$
+
+The Euler-Lagrange equation tells us that the term $\pdv{L}{x} - \dv{t} \pdv{L}{\dot{x}} = 0$.
+Thus, $\pdv{L}{x} = \dv{t} \pdv{L}{\dot{x}}$. Plugging this back into the equation above, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L(x, \dot{x})}{t} &= \pdv{L}{t} + \pdv{L}{\dot{x}} \ddot{x} + \pdv{L}{\dot{x}} \ddot{x} \\
+&= \pdv{L}{t} + \dv{t} \pdv{L}{\dot{x}} \dot{x} + \pdv{L}{\dot{x}} \ddot{x} \\
+&= \pdv{L}{t} + \dv{t} \qty(\pdv{L}{\dot{x}} \dot{x})
+\end{split}
+\end{equation}
+$$
+
+Recall that $\pdv{L}{\dot{x}}$ is the momentum $p = m \dot{x}$.
+Thus:
+
+$$
+\begin{equation}
+\dv{L(x, \dot{x})}{t} = \pdv{L}{t} + \dv{t} (p \dot{x}) = \pdv{L}{t} + \dv{t} (m \dot{x}^2)
+\end{equation}
+$$
+
+Rearranging yields:
+
+$$
+\begin{equation}
+\pdv{L}{t} = \dv{t} \qty(L - m \dot{x}^2)
+\end{equation}
+$$
+
+Since $L = \frac{1}{2} m \dot{x}^2 - V(x)$, we have:
+
+$$
+\begin{equation}
+\pdv{L}{t} = \dv{t} \qty[\qty(\frac{1}{2} m \dot{x}^2 - V(x)) - m \dot{x}^2] = -\dv{t} \qty[\frac{1}{2} m \dot{x}^2 + V(x)] = -\dv{H}{t}
+\end{equation}
+$$
+
+In other words, the time derivative of the Hamiltonian is equal to the negative of the time derivative of the Lagrangian.
