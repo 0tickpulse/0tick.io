@@ -29,7 +29,7 @@ Furthermore, we will discuss the canonical commutation relations between the pos
 
 The position observable has a continuous spectrum; its values can be any real number.
 Furthermore, we know that there are three spatial dimensions, so the position operator must be a vector operator.
-We assume that the position eigenkets $\ket{\va{r}}$ form a complete basis for the Hilbert space of the particle (an assumption in non-relativistic quantum mechanics).
+We assume that the position eigenkets $\ket{\vb{r}}$ form a complete basis for the Hilbert space of the particle (an assumption in non-relativistic quantum mechanics).
 
 For a single dimension, the state vector $\ket{\psi}$ can be expanded as:
 
@@ -43,11 +43,11 @@ In three dimensions, the state vector $\ket{\psi}$ can be expanded as:
 
 $$
 \begin{equation}
-\ket{\psi} = \int \dd[3]{\va{r}'} \ket{\va{r}'} \braket{\va{r}'}{\psi}
+\ket{\psi} = \int \dd[3]{\vb{r}'} \ket{\vb{r}'} \braket{\vb{r}'}{\psi}
 \end{equation}
 $$
 
-In this case, then, $\ket{\va{r}'}$ is an eigenket of all three components of the position operator.
+In this case, then, $\ket{\vb{r}'}$ is an eigenket of all three components of the position operator.
 From what we know about commutators, this means that the position operators in different directions have a commutator of zero:
 
 $$
@@ -55,3 +55,616 @@ $$
 \comm{x_i}{x_j} = 0
 \end{equation}
 $$
+
+## Translation Operators
+
+Suppose we have a state for a particle at position $\vb{r}$ as $\ket{\vb{r}}$.
+Let's define an operator that translates the state by an infinitesimal distance $\dd{\vb{r}'}$.
+We follow Sakurai's notation and denote this operator as $\mathcal{J}(\dd{\vb{r}'})$:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}} = \ket{\vb{r} + \dd{\vb{r}'}}
+\end{equation}
+$$
+
+To see how this operator acts on any state $\ket{\psi}$, we can expand $\ket{\psi}$ in terms of the position eigenkets:
+
+$$
+\begin{equation}
+\ket{\psi} = \int \dd[3]{\vb{r}'} \ket{\vb{r}'} \braket{\vb{r}'}{\psi}
+\end{equation}
+$$
+
+Then, we can apply the translation operator to $\ket{\psi}$:
+
+$$
+\begin{equation}
+\begin{split}
+\mathcal{J}(\dd{\vb{r}'}) \ket{\psi} &= \mathcal{J}(\dd{\vb{r}'}) \qty(\int \dd[3]{\vb{r}'} \ket{\vb{r}'} \braket{\vb{r}'}{\psi}) \\
+&= \int \dd[3]{\vb{r}'} \mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} \braket{\vb{r}'}{\psi} \\
+&= \int \dd[3]{\vb{r}'} \ket{\vb{r}' + \dd{\vb{r}'}} \braket{\vb{r}'}{\psi}
+\end{split}
+\end{equation}
+$$
+
+If we make the substitution $\vb{r}' \to \vb{r} - \dd{\vb{r}'}$, we get:
+
+$$
+\begin{equation}
+\int \dd[3]{\vb{r}'} \ket{\vb{r}' + \dd{\vb{r}'}} \braket{\vb{r}'}{\psi} = \int \dd[3]{\vb{r}'} \ket{\vb{r}'} \braket{\vb{r}' - \dd{\vb{r}'}}{\psi}
+\end{equation}
+$$
+
+This substitution is valid because the integral is over all space, and the substitution is a simple relabeling of the integration variable.
+Hence, we have:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \ket{\psi} = \int \dd[3]{\vb{r}'} \ket{\vb{r}'} \braket{\vb{r}' - \dd{\vb{r}'}}{\psi}
+\end{equation}
+$$
+
+Recall that the wavefunction for a state $\ket{\psi}$ is $\braket{E}{\psi}$ where $\ket{E}$ is an eigenket of an observable.
+In our case, the position wavefunction is $\braket{\vb{r}}{\psi}$.
+When $\mathcal{J}(\dd{\vb{r}'})$ acts on $\ket{\psi}$, it changes the wavefunctions from $\braket{\vb{r}}{\psi}$ to $\braket{\vb{r} - \dd{\vb{r}'}}{\psi}$.
+This is equivalent to a translation of the wavefunction by $\dd{\vb{r}'}$.
+
+### Properties of Translation Operators
+
+From physical intuition, we expect the translation operator to have the following properties:
+
+- As $\dd{\vb{r}'} \to 0$, $\mathcal{J}(\dd{\vb{r}'}) \to I$ because a translation by zero is the identity operator.
+- If we translate by $\dd{\vb{r}'_1}$ and then by $\dd{\vb{r}'_2}$, it should be the same as translating by $\dd{\vb{r}'_1} + \dd{\vb{r}'_2}$:
+
+    $$
+    \begin{equation}
+    \mathcal{J}(\dd{\vb{r}'_1}) \mathcal{J}(\dd{\vb{r}'_2}) = \mathcal{J}(\dd{\vb{r}'_1} + \dd{\vb{r}'_2})
+    \end{equation}
+    $$
+- If we translate by $-\dd{\vb{r}'}$, it should be the inverse of translating by $\dd{\vb{r}'}$:
+
+    $$
+    \begin{equation}
+    \mathcal{J}(-\dd{\vb{r}'}) = \mathcal{J}^{-1}(\dd{\vb{r}'})
+    \end{equation}
+    $$
+- The translation operator should preserve the total probability of finding the particle in a region of space.
+    This means that the translation operator should preserve the inner product of two states:
+
+    $$
+    \begin{equation}
+    \braket{\psi}{\psi} = \braket{\mathcal{J}(\dd{\vb{r}'}) \psi}{\mathcal{J}(\dd{\vb{r}'}) \psi}
+    \end{equation}
+    $$
+
+From the last property, after shifting the operators around a bit, we get:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'})^\dagger \mathcal{J}(\dd{\vb{r}'}) = I
+\end{equation}
+$$
+
+Thus, the translation operator is unitary.
+
+### Explicit Form of Translation Operators
+
+To derive the explicit form of the translation operator, we start with the Taylor expansion of the translation operator:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) = I + \grad{\mathcal{J}}(\vb{0}) \cdot \dd{\vb{r}'} + \order{\dd{\vb{r}'}^2}
+\end{equation}
+$$
+
+For the sake of brevity, we will write $\grad{\mathcal{J}}(\vb{0})$ as $\vb{G}$:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) = I + \vb{G} \cdot \dd{\vb{r}'} + \order{\dd{\vb{r}'}^2}
+\end{equation}
+$$
+
+Recall from the properties of the operator that $I = \mathcal{J}(\dd{\vb{r}'})^\dagger \mathcal{J}(\dd{\vb{r}'})$.
+Expanding each operator with the Taylor series, we get:
+
+$$
+\begin{equation}
+\begin{split}
+I &= \qty(I + \vb{G} \cdot \dd{\vb{r}'} + \order{\dd{\vb{r}'}^2})^\dagger \qty(I + \vb{G} \cdot \dd{\vb{r}'} + \order{\dd{\vb{r}'}^2}) \\
+&= I + \vb{G} \cdot \dd{\vb{r}'} + \qty(\vb{G} \cdot \dd{\vb{r}'})^\dagger + \order{\dd{\vb{r}'}^2} \\
+&= I + \dd{\vb{r}'} \cdot \qty(\vb{G} + \vb{G}^\dagger) + \order{\dd{\vb{r}'}^2}
+\end{split}
+\end{equation}
+$$
+
+Canceling the $I$ terms and the $\order{\dd{\vb{r}'}^2}$ terms, we get:
+
+$$
+\begin{equation}
+\vb{G} + \vb{G}^\dagger = 0
+\end{equation}
+$$
+
+In other words, $\vb{G} = -\vb{G}^\dagger$. This means that $\vb{G}$ is an anti-Hermitian operator.
+We can show that $i \vb{G}$ is Hermitian:
+
+$$
+\begin{equation}
+(i \vb{G})^\dagger = -i \vb{G}^\dagger = -i (-\vb{G}) = i \vb{G}
+\end{equation}
+$$
+
+Hence, $i \vb{G}$ is Hermitian. Denote this new Hermitian operator as $-\vb{K}$, with the minus sign by convention.
+Plugging this back into the Taylor expansion, we get:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) = I - i \vb{K} \cdot \dd{\vb{r}'} + \order{\dd{\vb{r}'}^2}
+\end{equation}
+$$
+
+For an infinitesimal translation, the $\order{\dd{\vb{r}'}^2}$ terms are negligible, so we can write:
+
+<Boxed>
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) = I - i \vb{K} \cdot \dd{\vb{r}'} \label{eq:infinitesimal-translation-operator}
+\end{equation}
+$$
+
+</Boxed>
+
+### Operator Identity
+
+We can derive a fundamental identity for the operator $\vb{K}$ and the position operator $\vb{r}$.
+Consider the commutator of the translation operator with the position operator, $\comm{\vb{r}}{\mathcal{J}(\dd{\vb{r}'})}$:
+
+$$
+\begin{equation}
+\comm{\vb{r}}{\mathcal{J}(\dd{\vb{r}'})} \ket{\vb{r}'} = \vb{r} \mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} - \mathcal{J}(\dd{\vb{r}'}) \vb{r} \ket{\vb{r}'}
+\end{equation}
+$$
+
+The first part of the commutator is:
+
+$$
+\begin{equation}
+\vb{r} \mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} = \vb{r} \ket{\vb{r}' + \dd{\vb{r}'}}
+\end{equation}
+$$
+
+Recall that the position operator acts on the position eigenket as $\vb{r} \ket{\vb{r}'} = \vb{r}' \ket{\vb{r}'}$ because the eigenket is an eigenstate of the position operator.
+Hence, the first part of the commutator is:
+
+$$
+\begin{equation}
+\vb{r} \mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} = (\vb{r}' + \dd{\vb{r}'}) \ket{\vb{r}' + \dd{\vb{r}'}}
+\end{equation}
+$$
+
+The second part of the commutator is:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \vb{r} \ket{\vb{r}'} = \mathcal{J}(\dd{\vb{r}'}) \vb{r}' \ket{\vb{r}'}
+\end{equation}
+$$
+
+$\vb{r}'$ is a constant (it is the eigenvalue of the position operator), so we can pull it out of the translation operator:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \vb{r} \ket{\vb{r}'} = \vb{r}' \mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'}
+\end{equation}
+$$
+
+Then, we can expand the translation operator:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \vb{r} \ket{\vb{r}'} = \vb{r}' \ket{\vb{r}' + \dd{\vb{r}'}}
+\end{equation}
+$$
+
+Thus, the commutator is:
+
+$$
+\begin{equation}
+\begin{split}
+\comm{\vb{r}}{\mathcal{J}(\dd{\vb{r}'})} \ket{\vb{r}'} &= (\vb{r}' + \dd{\vb{r}'}) \ket{\vb{r}' + \dd{\vb{r}'}} - \vb{r}' \ket{\vb{r}' + \dd{\vb{r}'}} \\
+&= \dd{\vb{r}'} \ket{\vb{r}' + \dd{\vb{r}'}}
+\end{split}
+\end{equation}
+$$
+
+$\ket{\vb{r}'}$ and $\ket{\vb{r}' + \dd{\vb{r}'}}$ differ by the second order in $\dd{\vb{r}'}$, so we can make the approximation:
+
+$$
+\begin{equation}
+\comm{\vb{r}}{\mathcal{J}(\dd{\vb{r}'})} \ket{\vb{r}'} = \dd{\vb{r}'} \ket{\vb{r}'}
+\end{equation}
+$$
+
+As such:
+
+<Boxed>
+
+$$
+\begin{equation}
+\comm{\vb{r}}{\mathcal{J}(\dd{\vb{r}'})} = \dd{\vb{r}'} \label{eq:position-translation-commutator}
+\end{equation}
+$$
+
+</Boxed>
+
+This is an **operator identity** that relates the position operator to the translation operator.
+This is an operator identity because it holds for any state $\ket{\vb{r}'}$ and the position eigenkets form a complete basis for the Hilbert space.
+The differential $\dd{\vb{r}'}$ is a *number* $\dd{\vb{r}'}$ times the identity operator.
+
+If we use the explicit form of the translation operator, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\dd{\vb{r}'} = \comm{\vb{r}}{I - i \vb{K} \cdot \dd{\vb{r}'}} &= \vb{r} (I - i \vb{K} \cdot \dd{\vb{r}'}) - (I - i \vb{K} \cdot \dd{\vb{r}'}) \vb{r} \\
+&= \vb{r} - i \vb{r} \vb{K} \cdot \dd{\vb{r}'} - \vb{r} + i \vb{K} \cdot \dd{\vb{r}'} \vb{r} \\
+&= -i \vb{r} \vb{K} \cdot \dd{\vb{r}'} + i \vb{K} \cdot \dd{\vb{r}'} \vb{r} \\
+\end{split}
+\end{equation}
+$$
+
+As such, we can write:
+
+$$
+\begin{equation}
+-i \vb{r} \vb{K} \cdot \dd{\vb{r}'} + i \vb{K} \cdot \dd{\vb{r}'} \vb{r} = \dd{\vb{r}'}
+\end{equation}
+$$
+
+If we set $\dd{\vb{r}'} = \dd{x_j} \vu{x}_j$, then Equation $\eqref{eq:position-translation-commutator}$ becomes:
+
+$$
+\begin{equation}
+\comm{x_i}{\mathcal{J}(\dd{x_j} \vu{x}_j)} = \dd{x_j} \vu{x}_j
+\end{equation}
+$$
+
+Since $\mathcal{J}(\dd{x_j} \vu{x}_j) = -i K_j \dd{x_j}$, we can write:
+
+$$
+\begin{equation}
+\comm{x_i}{-i K_j \dd{x_j}} = \dd{x_j} \vu{x}_j
+\end{equation}
+$$
+
+$\dd{x_j}$ is a number, so we can pull it out of the commutator. Then dividing by $-i \dd{x_j}$ yields:
+
+<Boxed>
+
+$$
+\begin{equation}
+\comm{x_i}{K_j} = i\delta_{ij} \label{eq:position-K-commutator}
+\end{equation}
+$$
+
+</Boxed>
+
+## Momenta
+
+We will now discuss the physical significance of the $\vb{K}$ operator.
+From classical mechanics, we know that momentum is the generator of translations in space (see the appendix for a brief review).
+
+From Equation $\eqref{eq:infinitesimal-translation-operator}$, we have:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) = I - i \vb{K} \cdot \dd{\vb{r}'} \tag{\ref{eq:infinitesimal-translation-operator}}
+\end{equation}
+$$
+
+Applying both sides to a state $\ket{\vb{r}'}$, we get:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} = \ket{\vb{r}'} - i \vb{K} \cdot \dd{\vb{r}'} \ket{\vb{r}'}
+\end{equation}
+$$
+
+Rearranging gives:
+
+$$
+\begin{equation}
+\mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} - \ket{\vb{r}'} = -i \vb{K} \cdot \dd{\vb{r}'} \ket{\vb{r}'}
+\end{equation}
+$$
+
+Since $\mathcal{J}(\dd{\vb{r}'}) \ket{\vb{r}'} = \ket{\vb{r}' + \dd{\vb{r}'}}$, we have:
+
+$$
+\begin{equation}
+\ket{\vb{r}' + \dd{\vb{r}'}} - \ket{\vb{r}'} = -i \vb{K} \cdot \dd{\vb{r}'} \ket{\vb{r}'}
+\end{equation}
+$$
+
+The left-hand side is the change in the position of the particle, $\dd{\vb{r}'}$.
+Dividing both sides over $\dd{\vb{r}'}$ gives:
+
+$$
+\begin{equation}
+\frac{\ket{\vb{r}' + \dd{\vb{r}'}} - \ket{\vb{r}'}}{\dd{\vb{r}'}} = -i \vb{K}
+\end{equation}
+$$
+
+The left-hand side becomes a derivative as $\dd{\vb{r}'} \to 0$:
+
+$$
+\begin{equation}
+\dv{\ket{\vb{r}'}}{\vb{r}'} = -i \vb{K}
+\end{equation}
+$$
+
+This bears a striking resemblance to the following relation in classical mechanics:
+
+$$
+\begin{equation}
+\dv{L}{x} = -\dv{t} p
+\end{equation}
+$$
+
+in which we can make the following correspondence:
+
+- $L$ is the Lagrangian, which is analogous to the state vector $\ket{\vb{r}'}$.
+- $x$ is the position, which is analogous to the position operator $\vb{r}$.
+- $p$ is the momentum, which is analogous to the operator $\vb{K}$.
+
+We thus say that the operator $\vb{K}$ is somehow related to the momentum operator $\vb{p}$.
+The dimensions of $\vb{K}$ are $\text{length}^{-1}$ (you can see it from the commutation relation $\comm{x_i}{K_j} = i\delta_{ij}$).
+The dimensions of momentum are $\text{mass} \times \text{velocity} = \text{mass} \times \text{length} \times \text{time}^{-1}$.
+To make the dimensions of $\vb{K}$ match those of momentum, we need to multiply $\vb{K}$ by a constant with dimensions of inverse *action*:
+
+$$
+\begin{equation}
+\vb{K} = \frac{\vb{p}}{\text{(constant with dimensions of action)}}
+\end{equation}
+$$
+
+Since macroscopic physics was constructed before quantum mechanics, our formulation of quantum mechanics necessitates this constant.
+If we were to start from scratch, we would certainly create a set of units in which this constant is unity (1).
+In fact, this is what we do in a system called **natural units** (more precisely, natural units are a *set* of different systems).
+
+Sakurai provides a useful analogy to understand this constant.
+The energy of two particles with a charge $e$ and a separation $r$ is proportional to $e^2 / r$.
+In SI units, the constant of proportionality is $1 / 4 \pi \epsilon_0$, but in unrationalized Gaussian cgs units, this constant is simply $1$.
+
+This constant appears in de Broglie's relation for the wavelength of matter waves:
+
+$$
+\begin{equation}
+\frac{2\pi}{\lambda} = \frac{p}{\hbar}
+\end{equation}
+$$
+
+(where $\frac{2\pi}{\hbar}$ is the wavenumber $k$ and $\hbar$ is our constant with dimensions of action).
+We finally have:
+
+$$
+\begin{equation}
+\vb{K} = \frac{\vb{p}}{\hbar}
+\end{equation}
+$$
+
+or,
+
+$$
+\begin{equation}
+\vb{p} = \hbar \vb{K}
+\end{equation}
+$$
+
+The infinitesimal translation operator is then:
+
+$$
+\begin{equation}
+\begin{split}
+\mathcal{J}(\dd{\vb{r}'}) &= I - i \vb{K} \cdot \dd{\vb{r}'} \\
+&= I - \frac{i}{\hbar} \vb{p} \cdot \dd{\vb{r}'}
+\end{split}
+\end{equation}
+$$
+
+The commutation relation in $\eqref{eq:position-K-commutator}$ can be written as:
+
+$$
+\begin{equation}
+\comm{x_i}{\frac{p_j}{\hbar}} = i\delta_{ij}
+\end{equation}
+$$
+
+Pullling out the $\frac{1}{\hbar}$ term gives:
+
+$$
+\begin{equation}
+\comm{x_i}{p_j} = i\hbar\delta_{ij}
+\end{equation}
+$$
+
+This is the **canonical commutation relation** between the position and momentum operators.
+
+### Position-Momentum Uncertainty Relation
+
+Recall previously that the uncertainty of the expectation value of two operators $A$ and $B$ is given by:
+
+$$
+\begin{equation}
+\expval{(\Delta A)^2} \expval{(\Delta B)^2} \geq \frac{1}{4} \expval{\comm{A}{B}}^2
+\end{equation}
+$$
+
+Now that we have the canonical commutation relation between the position and momentum operators, we can apply this to the position and momentum operators:
+
+$$
+\begin{equation}
+\expval{(\Delta x)^2} \expval{(\Delta p)^2} \geq \frac{1}{4} \expval{\comm{x}{p}}^2 = \frac{\hbar^2}{4}
+\end{equation}
+$$
+
+## Finite Translation Operators
+
+We have derived the infinitesimal translation operator in Equation $\eqref{eq:infinitesimal-translation-operator}$.
+To find the finite translation operator, we simply need to keep applying the infinitesimal translation operator:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta \vb{r}') = \mathcal{J}(\dd{\vb{r}'}) \mathcal{J}(\dd{\vb{r}'}) \cdots \mathcal{J}(\dd{\vb{r}'})
+\end{equation}
+$$
+
+If we have $N$ infinitesimal translations, then the infinitesimal length is $\dd{\vb{r}'} = \Delta \vb{r}' / N$.
+The right-hand side then becomes:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta \vb{r}') = \qty(I - \frac{i}{\hbar} \vb{p} \cdot \frac{\Delta \vb{r}'}{N})^N
+\end{equation}
+$$
+
+In the $x$-direction, for example, we have:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta x') = \qty(I - \frac{ip_x \Delta x'}{N\hbar})^N
+\end{equation}
+$$
+
+As $N \to \infty$, the right-hand side becomes:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta x') = \lim_{N \to \infty} \qty(I - \frac{ip_x \Delta x'}{N\hbar})^N
+\end{equation}
+$$
+
+Recall that the exponential function can be written as:
+
+$$
+\begin{equation}
+\exp(\text{(something)}) = \lim_{N \to \infty} \qty(1 + \frac{\text{(something)}}{N})^N
+\end{equation}
+$$
+
+In our case, the "something" is $-i p_x \Delta x' / \hbar$.
+Thus, we can write:
+
+<Boxed>
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta x') = \exp(\frac{-i p_x \Delta x'}{\hbar})
+\end{equation}
+$$
+
+</Boxed>
+
+In vector form, we have:
+
+<Boxed>
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta \vb{r}') = \exp(\frac{-i \vb{p} \cdot \Delta \vb{r}'}{\hbar})
+\end{equation}
+$$
+
+</Boxed>
+
+## Appendix: Generators in Hamiltonian Mechanics
+
+In classical mechanics, we have the concept of a **generator**.
+A generator is a function that generates a transformation of the phase space.
+
+Recall that the Hamiltonian of a system is a function of the generalized coordinates $q_i$ and the generalized momenta $p_i$.
+For simple cases, imagine we just have a Cartesian coordinate $x$ and its conjugate momentum $p$.
+In most simple cases, the Hamiltonian is simply the total energy of the system:
+
+$$
+\begin{equation}
+H = T + V = \frac{p^2}{2m} + V(x)
+\end{equation}
+$$
+
+The Lagrangian of the system is given by the difference between the kinetic and potential energies:
+
+$$
+\begin{equation}
+L = T - V = \frac{p^2}{2m} - V(x)
+\end{equation}
+$$
+
+Observe what happens if we take the derivative of the Lagrangian with respect to time:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L(x, \dot{x})}{t} &= \pdv{L}{t} + \pdv{L}{x} \dv{x}{t} + \pdv{L}{\dot{x}} \dv{\dot{x}}{t} \\
+&= \pdv{L}{t} + \pdv{L}{x} \dot{x} + \pdv{L}{\dot{x}} \ddot{x}
+\end{split}
+\end{equation}
+$$
+
+The Euler-Lagrange equation tells us that the term $\pdv{L}{x} - \dv{t} \pdv{L}{\dot{x}} = 0$.
+Thus, $\pdv{L}{x} = \dv{t} \pdv{L}{\dot{x}}$. Plugging this back into the equation above, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{L(x, \dot{x})}{t} &= \pdv{L}{t} + \pdv{L}{\dot{x}} \ddot{x} + \pdv{L}{\dot{x}} \ddot{x} \\
+&= \pdv{L}{t} + \dv{t} \pdv{L}{\dot{x}} \dot{x} + \pdv{L}{\dot{x}} \ddot{x} \\
+&= \pdv{L}{t} + \dv{t} \qty(\pdv{L}{\dot{x}} \dot{x})
+\end{split}
+\end{equation}
+$$
+
+Recall that $\pdv{L}{\dot{x}}$ is the momentum $p = m \dot{x}$.
+Thus:
+
+$$
+\begin{equation}
+\dv{L(x, \dot{x})}{t} = \pdv{L}{t} + \dv{t} (p \dot{x}) = \pdv{L}{t} + \dv{t} (m \dot{x}^2)
+\end{equation}
+$$
+
+Rearranging yields:
+
+$$
+\begin{equation}
+\pdv{L}{t} = \dv{t} \qty(L - m \dot{x}^2)
+\end{equation}
+$$
+
+Since $L = \frac{1}{2} m \dot{x}^2 - V(x)$, we have:
+
+$$
+\begin{equation}
+\pdv{L}{t} = \dv{t} \qty[\qty(\frac{1}{2} m \dot{x}^2 - V(x)) - m \dot{x}^2] = -\dv{t} \qty[\frac{1}{2} m \dot{x}^2 + V(x)] = -\dv{H}{t}
+\end{equation}
+$$
+
+In other words, the time derivative of the Hamiltonian is equal to the negative of the time derivative of the Lagrangian.
+
+We say that **the Hamiltonian generates time translations**.
+
+Here are a few more examples of generators:
+
+$$
+\begin{align}
+\pdv{L}{t} &= -\dv{t} H \\
+\pdv{L}{x} &= -\dv{t} p \\
+\pdv{L}{p} &= \dv{t} x \\
+\pdv{L}{\theta} &= -\dv{t} \mathfrak{L}
+\end{align}
+$$
+
+(where $\mathfrak{L}$ is the angular momentum, in a different notation to avoid confusion with the Lagrangian $L$).

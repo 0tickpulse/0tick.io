@@ -322,7 +322,7 @@ For the time-evolution operator form of the Schrödinger equation, we can solve 
     \end{equation}
     $$
 
-    We can show that this satisfies the Schrödinger equation by taking the Taylor series of the exponential function and using the fact that the Hamiltonian is time-independent.
+    When the Hamiltonian is time-independent, the Schrödinger equation is simply an exponential-like differential equation of the form $\dv{y}{x} = \lambda y$.
 
 2. **Time-Dependent, Commuting Hamiltonians**: If the Hamiltonians at different times commute, then the time-evolution operator can be written as:
 
@@ -342,76 +342,20 @@ For the time-evolution operator form of the Schrödinger equation, we can solve 
 
     This is known as the **Dyson series**, named after Freeman J. Dyson.
 
-## Appendix: Generators in Hamiltonian Mechanics
+## Postulates of Quantum Mechanics
 
-In classical mechanics, we have the concept of a **generator**.
-A generator is a function that generates a transformation of the phase space.
+With the Schrödinger equation, we have now derived the third postulate of quantum mechanics.
+We are now ready to partially state all the postulates of quantum mechanics:
 
-Recall that the Hamiltonian of a system is a function of the generalized coordinates $q_i$ and the generalized momenta $p_i$.
-For simple cases, imagine we just have a Cartesian coordinate $x$ and its conjugate momentum $p$.
-In most simple cases, the Hamiltonian is simply the total energy of the system:
+1. **State Space**: The state of a quantum system is described by a state vector $\ket{\psi}$ in a Hilbert space.
+    a. The state of a composite system is described by the tensor product of the component systems.
+2. **Observables**: Observables are represented by Hermitian operators.
+    a. The possible outcomes of a measurement are the eigenvalues of the operator.
+    b. Immediately after a measurement, the state of the system is the eigenvector corresponding to the measured eigenvalue.
+    c. The probability of measuring an eigenvalue is given by the Born rule: $P = \abs{\braket{x}{\phi}}^2$.
+    d. The expectation value of an observable is given by the inner product of the state vector and the operator.
+3. **Unitary Evolution**: The time evolution of a quantum system is governed by the Schrödinger equation.
+    a. The time-evolution operator is a unitary operator.
+    b. The time-evolution operator obeys the Schrödinger equation.
 
-$$
-\begin{equation}
-H = T + V = \frac{p^2}{2m} + V(x)
-\end{equation}
-$$
-
-The Lagrangian of the system is given by the difference between the kinetic and potential energies:
-
-$$
-\begin{equation}
-L = T - V = \frac{p^2}{2m} - V(x)
-\end{equation}
-$$
-
-Observe what happens if we take the derivative of the Lagrangian with respect to time:
-
-$$
-\begin{equation}
-\begin{split}
-\dv{L(x, \dot{x})}{t} &= \pdv{L}{t} + \pdv{L}{x} \dv{x}{t} + \pdv{L}{\dot{x}} \dv{\dot{x}}{t} \\
-&= \pdv{L}{t} + \pdv{L}{x} \dot{x} + \pdv{L}{\dot{x}} \ddot{x}
-\end{split}
-\end{equation}
-$$
-
-The Euler-Lagrange equation tells us that the term $\pdv{L}{x} - \dv{t} \pdv{L}{\dot{x}} = 0$.
-Thus, $\pdv{L}{x} = \dv{t} \pdv{L}{\dot{x}}$. Plugging this back into the equation above, we get:
-
-$$
-\begin{equation}
-\begin{split}
-\dv{L(x, \dot{x})}{t} &= \pdv{L}{t} + \pdv{L}{\dot{x}} \ddot{x} + \pdv{L}{\dot{x}} \ddot{x} \\
-&= \pdv{L}{t} + \dv{t} \pdv{L}{\dot{x}} \dot{x} + \pdv{L}{\dot{x}} \ddot{x} \\
-&= \pdv{L}{t} + \dv{t} \qty(\pdv{L}{\dot{x}} \dot{x})
-\end{split}
-\end{equation}
-$$
-
-Recall that $\pdv{L}{\dot{x}}$ is the momentum $p = m \dot{x}$.
-Thus:
-
-$$
-\begin{equation}
-\dv{L(x, \dot{x})}{t} = \pdv{L}{t} + \dv{t} (p \dot{x}) = \pdv{L}{t} + \dv{t} (m \dot{x}^2)
-\end{equation}
-$$
-
-Rearranging yields:
-
-$$
-\begin{equation}
-\pdv{L}{t} = \dv{t} \qty(L - m \dot{x}^2)
-\end{equation}
-$$
-
-Since $L = \frac{1}{2} m \dot{x}^2 - V(x)$, we have:
-
-$$
-\begin{equation}
-\pdv{L}{t} = \dv{t} \qty[\qty(\frac{1}{2} m \dot{x}^2 - V(x)) - m \dot{x}^2] = -\dv{t} \qty[\frac{1}{2} m \dot{x}^2 + V(x)] = -\dv{H}{t}
-\end{equation}
-$$
-
-In other words, the time derivative of the Hamiltonian is equal to the negative of the time derivative of the Lagrangian.
+There are, of course, more details to each of these postulates, but this is a good starting point.

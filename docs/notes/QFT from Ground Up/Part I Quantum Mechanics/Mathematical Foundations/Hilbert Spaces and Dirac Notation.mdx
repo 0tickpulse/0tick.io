@@ -14,6 +14,14 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 # Hilbert Spaces and Dirac Notation
 
+Our first section on quantum mechanics will introduce the fundamental concepts of quantum mechanics.
+In this chapter, we will introduce the state vector formalism, which is the most fundamental concept in quantum mechanics.
+
+Through this chapter, we shall gradually build up the mathematical framework of quantum mechanics.
+At the same time, we will slowly develop our notation to a more abstract and concise form.
+This means, for example, we will eventually strip away the arrow on top of a vector: $\va{v} \to \vb{v}$.
+Operators will also slowly lose their hats: $\hat{A} \to A$.
+
 ## Table of Contents
 
 <TOCInline toc={toc} />
@@ -208,7 +216,7 @@ $$
 
 :::note
 
-Outside orthonormal bases, the dot product is given by $\va{a} \cdot \va{b} = \va{a}^T \vb{G} \va{b}$, where $\vb{G}$ is the metric tensor.
+Outside orthonormal bases, the dot product is given by $\va{a} \cdot \va{b} = \va{a}^T \vb{G} \va{b} = a^\mu g_{\mu\nu} b^\nu$, where $\vb{G} = g_{\mu\nu} \vb{e}^\mu \otimes \vb{e}^\nu$ is the metric tensor.
 
 :::
 

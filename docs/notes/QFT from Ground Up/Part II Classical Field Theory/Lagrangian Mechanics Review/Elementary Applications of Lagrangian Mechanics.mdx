@@ -34,16 +34,16 @@ This might seem like an insanely obvious statement, but it is nevertheless an in
 We can use the Lagrangian formalism to prove this statement.
 
 The key is that the shortest path between two points is the path that minimizes the length of the path.
-We can create a path between two points by defining a function $\va{r}(t)$ that describes the path, where we can think of $t$ as time.
-Suppose this path lives in two-dimensional space, so $\va{r}(t) = (x(t), y(t))$.
+We can create a path between two points by defining a function $\vb{r}(t)$ that describes the path, where we can think of $t$ as time.
+Suppose this path lives in two-dimensional space, so $\vb{r}(t) = (x(t), y(t))$.
 
-Let the total distance of the path be $D[\va{r}]$.
+Let the total distance of the path be $D[\vb{r}]$.
 (Recall that we use square brackets to denote functionals, which are functions of functions.)
 It is the sum of the infinitesimal distances $\dd{s}$ along the path:
 
 $$
 \begin{equation}
-D[\va{r}] := \int \dd{s} = \int \sqrt{\dd{x}^2 + \dd{y}^2} = \int \dd{t} \sqrt{\dot{x}^2 + \dot{y}^2}
+D[\vb{r}] := \int \dd{s} = \int \sqrt{\dd{x}^2 + \dd{y}^2} = \int \dd{t} \sqrt{\dot{x}^2 + \dot{y}^2}
 \end{equation}
 $$
 
@@ -466,15 +466,15 @@ This means that we shall expand our vector to include the angular velocities:
 
 $$
 \begin{equation}
-\va{q} = \mqty[\theta_1 \\ \theta_2 \\ \dot{\theta}_1 \\ \dot{\theta}_2]
+\vb{q} = \mqty[\theta_1 \\ \theta_2 \\ \dot{\theta}_1 \\ \dot{\theta}_2]
 \end{equation}
 $$
 
-The derivative of $\va{q}$ is:
+The derivative of $\vb{q}$ is:
 
 $$
 \begin{equation}
-\dot{\va{q}} = \mqty[\dot{\theta}_1 \\ \dot{\theta}_2 \\ \ddot{\theta}_1 \\ \ddot{\theta}_2] = \mqty[\dot{\theta}_1 \\ \dot{\theta}_2 \\ \frac{1}{1 - \class{pink}{\alpha_1} \class{pink}{\alpha_2}} (\class{blue}{\beta_1} - \class{pink}{\alpha_1} \class{blue}{\beta_2}) \\ \frac{1}{1 - \class{pink}{\alpha_1} \class{pink}{\alpha_2}} (-\class{pink}{\alpha_2} \class{blue}{\beta_1} + \class{blue}{\beta_2})]
+\dot{\vb{q}} = \mqty[\dot{\theta}_1 \\ \dot{\theta}_2 \\ \ddot{\theta}_1 \\ \ddot{\theta}_2] = \mqty[\dot{\theta}_1 \\ \dot{\theta}_2 \\ \frac{1}{1 - \class{pink}{\alpha_1} \class{pink}{\alpha_2}} (\class{blue}{\beta_1} - \class{pink}{\alpha_1} \class{blue}{\beta_2}) \\ \frac{1}{1 - \class{pink}{\alpha_1} \class{pink}{\alpha_2}} (-\class{pink}{\alpha_2} \class{blue}{\beta_1} + \class{blue}{\beta_2})]
 \end{equation}
 $$
 
