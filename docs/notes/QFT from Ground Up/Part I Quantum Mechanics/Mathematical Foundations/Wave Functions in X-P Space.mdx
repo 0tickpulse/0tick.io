@@ -1,0 +1,122 @@
+---
+sidebar_position: 9
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Wave Functions in X-P Space
+
+In this note, we will discuss the wavefunctions in the position-momentum space. We will see how the wave functions in the position space and the momentum space are related to each other.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Wavefunction
+
+Recall that the position kets $\ket{x'}$ are the eigenkets of the position operator $x$:
+
+$$
+\begin{equation}
+x\ket{x'} = x'\ket{x'}
+\end{equation}
+$$
+
+The eigenkets are orthogonal;
+
+$$
+\begin{equation}
+\braket{x'}{x''} = \delta(x' - x'')
+\end{equation}
+$$
+
+We have briefly discussed the wavefunction in the first section of this chapter.
+They are the continuous analog of the coefficients of the state vector in a discrete basis:
+
+$$
+\begin{align}
+\ket{\psi} &= \sum_{a'} \overbrace{\class{yellow}{\braket{a'}{\psi}}}^{\text{Coefficient}} \ket{a'} \\
+\ket{\psi} &= \int \dd{x'} \underbrace{\class{yellow}{\braket{x'}{\psi}}}_{\mathclap{\text{Wavefunction}}} \ket{x'}
+\end{align}
+$$
+
+We define the coefficient $\braket{x'}{\psi}$ as the wavefunction $\psi(x')$:
+
+<Boxed>
+**Wavefunction in the Position Space**:
+
+$$
+\begin{equation}
+\psi(x') := \braket{x'}{\psi}
+\end{equation}
+$$
+
+</Boxed>
+
+For an inner product of two states $\ket{\psi}$ and $\ket{\phi}$, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\braket{\phi}{\psi} &= \int \dd{x'} \braket{\phi}{x'} \braket{x'}{\psi} \\
+&= \int \dd{x'} \phi^*(x') \psi(x')
+\end{split}
+\end{equation}
+$$
+
+If we take an inner product of a state vector with an eigenket $\ket{x'}$, we get the following:
+
+$$
+\begin{equation}
+\braket{x'}{\psi} = \int \dd{a'} \braket{x'}{a'} \braket{a'}{\psi}
+\end{equation}
+$$
+
+The $\braket{a'}{\psi}$ term is the wavefunction in the $a'$ basis. The $\braket{x'}{a'}$ term is the overlap between the position ket $\ket{x'}$ and the basis ket $\ket{a'}$.
+It is known as an **eigenfunction** of the operator $A$ with the eigenvalue $a'$:
+
+$$
+\begin{equation}
+u_{a'}(x') := \braket{x'}{a'}
+\end{equation}
+$$
+
+## Momentum Operator on Position Eigenkets
+
+Recall that the translation operator $\mathcal{J}(\Delta x')$ translates the position ket $\ket{x'}$ by $\Delta x'$ and, in the infinitesimal case, is given by:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta x') = 1 - \frac{ip \Delta x'}{\hbar}
+\end{equation}
+$$
+
+Applying it to a state vector $\ket{\psi}$ and expanding in the position basis, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\mathcal{J}(\Delta x')\ket{\psi} &= \int \dd{x'} \mathcal{J}(\Delta x')\ket{x'}\braket{x'}{\psi} \\
+&= \int \dd{x'} \ket{x' + \Delta x'}\braket{x'}{\psi} \\
+&= \int \dd{x'} \ket{x'}\braket{x' - \Delta x'}{\psi}
+\end{split}
+\end{equation}
+$$
+
+where we have shifted the variable of integration $x' \rightarrow x' - \Delta x'$ in the last step.
+The term $\braket{x' - \Delta x'}{\psi}$ is equal to $\braket{x'}{\psi} - \Delta x' \pdv{x'}\braket{x'}{\psi}$, where we have used the Taylor expansion of the wavefunction $\braket{x' - \Delta x'}{\psi}$ around $x'$:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta x')\ket{\psi} = \int \dd{x'} \ket{x'}\left(\braket{x'}{\psi} - \Delta x' \pdv{x'}\braket{x'}{\psi}\right)
+\end{equation}
+$$
+

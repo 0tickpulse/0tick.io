@@ -574,11 +574,206 @@ In vector form, we have:
 
 $$
 \begin{equation}
-\mathcal{J}(\Delta \vb{r}') = \exp(\frac{-i \vb{p} \cdot \Delta \vb{r}'}{\hbar})
+\mathcal{J}(\Delta \vb{r}') = \exp(\frac{-i \vb{p} \cdot \Delta \vb{r}'}{\hbar}) \label{eq:finite-translation-operator}
 \end{equation}
 $$
 
 </Boxed>
+
+Note that it would have been possible to derive this result directly from the properties of the translation operator had we not ignored the $\order{\dd{\vb{r}'}^2}$ terms in the Taylor expansion.
+The infinitesimal expression is a special case of the finite expression - the first term in the Taylor expansion of the exponential function.
+
+### Commutation Relations for Finite Translations
+
+Intuitively, it seems apparent that finite translations in different directions should commute.
+This is because it does not matter which direction we translate first; the final position is the same.
+
+It turns out that they do indeed commute:
+
+$$
+\begin{equation}
+\mathcal{J}(\Delta x' \vu{x}) \mathcal{J}(\Delta y' \vu{y}) = \mathcal{J}(\Delta x' \vu{x} + \Delta y' \vu{y}) = \mathcal{J}(\Delta y' \vu{y}) \mathcal{J}(\Delta x' \vu{x})
+\end{equation}
+$$
+
+We can expand each operator in terms of the exponential function:
+
+$$
+\begin{align}
+\mathcal{J}(\Delta x' \vu{x}) &= \exp(\frac{-i p_x \Delta x'}{\hbar}) = 1 - \frac{i p_x \Delta x'}{\hbar} - \frac{p_x^2 \Delta x'^2}{2\hbar^2} + \order{\Delta x'^3} \\
+\mathcal{J}(\Delta y' \vu{y}) &= \exp(\frac{-i p_y \Delta y'}{\hbar}) = 1 - \frac{i p_y \Delta y'}{\hbar} - \frac{p_y^2 \Delta y'^2}{2\hbar^2} + \order{\Delta y'^3}
+\end{align}
+$$
+
+Their commutator is then:
+
+$$
+\begin{equation}
+\begin{split}
+\comm{\mathcal{J}(\Delta x' \vu{x})}{\mathcal{J}(\Delta y' \vu{y})} &= \comm{1 - \frac{i p_x \Delta x'}{\hbar} - \frac{p_x^2 \Delta x'^2}{2\hbar^2} + \order{\Delta x'^3}}{1 - \frac{i p_y \Delta y'}{\hbar} - \frac{p_y^2 \Delta y'^2}{2\hbar^2} + \order{\Delta y'^3}} \\
+&\approx \cancel{\comm{1}{1}} + \cancel{\comm{1}{-\frac{i p_y \Delta y'}{\hbar}}} + \cancel{\comm{1}{-\frac{p_y^2 \Delta y'^2}{2\hbar^2}}} \\
+&\quad {}+ \cancel{\comm{-\frac{i p_x \Delta x'}{\hbar}}{1}} + \comm{-\frac{i p_x \Delta x'}{\hbar}}{-\frac{i p_y \Delta y'}{\hbar}} + \comm{-\frac{i p_x \Delta x'}{\hbar}}{-\frac{p_y^2 \Delta y'^2}{2\hbar^2}} \\
+&\quad {}+ \cancel{\comm{-\frac{p_x^2 \Delta x'^2}{2\hbar^2}}{1}} + \comm{-\frac{p_x^2 \Delta x'^2}{2\hbar^2}}{-\frac{i p_y \Delta y'}{\hbar}} + \comm{-\frac{p_x^2 \Delta x'^2}{2\hbar^2}}{-\frac{p_y^2 \Delta y'^2}{2\hbar^2}} \\
+&= \qty(\frac{i p_x \Delta x'}{\hbar} \frac{i p_y \Delta y'}{\hbar} - \frac{i p_y \Delta y'}{\hbar} \frac{i p_x \Delta x'}{\hbar}) + \qty(\frac{p_x^2 \Delta x'^2}{2\hbar^2} \frac{i p_y \Delta y'}{\hbar} - \frac{i p_y \Delta y'}{\hbar} \frac{p_x^2 \Delta x'^2}{2\hbar^2}) \\
+&\quad {}+ \qty(\frac{i p_x \Delta x'}{\hbar} \frac{p_y^2 \Delta y'^2}{2\hbar^2} - \frac{p_y^2 \Delta y'^2}{2\hbar^2} \frac{i p_x \Delta x'}{\hbar}) + \qty(\frac{p_x^2 \Delta x'^2}{2\hbar^2} \frac{p_y^2 \Delta y'^2}{2\hbar^2} - \frac{p_y^2 \Delta y'^2}{2\hbar^2} \frac{p_x^2 \Delta x'^2}{2\hbar^2}) \\
+&= -\frac{p_x p_y \Delta x' \Delta y'}{\hbar^2} + \frac{p_y p_x \Delta y' \Delta x'}{\hbar^2} + \frac{i p_x^2 p_y \Delta x'^2 \Delta y'}{2\hbar^3} - \frac{i p_y p_x^2 \Delta y'^2 \Delta x'}{2\hbar^3} \\
+&\quad {}+ \frac{i p_x p_y^2 \Delta x' \Delta y'^2}{2\hbar^3} - \frac{i p_y^2 p_x \Delta y' \Delta x'^2}{2\hbar^3} + \frac{p_x^2 p_y^2 \Delta x'^2 \Delta y'^2}{4\hbar^4} - \frac{p_y^2 p_x^2 \Delta y'^2 \Delta x'^2}{4\hbar^4} \\
+&\approx -\frac{p_x p_y \Delta x' \Delta y'}{\hbar^2} + \frac{p_y p_x \Delta y' \Delta x'}{\hbar^2} \\
+&= - \frac{\comm{p_x}{p_y} \Delta x' \Delta y'}{\hbar^2} \\
+\end{split}
+\end{equation}
+$$
+
+By asserting that the commutator of $\mathcal{J}(\Delta x' \vu{x})$ and $\mathcal{J}(\Delta y' \vu{y})$ is zero, we get:
+
+$$
+\begin{equation}
+\comm{p_x}{p_y} = 0 \label{eq:momentum-commutator}
+\end{equation}
+$$
+
+More generally, $\comm{p_i}{p_j} = 0$ for all $i$ and $j$.
+Since momentum is the generator of translations, this means that translations in different directions commute.
+In mathematical terms, the group of translations in three dimensions is an **Abelian group**.
+
+Since the momentum operators commute, we can simultaneously measure the momentum in different directions.
+This means we can construct a simultaneous eigenket of the momentum operators:
+
+$$
+\begin{equation}
+\ket{\vb{p}'} = \ket{p_x', p_y', p_z'} \label{eq:momentum-eigenket}
+\end{equation}
+$$
+
+Since they are eigenkets of the momentum operators, we have:
+
+$$
+\begin{align}
+p_x \ket{\vb{p}'} &= p_x' \ket{\vb{p}'} \\
+p_y \ket{\vb{p}'} &= p_y' \ket{\vb{p}'} \\
+p_z \ket{\vb{p}'} &= p_z' \ket{\vb{p}'}
+\end{align}
+$$
+
+where $p_x'$, $p_y'$, and $p_z'$ are the eigenvalues of the momentum operators $p_x$, $p_y$, and $p_z$ respectively.
+
+## Dirac's Rule for Canonical Commutation Relations
+
+The **canonical commutation relations** are the fundamental commutation relations between the position and momentum operators.
+We have derived all the commutation relations we need:
+
+$$
+\begin{align}
+\comm{x_i}{p_j} &= i\hbar\delta_{ij} \label{eq:canonical-commutation-relation-xp} \\
+\comm{x_i}{x_j} &= 0 \label{eq:canonical-commutation-relation-xx} \\
+\comm{p_i}{p_j} &= 0 \label{eq:canonical-commutation-relation-pp}
+\end{align}
+$$
+
+Dirac proposed a rule for creating the commutation relations between operators by observing their analogue in classical mechanics.
+More specifically, he proposed that the commutator of two operators is equal to the Poisson bracket of their classical counterparts multiplied by $i\hbar$:
+
+$$
+\begin{equation}
+\comm{A}{B} = i\hbar \pb{A_{\text{cl}}}{B_{\text{cl}}}
+\end{equation}
+$$
+
+where $A_{\text{cl}}$ and $B_{\text{cl}}$ are the classical counterparts of the operators $A$ and $B$ respectively.
+Recall that the Poisson bracket is defined as:
+
+$$
+\begin{equation}
+\pb{A_{\text{cl}}}{B_{\text{cl}}} = \pdv{A_{\text{cl}}}{q_i} \pdv{B_{\text{cl}}}{p_i} - \pdv{A_{\text{cl}}}{p_i} \pdv{B_{\text{cl}}}{q_i}
+\end{equation}
+$$
+
+The Poisson bracket of the position and momentum in classical mechanics is:
+
+$$
+\begin{equation}
+\pb{q_i}{p_j} = \delta_{ij}
+\end{equation}
+$$
+
+By Dirac's rule, we have then:
+
+$$
+\begin{equation}
+\comm{q_i}{p_j} = i\hbar \delta_{ij}
+\end{equation}
+$$
+
+which matches the canonical commutation relation we derived earlier.
+One justification for this rule is that both the commutator and the Poisson bracket satisfy a similar set of properties, even if they have different dimensions (which is why $\hbar$ is needed) and one is real while the other is anti-Hermitian (which is why the $i$ is needed).
+More fundamentally, they are both related to the [**Lie bracket**](https://en.wikipedia.org/wiki/Lie_algebra) in mathematics.
+
+## Summary and Next Steps
+
+In this section, we applied the principles of quantum mechanics to the position and momentum operators.
+
+Here are the key things to remember:
+
+- The three position operators commute with each other.
+    This means that we can simultaneously measure the position in different directions:
+
+    $$
+    \begin{equation}
+    \ket{\vb{r}'} = \ket{x', y', z'}
+    \end{equation}
+    $$
+
+- The translation operator $\mathcal{J}(\Delta \vb{r}')$ generates translations in space.
+    The infinitesimal translation operator is:
+
+    $$
+    \begin{equation}
+    \mathcal{J}(\dd{\vb{r}'}) = I - i \vb{K} \cdot \dd{\vb{r}'} \tag{\ref{eq:infinitesimal-translation-operator}}
+    \end{equation}
+    $$
+
+    which is derived from the properties that we asserted for the translation operator.
+
+    The finite translation operator is:
+
+    $$
+    \begin{equation}
+    \mathcal{J}(\Delta \vb{r}') = \exp(\frac{-i \vb{p} \cdot \Delta \vb{r}'}{\hbar}) \tag{\ref{eq:finite-translation-operator}}
+    \end{equation}
+    $$
+
+- The group of translations in three dimensions is an Abelian group.
+    This means that translations in different directions commute.
+    The momentum operators also commute with each other:
+
+    $$
+    \begin{equation}
+    \comm{p_i}{p_j} = 0 \tag{\ref{eq:momentum-commutator}}
+    \end{equation}
+    $$
+
+    Hence, we can simultaneously measure the momentum in different directions:
+
+    $$
+    \begin{equation}
+    \ket{\vb{p}'} = \ket{p_x', p_y', p_z'} \tag{\ref{eq:momentum-eigenket}}
+    \end{equation}
+    $$
+
+- The canonical commutation relations are the fundamental commutation relations between the position and momentum operators.
+    They are:
+
+    $$
+    \begin{align}
+    \comm{x_i}{p_j} &= i\hbar\delta_{ij} \tag{\ref{eq:canonical-commutation-relation-xp}} \\
+    \comm{x_i}{x_j} &= 0 \tag{\ref{eq:canonical-commutation-relation-xx}} \\
+    \comm{p_i}{p_j} &= 0 \tag{\ref{eq:canonical-commutation-relation-pp}}
+    \end{align}
+    $$
+
+- Dirac's rule for canonical commutation relations states that the commutator of two operators is equal to the Poisson bracket of their classical counterparts multiplied by $i\hbar$: $\comm{A}{B} = i\hbar \pb{A_{\text{cl}}}{B_{\text{cl}}}$.
+
+In the next section, we study wavefunctions in quantum mechanics.
 
 ## Appendix: Generators in Hamiltonian Mechanics
 
