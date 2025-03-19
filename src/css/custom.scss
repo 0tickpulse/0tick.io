@@ -157,3 +157,10 @@ mjx-container {
 .header-github-link:hover::before {
     background-color: var(--ifm-navbar-link-hover-color);
 }
+
+.searchHintKbd {
+    color: inherit;
+    background-color: transparent;
+    border: 1px solid;
+    font-family: var(--ifm-font-family-base);
+}
