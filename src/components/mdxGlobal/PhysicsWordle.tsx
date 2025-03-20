@@ -9,8 +9,8 @@
 import { MathEquation } from "@site/src/components/Math";
 import { WORDS } from "@site/src/utilities/wordle";
 import { useEffect, useRef, useState } from "react";
-import Confetti from "react-confetti";
 import styles from "./PhysicsWordle.module.scss";
+import Confetti from "react-confetti";
 
 type Letters = Record<string, string[]>;
 type Guess = [string, string, string, string, string];
@@ -85,7 +85,7 @@ const LETTERS: Letters = {
         String.raw`\frac{p}{q}`, // p is the dipole moment and q is the charge
         String.raw`K - U`, // Lagrangian
         String.raw`\qty(\frac{T}{2\pi})^2 g`, // Length of a pendulum string
-        String.raw`\int \dd{s}^4 \mathcal{L}(\phi, \partial_\mu \phi)`, // Lagrangian density in field theory
+        String.raw`\int \dd[4]{s} \mathcal{L}(\phi, \partial_\mu \phi)`, // Lagrangian density in field theory
     ],
     m: [
         String.raw`Ia`, // Magnetic dipole moment
