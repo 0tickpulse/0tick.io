@@ -29,4 +29,42 @@ This also means that there are other types of analysis, such as complex analysis
 
 So, in essence, real analysis is the study of functions defined on the real numbers, with a focus on the theoretical underpinnings of concepts like limits, continuity, differentiation, and integration.
 
-## Why Study Real Analysis?
+Below is an example of a proof in real analysis.
+
+**Theorem**:
+
+$$
+\begin{equation}
+\lim_{x \to c} (f(x) + g(x)) = \lim_{x \to c} f(x) + \lim_{x \to c} g(x)
+\end{equation}
+$$
+
+---
+
+**Proof**. Let $L_f = \lim_{x \to c} f(x)$, $L_g = \lim_{x \to c} g(x)$, and $L_s = \lim_{x \to c} (f(x) + g(x))$.
+We want to show that $L_s = L_f + L_g$.
+
+For $L_f$, we have that $\forall \epsilon > 0, \exists \delta_1 > 0$ such that $0 < |x - c| < \delta_1 \implies |f(x) - L_f| < \epsilon$.
+Similarly, for $L_g$, we have that $\forall \epsilon > 0, \exists \delta_2 > 0$ such that $0 < |x - c| < \delta_2 \implies |g(x) - L_g| < \epsilon$.
+
+If we choose $\epsilon > 0$, then we can find $\delta = \min(\delta_1, \delta_2)$ such that $0 < |x - c| < \delta \implies |f(x) - L_f| < \epsilon$ and $|g(x) - L_g| < \epsilon$.
+Then, we have:
+
+$$
+\begin{equation}
+\begin{aligned}
+|f(x) + g(x) - (L_f + L_g)| &= |f(x) - L_f + g(x) - L_g| \\
+&\leq |f(x) - L_f| + |g(x) - L_g| \\
+&< 2\epsilon
+\end{aligned}
+\end{equation}
+$$
+
+Thus, we have shown that $\forall \epsilon > 0, \exists \delta > 0$ such that $0 < |x - c| < \delta \implies |f(x) + g(x) - (L_f + L_g)| < 2\epsilon$.
+Therefore, $L_s = L_f + L_g$. $\blacksquare$
+
+---
+
+Notice that in introductory calculus, we simply assume the theorem to be true and use it to simplify calculations.
+However, in real analysis, we need to prove such theorems rigorously using the definitions of limits and functions.
+In this case, the limit is defined in terms of something called the $\epsilon-\delta$ definition.

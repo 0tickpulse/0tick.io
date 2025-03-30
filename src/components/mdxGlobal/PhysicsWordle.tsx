@@ -40,6 +40,7 @@ const LETTERS: Letters = {
         String.raw`\frac{Q}{V}`, // Capacitance
         String.raw`\frac{1}{\sqrt{\mu_0 \epsilon_0}}`, // Speed of light
         String.raw`\sqrt{a^2 + b^2}`, // Hypotenuse/Pythagorean theorem
+        String.raw`2\pi r`, // Circumference of a circle
     ],
     d: [
         String.raw`\frac{n \lambda}{\sin(\theta)}`, // Bragg's law
@@ -63,7 +64,10 @@ const LETTERS: Letters = {
         String.raw`\frac{c^4 G_{\mu\nu}}{8 \pi T_{\mu\nu}}`, // G in Einstein's field equations
         String.raw`\frac{Fr^2}{mM}`, // G in universal gravitation
     ],
-    h: [String.raw`\frac{1}{\mu_0} \va{B} - \va{M}`],
+    h: [
+        String.raw`\frac{1}{\mu_0} \va{B} - \va{M}`, // H in magnetic field
+        String.raw`\frac{3}{2} \frac{u^2}{a}`, // Maximum height reached in projectile motion
+    ],
     i: [
         String.raw`\frac{V}{R}`, // Ohm's law
         String.raw`\dv{q}{t}`, // Current = rate of change of charge
@@ -72,6 +76,7 @@ const LETTERS: Letters = {
     ],
     j: [
         String.raw`\frac{I}{A}`, // Current density
+        String.raw`\sqrt{-1} \, \text{(engineers)}`, // Imaginary unit in engineering notation
     ],
     k: [
         String.raw`\frac{S}{\ln(\Omega)}`, // Boltzmann's constant in terms of entropy
@@ -119,9 +124,10 @@ const LETTERS: Letters = {
     ],
     s: [
         String.raw`k_B \ln(\Omega)`, // Entropy
-        String.raw`\dv{\_}{t} > 0 \quad \text{(Closed)}`, // Entropy increases
+        String.raw`\dv{\_}{t} > 0 \, \text{(Closed)}`, // Entropy increases
         String.raw`\sqrt{v^\mu g_{\mu\nu} v^\nu}`, // Length of a 4-vector with metric tensor
         String.raw`ut + \frac{1}{2} a t^2`, // Distance travelled with constant acceleration
+        String.raw`\frac{u + v}{2} t`, // Distance travelled with constant acceleration using average velocity
     ],
     t: [
         String.raw`\gamma \tau`, // Proper time
@@ -134,13 +140,16 @@ const LETTERS: Letters = {
         String.raw`-\int \va{F} \cdot \dd{\va{r}}`, // General potential energy for a conservative force
         String.raw`E - K`, // Energy = potential energy + kinetic energy
         String.raw`\frac{\epsilon}{2} \int \va{E}^2 \dd{V}`, // Energy density in an electric field
+        String.raw`G \frac{mM}{r}`, // Gravitational potential energy
+        String.raw`\frac{1}{4\pi \epsilon_0} \frac{q_1 q_2}{r}`, // Electric potential energy
     ],
     v: [
         String.raw`\dv{\va{r}}{t}`, // Velocity
         String.raw`r\omega`, // Tangential velocity
         String.raw`u + \int a(t) \dd{t}`, // Final velocity
-        String.raw`f\lambda`, // Wave speed
         String.raw`u + at`, // Final velocity with constant acceleration
+        String.raw`\sqrt{u^2 + 2as}`, // Final velocity with constant acceleration and distance
+        String.raw`f\lambda`, // Wave speed
         String.raw`-\int \va{E} \cdot \dd{\va{r}}`, // Electric potential
     ],
     w: [
