@@ -1,0 +1,974 @@
+---
+sidebar_position: 10
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GaussianWavePacket } from "@site/src/components/visualizers/GaussianWavePackets";
+
+# Summary
+
+In the previous sections, we have introduced the mathematical foundations of quantum mechanics.
+We have seen how quantum mechanics is a probabilistic theory that describes the behavior of particles on the smallest scales.
+We have also seen how quantum mechanics can be formulated in terms of operators acting on a Hilbert space.
+
+In this section, we will summarize the key points of quantum mechanics that we have covered so far.
+They do not correspond to any specific chapter or section but are a general overview of the mathematical foundations of quantum mechanics.
+
+<table>
+    <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Mathematical Tools
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            Gaussian integrals.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \int_{-\infty}^{\infty} \dd{x} e^{-ax^2} &= \sqrt{\frac{\pi}{a}} \\
+            \int_{-\infty}^{\infty} \dd{x} x e^{-ax^2} &= 0 \\
+            \int_{-\infty}^{\infty} \dd{x} x^2 e^{-ax^2} &= \frac{1}{2a} \sqrt{\frac{\pi}{a}}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Dirac delta function](./Hilbert%20Spaces%20and%20Dirac%20Notation#dirac-delta-function).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \int_{-\infty}^{\infty} \dd{x} \delta(x - x') f(x) &= f(x') \\
+            \delta^3(\vb{r} - \vb{r}') &= \delta(x - x') \delta(y - y') \delta(z - z')
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Fourier series/Fourier transform](/notes/QFT%20from%20Ground%20Up/Part%200%20Math%20Boosters/Fourier%20Series).
+            </td>
+            <td>
+
+            For a function $f(x)$ that is periodic with period $L$:
+
+            $$
+            \begin{align}
+            f(x) &= \sum_{n = -\infty}^{\infty} c_n e^{i\frac{2\pi n x}{L}} \\
+            c_n &= \frac{1}{L} \int_{0}^{L} \dd{x} f(x) e^{-i\frac{2\pi n x}{L}}
+            \end{align}
+            $$
+
+            For a function $f(x)$ that is not periodic, the Fourier transform is:
+
+            $$
+            \begin{align}
+            \mathcal{F}[f(x)] &= \tilde{f}(\omega) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} \dd{x} e^{-i\omega x} f(x) \\
+            \mathcal{F}^{-1}[\tilde{f}(\omega)] &= f(x) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^{\infty} \dd{\omega} e^{i\omega x} \tilde{f}(\omega)
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Hilbert Spaces
+
+            Postulate 1: The state of a quantum system is described by a state vector, which is an element of a Hilbert space $\mathcal{H}$.
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            [State vectors of a quantum system](./Hilbert%20Spaces%20and%20Dirac%20Notation#how-do-we-represent-states).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{\psi} \in \mathcal{H}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [State vectors of composite systems (composite system postulate)](./Hilbert%20Spaces%20and%20Dirac%20Notation#states-of-coupled-systems).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{\psi} \in \mathcal{H}_1 \otimes \mathcal{H}_2
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Features of Hilbert spaces.
+            </td>
+            <td>
+
+            1. Has all the properties of a vector space.
+            2. Vectors are complex-valued.
+            3. [All Cauchy sequences converge](./Hilbert%20Spaces%20and%20Dirac%20Notation#the-state-vector-and-a-need-for-cauchy-completeness).
+            4. Inner product is defined.
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Dual space of linear functionals](./Hilbert%20Spaces%20and%20Dirac%20Notation#dual-space-and-bra-vectors).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \mathcal{H}^* := \{\bra{\phi} : \mathcal{H} \to \mathbb{C}, \text{ linear}\}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Inner product of state vectors, $\braket{\psi}{\phi}$.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \text{Linearity:} & \quad \braket{\alpha \psi + \beta \phi}{\chi} = \alpha \braket{\psi}{\chi} + \beta \braket{\phi}{\chi} \\
+            \text{Conjugate symmetry:} & \quad \braket{\psi}{\phi} = \braket{\phi}{\psi}^* \\
+            \text{Positive definiteness:} & \quad \braket{\psi}{\psi} \geq 0, \quad \braket{\psi}{\psi} = 0 \iff \ket{\psi} = 0
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Outer product of state vectors, $\dyad{\psi}{\phi}$.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \dyad{\psi}{\phi} : \mathcal{H} &\to \mathcal{H} \\
+            \dyad{\psi}{\phi} {} \ket{\chi} &= \ket{\psi} \braket{\phi}{\chi}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Riesz representation theorem](./Hilbert%20Spaces%20and%20Dirac%20Notation#dual-space-and-bra-vectors).
+            </td>
+            <td>
+
+            For every linear functional $\bra{\alpha} \in \mathcal{H}^*$, there exists a unique vector $\ket{\alpha} \in \mathcal{H}$ such that $\bra{\alpha}(\ket{\psi}) = \braket{\alpha}{\psi}$.
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            State vectors as linear combinations of basis vectors.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \ket{\psi} &= \sum_{a'} c_{a'} \ket{a'} \\
+            \ket{\psi} &= \int \dd{x'} \psi(x') \ket{x'}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Completeness relation](Hilbert%20Spaces%20and%20Dirac%20Notation#resolution-of-the-identity).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            I &= \sum_{a'} \dyad{a'} \\
+            I &= \int \dd{x'} \dyad{x'}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+        <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Observables and Operators
+
+            Postulate 2:
+
+            <span style={{ textAlign: "left" }}>
+            - Observables of a quantum system are represented by linear Hermitian operators acting on the Hilbert space, where the eigenvalues correspond to the possible measurement outcomes and the eigenvectors correspond to the possible states of the system.
+            - The probability of measuring an observable $A$ to be in a state $\ket{a'}$ is given by the Born rule.
+            - After a measurement, the state of the system collapses to the eigenvector corresponding to the measured eigenvalue.
+            </span>
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            [Hermitian adjoint/conjugate of an operator](./Observables%20and%20Operators#hermitian-adjoint-and-hermitian-operators).
+            </td>
+            <td>
+
+            $A^\dagger$ is defined such that $\braket{\psi}{A\phi} = \braket{A^\dagger\psi}{\phi}$.
+
+            If $A: V \to V$, then $A^\dagger: V \to V$.
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Properties of the Hermitian adjoint.
+
+            [Derivations](http://localhost:3000/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Observables%20and%20Operators#properties-of-hermitian-adjoint),
+            [derivation of last property](./http://localhost:3000/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Observables%20and%20Operators#appendix-why-is-the-hermitian-adjoint-of-a-ket-its-corresponding-bra).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            (A + B)^\dagger &= A^\dagger + B^\dagger \\
+            (AB)^\dagger &= B^\dagger A^\dagger \\
+            c^\dagger &= c^* \\
+            (A^\dagger)^\dagger &= A \\
+            \ket{\psi}^\dagger &= \bra{\psi}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Properties of Hermitian operators, defined by $A = A^\dagger$.
+            </td>
+            <td>
+
+            - All eigenvalues are real.
+            - Eigenvectors corresponding to distinct eigenvalues are orthogonal.
+            - The eigenvectors form a complete basis.
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Degenerate and non-degenerate eigenvalues.
+            </td>
+            <td>
+
+            **Degenerate eigenvalues:** Multiple eigenvectors correspond to the same eigenvalue.
+
+            **Non-degenerate eigenvalues:** Each eigenvalue has only one eigenvector.
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Spectral decomposition of an operator](./Observables%20and%20Operators#observables-and-hermitian-operators).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            A &= \sum_{a'} a' \dyad{a'} \\
+            A &= \int \dd{x'} x' \dyad{x'}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Born rule](./Observables%20and%20Operators#born-rule).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            P(a \to a') &= \abs{\braket{a}{\psi}}^2 \\
+            P(x' < x < x'') &= \int_{x'}^{x''} \dd{x} \abs{\braket{x}{\psi}}^2
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Expectation value of an observable](./Observables%20and%20Operators#expectation-value-of-an-observable).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \expval{A} = \mel{\psi}{A}{\psi}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Commutator of operators](./Commutators%20and%20Uncertainty#the-commutator).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \comm{A}{B} := AB - BA
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Anticommutator of operators](./Commutators%20and%20Uncertainty#the-commutator).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \acomm{A}{B} := AB + BA
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Properties of commutators.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \comm{A}{B} &= -\comm{B}{A} \\
+            \comm{A}{A} &= 0 \\
+            \comm{A}{c} &= 0 \quad \text{for } c \in \mathbb{C} \\
+            \comm{A + B}{C} &= \comm{A}{C} + \comm{B}{C} \\
+            \comm{A}{BC} &= B\comm{A}{C} + \comm{A}{B}C \\
+            \comm{A}{\comm{B}{C}} + \comm{B}{\comm{C}{A}} + \comm{C}{\comm{A}{B}} &= 0 \\
+            AB &= \frac{1}{2}(\acomm{A}{B} + \comm{A}{B})
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Properties of operators based on if they commute.
+            </td>
+            <td>
+
+            - If $[A, B] = 0$, then $A$ and $B$ commute.
+            - If $A$ and $B$ commute, then they share a common set of eigenvectors. [Derivation](./Commutators%20and%20Uncertainty#eigenvalue-properties)
+            - If $A$ and $B$ commute, then a system can be in a state where both $A$ and $B$ have definite values. [Derivation](./Commutators%20and%20Uncertainty#eigenvalue-properties)
+            - If $A$ and $B$ do not commute, then they do not share a common set of eigenvectors. [Derivation](./Commutators%20and%20Uncertainty#non-commuting-operators)
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Uncertainty principle](./Commutators%20and%20Uncertainty#the-uncertainty-principle).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \expval{(\Delta A)^2} \expval{(\Delta B)^2} \geq \frac{1}{4} \abs{\expval{\comm{A}{B}}}^2
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Matrix Representation of Operators
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            Double spectral decomposition of an operator.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            A &= \sum_{a'} \sum_{a''} \dyad{a'} A \dyad{a''} \\
+            A &= \iint \dd{x'} \dd{x''} \dyad{x'} A \dyad{x''}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Matrix representation of operators](./Matrix%20Representations%20of%20Operators#operators-as-matrices).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            A &\overset{.}{=} \mqty[\mel{a^{(1)}}{A}{a^{(1)}} & \mel{a^{(1)}}{A}{a^{(2)}} & \cdots \\ \mel{a^{(2)}}{A}{a^{(1)}} & \mel{a^{(2)}}{A}{a^{(2)}} & \cdots \\ \vdots & \vdots & \ddots] \\
+            A_{ij} &= \mel{a^{(i)}}{A}{a^{(j)}}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Kets as column vectors](./Matrix%20Representations%20of%20Operators#kets-as-column-vectors).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \ket{\psi} &\overset{.}{=} \mqty[\braket{a^{(1)}}{\psi} \\ \braket{a^{(2)}}{\psi} \\ \vdots \\ \braket{a^{(n)}}{\psi}] \\
+            \ket{\psi} &= \mqty[\ket{a^{(1)}} & \ket{a^{(2)}} & \cdots & \ket{a^{(n)}}] \mqty[\braket{a^{(1)}}{\psi} \\ \braket{a^{(2)}}{\psi} \\ \vdots \\ \braket{a^{(n)}}{\psi}]
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Bras as row vectors](./Matrix%20Representations%20of%20Operators#bra-vectors-as-row-vectors).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \bra{\psi} &\overset{.}{=} \mqty[\braket{\psi}{a^{(1)}} & \braket{\psi}{a^{(2)}} & \cdots & \braket{\psi}{a^{(n)}}] \\
+            \bra{\psi} &= \mqty[\braket{\psi}{a^{(1)}} & \braket{\psi}{a^{(2)}} & \cdots & \braket{\psi}{a^{(n)}}] \mqty[\ket{a^{(1)}} \\ \ket{a^{(2)}} \\ \vdots \\ \ket{a^{(n)}}]
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Matrix representation of inner products](./Matrix%20Representations%20of%20Operators#bra-vectors-as-row-vectors).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \braket{\psi}{\phi} = \mqty[\braket{\psi}{a^{(1)}} & \braket{\psi}{a^{(2)}} & \cdots & \braket{\psi}{a^{(n)}}] \mqty[\braket{a^{(1)}}{\phi} \\ \braket{a^{(2)}}{\phi} \\ \vdots \\ \braket{a^{(n)}}{\phi}]
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Matrix representation of outer products](./Matrix%20Representations%20of%20Operators#outer-products).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \dyad{\psi}{\phi} = \mqty[\braket{a^{(1)}}{\psi} \braket{\phi}{a^{(1)}} & \braket{a^{(1)}}{\psi} \braket{\phi}{a^{(2)}} & \cdots \\ \braket{a^{(2)}}{\psi} \braket{\phi}{a^{(1)}} & \braket{a^{(2)}}{\psi} \braket{\phi}{a^{(2)}} & \cdots \\ \vdots & \vdots & \ddots]
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Change of basis](./Change%20of%20Basis#the-transformation-matrix).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            U &= \sum_{a'} \dyad{b'}{a'} \\
+            \ket{b^{(i)}} &= \sum_{a'} U_{ia'} \ket{a^{(i)}} \\
+            \mqty[\ket{b^{(1)}} & \ket{b^{(2)}} & \cdots] &= \mqty[\ket{a^{(1)}} & \ket{a^{(2)}} & \cdots] U
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Vector components under a change of basis](./Change%20of%20Basis#components-of-vectors-under-change-of-basis) (contravariant transformation).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \mqty[\braket{b^{(1)}}{\psi} \\ \braket{b^{(2)}}{\psi} \\ \vdots] = U^\dagger \mqty[\braket{a^{(1)}}{\psi} \\ \braket{a^{(2)}}{\psi} \\ \vdots]
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Matrix representation of operators under a change of basis](./Change%20of%20Basis#components-of-operators-under-change-of-basis).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            A' = U^\dagger A U
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Trace of a matrix](./Change%20of%20Basis#properties-of-the-trace).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \Tr(A) &:= \sum_{i} A_{ii} = \sum_{a'} \mel{a'}{A}{a'} \\
+            \Tr(A + B) &= \Tr(A) + \Tr(B) \\
+            \Tr(ABC) &= \Tr(BCA) = \Tr(CAB) \\
+            \Tr(A) &= \Tr(U^\dagger A U) \\
+            \Tr(\dyad{\psi}{\phi}) &= \braket{\phi}{\psi}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Position and Momentum
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            Position: simultaneous ket of position states.
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{\vb{r}'} = \ket{x', y', z'}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Decomposition of state vectors in three-dimensional position space](./Position%20and%20Momentum#position-operator).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{\psi} = \int \dd[3]{r'} \ket{\vb{r}'} \braket{\vb{r}'}{\psi}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Momentum: simultaneous ket of position states.
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{\vb{p}'} = \ket{p_x', p_y', p_z'}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Decomposition of state vectors in three-dimensional momentum space.
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{\psi} = \int \dd[3]{p'} \ket{\vb{p}'} \braket{\vb{p}'}{\psi}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Infinitesimal spatial translation operator](./Position%20and%20Momentum#explicit-form-of-translation-operators).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \mathcal{J}(\dd{\vb{r}'}) = I - i\vb{K} \cdot \dd{\vb{r}'}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Operator identity for infinitesimal translation operator](./Position%20and%20Momentum#operator-identity).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \comm{\vb{r}}{\mathcal{J}(\dd{\vb{r}'})} = \dd{\vb{r}'}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Finite spatial translation operator](./Position%20and%20Momentum#finite-translation-operators).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \mathcal{J}(\Delta \vb{r}') = \exp(\frac{-i\vb{p} \cdot \Delta \vb{r}'}{\hbar})
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Canonical commutation relations between position and momentum.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \comm{x_i}{p_j} &= i\hbar \delta_{ij} \\
+            \comm{x_i}{x_j} &= 0 \\
+            \comm{p_i}{p_j} &= 0
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Dirac's rule for commutation relations](./Position%20and%20Momentum#diracs-rule-for-canonical-commutation-relations).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \comm{A}{B} = i\hbar \pb{A}{B}_\text{(classical)}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Momentum operator on position states](./Wave%20Functions%20in%20X-P%20Space#momentum-operator-on-position-eigenkets).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \braket{\vb{p}}{\psi} &= \int \dd[3]{r'} \qty(-i\hbar \grad')\psi(\vb{r}') \\
+            \mel{\phi}{\vb{p}}{\psi} &= \int \dd[3]{r'} \phi^*(\vb{r}')\qty(-i\hbar \grad')\psi(\vb{r}')
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Coordinate transformations between position and momentum eigenkets](./Wave%20Functions%20in%20X-P%20Space#transformation-between-position-and-momentum-space).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \braket{\vb{r}}{\vb{p}} = \frac{1}{(2\pi\hbar)^{3/2}} \exp(\frac{i\vb{p} \cdot \vb{r}}{\hbar})
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Fourier transforms between position and momentum space wave functions](./Wave%20Functions%20in%20X-P%20Space#transformation-between-position-and-momentum-space).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \braket{\vb{r}'}{\psi} &= \frac{1}{(2\pi\hbar)^{3/2}} \int \dd[3]{p'} \exp(\frac{i\vb{p}' \cdot \vb{r}'}{\hbar}) \braket{\vb{p}'}{\psi} \\
+            \braket{\vb{p}'}{\psi} &= \frac{1}{(2\pi\hbar)^{3/2}} \int \dd[3]{r'} \exp(\frac{-i\vb{p}' \cdot \vb{r}'}{\hbar}) \braket{\vb{r}'}{\psi}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Application: Quantum Spin-1/2 Systems
+
+            The Stern-Gerlach experiment showed that particles have intrinsic angular momentum, or spin, which can be quantized into discrete values.
+            Its mathematical description is similar to that of light polarization.
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            [Matrix representation of spin systems](./Applying%20to%20Spin%2012%20Systems#matrix-representations).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \ket{+z} = \mqty[1 \\ 0], \quad \ket{-z} = \mqty[0 \\ 1]
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Spin-z operator](./Applying%20to%20Spin%2012%20Systems#matrix-representations).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            S_z = \frac{\hbar}{2} \dyad{+z} - \frac{\hbar}{2} \dyad{-z} \overset{.}{=} \frac{\hbar}{2} \mqty[1 & 0 \\ 0 & -1]
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Equation for electromagnetic waves](./Stern%20Gerlach%20Experiment#polarization-of-light).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \vb{E} = \mqty[E_x e^{i\phi_x} \\ E_y e^{i\phi_y}] e^{i(kz - \omega t)} = \vb{J} e^{i(kz - \omega t)}
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Spin-x and spin-y eigenkets, analogous to Jones vectors](./Applying%20to%20Spin%2012%20Systems#observables-and-probabilities).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \ket{\pm x} &= \frac{1}{\sqrt{2}} \ket{+z} \pm \frac{1}{\sqrt{2}} \ket{-z} &\iff \vb{D}, \vb{A} = \frac{1}{\sqrt{2}} \vb{H} \pm \frac{1}{\sqrt{2}} \vb{V} \\
+            \ket{\pm y} &= \frac{1}{\sqrt{2}} \ket{+z} \pm i\frac{1}{\sqrt{2}} \ket{-z} &\iff \vb{L}, \vb{R} = \frac{1}{\sqrt{2}} \vb{H} \pm i\frac{1}{\sqrt{2}} \vb{V}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Spin-x and spin-y operators](./Applying%20to%20Spin%2012%20Systems#observables-and-probabilities).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            S_x &= \frac{\hbar}{2} (\dyad{+z}{-z} + \dyad{-z}{+z}) \\
+            S_y &= \frac{\hbar}{2} (-i\dyad{+z}{-z} + i\dyad{-z}{+z})
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Commutation relations of spin operators](./Applying%20to%20Spin%2012%20Systems#observables-and-probabilities).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \comm{S_i}{S_j} = i\hbar \epsilon_{ijk} S_k
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Classification of transformations](./Stern%20Gerlach%20Experiment#summary-of-the-groups).
+            </td>
+            <td>
+
+            - Unitary 2x2 matrices—SU(2); $U^\dagger U = I$—preserves magnitude of Jones vector; $\abs{\det{U}} = 1$.
+                - Special unitary 2x2 matrices—SU(2); $\det{U} = 1$.
+            - Orthogonal 3x3 matrices—SO(3); $O^T O = I$—preserves magnitude of spin vector; $\det{O} = 1$.
+                - Special orthogonal 3x3 matrices—SO(3); $\det{O} = 1$.
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [SU(2) Transformations of Jones vectors in the Poincaré sphere](./Stern%20Gerlach%20Experiment#su2-states-for-polarization).
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \vb{A} \to \vb{R} \to \vb{D} \to \vb{L} &:\quad &&\mqty[1 & 0 \\ 0 & i] \\
+            \vb{H} \to \vb{L} \to \vb{V} \to \vb{R} &:\quad &&e^{i\pi /4}\frac{1}{\sqrt{2}} \mqty[1 & i \\ i & 1] \\
+            \vb{H} \to \vb{A} \to \vb{V} \to \vb{D} &:\quad &&\frac{1}{\sqrt{2}} \mqty[1 & 1 \\ -1 & 1]
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th colspan="2">
+
+            ## Application: Gaussian Wave Packets
+
+            A Gaussian wave packet is a superposition of plane waves with a Gaussian envelope.
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+            [Position-space wavefunction for Gaussian wave packets](./Wave%20Functions%20in%20X-P%20Space#application-gaussian-wavefunction).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \braket{x'}{\psi} = \frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2})
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            [Momentum-space wavefunction for Gaussian wave packets](./Wave%20Functions%20in%20X-P%20Space#momentum-space-wavefunction).
+            </td>
+            <td>
+
+            $$
+            \begin{equation}
+            \braket{p'}{\psi} = \sqrt{\frac{d}{\hbar  \sqrt{\pi}}} \exp\qty[-\frac{(p' - \hbar k)^2 d^2}{2\hbar^2}]
+            \end{equation}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Expectation values of position and momentum.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \expval{x} &= 0 \\
+            \expval{x^2} &= \frac{d^2}{2} \\
+            \expval{p} &= \hbar k \\
+            \expval{p^2} &= \hbar^2 k^2 + \frac{\hbar^2}{2d^2}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+        <tr>
+            <td>
+            Dispersion values of position and momentum.
+            </td>
+            <td>
+
+            $$
+            \begin{align}
+            \expval{(\Delta x)^2} &= \frac{d^2}{2} \\
+            \expval{(\Delta p)^2} &= \frac{\hbar^2}{2d^2}
+            \end{align}
+            $$
+
+            </td>
+        </tr>
+    </tbody>
+</table>

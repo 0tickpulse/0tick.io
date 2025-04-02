@@ -10,7 +10,8 @@ import { color } from "@site/src/utilities/colors"
 import TOCInline from '@theme/TOCInline';
 import * as MB from "mathbox-react"
 import * as THREE from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { GaussianWavePacket } from "@site/src/components/visualizers/GaussianWavePackets";
 
 # Wave Functions in X-P Space
 
@@ -89,6 +90,46 @@ u_{a'}(x') := \braket{x'}{a'}
 \end{equation}
 $$
 
+Next, consider the expression $\mel{\phi}{A}{\psi}$, where $A$ is an operator.
+We can write this as:
+
+$$
+\begin{equation}
+\begin{split}
+\mel{\class{blue}{\phi}}{A}{\class{pink}{\psi}} &= \mel{\class{blue}{\int \dd{x'} \braket{\phi}{x'} \ket{x'}}}{A}{\class{pink}{\int \dd{x''} \braket{x''}{\psi} \ket{x''}}} \\
+&= \class{blue}{\int \dd{x'}} \class{pink}{\int \dd{x''}} \class{blue}{\braket{\phi}{x'}} \class{pink}{\braket{x''}{\psi}} \mel{x'}{A}{x''} \\
+&= \int \dd{x'} \int \dd{x''} \phi^*(x') \mel{x'}{A}{x''} \psi(x'')
+\end{split}
+\end{equation}
+$$
+
+The central term $\mel{x'}{A}{x''}$ is the matrix element of the operator $A$ in the position basis.
+If $A$ is a function of the position operator $x$, i.e. $A = f(x)$, then the matrix element is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\mel{x'}{A}{x''} &= \braket{x'}{f(x)}{x''} \\
+&= f(x') \delta(x' - x'')
+\end{split}
+\end{equation}
+$$
+
+Then the expression $\mel{\phi}{A}{\psi}$ becomes:
+
+<Boxed>
+
+$$
+\begin{equation}
+\begin{split}
+\mel{\phi}{A}{\psi} &= \int \dd{x'} \int \dd{x''} \phi^*(x') f(x') \delta(x' - x'') \psi(x'') \\
+&= \int \dd{x'} \phi^*(x') f(x') \psi(x')
+\end{split}
+\end{equation}
+$$
+
+</Boxed>
+
 ## Momentum Operator on Position Eigenkets
 
 Recall that the translation operator $\mathcal{J}(\Delta x')$ translates the position ket $\ket{x'}$ by $\Delta x'$ and, in the infinitesimal case, is given by:
@@ -120,3 +161,587 @@ $$
 \end{equation}
 $$
 
+Using the expression for the translation operator $\mathcal{J}(\Delta x')$, we can write the above equation as:
+
+$$
+\begin{equation}
+\qty(1 - \frac{ip \Delta x'}{\hbar})\ket{\psi} = \int \dd{x'} \ket{x'}\left(\braket{x'}{\psi} - \Delta x' \pdv{x'}\braket{x'}{\psi}\right)
+\end{equation}
+$$
+
+Expanding the left-hand side of the equation, we get:
+
+$$
+\begin{equation}
+\ket{\psi} - \frac{ip \Delta x'}{\hbar}\ket{\psi} = \int \dd{x'} \ket{x'}\left(\braket{x'}{\psi} - \Delta x' \pdv{x'}\braket{x'}{\psi}\right)
+\end{equation}
+$$
+
+Recall that $\ket{\psi} = \int \dd{x'} \ket{x'}\braket{x'}{\psi}$, so we can write the above equation as:
+
+$$
+\begin{equation}
+\int \dd{x'} \ket{x'}\braket{x'}{\psi} - \frac{ip \Delta x'}{\hbar}\ket{\psi} = \int \dd{x'} \ket{x'}\left(\braket{x'}{\psi} - \Delta x' \pdv{x'}\braket{x'}{\psi}\right)
+\end{equation}
+$$
+
+Now move the integral from the left-hand side to the right-hand side:
+
+$$
+\begin{equation}
+\frac{ip \Delta x'}{\hbar}\ket{\psi} = \int \dd{x'} \ket{x'}\left(\braket{x'}{\psi} - \Delta x' \pdv{x'}\braket{x'}{\psi}\right) - \int \dd{x'} \ket{x'}\braket{x'}{\psi}
+\end{equation}
+$$
+
+Both integrals have a $\braket{x'}{\psi}$ term, so they cancel out and we are left with:
+
+$$
+\begin{equation}
+\frac{ip \Delta x'}{\hbar}\ket{\psi} = -\int \dd{x'} \ket{x'}\Delta x' \pdv{x'}\braket{x'}{\psi}
+\end{equation}
+$$
+
+Canceling the $\Delta x'$ term and rearranging $i$ and $\hbar$ on the left-hand side, we get:
+
+$$
+\begin{equation}
+p\ket{\psi} = \int \dd{x'} \ket{x'}\qty(-i\hbar \pdv{x'}\braket{x'}{\psi}) \label{eq:momentum-operator-position-eigenkets}
+\end{equation}
+$$
+
+Taking the inner product of the Equation $\eqref{eq:momentum-operator-position-eigenkets}$ with a position eigenket $\bra{x''}$ gives:
+
+$$
+\begin{equation}
+\begin{split}
+\mel{x''}{p}{\psi} &= \int \dd{x'} \braket{x''}{x'}\qty(-i\hbar \pdv{x'}\braket{x'}{\psi}) \\
+&= \int \dd{x'} \delta(x'' - x')\qty(-i\hbar \pdv{x'}\braket{x'}{\psi}) \\
+&= -i\hbar \pdv{x''}\braket{x''}{\psi}
+\end{split} \label{eq:momentum-operator-position-eigenkets-inner-product}
+\end{equation}
+$$
+
+Taking the inner product of the Equation $\eqref{eq:momentum-operator-position-eigenkets}$ with another ket $\bra{\phi}$ gives:
+
+$$
+\begin{equation}
+\begin{split}
+\mel{\phi}{p}{\psi} &= \int \dd{x'} \braket{\phi}{x'}\qty(-i\hbar \pdv{x'}\braket{x'}{\psi}) \\
+&= \int \dd{x'} \phi^*(x')\qty(-i\hbar \pdv{x'})\psi(x')
+\end{split}
+\end{equation}
+$$
+
+The above is usually what introductory textbooks present at the beginning of the chapter on quantum mechanics.
+In our formalism, we have derived the above equation from properties such as the translation operator and the canonical commutation relation.
+
+To repeatedly apply the momentum operator to a state vector, we can use the following recursive formula:
+
+$$
+\begin{align}
+\mel{x''}{p^n}{\psi} &= (-i\hbar)^n \pdv[n]{x''}\braket{x''}{\psi} \\
+\mel{\phi}{p^n}{\psi} &= \int \dd{x'} \phi^*(x')(-i\hbar)^n \pdv[n]{x'}\psi(x')
+\end{align}
+$$
+
+:::info
+
+It is interesting to see the parallel with generators once again.
+Recall that momentum is the generator of translations in the position space.
+In classical mechanics, we can write this in terms of the Lagrangian $L$ as:
+
+$$
+\begin{equation}
+\pdv{L}{x} = -\dv{t} p
+\end{equation}
+$$
+
+The parallel with the quantum mechanical expression is striking:
+
+$$
+\begin{equation}
+i\hbar \pdv{x}\ket{\psi} = p\ket{\psi}
+\end{equation}
+$$
+
+:::
+
+## Wavefunction in the Momentum Space
+
+So far we have discussed the wavefunction in the position space.
+In the momentum space, the wavefunction is defined as:
+
+$$
+\begin{equation}
+\braket{p'}{\psi} = \psi(p')
+\end{equation}
+$$
+
+where $\ket{p'}$ are the eigenkets of the momentum operator $p$:
+
+$$
+\begin{equation}
+p\ket{p'} = p'\ket{p'}
+\end{equation}
+$$
+
+Similar to the position eigenkets, the momentum eigenkets are orthogonal:
+
+$$
+\begin{equation}
+\braket{p'}{p''} = \delta(p' - p'')
+\end{equation}
+$$
+
+And they span the space:
+
+$$
+\begin{equation}
+\int \dd{p'} \ket{p'}\bra{p'} = 1
+\end{equation}
+$$
+
+### Transformation between Position and Momentum Space
+
+Recall that we change basis by using a certain matrix. From an old set of bases $\{\ket{a'}\}$ to a new set of bases $\{\ket{b'}\}$, we have:
+
+$$
+\begin{equation}
+\ket{b'} = \sum_{a'} \braket{b'}{a'}\ket{a'}
+\end{equation}
+$$
+
+To derive the transformation between the position and momentum space, we will use the position and momentum operators as the basis kets.
+First, the inner product $\mel{x'}{p}{p'}$ can be calculated by using Equation $\eqref{eq:momentum-operator-position-eigenkets-inner-product}$ and setting $\ket{\psi} = \ket{p'}$:
+
+$$
+\begin{equation}
+\mel{x'}{p}{p'} = -i\hbar \pdv{x'}\braket{x'}{p'}
+\end{equation}
+$$
+
+Since $p\ket{p'} = p'\ket{p'}$, we can write the above equation as:
+
+$$
+\begin{equation}
+p'\braket{x'}{p'} = -i\hbar \pdv{x'}\braket{x'}{p'}
+\end{equation}
+$$
+
+This is a simple first-order differential equation. If not immediately obvious, it has a form equivalent to $\lambda f(x) = \dv{f(x)}{x}$, where $\lambda$ is a constant.
+The solution to this differential equation is $f(x) = N \exp(\lambda x)$.
+In our case, $f(x) = \braket{x'}{p'}$ and $\lambda = -\frac{p'}{i\hbar} = \frac{i p'}{\hbar}$.
+Thus, the solution is:
+
+$$
+\begin{equation}
+\braket{x'}{p'} = N \exp(\frac{i p' x'}{\hbar})
+\end{equation}
+$$
+
+The key insight comes from the following: consider a position wavefunction $\braket{x'}{\psi}$.
+We can expand this wavefunction in the momentum basis:
+
+$$
+\begin{equation}
+\braket{x'}{\psi} = \int \dd{p'} \braket{x'}{p'}\braket{p'}{\psi}
+\end{equation}
+$$
+
+Now that we know the form of $\braket{x'}{p'}$, we can write the above equation as:
+
+$$
+\begin{equation}
+\braket{x'}{\psi} = \int \dd{p'} N \exp(\frac{i p' x'}{\hbar})\braket{p'}{\psi}
+\end{equation}
+$$
+
+This means that the wavefunction is a superposition of plane waves—a Fourier series!
+
+To find out what $N$ is, we can use the orthogonality of the eigenkets.
+First consider the inner product $\braket{x'}{x''}$:
+
+$$
+\begin{equation}
+\braket{x'}{x''} = \int \dd{p'} \braket{x'}{p'}\braket{p'}{x''}
+\end{equation}
+$$
+
+The left-hand side is $\delta(x' - x'')$. The right-hand side can be calculated by using the expression for $\braket{x'}{p'}$ and $\braket{p'}{x''}$:
+
+$$
+\begin{equation}
+\begin{split}
+\delta(x' - x'') &= \int \dd{p'} N \exp(\frac{i p' x'}{\hbar}) N \exp(\frac{i p' x''}{\hbar}) \\
+&= N^2 \int \dd{p'} \exp(\frac{i p' (x' - x'')}{\hbar})
+\end{split}
+\end{equation}
+$$
+
+The integral is a Dirac delta function because it satisfies the defining property $\int \dd{x} \delta(x - x') f(x) = f(x')$.
+Thus, the integral evaluates to $2\pi\hbar N^2 \delta(x' - x'')$.
+Rearranging the terms, we get:
+
+$$
+\begin{equation}
+N = \frac{1}{\sqrt{2\pi\hbar}}
+\end{equation}
+$$
+
+Thus, the wavefunction in the momentum space is:
+
+$$
+\begin{equation}
+\braket{x'}{\psi} = \frac{1}{\sqrt{2\pi\hbar}} \int \dd{p'} \exp(\frac{i p' x'}{\hbar})\braket{p'}{\psi}
+\end{equation}
+$$
+
+A similar derivation can be done for the wavefunction in the position space:
+
+$$
+\begin{equation}
+\braket{p'}{\psi} = \frac{1}{\sqrt{2\pi\hbar}} \int \dd{x'} \exp(-\frac{i x' p'}{\hbar})\braket{x'}{\psi}
+\end{equation}
+$$
+
+It is important to note that the wavefunctions in the position and momentum space are Fourier transforms of each other.
+See [this page](../../Part%200%20Math%20Boosters/Fourier%20Series) for a refresher on Fourier series.
+
+
+## Application: Gaussian Wavefunction
+
+A **Gaussian wave packet** is a wavefunction that is localized in both the position and momentum space.
+It is given by:
+
+$$
+\begin{equation}
+\braket{x'}{\psi} = \psi(x') = \frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2})
+\end{equation}
+$$
+
+This is known as a Gaussian wave packet because its probability density is a Gaussian function (a bell curve).
+It looks like this:
+
+<CustomMathbox>
+    <MB.Cartesian>
+        <MB.Axis axis="x" range={[-15, 15]} width={5} />
+        <MB.Axis axis="y" range={[-5, 5]} /> {/* y-axis = Real part */}
+        <MB.Axis axis="z" range={[-5, 5]} /> {/* z-axis = Imaginary part */}
+
+        <MB.Interval
+            id="gaussian-wave-packet"
+            range={[-15, 15]}
+            width={256}
+            expr={(emit, x) => {
+                const k = 1;
+                const d = 2;
+
+                const SCALE = 1;
+
+                const A = (1 / (Math.PI ** 0.25 * Math.sqrt(d))) * Math.exp(-(x ** 2)/(2 * (d ** 2)));
+                const re = A * Math.cos(k * x) * SCALE;
+                const im = A * Math.sin(k * x) * SCALE;
+
+                emit(x, re, im);
+            }}
+        />
+        <MB.Interval
+            id="gaussian-wave-packet-lines"
+            range={[-15, 15]}
+            items={2}
+            width={256}
+            expr={(emit, x) => {
+                const k = 1;
+                const d = 2;
+
+                const SCALE = 1;
+
+                const A = (1 / (Math.PI ** 0.25 * Math.sqrt(d))) * Math.exp(-(x ** 2)/(2 * (d ** 2)));
+                const re = A * Math.cos(k * x) * SCALE;
+                const im = A * Math.sin(k * x) * SCALE;
+
+                emit(x, 0, 0);
+                emit(x, re, im);
+            }}
+        />
+
+        <MB.Line points="#gaussian-wave-packet" width={5} color={color("red")} />
+        <MB.Vector points="#gaussian-wave-packet-lines" width={1} color={color("red")} />
+    </MB.Cartesian>
+</CustomMathbox>
+
+The probability amplitude, $\abs{\braket{x'}{\psi}}^2$, is a Gaussian function in the position space.
+It looks like this:
+
+<Mafs>
+    <Coordinates.Cartesian />
+    <Plot.OfX
+        y={(x) => {
+            const k = 1;
+            const d = 2;
+
+            return (1 / (Math.PI ** 0.25 * Math.sqrt(d))) * Math.exp(-(x ** 2)/(2 * (d ** 2)));
+        }}
+    />
+</Mafs>
+
+As you can see, it quickly decays as we move away from the center of the wave packet.
+
+### Expectation Value of Position
+
+The expectation value of the position operator $\expval{x}$ is given by:
+
+$$
+\begin{equation}
+\expval{x} = \int \dd{x'} \braket{\psi}{x'} x' \braket{x'}{\psi} = \int \dd{x'} x' \abs{\braket{x'}{\psi}}^2 = 0
+\end{equation}
+$$
+
+This is because the wave packet is symmetric around the origin.
+
+### Uncertainty in Position
+
+To calculate the dispersion in position, we use:
+
+$$
+\begin{equation}
+\expval{(\Delta x)^2} = \expval{x^2} - \expval{x}^2
+\end{equation}
+$$
+
+(This comes from the definition of the variance of a random variable.)
+
+The expectation value of the position squared operator $\expval{x^2}$ is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{x^2} &= \int \dd{x'} x'^2 \abs{\braket{x'}{\psi}}^2 \\
+&= \int \dd{x'} x'^2 \frac{1}{\pi^{1/2} d} \exp(-\frac{x'^2}{d^2}) \\
+&= \frac{d^2}{2}
+\end{split}
+\end{equation}
+$$
+
+where we have used the Gaussian integral $\int_{-\infty}^{\infty} x^2 \exp(-x^2) \dd{x} = \sqrt{\pi}$.
+
+Then, the dispersion in position is:
+
+$$
+\begin{equation}
+\expval{(\Delta x)^2} = \expval{x^2} - \expval{x}^2 = \frac{d^2}{2} - 0 = \frac{d^2}{2}
+\end{equation}
+$$
+
+### Expectation Value of Momentum
+
+The expectation value of the momentum operator $\expval{p}$ is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{p} &= \int \dd{x'} \braket{\psi}{x'} \qty(-i\hbar \pdv{x'}) \braket{x'}{\psi} \\
+&= \int \dd{x'} \qty(\frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2}))^* \qty(-i\hbar \pdv{x'}) \qty(\frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2})) \\
+&= \frac{1}{\sqrt{\pi} d} \int \dd{x'} \exp(-ikx' - \frac{x'^2}{2d^2}) \qty[\qty(-i\hbar \pdv{x'}) \exp(ikx' - \frac{x'^2}{2d^2})] \\
+&= \frac{1}{\sqrt{\pi} d} \int \dd{x'} \exp(-ikx' - \frac{x'^2}{2d^2}) \qty[-i\hbar \exp(ikx' - \frac{x'^2}{2d^2}) \qty(ik - \frac{x'}{d^2})] \\
+&= -\frac{i\hbar}{\sqrt{\pi} d} \int \dd{x'} \exp(-\frac{x'^2}{d^2}) \qty(ik - \frac{x'}{d^2}) \\
+&= -\frac{i\hbar}{\sqrt{\pi} d} \qty(ik \int \dd{x} e^{-x^2/d^2} - \frac{1}{d^2} \int \dd{x} x e^{-x^2})
+\end{split}
+\end{equation}
+$$
+
+The first integral is a standard Gaussian integral and results in $\sqrt{\pi} d$. The second integral is zero because the integrand is an odd function.
+Thus, the expectation value of the momentum is:
+
+$$
+\begin{equation}
+\expval{p} = -\frac{i\hbar}{\sqrt{\pi} d} ik \sqrt{\pi} d = \hbar k
+\end{equation}
+$$
+
+### Uncertainty in Momentum
+
+We first calculate the expectation value of the momentum squared operator $\expval{p^2}$:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{p^2} &= \int \dd{x'} \braket{\psi}{x'} \qty(-i\hbar \pdv{x'})^2 \braket{x'}{\psi} \\
+&= \int \dd{x'} \qty(\frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2}))^* \qty(-i\hbar \pdv{x'})^2 \qty(\frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2})) \\
+&= -\frac{\hbar}{\sqrt{\pi} d} \int \dd{x'} \exp(-ikx' - \frac{x'^2}{2d^2}) \qty[\pdv[2]{x'} \exp(ikx' - \frac{x'^2}{2d^2})] \\
+&= -\frac{\hbar}{\sqrt{\pi} d} \int \dd{x'} \exp(-ikx' - \frac{x'^2}{2d^2}) \qty[\pdv{x'} \qty(\exp(ikx' - \frac{x'^2}{2d^2}) \qty(ik - \frac{x'}{d^2}))] \\
+&= -\frac{\hbar}{\sqrt{\pi} d} \int \dd{x'} \exp(-ikx' - \frac{x'^2}{2d^2}) \qty[\exp(ikx' - \frac{x'^2}{2d^2}) \qty(ik - \frac{x'}{d^2})^2 - \frac{1}{d^2} \exp(ikx' - \frac{x'^2}{2d^2})] \\
+&= -\frac{\hbar}{\sqrt{\pi} d} \int \dd{x'} \exp(-\frac{x'^2}{d^2}) \qty(i^2 k^2 - 2ik\frac{x'}{d^2} + \frac{x'^2}{d^4} - \frac{1}{d^2}) \\
+&= -\frac{\hbar}{\sqrt{\pi} d} \qty[\qty(-k^2 - \frac{1}{d^2}) \int \dd{x'} \exp(-\frac{x'^2}{d^2}) + 2ik \int \dd{x'} x' \exp(-\frac{x'^2}{d^2}) - \frac{1}{d^4} \int \dd{x'} x'^2 \exp(-\frac{x'^2}{d^2})] \\
+&= -\frac{\hbar}{\sqrt{\pi} d} \qty[\qty(-k^2 - \frac{1}{d^2}) \sqrt{\pi} d + 2ik \cdot 0 - \frac{1}{d^4} \cdot \frac{\sqrt{\pi}}{2}] \\
+&= \hbar^2 k^2 + \frac{\hbar^2}{2d^2}
+\end{split}
+\end{equation}
+$$
+
+where we have used the Gaussian integrals $\int_{-\infty}^{\infty} x \exp(-x^2) \dd{x} = 0$ and $\int_{-\infty}^{\infty} x^2 \exp(-x^2) \dd{x} = \sqrt{\pi}/2$.
+
+Then, the dispersion in momentum is:
+
+$$
+\begin{equation}
+\expval{(\Delta p)^2} = \expval{p^2} - \expval{p}^2 = \hbar^2 k^2 + \frac{\hbar^2}{2d^2} - (\hbar k)^2 = \frac{\hbar^2}{2d^2}
+\end{equation}
+$$
+
+### Heisenberg Uncertainty Principle
+
+Now that we have calculated the dispersions in position and momentum, we can calculate the product of the dispersions:
+
+$$
+\begin{equation}
+\expval{(\Delta x)^2} \expval{(\Delta p)^2} = \frac{d^2}{2} \cdot \frac{\hbar^2}{2d^2} = \frac{\hbar^2}{4} \label{eq:gaussian-wave-packet-dispersion-product}
+\end{equation}
+$$
+
+In this case, the product of the dispersions is a constant, which is the minimum value allowed by the Heisenberg Uncertainty Principle.
+
+### Momentum-Space Wavefunction
+
+The wavefunction in the momentum space can be calculated by using the Fourier transform of the position-space wavefunction:
+
+$$
+\begin{equation}
+\begin{split}
+\braket{p'}{\psi} &= \frac{1}{\sqrt{2\pi\hbar}} \int \dd{x'} \exp(-\frac{ix' p'}{\hbar}) \class{blue}{\braket{x'}{\psi}} \\
+&= \frac{1}{\sqrt{2\pi\hbar}} \int \dd{x'} \exp(-\frac{ix' p'}{\hbar}) \class{blue}{\frac{1}{\pi^{1/4} \sqrt{d}} \exp(ikx' - \frac{x'^2}{2d^2})} \\
+&= \frac{1}{\sqrt{2\pi\hbar}} \frac{1}{\pi^{1/4} \sqrt{d}} \int \dd{x'} \exp(-\frac{x'^2}{2d^2} - \qty(\frac{ip'}{\hbar} - ik)x')
+\end{split}
+\end{equation}
+$$
+
+We can complete the square in the exponent—$Ax^2 + Bx = A(x + B/2A)^2 - B^2/4A$—to get:
+
+$$
+\begin{equation}
+\begin{split}
+\exp(-\frac{x'^2}{2d^2} + \qty(\frac{ip'}{\hbar} - ik)x') &= \exp\qty[-\frac{1}{2d^2} \qty(x' + d^2\qty(\frac{ip'}{\hbar} - ik))^2 + \frac{d^2}{2} \qty(\frac{ip'}{\hbar} - ik)^2] \\
+&= \exp\qty[-\frac{1}{2d^2} \qty(x' + d^2\qty(\frac{ip'}{\hbar} - ik))^2] \exp\qty[\frac{d^2}{2} \qty(\frac{ip'}{\hbar} - ik)^2] \\
+&= \exp\qty[-\frac{1}{2d^2} \qty(x' + d^2\qty(\frac{ip'}{\hbar} - ik))^2] \exp\qty[-\frac{d^2}{2\hbar^2} (p' - \hbar k)^2]
+\end{split}
+\end{equation}
+$$
+
+Thus:
+
+$$
+\begin{equation}
+\braket{p'}{\psi} = \frac{1}{\sqrt{2\hbar d \pi^{3/2}}} \exp\qty[-\frac{d^2}{2\hbar^2} (p' - \hbar k)^2] \int \dd{x'} \exp(-\frac{1}{2d^2} \qty(x' + d^2\qty(\frac{ip'}{\hbar} - ik))^2)
+\end{equation}
+$$
+
+Making the substitution $u := x' + d^2\qty(\frac{ip'}{\hbar} - ik)$, the integral becomes $\int \dd{u} \exp(-\frac{u^2}{2d^2})$, which is a Gaussian integral and evaluates to $\sqrt{2\pi} d$.
+
+Thus, the wavefunction in the momentum space is:
+
+<Boxed>
+
+$$
+\begin{equation}
+\braket{p'}{\psi} = \frac{1}{\sqrt{2\hbar d \pi^{3/2}}} \exp\qty[-\frac{d^2}{2\hbar^2} (p' - \hbar k)^2] \sqrt{2\pi} d = \sqrt{\frac{d}{\hbar  \sqrt{\pi}}} \exp\qty[-\frac{(p' - \hbar k)^2 d^2}{2\hbar^2}]
+\end{equation}
+$$
+
+</Boxed>
+
+Both the position and momentum space wavefunctions are Gaussian functions and are shown below:
+
+<GaussianWavePacket />
+
+Notice that (when you move the slider for $d$) the wave packet in the position space becomes narrower as the wave packet in the momentum space becomes wider, and vice versa.
+This is a manifestation of the uncertainty principle which, in this case, according to Equation $\eqref{eq:gaussian-wave-packet-dispersion-product}$, is $\expval{(\Delta x)^2} \expval{(\Delta p)^2} = \frac{\hbar^2}{4}$.
+
+In the limit $d \to \infty$, the wave packet in the position space becomes a plane wave and the wave packet in the momentum space becomes a delta function.
+Probabilistically, this means that the position of the particle is completely unknown, but its momentum is known exactly.
+
+Conversely, in the limit $d \to 0$, the wave packet in the position space becomes a delta function and the wave packet in the momentum space becomes a plane wave.
+This means that the position of the particle is known exactly, but its momentum is completely unknown.
+
+## Summary and Next Steps
+
+In this chapter, we have introduced the wavefunction in the position and momentum space.
+We have derived the transformation between the two spaces and calculated the wavefunction of a Gaussian wave packet in both spaces.
+
+Below are the important equations derived in this chapter, generalized to three dimensions:
+
+- **Position eigenket**:
+
+    $$
+    \begin{equation}
+    \vb{r} \ket{\vb{r}'} = \vb{r}' \ket{\vb{r}'}
+    \end{equation}
+    $$
+
+- **Momentum eigenket**:
+
+    $$
+    \begin{equation}
+    \vb{p} \ket{\vb{p}'} = \vb{p}' \ket{\vb{p}'}
+    \end{equation}
+    $$
+
+- **Three-dimensional Dirac delta function**:
+
+    $$
+    \begin{equation}
+    \delta^3(\vb{r}' - \vb{r}'') = \delta(x' - x'') \delta(y' - y'') \delta(z' - z'')
+    \end{equation}
+    $$
+
+- **Orthogonality of eigenkets**:
+
+    $$
+    \begin{align}
+    \braket{\vb{r}'}{\vb{r}''} &= \delta^3(\vb{r}' - \vb{r}'') \\
+    \braket{\vb{p}'}{\vb{p}''} &= \delta^3(\vb{p}' - \vb{p}'')
+    \end{align}
+    $$
+
+- **Completeness relation**:
+
+    $$
+    \begin{equation}
+    \int \dd[3]{r'} \ket{\vb{r}'}\bra{\vb{r}'} = 1 \quad \text{and} \quad \int \dd[3]{p'} \ket{\vb{p}'}\bra{\vb{p}'} = 1
+    \end{equation}
+    $$
+
+- **Spectral decomposition of state vector**:
+
+    $$
+    \begin{equation}
+    \ket{\psi} = \int \dd[3]{r'} \ket{\vb{r}'}\braket{\vb{r}'}{\psi} = \int \dd[3]{p'} \ket{\vb{p}'}\braket{\vb{p}'}{\psi}
+    \end{equation}
+    $$
+
+- **Momentum operator on position-space wavefunctions**:
+
+    $$
+    \begin{equation}
+    \mel{\phi}{\vb{p}}{\psi} = \int \dd[3]{r'} \phi^*(\vb{r}') \qty(-i\hbar \grad') \psi(\vb{r}')
+    \end{equation}
+    $$
+
+- **Coordinate transformation**:
+
+    $$
+    \begin{equation}
+    \braket{\vb{r}'}{\vb{p}'} = \frac{1}{(2\pi\hbar)^{3/2}} \exp(\frac{i \vb{p}' \vdot \vb{r}'}{\hbar})
+    \end{equation}
+    $$
+
+- **Fourier transforms of position and momentum space wavefunctions**:
+
+    $$
+    \begin{align}
+    \braket{\vb{r}'}{\psi} &= \frac{1}{(2\pi\hbar)^{3/2}} \int \dd[3]{p'} \exp(\frac{i \vb{p}' \vdot \vb{r}'}{\hbar}) \braket{\vb{p}'}{\psi} \\
+    \braket{\vb{p}'}{\psi} &= \frac{1}{(2\pi\hbar)^{3/2}} \int \dd[3]{r'} \exp(-\frac{i \vb{p}' \vdot \vb{r}'}{\hbar}) \braket{\vb{r}'}{\psi}
+    \end{align}
+    $$
+
+This completes the first part of our journey into quantum mechanics—understanding the mathematical foundations of the state vector formalism.
+The next page is a summary of all important results derived in this chapter.

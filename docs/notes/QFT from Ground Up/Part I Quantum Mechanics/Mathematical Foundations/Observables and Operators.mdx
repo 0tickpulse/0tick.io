@@ -84,17 +84,17 @@ One intuition is that for a state vector $\ket{\psi}$, the probability of measur
                 <Mafs viewBox={{ y: [-1, 1] }}>
                     <Coordinates.Cartesian xAxis={{ labels: () => "" }} yAxis={{ labels: () => "" }} />
                     <Vector tip={[1, 0]} color={color("blue")} />
-                    <LaTeX tex="|E_1\rangle" at={[1.2, 0]} color={color("blue")} />
+                    <MafsMathJax tex="\ket{E_1}" at={[1.2, 0]} color={color("blue")} />
                     <Vector tip={[0, 1]} color={color("blue")} />
-                    <LaTeX tex="|E_2\rangle" at={[0, 1.2]} color={color("blue")} />
+                    <MafsMathJax tex="\ket{E_2}" at={[0, 1.2]} color={color("blue")} />
 
                     <Vector tip={psi.point} color={color("yellow")} />
-                    <LaTeX tex="|\psi\rangle" at={vec.withMag(psi.point, 1.2)} color={color("yellow")} />
+                    <MafsMathJax tex="\ket{\psi}" at={vec.withMag(psi.point, 1.2)} color={color("yellow")} />
                     {psi.element}
 
                     <Polyline points={[[0, 0], [psi.point[0], 0], psi.point]} strokeStyle="dashed" />
-                    <LaTeX tex={psi.point[1].toFixed(2)} at={[psi.point[0] + (psi.point[0] > 0 ? 0.2 : -0.2), psi.point[1] / 2]} />
-                    <LaTeX tex={psi.point[0].toFixed(2)} at={[psi.point[0] / 2, (psi.point[1] > 0 ? -0.2 : 0.2)]} />
+                    <MafsMathJax tex={psi.point[1].toFixed(2)} at={[psi.point[0] + (psi.point[0] > 0 ? 0.2 : -0.2), psi.point[1] / 2]} />
+                    <MafsMathJax tex={psi.point[0].toFixed(2)} at={[psi.point[0] / 2, (psi.point[1] > 0 ? -0.2 : 0.2)]} />
                 </Mafs>
             </div>
             <div className="card__footer">

@@ -78,6 +78,185 @@ This is not something that Euclid just made up - it is a statement that is based
 In the same way, the postulates of QM are based on experimental evidence and are the simplest assumptions that can explain the behavior of particles on the quantum scale.
 We will try to motivate these postulates as we go along, but it's important to remember that they are not arbitrary.
 
+## Timeline of Quantum Mechanics
+
+Below is a rough timeline of the development of quantum mechanics just to give some context to the subject.
+
+- **1900**: Max Planck investigates the spectrum of black-body radiation.
+
+    At that time, classical physics could not explain the spectrum of black-body radiation.
+    One of the key assumptions of classical physics was that energy could be emitted or absorbed in any amount.
+    It was described by Wien's law and the Rayleigh-Jeans law, both of which were in agreement with experimental data at high and low frequencies, respectively.
+    However, there was a region in the middle where neither law worked.
+
+    Planck proposed that energy could only be emitted or absorbed in discrete amounts, which he called "quanta".
+    This was the first time that the idea of quantization was introduced in physics.
+    Planck's law was able to explain the spectrum of black-body radiation across all frequencies, and it led to the following equation:
+
+    $$
+    \begin{equation}
+    I_\lambda = \frac{2\pi hc^2}{\lambda^5} \frac{1}{e^{hc/\lambda kT} - 1}
+    \end{equation}
+    $$
+
+    He introduced the constant $h$, which is now known as Planck's constant.
+    It turns out that $h$ is the quantum of **action**. This means that all physical processes occur in discrete steps of $h$:
+
+    $$
+    \begin{equation}
+    \int \dd{t} L = n h
+    \end{equation}
+    $$
+
+- **1905**: Albert Einstein explains the photoelectric effect.
+
+    The photoelectric effect was another phenomenon that could not be explained by classical physics.
+    The classical theory of light predicted that the energy of the ejected electrons should depend on the intensity of the light, not the frequency.
+    However, experiments showed that the energy of the ejected electrons depended on the frequency of the light, not the intensity.
+
+    Einstein proposed that light was quantized into particles called photons, each with an energy proportional to the frequency of the light.
+    This explained the photoelectric effect and provided further evidence for the quantization of energy.
+
+- **1913**: Niels Bohr introduces the quantized model of the atom.
+
+    At that time, the Rutherford model of the atom was the best model available.
+    For the Hydrogen-1 atom, it consisted of a single proton at the center and an electron orbiting around it.
+    However, classical physics predicted that the electron would spiral into the nucleus due to the emission of electromagnetic radiation.
+
+    Because angular momentum has the same dimensions as action, Bohr proposed that the angular momentum of the electron was also quantized:
+
+    $$
+    \begin{equation}
+    L = mvr = \frac{n h}{2\pi} = n \hbar
+    \end{equation}
+    $$
+
+    This means that the angular momentum of the electron could only take on discrete values.
+
+    Because the electrostatic force between the electron and the proton is $\frac{1}{4\pi\epsilon_0} \frac{e^2}{r^2}$ and it undergoes circular motion with acceleration $\frac{v^2}{r}$, the following equation holds:
+
+    $$
+    \begin{equation}
+    \frac{1}{4\pi\epsilon_0} \frac{e^2}{r^2} = \frac{m v^2}{r}
+    \end{equation}
+    $$
+
+    Combining this with the quantization of angular momentum, Bohr was able to derive the radii of the electron orbits and the energy levels of the Hydrogen-1 atom:
+
+    $$
+    \begin{align}
+    r_n &= \frac{n^2 \hbar^2}{4\pi\epsilon_0 m e^2} \\
+    E_n &= -\frac{m e^4}{2(4\pi\epsilon_0)^2 \hbar^2} \frac{1}{n^2}
+    \end{align}
+    $$
+
+    However, at that time, Bohr's model was purely empirical and did not have a theoretical basis.
+    There was no explanation for why the electron could only occupy certain orbits.
+
+- **1922**: The Stern-Gerlach experiment demonstrates the quantization of angular momentum.
+
+    The Stern-Gerlach experiment was a landmark experiment that demonstrated the quantization of angular momentum in silver atoms.
+    The experiment involved passing a beam of silver atoms through an inhomogeneous magnetic field, which caused the atoms to split into two distinct beams.
+
+    The next page will discuss the Stern-Gerlach experiment in great detail.
+
+- **1924**: Louis de Broglie proposes the wave-particle duality.
+
+    De Broglie proposed that particles could exhibit both wave-like and particle-like properties.
+    He suggested that the wavelength of a particle was inversely proportional to its momentum:
+
+    $$
+    \begin{equation}
+    \lambda = \frac{h}{p}
+    \end{equation}
+    $$
+
+    This was based on the idea that if light could exhibit particle-like properties, then particles should be able to exhibit wave-like properties.
+
+    The electron in Bohr's model could be thought of as a standing wave around the nucleus, with the condition that the circumference of the orbit is an integer multiple of the wavelength of the electron:
+
+    $$
+    \begin{equation}
+    2\pi r = n \lambda
+    \end{equation}
+    $$
+
+    Given that $\lambda = \frac{h}{p} = \frac{h}{mv}$, we get:
+
+    $$
+    \begin{equation}
+    2\pi r = n \frac{h}{mv} \implies mvr = n \hbar
+    \end{equation}
+    $$
+
+    In other words, the quantization of angular momentum in Bohr's model could be explained by the wave-like properties of the electron.
+
+- **1925**: Werner Heisenberg formulates matrix mechanics.
+
+    This was the first formulation of quantum mechanics, and it was based on matrices.
+    It was born out of the need to explain one problem with Bohr's model—the intensity of the spectral lines of the Hydrogen-1 atom.
+    Heisenberg wrote an equation for the intensity of the spectral lines in terms of the transition probabilities between the energy levels of the atom:
+
+    $$
+    \begin{equation}
+    I_{ij} \propto \abs{\bra{\psi_i} \hat{O} \ket{\psi_j}}^2
+    \end{equation}
+    $$
+
+    Max Born suggested that his equation could be expressed in terms of matrices, and Heisenberg developed a formalism based on matrices.
+
+    He also derived an early form of the uncertainty principle, which states that the more precisely the position of a particle is known, the less precisely its momentum can be known, and vice versa:
+
+    $$
+    \begin{equation}
+    \Delta x \Delta p \geq \frac{\hbar}{2}
+    \end{equation}
+    $$
+
+- **1926**: Erwin Schrödinger formulates wave mechanics.
+
+    Schrödinger developed a wave equation that described the behavior of particles as waves.
+    The Schrödinger equation is a partial differential equation that describes how the wave function of a particle evolves with time.
+    The specific form of the equation he developed is:
+
+    $$
+    \begin{equation}
+    i\hbar \pdv{\psi}{t} = -\frac{\hbar^2}{2m} \laplacian{\psi} + V \psi
+    \end{equation}
+    $$
+
+    He showed that his equation was equivalent to Heisenberg's matrix mechanics and that both formulations were mathematically equivalent.
+
+    All of these developments were applied to the Hydrogen-1 atom.
+    Through Heisenberg's uncertainty principle, it was shown that the electron in the Hydrogen-1 atom could not be thought of as a particle with a definite trajectory.
+    Instead, it was described by an atomic orbital, which was a probability distribution of where the electron was likely to be found.
+    In this model, each electron has four distinct quantum numbers: the principal quantum number $n$, the azimuthal quantum number $l$, the magnetic quantum number $m_l$, and the spin quantum number $m_s$.
+    The Pauli exclusion principle dictates that no two electrons in an atom can have the same set of quantum numbers.
+
+- **1927**: The Copenhagen interpretation of quantum mechanics is developed.
+
+    The Copenhagen interpretation is a set of philosophical interpretations of quantum mechanics that was developed by Niels Bohr and Werner Heisenberg.
+    It posits that the wave function of a particle collapses upon measurement, and that the act of measurement itself affects the outcome of the measurement.
+    This interpretation has been the subject of much debate and controversy in the field of quantum mechanics.
+
+- **1927**: The modern formulation of quantum mechanics is developed.
+
+    Paul Dirac proposed the Dirac equation, which was an initial step towards unifying quantum mechanics with special relativity.
+    It describes spin-1/2 particles as spinor fields, and applies to electrons and other fermions.
+    Through the Dirac equation, he was able to predict the existence of antimatter, which was later confirmed experimentally.
+
+    Additionally, Dirac introduced the bra-ket notation, which is a concise way of representing the inner product of two vectors.
+    At the same time, John von Neumann developed the mathematical formalism of quantum mechanics through the use of Hilbert spaces and linear operators.
+
+- **1930s**: Quantum mechanics is further developed.
+
+    More work was done on quantum mechanics in the 1930s, leading to the development of quantum field theories.
+    The first quantum field theory was quantum electrodynamics (QED), which describes the interaction of electrons and photons.
+    It was formulated by Richard Feynman, Freeman Dyson, Julian Schwinger, and Sin-Itiro Tomonaga.
+
+    In the 1960s, physicists began to formulate the theory of quantum chromodynamics (QCD), which describes the strong nuclear force.
+    In 1979, Sheldon Glashow, Abdus Salam, and Steven Weinberg were awarded the Nobel Prize in Physics for their work on the electroweak theory, which unified the electromagnetic and weak nuclear forces.
+
 ## Resources
 
 The main resources used for these notes are:

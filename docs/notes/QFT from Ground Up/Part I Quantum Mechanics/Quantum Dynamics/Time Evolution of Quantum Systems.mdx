@@ -16,6 +16,11 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 Up to this point, we have discussed the basic principles of quantum mechanics, including the postulates and mathematical formalism.
 We have not yet discussed how quantum systems evolve in time.
+There are typically three ways to describe the time evolution of quantum systems.
+The first is the Schrödinger picture, where the state of the system, $\ket{\psi}$, evolves in time.
+The second is the Heisenberg picture, where the operators themselves evolve in time.
+The third is a different approach called the path integral formalism developed by Richard Feynman.
+We will go through all three of these methods eventually, but we will start with the Schrödinger picture.
 In this section, we will derive the third postulate of quantum mechanics, which requires that the time evolution of quantum systems be governed by a unitary operator.
 
 ## Table of Contents
@@ -314,7 +319,7 @@ $$
 
 For the time-evolution operator form of the Schrödinger equation, we can solve it depending on the form of the Hamiltonian.
 
-1. **Time-Independent Hamiltonian**: If the Hamiltonian is time-independent, then the time-evolution operator can be written as:
+1. **Time-Independent Hamiltonian**: If the Hamiltonian is time-independent, which corresponds to systems with fixed energies, then the time-evolution operator can be written as:
 
     $$
     \begin{equation}
@@ -341,6 +346,63 @@ For the time-evolution operator form of the Schrödinger equation, we can solve 
     $$
 
     This is known as the **Dyson series**, named after Freeman J. Dyson.
+
+## Time-Independent Hamiltonians
+
+For now on, we will consider the case where the Hamiltonian is time-independent.
+In this case, the Schrödinger equation simplifies to the first case:
+
+$$
+\begin{equation}
+U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0))
+\end{equation}
+$$
+
+To find out how $U(t; t_0)$ acts on a state vector $\ket{\psi}$, it is useful to first know how it acts on the eigenstates of whatever operator we are considering.
+It is convenient to choose an operator $A$ such that $\comm{A}{H} = 0$.
+Then, the eigenstates of $A$ are also eigenstates of $H$, known as **energy eigenkets**.
+Their eigenvalues are denoted by $E_{a'}$:
+
+$$
+\begin{equation}
+H\ket{a'} = E_{a'} \ket{a'}
+\end{equation}
+$$
+
+Then, applying the completeness relation to the time-evolution operator twice and setting $t_0 = 0$, we have:
+
+$$
+\begin{equation}
+\exp(-\frac{i}{\hbar} H t) = \sum_{a'} \sum_{a''} \dyad{a''} \exp(-\frac{i}{\hbar} Ht) \dyad{a'}
+\end{equation}
+$$
+
+And since $\ket{a'}$ are eigenstates of $H$, we have:
+
+$$
+\begin{equation}
+\exp(-\frac{i}{\hbar} H t) \dyad{a'} = \exp(-\frac{i}{\hbar} E_{a'} t) \dyad{a'}
+\end{equation}
+$$
+
+Thus the time-evolution operator can be written as:
+
+$$
+\begin{equation}
+U(t) = \exp(-\frac{i}{\hbar} H t) = \sum_{a'} \exp(-\frac{i}{\hbar} E_{a'} t) \dyad{a'}
+\end{equation}
+$$
+
+Then, acting on a state vector $\ket{\psi}$, we have:
+
+$$
+\begin{equation}
+\begin{split}
+U(t) \ket{\psi} &= \exp(-\frac{i}{\hbar} H t) \sum_{a'} c_{a'} \ket{a'} \\
+&= \sum_{a'} \ket{a'} \braket{a'}{\psi} \exp(-\frac{i}{\hbar} E_{a'} t)
+\end{split}
+\end{equation}
+$$
 
 ## Postulates of Quantum Mechanics
 

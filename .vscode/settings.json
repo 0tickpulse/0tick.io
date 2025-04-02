@@ -2,5 +2,7 @@
     "yaml.schemas": {
         "https://json.schemastore.org/github-workflow.json": "file:///c%3A/Users/Quxia/Stuff/GitHub/0tick.io/.github/workflows/deploy.yml"
     },
-    
+    "javascript.preferences.importModuleSpecifier": "non-relative",
+    "javascript.preferences.importModuleSpecifierEnding": "minimal",
+
 }

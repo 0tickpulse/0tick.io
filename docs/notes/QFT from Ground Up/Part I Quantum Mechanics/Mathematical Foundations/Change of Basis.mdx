@@ -302,4 +302,14 @@ The characteristic equation is a polynomial of degree $n$ in $a_i$.
 If an operator has $n$ distinct eigenvalues, then it can be diagonalized by making the eigenvectors the basis vectors.
 Otherwise, it is not diagonalizable.
 
+Regarding diagonalization, we also have an important theorem:
+
+> **Theorem**: Let $A$ be an operator with non-degenerate eigenvalues (i.e. all eigenvalues correspond to a single eigenvector).
+> If $A$ and $B$ commute, then $B$ is diagonal in the basis of eigenvectors of $A$.
+
+**Proof**: We already know that $A$ is diagonal in the basis of eigenvectors of $A$ (by definition).
+
+We also know that if $A$ and $B$ commute, then they share a common set of eigenvectors.
+Thus, $B$ is diagonal in the basis of eigenvectors of $A$ because they are also the eigenvectors of $B$. $\blacksquare$
+
 

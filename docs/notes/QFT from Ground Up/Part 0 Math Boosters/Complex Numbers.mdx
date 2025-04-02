@@ -1,0 +1,518 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ComplexFourierSeriesVisualizer } from "@site/src/components/visualizers/ComplexFourierSeriesVisualizer";
+
+# Complex Numbers
+
+Complex numbers are an extension of the real numbers that include a new element, $i$, such that $i^2 = -1$.
+This allows us to solve equations like $x^2 + 1 = 0$.
+
+A complex number is written as $z = a + bi$, where $a$ and $b$ are real numbers.
+The real part of $z$ is denoted by $\Re(z)$ and the imaginary part of $z$ is denoted by $\Im(z)$.
+Complex numbers are typically represented in the complex plane, where the real part is the $x$-axis and the imaginary part is the $y$-axis.
+
+The other form of a complex number is the polar form, $z = r e^{i \theta}$, where $r = |z|$ is the magnitude of $z$ and $\theta = \arg(z)$ is the argument of $z$.
+The magnitude of a complex number is given by $|z| = \sqrt{a^2 + b^2}$ and the argument is given by $\arg(z) = \tan^{-1}\left(\frac{b}{a}\right)$.
+$e^{i \theta}$ is a shorthand for $\cos(\theta) + i \sin(\theta)$, which is known as Euler's formula.
+It comes from the fact that $e^{i \theta}$ fundamentally represents circular motion as it satisfies the differential equation $\frac{d}{dt} e^{i \theta} = i e^{i \theta}$, and $i$ is a quarter turn in the complex plane.
+(You can also prove Euler's formula using the Taylor series of $e^{i\theta}$, $\cos(\theta)$, and $\sin(\theta)$.)
+
+Below is a quick table of the properties and operations of complex numbers in both Cartesian and polar form.
+
+|                | Cartesian Form                                                                   | Polar Form                                                                                                                         |
+| -------------- | -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+|                | $z = a + bi$                                                                     | $z = r e^{i \theta}$                                                                                                               |
+| Real Part      | $\Re(z) = a$                                                                     | $r \cos(\theta)$                                                                                                                   |
+| Imaginary Part | $\Im(z) = b$                                                                     | $r \sin(\theta)$                                                                                                                   |
+| Magnitude      | $\abs{z} = \sqrt{a^2 + b^2}$                                                     | $\abs{z} = r$                                                                                                                      |
+| Argument       | $\arg(z) = \tan^{-1}\left(\frac{b}{a}\right)$                                    | $\arg(z) = \theta$                                                                                                                 |
+| Addition       | $(a + bi) + (c + di) = (a + c) + (b + d)i$                                       | $r_1 e^{i \theta_1} + r_2 e^{i \theta_2} = (r_1 \cos(\theta_1) + r_2 \cos(\theta_2)) + (r_1 \sin(\theta_1) + r_2 \sin(\theta_2))i$ |
+| Multiplication | $(a + bi)(c + di) = (ac - bd) + (ad + bc)i$                                      | $r_1 e^{i \theta_1} r_2 e^{i \theta_2} = r_1 r_2 e^{i (\theta_1 + \theta_2)}$                                                      |
+| Division       | $\frac{a + bi}{c + di} = \frac{ac + bd}{c^2 + d^2} + \frac{bc - ad}{c^2 + d^2}i$ | $\frac{r_1 e^{i \theta_1}}{r_2 e^{i \theta_2}} = \frac{r_1}{r_2} e^{i (\theta_1 - \theta_2)}$                                      |
+| Conjugate      | $z^* = a - bi$                                                                   | $z^* = r e^{-i \theta}$                                                                                                            |
+| Inverse        | $z^{-1} = \frac{a}{a^2 + b^2} - \frac{b}{a^2 + b^2}i$                            | $z^{-1} = \frac{1}{r} e^{-i \theta}$                                                                                               |
+| Power          | $z^n = \sum_{k=0}^{n} \binom{n}{k} a^{n-k} b^k i^k$                              | $z^n = r^n e^{i n \theta}$                                                                                                         |
+
+It is clear that some operations are easier in Cartesian form and some are easier in polar form.
+For example, multiplication and division are easier in polar form, while addition and subtraction are easier in Cartesian form.
+
+Below are more properties of complex numbers, this time independent of the form:
+
+$$
+\begin{align}
+\Re(z) &= \frac{z + z^*}{2} \\
+\Im(z) &= \frac{z - z^*}{2i} \\
+z z^* &= \abs{z}^2 \\
+z^{-1} = \frac{1}{z} &= \frac{z^*}{z z^*} = \frac{z^*}{\abs{z}^2}
+\end{align}
+$$
+
+## Complex Functions
+
+A complex function is a function that takes a complex number as an input and returns a complex number as an output.
+For example, $f(z) = z^2$ is a complex function.
+The domain of a complex function is the set of complex numbers for which the function is defined.
+
+Generally, we write $f(z) = u(x, y) + i v(x, y)$, where $u$ and $v$ are real functions of the real variables $x$ and $y$.
+
+### Differentiation of Complex Functions
+
+The derivative of a complex function can be defined in the same way as the derivative of a real function;
+
+$$
+\begin{equation}
+f'(z) = \dv{f(z)}{z} = \lim_{z_0 \to z} \frac{f(z) - f(z_0)}{z - z_0}
+\end{equation}
+$$
+
+However, because $\Delta z$ is two-dimensional, we can approach $0$ in any direction.
+This means that there is ambiguity in the definition of the derivative of a complex function.
+For example, if we approach from the real axis ($x$-axis), we get:
+
+$$
+\begin{equation}
+f'(z) = \dv{f(z)}{z} = \lim_{x_0 \to x} \frac{u(x, y) + i v(x, y)}{x - x_0} + i \lim_{x_0 \to x} \frac{u(x, y) + i v(x, y)}{x - x_0} = \pdv{u}{x} + i \pdv{v}{x}
+\end{equation}
+$$
+
+Conversely, if we approach from the imaginary axis ($y$-axis), we get:
+
+$$
+\begin{equation}
+f'(z) = \dv{f(z)}{z} = \lim_{y_0 \to y} \frac{u(x, y) + i v(x, y)}{i(y - y_0)} + i \lim_{y_0 \to y} \frac{u(x, y) + i v(x, y)}{i(y - y_0)} = i \pdv{u}{y} - \pdv{v}{y}
+\end{equation}
+$$
+
+To resolve this ambiguity, we assert that both limits must be equal, which gives us the **Cauchy-Riemann equations**:
+
+$$
+\begin{align}
+\pdv{u}{x} &= \pdv{v}{y} \label{eq:cauchy-riemann-1} \\
+\pdv{u}{y} &= -\pdv{v}{x} \label{eq:cauchy-riemann-2}
+\end{align}
+$$
+
+If these equations are satisfied, then the function is said to be **holomorphic** or **analytic**.
+This means that the function is differentiable at every point in its domain.
+
+### Analyticity
+
+> **Theorem:** All finite polynomials are analytic in the entire complex plane.
+
+---
+
+**Proof**. A polynomial is a sum of terms of the form $a_n z^n$.
+
+This proof can be done easily, so we will skip it. The main steps are:
+
+1. It is easy to see that $f(z) = az$ is analytic because $\pdv{f}{z^*} = 0$.
+2. The sum of two analytic functions is analytic, and the product of two analytic functions is analytic.
+3. All finite polynomials can be written as a sum of terms of the form $a_n z^n$, which in turn can be written as a product of $n$ terms of the form $a z$.
+4. Therefore, all finite polynomials are analytic.
+
+Note that this does not easily generalize to infinite polynomials because the set of polynomials is not complete.
+In other words, the limit of a (Cauchy) sequence of polynomials may not be a polynomial—for example, the limit of the sequence $1 + z + z^2/2! + z^3/3! + \cdots$ is $e^z$, which is not a polynomial.
+
+---
+
+The following theorem is very powerful and useful in complex analysis:
+
+> **Theorem:** If a function $f(z)$ is written such that it only contains $z$ but not $z^*$, then $f(z)$ is analytic in the region where it is defined.
+
+---
+
+**Proof**. To prove this theorem, we need to show that an analytic function does not depend on the conjugate of $z$.
+In other words, if $f(z)$ is analytic, then $\pdv{f}{z^*} = 0$.
+Using the multivariable chain rule, we can write:
+
+$$
+\begin{equation}
+\pdv{f}{z^*} = \pdv{f}{x} \pdv{x}{z^*} + \pdv{f}{y} \pdv{y}{z^*}
+\end{equation}
+$$
+
+Since $f(z) = u(x, y) + i v(x, y)$, then $\pdv{f}{x} = \pdv{u}{x} + i \pdv{v}{x}$ and $\pdv{f}{y} = \pdv{u}{y} + i \pdv{v}{y}$.
+
+Additionally, since $x = \frac{z + z^*}{2}$ and $y = \frac{z - z^*}{2i}$, then $\pdv{x}{z^*} = \frac{1}{2}$ and $\pdv{y}{z^*} = -\frac{1}{2i}$.
+
+Substituting these into the equation above, we get:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{f}{z^*} &= \qty(\pdv{u}{x} + i \pdv{v}{x}) \qty(\frac{1}{2}) + \qty(\pdv{u}{y} + i \pdv{v}{y}) \qty(-\frac{1}{2i}) \\
+&= \frac{1}{2} \qty(\pdv{u}{x} - \pdv{v}{y}) + \frac{1}{2} i \qty(\pdv{v}{x} + \pdv{u}{y})
+\end{split}
+\end{equation}
+$$
+
+From Equation $\eqref{eq:cauchy-riemann-1}$, we know that $\pdv{u}{x} = \pdv{v}{y}$, so the left term becomes $0$.
+From Equation $\eqref{eq:cauchy-riemann-2}$, we know that $\pdv{u}{y} = -\pdv{v}{x}$, so the right term becomes $0$.
+Therefore, $\pdv{f}{z^*} = 0$.
+
+This theorem is very useful because it allows us to determine if a function is analytic by checking if it contains $z^*$.
+
+---
+
+If a function is analytic, then it can be expanded as a Taylor series around a point $z_0$:
+
+$$
+\begin{equation}
+f(z) = \sum_{n=0}^{\infty} \frac{f^{(n)}(z_0)}{n!} (z - z_0)^n
+\end{equation}
+$$
+
+And if a function is analytic at a point $z_0$, this point is called a **regular point**.
+If a function is not analytic at a point, then it is called a **singular point**.
+
+## Complex Integration
+
+The integral of a complex function is defined in the same way as the integral of a real function.
+However, because the complex plane is two-dimensional, the integral can be taken along any path in the complex plane.
+This means that the integral of a complex function requires more information than just the endpoints of the path.
+
+However, there is another property of analytic functions that makes complex integration easier.
+
+> **Theorem:** If a function $f(z)$ is analytic in a region $R$, then the integral of $f(z)$ is path-independent in $R$.
+
+---
+
+**Proof**. Recall from vector calculus that there are many ways to state that a vector field is conservative:
+
+1. The vector field is the gradient of a scalar field; $\vb{E} = -\grad{\phi}$.
+2. The line integral of the vector field is path-independent; $\oint_C \vb{E} \cdot \dd{\vb{l}} = 0$.
+3. The curl of the vector field is zero; $\curl{\vb{E}} = 0$.
+
+The third statement is the most general and can be applied to complex functions.
+Suppose we integrate a complex function $f(z)$ along a closed curve $C$ in the complex plane, where the endpoints of the curve are $z_1$ and $z_2$.
+Then the integral is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\int_C f(z) \dd{z} &= \int_{z_1}^{z_2} f(z) \, \dd{z} \\
+&= \int_{z_1}^{z_2} (u + iv) (\dd{x} + i \dd{y}) \\
+&= \int_{z_1}^{z_2} (u \dd{x} - v \dd{y}) + i \int_{z_1}^{z_2} (v \dd{x} + u \dd{y})
+\end{split}
+\end{equation}
+$$
+
+We borrow the notation from vector calculus and write $\vb{A} := u\vu{x} - v\vu{y}$ and $\vb{B} := v\vu{x} + u\vu{y}$.
+Then the integral becomes:
+
+$$
+\begin{equation}
+\int_C f(z) \dd{z} = \int_{z_1}^{z_2} \vb{A} \cdot \dd{\vb{l}} + i \int_{z_1}^{z_2} \vb{B} \cdot \dd{\vb{l}} \label{eq:complex-integral-1}
+\end{equation}
+$$
+
+Next, we apply Stokes's theorem to the integrals above:
+
+$$
+\begin{equation}
+\int_C f(z) \dd{z} = \int_S (\curl{\vb{A}}) \cdot \dd{\vb{a}} + i \int_S (\curl{\vb{B}}) \cdot \dd{\vb{a}}
+\end{equation}
+$$
+
+(Although curl is technically defined in three dimensions, we can still use a version of it in two dimensions, where we take everything we know about curl in three dimensions and remove the $z$-component.)
+The curls are explicitly given by:
+
+$$
+\begin{align}
+\curl{\vb{A}} &= \qty(-\pdv{v}{x} - \pdv{u}{y}) \vu{z} = \vb{0} \\
+\curl{\vb{B}} &= \qty(\pdv{u}{x} + \pdv{v}{y}) \vu{z} = \vb{0}
+\end{align}
+$$
+
+They are zero from the Cauchy-Riemann equations (Equations $\eqref{eq:cauchy-riemann-1}$ and $\eqref{eq:cauchy-riemann-2}$).
+As we stated earlier, if the curl of a vector field is zero, then the line integral is path-independent.
+Therefore, both integrals in $\eqref{eq:complex-integral-1}$ are path-independent.
+
+Hence, the integral of an analytic function is path-independent.
+
+---
+
+This theorem is very useful because it allows us to evaluate complex integrals by choosing the path that is easiest to integrate over.
+
+> **Corollary (Cauchy—Goursat Theorem):** If a function $f(z)$ is analytic in a region $R$ and $C$ is a closed curve in $R$, then $\oint_C f(z) \dd{z} = 0$.
+
+This theorem is a direct consequence of the path-independence of the integral of an analytic function.
+Just choose the path to be the same curve $C$.
+
+### Cauchy's Integral Formula
+
+Cauchy's integral formula is a powerful result in complex analysis. It states:
+
+$$
+\begin{equation}
+f(z) = \frac{1}{2 \pi i} \oint_C \frac{f(\zeta)}{\zeta - z} \dd{\zeta}
+\end{equation}
+$$
+
+where $f(z)$ is analytic in a region $R$ that contains the closed curve $C$ and $z$ is a **singular point** inside $C$.
+We traverse the curve $C$ in the counterclockwise direction.
+
+To prove this formula, we leverage the path-independence of the integral of an analytic function.
+We shall use a different path that is easier to integrate over.
+Namely, we traverse $C$ normally, but at a certain point, we make a small detour and go towards $z$ until we reach a small circle $C_\epsilon$ around $z$.
+Then we traverse $C_\epsilon$ in the clockwise direction and return to the original path.
+
+<Mafs>
+    <Point x={0} y={0} />
+    <LaTeX at={[-0.3, 0.7]} tex="z" />
+    <Line.Segment point1={[0, 0]} point2={[-0.2, 0.6]} style="dashed" />
+    {/* Circle around z */}
+    <Plot.Parametric t={[Math.asin(0.1 / 0.2), 2 * Math.PI - Math.asin(0.1 / 0.2)]} xy={(t) => [Math.cos(t) * 0.2, Math.sin(t) * 0.2]} color={color("pink")} />
+    <LaTeX at={[0, -0.5]} tex="C_\epsilon" color={color("pink")} />
+    <Vector tail={[0, 0.2]} tip={[0.06, 0.2]} weight={1.5} color={color("pink")} />
+    <Vector tail={[0, -0.2]} tip={[-0.06, -0.2]} weight={1.5} color={color("pink")} />
+    {/* Curve C */}
+    <Plot.Parametric t={[Math.asin(0.1 / 2), 2 * Math.PI - Math.asin(0.1 / 2)]} xy={(t) => [Math.cos(t) * 2 + 0.05 * Math.cos(t * 5) + 0.05 * Math.sin(t * 4), Math.sin(t) * 2 + 0.05 * Math.cos(t * 6)]} />
+    <Vector tail={[0, 2]} tip={[-0.06, 2]} weight={1.5} />
+    <Vector tail={[0, -2]} tip={[0.06, -2]} weight={1.5} />
+    {/* Connector 1 */}
+    <Line.Segment point1={[Math.sqrt(0.2 ** 2 - 0.1 ** 2), 0.1]} point2={[Math.sqrt(4 - 0.1 ** 2), 0.1]} color={color("green")} />
+    <Line.Segment point1={[Math.sqrt(0.2 ** 2 - 0.1 ** 2), -0.1]} point2={[Math.sqrt(4 - 0.1 ** 2), -0.1]} color={color("green")} />
+</Mafs>
+
+In practice, we are replacing the curve $C$ with the curve $C + C_\epsilon$, and we take the limit as $C_\epsilon \to 0$.
+The green connectors are the detours we made, and they are infinitesimally close to each other, thus they cancel each other out.
+
+The key is that while we are taking the limit as $C_\epsilon \to 0$, we are not actually letting $C_\epsilon$ be zero.
+Hence we are never touching the singular point $z$, and so the function is analytic in the region we are integrating over.
+This means that the integral over the larger curve $C$ is zero (since it is closed) and we are left with the integral over the small circle $C_\epsilon$:
+
+$$
+\begin{equation}
+\oint_{C + C_\epsilon} \frac{f(\zeta)}{\zeta - z} \dd{\zeta} = \oint_{C_\epsilon} \frac{f(\zeta)}{\zeta - z} \dd{\zeta}
+\end{equation}
+$$
+
+Note that while $C_\epsilon$ is closed and its integral is zero, as we let $C_\epsilon \to 0$, the integral over $C_\epsilon$ is not necessarily zero because we reach the singular point $z$.
+Thus we cannot just say that the integral over $C_\epsilon$ is zero.
+
+Since $C_\epsilon$ is a circle, we parametrize it as:
+
+$$
+\begin{equation}
+\zeta - z = \epsilon e^{i \phi}
+\end{equation}
+$$
+
+and the limit we are taking is $\epsilon \to 0$.
+The bounds of the integral are $\phi = 0$ to $\phi = 2 \pi$.
+The integral becomes:
+
+$$
+\begin{equation}
+\oint_{C_\epsilon} \frac{f(\zeta)}{\zeta - z} \dd{\zeta} = \int_0^{2 \pi} \frac{f(z + \epsilon e^{i \phi})}{\epsilon e^{i \phi}} \epsilon i e^{i \phi} \dd{\phi} = \int_0^{2 \pi} if(z + \epsilon e^{i \phi}) \dd{\phi}
+\end{equation}
+$$
+
+But as $\epsilon \to 0$, the integrand becomes $if(z)$, and so the integral becomes $2 \pi i f(z)$.
+Therefore, dividing both sides by $2 \pi i$ gives us Cauchy's integral formula:
+
+$$
+\begin{equation}
+f(z) = \frac{1}{2 \pi i} \oint_C \frac{f(\zeta)}{\zeta - z} \dd{\zeta}
+\end{equation}
+$$
+
+### Laurent Series
+
+Recall that a Taylor series is a power series expansion of a function around a point.
+It is the same for complex functions:
+
+$$
+\begin{equation}
+f(z) = \sum_{n=0}^{\infty} a_n (z - z_0)^n
+\end{equation}
+$$
+
+where $a_n = \frac{f^{(n)}(z_0)}{n!}$.
+
+By the Cauchy integral formula, we can write the $n$th derivative of $f(z)$ as:
+
+$$
+\begin{equation}
+\dv[n]{f(z)}{z} = \frac{n!}{2 \pi i} \oint_C \frac{f(\zeta)}{(\zeta - z)^{n+1}} \dd{\zeta}
+\end{equation}
+$$
+
+Thus the $n$th coefficient in the series expansion is:
+
+$$
+\begin{equation}
+a_n = \frac{1}{2 \pi i} \oint_C \frac{f(\zeta)}{(\zeta - z_0)^{n+1}} \dd{\zeta}
+\end{equation}
+$$
+
+If we let $n$ be negative as well, we get the **Laurent series**:
+
+$$
+\begin{equation}
+f(z) = \sum_{n=-\infty}^{\infty} a_n (z - z_0)^n
+\end{equation}
+$$
+
+The difference between the two series lie in the regions of convergence.
+The Taylor series converges in a disk around $z_0$, while the Laurent series converges in an annulus around $z_0$.
+
+## Cauchy's Residue Theorem
+
+This is one of the most important results in complex analysis for physics.
+We begin with an analytic function $f(z)$ that is analytic in a region $R$ except for a singular point at $z = z_0$.
+First, expand $f(z)$ as a Laurent series around $z_0$:
+
+$$
+\begin{equation}
+f(z) = \sum_{n=-\infty}^{\infty} a_n (z - z_0)^n
+\end{equation}
+$$
+
+If it is possible to write $f(z)$ as:
+
+$$
+\begin{equation}
+f(z) = \frac{b_1}{z - z_0} + \sum_{n=0}^{\infty} a_n (z - z_0)^n \label{eq:residue-theorem-simple-pole}
+\end{equation}
+$$
+
+Then $f(z)$ has a **simple pole** at $z = z_0$. A pole is a point where the function goes to infinity.
+It is clear that at $z = z_0$, the function goes to infinity because of the $1/(z - z_0)$ term.
+A higher-order pole is called a **pole of order $n$**, and it has the form:
+
+$$
+\begin{equation}
+f(z) = \frac{b_n}{(z - z_0)^n} + \frac{b_{n-1}}{(z - z_0)^{n-1}} + \cdots + \frac{b_1}{z - z_0} + \sum_{m=0}^{\infty} a_m (z - z_0)^m
+\end{equation}
+$$
+
+Now consider a closed curve $C$ in $f(z)$'s radius of convergence that encloses $z_0$.
+Then the integral of $f(z)$ over $C$ is:
+
+$$
+\begin{equation}
+\oint_C f(z) \dd{z} = \oint_C \frac{b_1}{z - z_0} \dd{z} + \oint_C \sum_{n=0}^{\infty} a_n (z - z_0)^n \dd{z}
+\end{equation}
+$$
+
+Since the term on the right is a polynomial, it is analytic and its integral is zero.
+Thus the integral is just the integral of the simple pole term:
+
+$$
+\begin{equation}
+\oint_C f(z) \dd{z} = \oint_C \frac{b_1}{z - z_0} \dd{z} = 2 \pi i b_1
+\end{equation}
+$$
+
+where we have used Cauchy's integral formula.
+The term $b_1$ is called the **residue** of $f(z)$ at $z = z_0$, and it is denoted by $\Res[f(z_0)]$.
+If we take the original expression in Equation $\eqref{eq:residue-theorem-simple-pole}$ and multiply both sides by $z - z_0$, we get:
+
+$$
+\begin{equation}
+(z - z_0) f(z) = b_1 + \sum_{n=0}^{\infty} a_n (z - z_0)^{n+1}
+\end{equation}
+$$
+
+If we take the limit as $z \to z_0$, the right side becomes $b_1$ because all the other terms vanish.
+Therefore we say:
+
+$$
+\begin{equation}
+\Res[f(z_0)] = \lim_{z \to z_0} \qty[(z - z_0) f(z)]
+\end{equation}
+$$
+
+In other words, the residue is a measure of how much $f(z)$ and $z - z_0$ "compete" with each other at $z = z_0$ (one goes to zero and the other goes to infinity).
+
+Now suppose $f(z)$ has multiple simple poles at $z_1, z_2, \ldots, z_N$.
+Then it can be written as:
+
+$$
+\begin{equation}
+f(z) = \sum_{k=1}^{N} \frac{b_k}{z - z_k} + \sum_{n=0}^{\infty} a_n (z - z_0)^n
+\end{equation}
+$$
+
+Then the integarl of $f(z)$ over a closed curve $C$ is:
+
+$$
+\begin{equation}
+\oint_C f(z) \dd{z} = 2 \pi i \sum_{k=1}^{N} b_k = 2 \pi i \sum_{k=1}^{N} \Res[f(z_k)]
+\end{equation}
+$$
+
+This is **Cauchy's residue theorem**.
+
+### Applications of the Residue Theorem
+
+The residue theorem is very powerful and can be used to evaluate integrals that are difficult to evaluate by other means.
+
+For example, consider the integral:
+
+$$
+\begin{equation}
+I = \int_{-\infty}^{\infty} \frac{e^{itx}}{x^2 + 1} \dd{x}
+\end{equation}
+$$
+
+This integral is difficult to evaluate with the typical Calculus 2 methods.
+However, we can evaluate it using the residue theorem.
+
+First, we let the variable we're integrating over be complex.
+Label the integrand as:
+
+$$
+\begin{equation}
+f(z) := \frac{e^{itz}}{z^2 + 1}
+\end{equation}
+$$
+
+It can be shown that $e^{itz}$ is analytic in the entire complex plane (it is an entire function) because its power series converges everywhere.
+The rest of the integrand, $1/(z^2 + 1)$, has simple poles at $z = i$ and $z = -i$.
+This is because at these points, the denominator goes to zero so the fraction goes to infinity.
+
+Next, we split the integrand into partial fractions:
+
+$$
+\begin{equation}
+\frac{e^{itz}}{z^2 + 1} = \frac{e^{itz}}{2i} \qty(\frac{1}{z - i} - \frac{1}{z + i})
+\end{equation}
+$$
+
+Now we consider which contour we integrate over.
+We choose the contour to be the semicircle of radius $a > 1$ in the upper half-plane, and we let $a \to \infty$.
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {/* Line */}
+    <Line.Segment point1={[-2, 0]} point2={[2, 0]} color={color("pink")} />
+    <Vector tail={[-1, 0]} tip={[-1 + 0.06, 0]} weight={1.5} color={color("pink")} />
+    <Vector tail={[1, 0]} tip={[1 + 0.06, 0]} weight={1.5} color={color("pink")} />
+    {/* Circle */}
+    <Plot.Parametric t={[0, Math.PI]} xy={(t) => [Math.cos(t) * 2, Math.sin(t) * 2]} color={color("pink")} />
+</Mafs>
+
+This contour is nice because the integrand is an exponential function, and it decays as we go up in the complex plane; $e^{itz}$ decays as $\Im(z) \to \infty$.
+This is more concretely shown if we expand $z$ as $x + iy$:
+
+$$
+\begin{equation}
+e^{itz} = e^{it(x + iy)} = e^{itx} e^{-ty}
+\end{equation}
+$$
+
+So there are two parts to the integrand—$e^{itx}$ simply oscillates as $x$ changes, and $e^{-ty}$ decays as $y$ increases.
+This means that the integrand decays as we go up in the complex plane.
+Thus eventually, when we let the radius go to infinity, the integral over the semicircle goes to zero and we're left with the integral over the real line.
+
+

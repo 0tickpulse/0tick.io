@@ -1,0 +1,600 @@
+
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ComplexFourierSeriesVisualizer } from "@site/src/components/visualizers/ComplexFourierSeriesVisualizer";
+
+# Fourier Series
+
+In this note, we will explore Fourier series, a way to represent periodic functions as a sum of sines and cosines.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Suppose you have any function $f(t)$. For the sake of simplicity, let's assume that $f(t)$ is periodic with period $2R\pi$.
+This could, for example, be the trajectory of a pendulum, or the voltage across a resistor in an AC circuit.
+
+Now imagine that you want to represent this function as a sum of sines and cosines.
+Each time you add a sine or cosine, you can adjust its amplitude and phase to make it fit the function better.
+When the sum of sines and cosines is infinite, it will perfectly fit the function, similar to a Taylor series.
+
+Each term in this series must also be periodic with periods that are integer multiples of the period of the function, i.e. $2R\pi$.
+If the period is just $2R\pi$, then the sine/cosine term looks like $\sin(\frac{n}{R}t)$ or $\cos(\frac{n}{R}t)$.
+The next terms will have periods of $2\frac{2R}{n}\pi$, $2\frac{3R}{n}\pi$, and so on.
+As such, the terms in the series are $\sin(\frac{n}{R}t)$ and $\cos(\frac{n}{R}t)$.
+
+With this, we can write the **Fourier series** of $f(t)$ as:
+
+$$
+\begin{equation}
+f(t) = \sum_{n=1}^\infty \qty[a_n \cos\qty(\frac{nt}{R}) + b_n \sin\qty(\frac{nt}{R})]
+\end{equation}
+$$
+
+It is often much more convenient to use complex exponentials instead of sines and cosines, since they are easier to work with.
+The Fourier series can then be written as:
+
+$$
+\begin{equation}
+\psi(t) = \sum_{n=-\infty}^\infty \psi_n e^{int/R}
+\end{equation}
+$$
+
+The coefficients $\psi_n$ correspond to the coefficients $a_n$ and $b_n$ in the Fourier series.
+We can introduce another term $n/R = \omega_n$, which is the *angular frequency* of the term.
+
+$$
+\begin{equation}
+\psi(t) = \sum_{n=-\infty}^\infty \psi_n e^{i\omega_n t}
+\end{equation}
+$$
+
+(Recall from introductory physics that for a simple harmonic oscillator, the function is $\cos(\omega t)$. This is just the complex exponential form of that function.)
+
+Since complex exponentials are visualized as circles in the complex plane, one could imagine that each term in the Fourier series is a circle with a certain radius and frequency.
+The sum of all these circles will then trace out the function $\psi(t)$.
+
+<ComplexFourierSeriesVisualizer />
+
+### Fourier Coefficients
+
+Now that we have established the foundations of the Fourier series, we still need to determine the coefficients $\psi_n$.
+
+First, let's try to determine the coefficient $\psi_0$, corresponding to $\omega_0$.
+This is defined as the term with a frequency of zero, meaning that it is just a constant term:
+
+$$
+\begin{equation}
+\psi(t) = \cdots + \psi_0 e^{i\omega_0 t} + \cdots
+\end{equation}
+$$
+
+We can find this by realizing that if we take a sample of points of the function $\psi(t)$ and average them, we will get the constant term.
+In this way, the constant term is the "center of mass" of the function in the complex plane:
+
+$$
+\begin{equation}
+\psi_0 = \frac{1}{2\pi R} \int_0^{2\pi R} \dd{t} \, \psi(t)
+\end{equation}
+$$
+
+To see this more concretely, consider what the integral actually does to $\psi(t)$:
+
+$$
+\begin{equation}
+\begin{split}
+\int_0^{2\pi R} \dd{t} \, \psi(t) &= \int_0^{2\pi R} \dd{t} \, \qty[\cdots + \psi_{-2} e^{-2i\omega t} + \psi_{-1} e^{-i\omega t} + \psi_0 e^{0} + \psi_1 e^{i\omega t} + \psi_2 e^{2i\omega t} + \cdots] \\
+&= \cdots + \int_0^{2\pi R} \dd{t} \, \psi_{-2} e^{-2i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_{-1} e^{-i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_0 e^{0} + \int_0^{2\pi R} \dd{t} \, \psi_1 e^{i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_2 e^{2i\omega t} + \cdots
+\end{split}
+\end{equation}
+$$
+
+Because every other term has a frequency that is not zero, the integral of those terms will be zero.
+Visually, imagine that term being a circle in the complex plane. Obviously, the average of all the points on the circle will be zero.
+However, in the special case of the constant term, because the value does not move around the circle, the average will be the value itself.
+As such, the integral becomes:
+
+$$
+\begin{equation}
+\begin{split}
+\int_0^{2\pi R} \dd{t} \, \psi(t) &= \cdots + \int_0^{2\pi R} \dd{t} \, \psi_{-2} e^{-2i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_{-1} e^{-i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_0 e^{0} + \int_0^{2\pi R} \dd{t} \, \psi_1 e^{i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_2 e^{2i\omega t} + \cdots \\
+&= \cdots + 0 + 0 + \int_0^{2\pi R} \dd{t} \, \psi_0 e^{0} + 0 + 0 + \cdots \\
+&= \cdots + 0 + 0 + 2\pi R\psi_0 + 0 + 0 + \cdots
+\end{split}
+\end{equation}
+$$
+
+To find *any* coefficient $\psi_n$, we can apply a similar logic.
+This method of finding the coefficients relies on the term being constant, but obviously that is only the case for $n = 0$.
+How do we make another term constant?
+The clever trick is to multiply both sides of the equation by $e^{-im\omega t}$.
+
+$$
+\begin{align}
+\psi(t) &= \cdots + \psi_{-2} e^{-2i\omega t} + \psi_{-1} e^{-i\omega t} + \psi_0 e^{0} + \psi_1 e^{i\omega t} + \psi_2 e^{2i\omega t} + \cdots \\
+\class{blue}{e^{-i(2) t}} \psi(t) &= \cdots + \psi_{-2} e^{-2i\omega t} \class{blue}{e^{-2i\omega t}} + \psi_{-1} e^{-i\omega t} \class{blue}{e^{-2i\omega t}} + \psi_0 e^{0} \class{blue}{e^{-2i\omega t}} + \psi_1 e^{i\omega t} \class{blue}{e^{-2i\omega t}} + \psi_2 e^{2i\omega t} \class{blue}{e^{-2i\omega t}} + \cdots
+\end{align}
+$$
+
+Notice that specifically the $n = 2$ term have the exponential terms cancel out:
+
+$$
+\begin{equation}
+e^{-2i\omega t} \psi(t) = \cdots + \psi_{-2} e^{-2i\omega t} e^{-2i\omega t} + \psi_{-1} e^{-i\omega t} e^{-2i\omega t} + \psi_0 e^{0} e^{-2i\omega t} + \psi_1 e^{i\omega t} e^{-2i\omega t} + \psi_2 + \cdots
+\end{equation}
+$$
+
+Then, when we integrate, every term except for the $n = 2$ term will be zero:
+
+$$
+\begin{equation}
+\begin{split}
+\int_0^{2\pi R} \dd{t} \, e^{-2i\omega t} \psi(t) &= \cdots + \int_0^{2\pi R} \dd{t} \, \psi_{-2} e^{-2i\omega t} e^{-2i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_{-1} e^{-i\omega t} e^{-2i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_0 e^{0} e^{-2i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_1 e^{i\omega t} e^{-2i\omega t} + \int_0^{2\pi R} \dd{t} \, \psi_2 e^{2i\omega t} e^{-2i\omega t} + \cdots \\
+&= \cdots + 0 + 0 + 0 + 0 + \int_0^{2\pi R} \dd{t} \, \psi_2 + \cdots \\
+&= 2\pi R\psi_2
+\end{split}
+\end{equation}
+$$
+
+This method can be applied to any term in the Fourier series, and it is a very powerful tool for finding the coefficients:
+
+<Boxed>
+
+$$
+\begin{equation}
+\psi_n = \frac{1}{2\pi R} \int_0^{2\pi R} \dd{t} \, e^{-in\omega t} \psi(t)
+\end{equation}
+$$
+
+</Boxed>
+
+### Example: Laplace's Equation
+
+This example comes from Example 3.3 in Griffiths' *Introduction to Electrodynamics* (4th ed.).
+I will not go through the details of the physical problem, but it is still worth mentioning for its mathematical content.
+
+Gauss's law in electrostatics states that the divergence of the electric field is equal to the charge density:
+
+$$
+\begin{equation}
+\laplacian{\vb{E}} = \frac{\rho}{\epsilon_0}
+\end{equation}
+$$
+
+This means that in a vacuum, where there is no charge, the electric field is divergenceless.
+If we replace $\vb{E}$ with the gradient of a scalar field $\phi$, we get Laplace's equation:
+
+$$
+\begin{equation}
+\laplacian{\phi} = 0
+\end{equation}
+$$
+
+In Cartesian coordinates, the Laplacian is simply the sum of the second derivatives:
+
+$$
+\begin{equation}
+\laplacian{\phi} = \pdv[2]{\phi}{x} + \pdv[2]{\phi}{y} + \pdv[2]{\phi}{z} = 0
+\end{equation}
+$$
+
+In our problem, $z$ is not relevant, so we can simplify the equation to:
+
+$$
+\begin{equation}
+\pdv[2]{\phi}{x} + \pdv[2]{\phi}{y} = 0
+\end{equation}
+$$
+
+Our boundary conditions are as follows:
+
+1. $\phi = 0$ when $y = 0$.
+2. $\phi = 0$ when $y = a$.
+3. $\phi = \phi_0(y)$ when $x = 0$.
+4. $\phi \to 0$ as $x \to \infty$.
+
+In order to solve this equation, we can use the method of separation of variables.
+In this method, we look for solutions of the form $\phi(x, y, z) = X(x)Y(y)$.
+The partial derivatives of $\phi$ can then be written as:
+
+$$
+\begin{equation}
+\pdv[2]{\phi}{x} = Y \dv[2]{X}{x} \quad \text{and} \quad \pdv[2]{\phi}{y} = X \dv[2]{Y}{y}
+\end{equation}
+$$
+
+Plugging these into Laplace's equation and dividing by $XY$ gives:
+
+$$
+\begin{equation}
+\frac{1}{X} \dv[2]{X}{x} + \frac{1}{Y} \dv[2]{Y}{y} = 0
+\end{equation}
+$$
+
+The key is that these three terms are all independent of each other.
+They are all equal to a constant—if not, then you can, for example, change $x$ to make $\frac{1}{X} \pdv[2]{X}{x}$ different and the equation will not hold.
+This means that each term must be equal to a constant, which we will call $k^2$:
+
+$$
+\begin{align}
+\frac{1}{X} \dv[2]{X}{x} &= k^2 \\
+\frac{1}{Y} \dv[2]{Y}{y} &= -k^2
+\end{align}
+$$
+
+These are simply equations for simple harmonic oscillators, and the solutions are then:
+
+$$
+\begin{align}
+X(x) &= Ae^{kx} + Be^{-kx} \\
+Y(y) &= C\cos(ky) + D\sin(ky)
+\end{align}
+$$
+
+where $X$ uses exponentials because $k^2 X$ is positive, and $Y$ uses sines and cosines because $k^2 Y$ is negative.
+
+The potential $\phi$ is then the product of these two functions.
+Plugging in the boundary conditions, we assert that this is the form of $\phi$:
+
+$$
+\begin{equation}
+\phi(x, y) = Ce^{-kx} \sin(ky)
+\end{equation}
+$$
+
+Plugging in the second boundary condition gives $\sin(ka) = 0$, which means that $ka = n\pi$.
+This means that $k = \frac{n\pi}{a}$, and the potential becomes:
+
+$$
+\begin{equation}
+\phi(x, y) = C e^{-n\pi x/a} \sin(\frac{n\pi y}{a})
+\end{equation}
+$$
+
+Now the key is that Laplace's equation is linear, meaning that the sum of two solutions is also a solution.
+This means that the general solution is a sum of all these terms:
+
+$$
+\begin{equation}
+\phi(x, y) = \sum_{n=1}^\infty C_n e^{-n\pi x/a} \sin(\frac{n\pi y}{a})
+\end{equation}
+$$
+
+Finally, the third boundary condition must be satisfied, which means:
+
+$$
+\begin{equation}
+\phi(0, y) = \sum_{n=1}^\infty C_n \sin(\frac{n\pi y}{a}) = \phi_0(y)
+\end{equation}
+$$
+
+This is exactly what we have been talking about with Fourier series.
+Like before, we can find the coefficients $C_n$ by multiplying both sides by something to make one specific term constant.
+In this case, we multiply by $\sin(\frac{m\pi y}{a})$ (instead of its exponential counterpart) and integrate over $y$.
+First, we multiply both sides by $\sin(\frac{m\pi y}{a})$:
+
+$$
+\begin{equation}
+\sin(\frac{m\pi y}{a}) \phi_0(y) = \sum_{n=1}^\infty C_n \sin(\frac{n\pi y}{a}) \sin(\frac{m\pi y}{a})
+\end{equation}
+$$
+
+And then we integrate over $y$:
+
+$$
+\begin{equation}
+\int_0^a \dd{y} \, \sin(\frac{m\pi y}{a}) \phi_0(y) = \sum_{n=1}^\infty C_n \int_0^a \dd{y} \, \sin(\frac{n\pi y}{a}) \sin(\frac{m\pi y}{a})
+\end{equation}
+$$
+
+By the same logic as with the exponentials, the integral $\int_0^a \dd{y} \, \sin(\frac{n\pi y}{a}) \sin(\frac{m\pi y}{a})$ will be zero unless $n = m$.
+It is instructive to see the graph of $\sin(\frac{n\pi y}{a}) \sin(\frac{m\pi y}{a})$ to understand why this is the case:
+
+<div className="card">
+    <div className="card__header">
+        <div className="row">
+            <div className="col">
+                <MathEquation>
+                    {String.raw`f(y) = \sin\qty(\frac{2\pi y}{a}) \sin\qty(\frac{3\pi y}{a})`}
+                </MathEquation>
+            </div>
+            <div className="col">
+                <MathEquation>
+                    {String.raw`f(y) = \sin\qty(\frac{2\pi y}{a}) \sin\qty(\frac{2\pi y}{a})`}
+                </MathEquation>
+            </div>
+        </div>
+    </div>
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    {/* Different n and m */}
+                    <Plot.OfX y={(x) => Math.sin(2 * Math.PI * x / 2) * Math.sin(3 * Math.PI * x / 2)} />
+                </Mafs>
+            </div>
+            <div className="col">
+                <Mafs>
+                    <Coordinates.Cartesian />
+                    {/* Same n and m */}
+                    <Plot.OfX y={(x) => Math.sin(2 * Math.PI * x / 2) * Math.sin(2 * Math.PI * x / 2)} />
+                </Mafs>
+            </div>
+        </div>
+    </div>
+</div>
+
+Notice that in the case when $n \neq m$, there is an equal amount of positive and negative area, meaning that the integral will be zero.
+But when $n = m$, the function is always positive, meaning that the integral will be nonzero.
+
+## Non-Periodic Functions
+
+Now that we have established the Fourier series for periodic functions, what about non-periodic functions?
+
+First, we need to realize what a function being periodic actually entails for the Fourier series.
+Recall that we restricted the terms in the Fourier series to have periods that are integer multiples of the period of the function.
+This means that the function must be periodic with a period of a multiple of $2R\pi$, and the Fourier series will have terms with the angular frequencies $\omega_n = \frac{n}{R}$.
+
+If the function is not periodic, we can imagine that $R$ tends to infinity.
+The gap between the frequencies of the terms in the Fourier series is originally $\omega_2 - \omega_1 = \frac{1}{R}$.
+If $R$ tends to infinity, the gap between the frequencies will tend to zero.
+
+This means that the Fourier series will have terms with frequencies that are infinitesimally close to each other.
+To see what this means, consider the Fourier series of a periodic function:
+
+$$
+\begin{equation}
+\psi(t) = \sum_{n=-\infty}^\infty \psi_n e^{i\omega_n t}
+\end{equation}
+$$
+
+We will rewrite $\psi_n$ as $\frac{1}{\sqrt{2 \pi} R} \hat{\psi}(\omega)$, where the inclusion of the coefficient will be explained later.
+This allows us to write the Fourier series as:
+
+$$
+\begin{equation}
+\psi(t) = \sum_{n=-\infty}^\infty \frac{1}{\sqrt{2 \pi} R} \hat{\psi}(\omega) e^{i\omega t}
+\end{equation}
+$$
+
+Because the gap in the frequency is $\frac{1}{R}$, we can rewrite this as:
+
+$$
+\begin{equation}
+\psi(t) = \sum_{n=-\infty}^\infty \Delta \omega \frac{1}{\sqrt{2 \pi}} \hat{\psi}(\omega) e^{i\omega t}
+\end{equation}
+$$
+
+As we said, the gap between the frequencies will tend to zero.
+This means that we can replace the sum with an integral, where $\sum_{n=-\infty}^\infty \Delta \omega \to \int \dd{\omega}$.
+This gives us:
+
+$$
+\begin{equation}
+\psi(t) = \int_{-\infty}^\infty \frac{1}{\sqrt{2 \pi}} \hat{\psi}(\omega) e^{i\omega t} \dd{\omega}
+\end{equation}
+$$
+
+The value for $\frac{1}{\sqrt{2 \pi}} \hat{\psi}(\omega)$ is the same as before:
+
+$$
+\begin{equation}
+\frac{1}{\sqrt{2 \pi}} \hat{\psi}(\omega) = \frac{1}{2\pi R} \int_{-\infty}^\infty \dd{t} \, e^{-i\omega t} \psi(t)
+\end{equation}
+$$
+
+However, because $R \to \infty$, the integral will be over all time.
+Doing this and rearranging gives:
+
+$$
+\begin{equation}
+\hat{\psi}(\omega) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{t} \, e^{-i\omega t} \psi(t)
+\end{equation}
+$$
+
+Putting this all together, we have a suggestive relation between $\psi(t)$ and $\hat{\psi}(\omega)$:
+
+$$
+\begin{align}
+\psi(t) &= \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{\omega} \, e^{i\omega t} \hat{\psi}(\omega) \\
+\hat{\psi}(\omega) &= \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{t} \, e^{-i\omega t} \psi(t)
+\end{align}
+$$
+
+The transformation between $\psi(t)$ and $\hat{\psi}(\omega)$ is known as the **Fourier transform**.
+It is usually denoted as $\mathcal{F}$:
+
+$$
+\begin{equation}
+\hat{\psi}(\omega) = \mathcal{F}[\psi(t)]
+\end{equation}
+$$
+
+### Orthogonality of Complex Exponentials
+
+The Fourier series and Fourier transform are based on the orthogonality of complex exponentials.
+In a certain respect, we can treat complex exponentials as a "basis", similar to how we treat the unit vectors $\hat{x}$, $\hat{y}$, and $\hat{z}$ as a basis in three-dimensional space.
+These basis functions are orthogonal to each other, meaning that the integral of the product of two different basis functions is zero:
+
+$$
+\begin{equation}
+\int_{-\infty}^\infty \dd{t} \, e^{i\omega t} e^{-i\omega' t} = \delta(\omega - \omega')
+\end{equation}
+$$
+
+where $\delta(\omega - \omega')$ is the Dirac delta function.
+This means that the complex exponentials are orthogonal to each other, and the Fourier transform can be thought of as a change of basis from the time basis to the frequency basis.
+
+Another property we leverage is the **completeness** of the complex exponentials.
+This means that *any function* can be written as a sum of complex exponentials.
+This is similar to the concept of span in linear algebra.
+To use the language of linear algebra, we say that $\operatorname{span}\{e^{i\omega t}\} = \text{Almost all functions}$.
+This set of functions is more formally known as $L^2(\mathbb{R})$, the set of square-integrable functions on the real line.
+(A square-integrable function is one for which the integral of the square of the function is finite.)
+
+## Applying to Position and Momentum Wavefunctions
+
+Now we will apply the Fourier transform to the position and momentum wavefunctions of a particle.
+The position wavefunction $\psi(x')$ is a function of position, and the momentum wavefunction $\phi(p')$ is a function of momentum.
+
+If you have read the notes on the momentum operator, you will know that applying it to a position wavefunction gives:
+
+$$
+\begin{equation}
+p \psi(x) = -i\hbar \pdv{x'} \psi(x')
+\end{equation}
+$$
+
+Suppose we expand $\psi(x')$ as a continuous sum of plane waves, i.e. a Fourier series.
+An individual term in this series goes as $e^{i\omega x'}$.
+The momentum operator acting on this term gives:
+
+$$
+\begin{equation}
+p e^{i\omega x'} = -i\hbar \pdv{x'} e^{i\omega x'} = -i\hbar i\omega e^{i\omega x'} = \hbar \omega e^{i\omega x'}
+\end{equation}
+$$
+
+Notice that the momentum operator acting on a plane wave gives the same plane wave back, but with a factor of $\hbar \omega$.
+As such, the position wavefunction term is an eigenfunction of the momentum operator, with eigenvalue $\hbar \omega$.
+
+In the continuous sum, the position wavefunction $\psi(x')$ can be written as:
+
+$$
+\begin{equation}
+\psi(x') = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{\omega} \, \hat{\psi}(\omega) e^{i\omega x'}
+\end{equation}
+$$
+
+Because $e^{i\omega x}$ is an eigenfunction of the momentum operator, this integral resembles a spectral decomposition of the position wavefunction in terms of momentum eigenfunctions:
+
+$$
+\begin{equation}
+\psi(x') = \int_{-\infty}^\infty \dd{p'} \, \phi(p') e^{ip'x'}
+\end{equation}
+$$
+
+This means that the momentum wavefunction $\phi(p')$ can be regarded the Fourier transform of the position wavefunction $\psi(x')$.
+We define $p' = \hbar \omega$ because that is the eigenvalue of the momentum operator acting on the plane wave.
+Then, $\dd{p'} = \hbar \dd{\omega}$.
+With this we get:
+
+$$
+\begin{equation}
+\psi(x') \overset{?}{=} \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{p'} \, \phi(p') e^{ip'x'/\hbar}
+\end{equation}
+$$
+
+and
+
+$$
+\begin{equation}
+\phi(p') \overset{?}{=} \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{x'} \, \psi(x') e^{-ip'x'/\hbar}
+\end{equation}
+$$
+
+There is a question mark because there is one small detail that we have not yet addressed.
+Consider the probability amplitude of a momentum eigenstate as given by the Born rule:
+
+$$
+\abs{\phi(p')}^2 \dd{p'}
+$$
+
+We want to ensure that the probability is conserved when we transform between the position and momentum wavefunctions.
+This means that the normalization of the wavefunctions must be preserved, meaning:
+
+$$
+\begin{equation}
+\abs{\psi(\omega)}^2 \dd{\omega} = \abs{\phi(p')}^2 \dd{p'} = \abs{\phi(p')}^2 \frac{\dd{\omega}}{\hbar}
+\end{equation}
+$$
+
+Currently, the normalization of the wavefunctions is not preserved.
+To fix this, we introduce a factor of $\frac{1}{\sqrt{\hbar}}$ in the Fourier transform:
+
+<Boxed>
+
+$$
+\begin{equation}
+\phi(p') = \frac{1}{\sqrt{2\pi\hbar}} \int_{-\infty}^\infty \dd{x'} \, \psi(x') e^{-ip'x'/\hbar}
+\end{equation}
+$$
+
+</Boxed>
+
+Then the probability is conserved:
+
+$$
+\begin{equation}
+\abs{\phi(p')}^2 \dd{p'} = \abs{\phi(\omega)/\sqrt{\hbar}}^2 \frac{\dd{\omega}}{\hbar} = \abs{\phi(\omega)}^2 \frac{\dd{\omega}}{\hbar} = \abs{\psi(\omega)}^2 \dd{\omega}
+\end{equation}
+$$
+
+This is a very powerful result, as it allows us to transform between the position and momentum wavefunctions of a particle.
+
+Note that had the position wavefunction been periodic, the range of the integral would have been limited to a certain discrete set of momenta.
+In other words, the momentum would have been quantized.
+In the case of a non-periodic position wavefunction, the momentum is continuous.
+
+Now realize that angles are periodic with a period of $2\pi$.
+This means that the Fourier series of the angle wavefunction will have terms with a discrete set of frequencies.
+This is a reason why angular momentum is quantized.
+
+## Example: Square Wave
+
+As an example, consider the square wave function:
+
+$$
+\begin{equation}
+\psi(t) = \begin{cases} 1 & \text{if } 0 \leq t < \pi \\ -1 & \text{if } \pi \leq t < 2\pi \end{cases}
+\end{equation}
+$$
+
+## Summary
+
+In this note, we explored Fourier series and the Fourier transform.
+
+Here are the key points to remember:
+
+- A Fourier series is a way to represent periodic functions as a sum of sines and cosines.
+- The Fourier series can be written in terms of complex exponentials, which are easier to work with.
+- The coefficients of the Fourier series can be found by integrating the function multiplied by a complex exponential.
+- For non-periodic functions, the Fourier series becomes an integral, which is known as the Fourier transform:
+
+    $$
+    \begin{equation}
+    \hat{\psi}(\omega) = \frac{1}{\sqrt{2\pi}} \int_{-\infty}^\infty \dd{t} \, e^{-i\omega t} \psi(t)
+    \end{equation}
+    $$
+- The Fourier transform leverages the orthogonality and completeness of complex exponentials.
+- The Fourier transform allows us to transform between the position and momentum wavefunctions of a particle:
+
+    $$
+    \begin{equation}
+    \phi(p') = \mathcal{F}[\psi(x')]
+    \end{equation}
+    $$
+
+This is a very powerful tool in quantum mechanics, as it allows us to transform between different representations of a particle's wavefunction.
+
+### Further Reading
+
+Because the Fourier transform is such a fundamental concept in physics, there are many resources available to learn more about it.
+
+Here are some resources that you might find helpful:
+
+- [Wikipedia: Fourier series](https://en.wikipedia.org/wiki/Fourier_series)
+- [Wikipedia: Fourier transform](https://en.wikipedia.org/wiki/Fourier_transform)
+- [But what is the Fourier Transform? A visual introduction. - 3Blue1Brown](https://www.youtube.com/watch?v=spUNpyF58BY)
+- [The intuition behind Fourier and Laplace transforms I was never taught in school - Zach Star](https://www.youtube.com/watch?v=3gjJDuCAEQQ)
