@@ -1,0 +1,414 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+## The Theory of Galilean Relativity
+
+The theory of relativity was not developed by a single person, but rather by a series of physicists over the course of the late 19th and early 20th centuries.
+The first theory of relativity was Galilean relativity, which states that the laws of physics are the same in all inertial reference frames.
+It correctly describes the motion of objects at everyday speeds.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+We first define an **inertial reference frame** as a frame of reference in which a body at rest remains at rest and a body in motion continues to move at a constant velocity.
+Roughly speaking, an inertial frame is one that is not accelerating.
+
+Suppose we have two inertial frames, $S$ and $S'$.
+The two frames are moving relative to each other with a constant velocity.
+In other words, if a vector $\vb{s}$ points from the origin of $S$ to the origin of $S'$, then $\dv{\vb{s}}{t}$ is constant.
+
+In Galilean relativity, the laws of physics are the same in both frames.
+This means that if an observer in $S$ measures a physical quantity $x$ to be $x_0$, then an observer in $S'$ will also measure $x$ to be $x_0$.
+More concretely, the following table summarizes the quantities that are the same and different in the two frames:
+
+| Agree                                                                  | Disagree                             |
+| ---------------------------------------------------------------------- | ------------------------------------ |
+| Passage of time ($\Delta t$)                                           | Position ($\vb{r}$)                  |
+| Length/physical distance ($\Delta \vb{r}$)                             | Velocity ($\vb{v}$)                  |
+| Masses of objects ($m$)                                                | Momentum ($\vb{p} := m \vb{v}$)      |
+| Newton's second law ($\vb{F} = m \vb{a}$)                              | Kinetic energy ($\frac{1}{2} m v^2$) |
+| Newton's law of gravitation ($\vb{F} = -\frac{G m_1 m_2}{r^2} \vu{r}$) |                                      |
+
+## Space and Time
+
+In order to visualize the motion of objects in different reference frames, we can use spacetime diagrams.
+Spacetime has four dimensions: three spatial dimensions ($x$, $y$, $z$) and one time dimension ($t$).
+
+Sometimes we will use the notation $x^0 = t$, $x^1 = x$, $x^2 = y$, and $x^3 = z$.
+When we use an index, Latin letters like $i$ or $j$ will denote spatial indices, while Greek letters like $\mu$ or $\nu$ will denote spacetime indices.
+For example, $x^\mu$ refers to $(t, x, y, z)$ while $x^i$ refers to $(x, y, z)$.
+
+### Worldlines
+
+Suppose a person is standing on the ground.
+A car is moving to the right ($+x$) at a velocity of $1/2$ (in some units), while a train is moving to the left ($-x$) at a velocity of $3$.
+For the sake of simplicity, when we draw a spacetime diagram, we simply draw the $x$-axis and the $t$-axis and ignore the $y$ and $z$ axes.
+By convention, the $t$-axis points upwards.
+
+<Mafs viewBox={{ x: [-10, 10], y: [0, 8] }}>
+    <Coordinates.Cartesian />
+
+    {/* Person */}
+    <Plot.OfY x={() => 0} color={color("pink")} />
+    {/* Car */}
+    <Plot.OfY x={(t) => t / 2} color={color("blue")} />
+    {/* Train */}
+    <Plot.OfY x={(t) => -3 * t} color={color("green")} />
+</Mafs>
+
+In the diagram above, the pink line represents the person standing on the ground.
+The blue line represents the car moving to the right, while the green line represents the train moving to the left.
+These lines are called **worldlines**.
+
+### Events
+
+Outside of worldlines, we can also draw **events**.
+An event is a point in spacetime, i.e. $(t, x, y, z)$, that represents a specific location at a specific time.
+We can draw events as dots on the spacetime diagram.
+For example, the event $A = (3, 1)$ represents a point in spacetime where $t = 3$ and $x = 1$.
+
+<Mafs viewBox={{ x: [-10, 10], y: [0, 8] }}>
+    <Coordinates.Cartesian />
+
+    {/* Person */}
+    <Plot.OfY x={() => 0} color={color("pink")} />
+    {/* Car */}
+    <Plot.OfY x={(t) => t / 2} color={color("blue")} />
+    {/* Train */}
+    <Plot.OfY x={(t) => -3 * t} color={color("green")} />
+
+    {/* Event */}
+    <Point x={1} y={3} color={color("pink")} />
+    <MafsMathJax at={[1, 3.5]} tex="A" />
+    <Point x={-4} y={6} color={color("pink")} />
+    <MafsMathJax at={[-4, 6.5]} tex="B" />
+</Mafs>
+
+On the above spacetime diagram I have drawn two events, $A$ and $B$.
+Event $A$ is located at $(t = 3, x = 1)$, while event $B$ is located at $(t = 6, x = -4)$.
+We can draw a vector $\vb{S}$ from event $A$ to event $B$. This vector is called a **spacetime separation vector**.
+
+### Basis Vectors and Invariance
+
+In order to describe vectors in spacetime, we need to define a set of basis vectors.
+In spacetime diagrams, we use the basis vectors $\class{red}{\vb{e}_t}$ and $\class{red}{\vb{e}_x}$ (sometimes $\class{red}{\vb{e}_0}$ and $\class{red}{\vb{e}_1}$) to represent the time and space directions, respectively.
+Heuristically, basis vectors are measuring sticks that we use to measure distances and angles in spacetime.
+
+Looking at the spacetime diagram above, we can see that $\vb{S}$ has a time component of $\class{pink}{3}$ and a space component of $\class{pink}{-5}$.
+We can write this as:
+
+$$
+\begin{equation}
+\vb{S} = \class{pink}{3} \class{red}{\vb{e}_t} + (\class{pink}{-5}) \class{red}{\vb{e}_x}
+\end{equation}
+$$
+
+Equivalently, we use matrix notation to write:
+
+$$
+\begin{equation}
+\vb{S} = \mqty[\class{red}{\vb{e}_t} & \class{red}{\vb{e}_x}] \mqty[\class{pink}{3} \\ \class{pink}{-5}]
+\end{equation}
+$$
+
+Here we run into a very important topic, perhaps the most important in all of relativity—invariance.
+The crucial point is that under a different reference frame, the basis vectors will change.
+For example, under the car's reference frame, we can denote the bases as $\class{darkblue}{\tilde{\vb{e}}_t}$ and $\class{darkblue}{\tilde{\vb{e}}_x}$.
+This means that the components of $\vb{S}$ will also change under this new reference frame.
+
+However, the spacetime separation vector $\vb{S}$, from a geometric point of view, remains **invariant**.
+It is physically the same vector, one that exists independent of a set of basis vectors.
+
+### Coordinate Transformations
+
+Suppose we have the same situation again, and focus on the person's and the car's reference frames.
+The basis vector $\vb{e}_t$ points in a direction where $t$ increases but $x$ stays the same.
+This means that it will always point in the direction of the reference frame's worldline.
+As such, the basis vectors for the car's reference frame will be different from the person's reference frame:
+
+<Mafs viewBox={{ x: [-1, 1], y: [-1, 1] }}>
+    <Coordinates.Cartesian />
+
+    {/* Car WL */}
+    <Plot.OfY x={(t) => t / 2} color={color("blue")} />
+
+    {/* Person Basis */}
+    <Vector tip={[0, 1]} color={color("red")} />
+    <MafsMathJax at={[-0.1, 0.5]} tex="\vb{e}_t" color={color("red")} />
+    <Vector tip={[1, 0]} color={color("red")} weight={2.5} />
+    <MafsMathJax at={[0.4, -0.1]} tex="\vb{e}_x" color={color("red")} />
+
+    {/* Car Basis */}
+    <Vector tip={[0.5, 1]} color={color("darkblue")} />
+    <MafsMathJax at={[0.4, 0.4]} tex="\tilde{\vb{e}}_t" color={color("darkblue")} />
+    <Vector tip={[1, 0]} color={color("darkblue")} />
+    <MafsMathJax at={[0.6, -0.1]} tex="\tilde{\vb{e}}_x" color={color("darkblue")} />
+</Mafs>
+
+Notice that the $x$ basis vector for the car's reference frame is the same as the person's reference frame, but the $t$ basis vector is different.
+To ascertain specifically how different, consider how much the car moves after a unit of time.
+By definition, the car moves $1/2$ units in the $x$ direction for every unit of time, and $\vb{e}_t$ *defines* one unit of time.
+As such, the distance between the two basis vectors is $1/2$. We can thus write:
+
+$$
+\begin{align}
+\class{darkblue}{\tilde{\vb{e}}_t} &= 1\class{red}{\vb{e}_t} + \frac{1}{2} \class{red}{\vb{e}_x} \\
+\class{darkblue}{\tilde{\vb{e}}_x} &= 0\class{red}{\vb{e}_t} + 1\class{red}{\vb{e}_x}
+\end{align}
+$$
+
+Written in matrix form, this is:
+
+$$
+\begin{equation}
+\mqty[\class{darkblue}{\tilde{\vb{e}}_t} & \class{darkblue}{\tilde{\vb{e}}_x}] = \mqty[\class{red}{\vb{e}_t} & \class{red}{\vb{e}_x}] \mqty[1 & 1/2 \\ 0 & 1]
+\end{equation}
+$$
+
+Next, consider a spacetime separation vector $\vb{S}$. How does it transform under the car's reference frame?
+
+<Mafs viewBox={{ x: [-2, 2], y: [-1, 3] }}>
+    <Coordinates.Cartesian />
+
+    {/* Car WL */}
+    <Plot.OfY x={(t) => t / 2} color={color("blue")} />
+
+    {/* Person Basis */}
+    <Vector tip={[0, 1]} color={color("red")} />
+    <MafsMathJax at={[-0.1, 0.5]} tex="\vb{e}_t" color={color("red")} />
+    <Vector tip={[1, 0]} color={color("red")} weight={2.5} />
+    <MafsMathJax at={[0.4, -0.1]} tex="\vb{e}_x" color={color("red")} />
+
+    {/* Car Basis */}
+    <Vector tip={[0.5, 1]} color={color("darkblue")} />
+    <MafsMathJax at={[0.4, 0.4]} tex="\tilde{\vb{e}}_t" color={color("darkblue")} />
+    <Vector tip={[1, 0]} color={color("darkblue")} />
+    <MafsMathJax at={[0.6, -0.1]} tex="\tilde{\vb{e}}_x" color={color("darkblue")} />
+
+    {/* Event */}
+    <Point x={3} y={2} color={color("pink")} />
+    <Vector tip={[3, 2]} />
+
+    <Line.Segment point1={[0, 2]} point2={[1, 2]} style="dashed" />
+    <MafsMathJax tex="vt" at={[0.5, 2.2]} />
+</Mafs>
+
+Suppose that in the person's reference frame, the spacetime separation vector $\vb{S}$ is $(\class{pink}{t}, \class{pink}{x}) = (2, 3)$.
+However, using the car's basis vectors, the spacetime separation vector $\vb{S}$ is $(\class{blue}{\tilde{t}}, \class{blue}{\tilde{x}}) = (2, 2)$:
+
+<Mafs viewBox={{ x: [-2, 2], y: [-1, 3] }}>
+    <Coordinates.Cartesian />
+
+    {/* Car WL */}
+    <Plot.OfY x={(t) => t / 2} color={color("blue")} />
+
+    {/* Car Basis */}
+    <Vector tip={[0.5, 1]} color={color("darkblue")} />
+    <MafsMathJax at={[0.4, 0.4]} tex="\tilde{\vb{e}}_t" color={color("darkblue")} />
+    <Vector tail={[0.5, 1]} tip={[1, 2]} color={color("darkblue")} />
+    <MafsMathJax at={[0.9, 1.4]} tex="\tilde{\vb{e}}_t" color={color("darkblue")} />
+
+    <Vector tail={[1, 2]} tip={[2, 2]} color={color("darkblue")} />
+    <MafsMathJax at={[1.5, 2.2]} tex="\tilde{\vb{e}}_x" color={color("darkblue")} />
+    <Vector tail={[2, 2]} tip={[3, 2]} color={color("darkblue")} />
+    <MafsMathJax at={[2.5, 2.2]} tex="\tilde{\vb{e}}_x" color={color("darkblue")} />
+
+    {/* Event */}
+    <Point x={3} y={2} color={color("pink")} />
+    <Vector tip={[3, 2]} />
+
+    <Line.Segment point1={[0, 2]} point2={[1, 2]} style="dashed" />
+    <MafsMathJax tex="vt" at={[0.5, 2.2]} />
+</Mafs>
+
+The difference in the $x$ component of $\vb{S}$ is due to the fact that the car is moving.
+Physically, because the car is moving, they get closer to the $\vb{S}$ vector, and so the $x$ component decreases.
+Specifically, since $t$ time passed, the distance the car moved is $vt = 0.5 \cdot 2 = 1$.
+Hence, the $x$ component of $\vb{S}$ is $1$ lower than it would be in the person's reference frame.
+
+We can write:
+
+$$
+\begin{align}
+\class{blue}{\tilde{t}} &= 1\class{pink}{t} + 0\class{pink}{x} \\
+\class{blue}{\tilde{x}} &= -\frac{1}{2}\class{pink}{t} + 1\class{pink}{x}
+\end{align}
+$$
+
+In matrix form, this is:
+
+$$
+\begin{equation}
+\mqty[\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \mqty[1 & 0 \\ -1/2 & 1] \mqty[\class{pink}{t} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+Putting it all together, and generalizing from $1/2$ to any velocity $v$ (for the car), we have:
+
+<Boxed>
+
+$$
+\begin{align}
+\mqty[\class{darkblue}{\tilde{\vb{e}}_t} & \class{darkblue}{\tilde{\vb{e}}_x}] &= \mqty[\class{red}{\vb{e}_t} & \class{red}{\vb{e}_x}] \mqty[1 & v \\ 0 & 1] \label{eq:galilean-basis} \\
+\mqty[\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] &= \mqty[1 & 0 \\ -v & 1] \mqty[\class{pink}{t} \\ \class{pink}{x}] \label{eq:galilean-coords}
+\end{align}
+$$
+
+</Boxed>
+
+These two equations encapsulate the **Galilean transformation**.
+
+## Covariance and Contravariance
+
+The next step is to identify patterns within the equations we have just derived.
+As it turns out, the two matrices in Equations $\eqref{eq:galilean-basis}$ and $\eqref{eq:galilean-coords}$ are inverses of each other.
+This is not a coincidence, but rather a fundamental property of linear algebra.
+
+For simplicity, we will step out of the context of spacetime and consider a simpler example.
+Consider a very simple transformation matrix that just scales both bases by a factor of $2$:
+
+$$
+\begin{equation}
+\mqty[\class{darkblue}{\tilde{\vb{e}}_x} & \class{darkblue}{\tilde{\vb{e}}_y}] = \mqty[2 & 0 \\ 0 & 2] \mqty[\class{red}{\vb{e}_x} & \class{red}{\vb{e}_y}]
+\end{equation}
+$$
+
+<Mafs viewBox={{ x: [-1, 3], y: [-1, 3] }}>
+    <Coordinates.Cartesian />
+
+    {/* Old basis */}
+    <Vector tip={[1, 0]} color={color("red")} weight={2.5} />
+    <MafsMathJax at={[1.2, -0.1]} tex="\vb{e}_x" color={color("red")} />
+    <Vector tip={[0, 1]} color={color("red")} weight={2.5} />
+    <MafsMathJax at={[-0.1, 1.2]} tex="\vb{e}_y" color={color("red")} />
+
+    {/* New basis */}
+    <Vector tip={[2, 0]} color={color("darkblue")} />
+    <MafsMathJax at={[2.2, -0.1]} tex="\tilde{\vb{e}}_x" color={color("darkblue")} />
+    <Vector tip={[0, 2]} color={color("darkblue")} />
+    <MafsMathJax at={[-0.1, 2.2]} tex="\tilde{\vb{e}}_y" color={color("darkblue")} />
+
+    {/* Vector */}
+    <Vector tip={[2, 2]} />
+</Mafs>
+
+Consider how the vector shown above transforms under this matrix.
+We can see by inspection that in the old basis, the vector is $(2, 2)$, while in the new basis, the vector is $(1, 1)$.
+This is *opposite* to what the basis vectors did.
+
+Heuristically, if we think of basis vectors as measuring sticks, then if the sticks double in length, we will obviously need half of the sticks to measure the same distance.
+In other words, the two scaling transformations "cancel out" to ensure that the vector remains the same.
+More formally, we say that the basis vectors are **covariant** while the vector components are **contravariant**.
+*Contra-* means "against" or "opposite", while *co-* means "with" or "together".
+Thus the basis vectors and the vector components transform in opposite ways.
+
+We can also see this more generally with any transformation.
+Consider any transformation described by a matrix $T$.
+First, a vector can be expanded in terms of the basis vectors:
+
+$$
+\begin{equation}
+\vb{v} = \mqty[\class{red}{\vb{e}_x} & \class{red}{\vb{e}_y}] \mqty[\class{pink}{v_x} \\ \class{pink}{v_y}]
+\end{equation}
+$$
+
+Now, because we are using matrices, we can insert the identity matrix anywhere without changing the result.
+This allows us to write:
+
+$$
+\begin{equation}
+\vb{v} = \mqty[\class{red}{\vb{e}_x} & \class{red}{\vb{e}_y}] I \mqty[\class{pink}{v_x} \\ \class{pink}{v_y}]
+\end{equation}
+$$
+
+Now, we know that by definition, $I = T (T^{-1})$. This allows us to write:
+
+$$
+\begin{equation}
+\vb{v} = \mqty[\class{red}{\vb{e}_x} & \class{red}{\vb{e}_y}] T (T^{-1}) \mqty[\class{pink}{v_x} \\ \class{pink}{v_y}]
+\end{equation}
+$$
+
+Also, by definition, we must also be able to decompose $\vb{v}$ in terms of the new basis vectors. Thus:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{v} &= \mqty[\class{darkblue}{\tilde{\vb{e}}_x} & \class{darkblue}{\tilde{\vb{e}}_y}] \mqty[\class{blue}{\tilde{v}_x} \\ \class{blue}{\tilde{v}_y}] \\
+&= \mqty[\class{red}{\vb{e}_x} & \class{red}{\vb{e}_y}] T (T^{-1}) \mqty[\class{pink}{v_x} \\ \class{pink}{v_y}]
+\end{split}
+\end{equation}
+$$
+
+As such, if we group the terms together, we have:
+
+$$
+\begin{align}
+\mqty[\class{blue}{\vb{e}_x} & \class{blue}{\vb{e}_y}] &= \mqty[\class{red}{\vb{e}_x} & \class{red}{\vb{e}_y}] T \\
+\mqty[\class{blue}{v_x} \\ \class{blue}{v_y}] &= T^{-1} \mqty[\class{pink}{v_x} \\ \class{pink}{v_y}]
+\end{align}
+$$
+
+When an object has an equal number of covariant and contravariant indices, it is invariant under changes of basis because the transformations cancel out.
+An object that is invariant under changes of basis is called a **tensor**.
+
+### Index Notation
+
+From the previous section, we have identified that there are fundamentall two different types of quantities in relativity: covariant and contravariant.
+In order to distinguish between the two, we use the following convention: covariant quantities are denoted with a subscript, while contravariant quantities are denoted with a superscript.
+This means that the basis vectors are denoted as $\vb{e}_\mu$ and the vector components are denoted as $v^\mu$:
+
+$$
+\begin{equation}
+\vb{v} = \class{pink}{v^t} \class{red}{\vb{e}_t} + \class{pink}{v^x} \class{red}{\vb{e}_x} + \class{pink}{v^y} \class{red}{\vb{e}_y} + \class{pink}{v^z} \class{red}{\vb{e}_z} = \sum_\mu \class{pink}{v^\mu} \class{red}{\vb{e}_\mu}
+\end{equation}
+$$
+
+To write the transformation equations in index notation, we can write:
+
+$$
+\begin{align}
+\class{blue}{\tilde{\vb{e}}_\mu} &= \sum_\nu \class{red}{\vb{e}_\nu} T^\nu_\mu \\
+\class{blue}{\tilde{v}^\mu} &= \sum_\nu (T^{-1})_\nu^\mu \class{pink}{v^\nu}
+\end{align}
+$$
+
+These come from the definitions for matrix multiplication.
+
+## Summary and Next Steps
+
+In this set of notes, we have introduced the theory of relativity, specifically Galilean relativity.
+We have seen how the laws of physics are the same in all inertial reference frames, and how we can use spacetime diagrams to visualize the motion of objects in different reference frames.
+
+Here are the key things to remember:
+
+- An inertial reference frame is one in which a body at rest remains at rest and a body in motion continues to move at a constant velocity.
+- Galilean relativity states that the laws of physics are the same in all inertial reference frames.
+- Spacetime has four dimensions: three spatial dimensions ($x$, $y$, $z$) and one time dimension ($t$). Latin letters denote spatial indices, while Greek letters denote spacetime indices.
+- The basis vectors $\vb{e}_t$ and $\vb{e}_x$ are used to represent the time and space directions, respectively.
+- The Galilean transformation is:
+
+    $$
+    \begin{align}
+    \mqty[\class{darkblue}{\tilde{\vb{e}}_t} & \class{darkblue}{\tilde{\vb{e}}_x}] &= \mqty[\class{red}{\vb{e}_t} & \class{red}{\vb{e}_x}] \mqty[1 & v \\ 0 & 1] \tag{\ref{eq:galilean-basis}} \\
+    \mqty[\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] &= \mqty[1 & 0 \\ -v & 1] \mqty[\class{pink}{t} \\ \class{pink}{x}] \tag{\ref{eq:galilean-coords}}
+    \end{align}
+    $$
+
+- Covariant quantities, such as basis vectors, transform with the forward transformations. Contravariant quantities, such as vector components, transform with the inverse transformations.
+
+In the next page, we will explore tensors further by introducing metrics, bilinear forms, and covectors.

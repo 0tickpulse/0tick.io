@@ -1,0 +1,579 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { range } from "lodash";
+import { Fragment } from "react";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+
+## Tensors
+
+A **tensor** is a mathematical object that is invariant under a change of basis.
+However, they have *components* that transform in a specific way under a change of basis.
+In this page, we will introduce the concept of tensors and build up our understanding of them.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Covectors
+
+A **covector** is a linear map that takes a vector and returns a scalar.
+They have many names—dual vectors, one-forms, linear functionals, etc.—but they all refer to the same concept.
+If you have read the quantum mechanics section, you will know that the bra vector $\bra{\psi}$ is a covector.
+The Riesz representation theorem states that every covector can be represented as an inner product with a vector.
+We will re-introduce the concept of covectors, this time in the context of tensors.
+
+Let $\alpha$ be a covector. When applied to a vector $\vb{v}$, it returns a scalar, denoted by $\alpha(\vb{v})$.
+They are represented by a row vector.
+For a simple example, consider the covector $\alpha = \mqty[1 & 2]$.
+When applied to the vector $\vb{v} = \mqty[3 \\ 4]$, we get:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) = \mqty[1 & 2] \mqty[3 \\ 4] = 1 \cdot 3 + 2 \cdot 4 = 11
+\end{equation}
+$$
+
+Suppose now we apply $\alpha$ to a sum of vectors $\vb{v} + \vb{w}$, where $\vb{w} = \mqty[5 \\ 6]$.
+This is given by:
+
+$$
+\begin{equation}
+\alpha(\vb{v} + \vb{w}) = \mqty[1 & 2] \qty(\mqty[3 \\ 4] + \mqty[5 \\ 6]) = \mqty[1 & 2] \mqty[8 \\ 10] = 1 \cdot 8 + 2 \cdot 10 = 28
+\end{equation}
+$$
+
+Notice that this is the same as if we applied $\alpha$ to $\vb{v}$ and $\vb{w}$ separately and then added the results:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) + \alpha(\vb{w}) = \mqty[1 & 2] \mqty[3 \\ 4] + \mqty[1 & 2] \mqty[5 \\ 6] = 11 + 17 = 28
+\end{equation}
+$$
+
+Additionally, suppose we apply $\alpha$ to $2\vb{v}$. This is given by:
+
+$$
+\begin{equation}
+\alpha(2\vb{v}) = \mqty[1 & 2] \mqty[6 \\ 8] = 1 \cdot 6 + 2 \cdot 8 = 22
+\end{equation}
+$$
+
+Notice that this is the same as if we applied $2\alpha$ to $\vb{v}$:
+
+$$
+\begin{equation}
+2\alpha(\vb{v}) = 2 \cdot 11 = 22
+\end{equation}
+$$
+
+From these examples, we can see that covectors are **linear** maps, meaning that they satisfy the following properties:
+
+$$
+\begin{align}
+\alpha(\vb{v} + \vb{w}) &= \alpha(\vb{v}) + \alpha(\vb{w}) \\
+\alpha(c\vb{v}) &= c\alpha(\vb{v})
+\end{align}
+$$
+
+Hence, more formally, we define covectors symbolically as:
+
+$$
+\begin{equation}
+\{\alpha: V \to \mathbb{F}, \alpha(a\vb{v} + b\vb{w}) = a\alpha(\vb{v}) + b\alpha(\vb{w})\}
+\end{equation}
+$$
+
+where $V$ is the vector space and $\mathbb{F}$ is the field that the vector space is defined over.
+The set of all covectors on a vector space $V$ is called the **dual space** of $V$, denoted by $V^*$.
+
+### Index Notation for Covectors
+
+When we apply a covector to a vector, we take each component of the covector and multiply it by the corresponding component of the vector.
+For a covector $\alpha = \mqty[3 & 9 & 5]$, we say that $\alpha_1 = 3$, $\alpha_2 = 9$, and $\alpha_3 = 5$.
+As such, when we apply $\alpha$ to a vector, we get:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) = \alpha_1 v^1 + \alpha_2 v^2 + \alpha_3 v^3 = \sum_{i=1}^3 \alpha_i v^i
+\end{equation}
+$$
+
+### Visualizing Covectors
+
+Suppose we have covectors acting on two-dimensional vectors.
+We can imagine a covector as a surface, where the height of the surface at a point $(x, y)$ is given by the value of the covector at that point.
+For example, consider the covector $\alpha = \mqty[1 & 2]$. This is visualized as a plane with a slope of $2$ in the $x$-direction and $1$ in the $y$-direction:
+
+<CustomMathbox>
+    <MB.Cartesian>
+        <MB.Axis axis="x" range={[-5, 5]} />
+        <MB.Axis axis="y" range={[-5, 5]} />
+        <MB.Axis axis="z" range={[-5, 5]} />
+
+        <MB.Area
+            id="covector"
+            axes="xy"
+            rangeX={[-10, 10]}
+            rangeY={[-10, 10]}
+            expr={(emit, x, y) => {
+                emit(x, y, 1 * x + 2 * y);
+            }}
+            width={64}
+            height={64}
+            channels={3}
+        />
+        <MB.Surface
+            points="#covector"
+            lineX={true}
+            lineY={true}
+            opacity={0.75}
+            shaded={true}
+        />
+    </MB.Cartesian>
+</CustomMathbox>
+
+However, these can be difficult to visualize and draw, especially in higher dimensions.
+We instead prefer to use a series of lines to represent covectors, akin to a contour plot.
+Each line represents a constant value of the covector.
+Then, the value of $\alpha$ on a vector $\vb{v}$ is given by how many lines $\vb{v}$ intersects.
+
+export function CovectorContourVisualizer({ alpha = [1, 2], arrowsInsteadOfNumbers = false }) {
+    const vMovable = useMovablePoint([1, 1]);
+    const f = (x, y) => alpha[0] * x + alpha[1] * y;
+    const y = (x, value) => -alpha[0] / alpha[1] * x + value / alpha[1];
+    const value = alpha[0] * vMovable.point[0] + alpha[1] * vMovable.point[1];
+    // alpha[0] * x + alpha[1] * y = value
+    // ==> y = -alpha[0]/alpha[1] * x + value/alpha[1]
+    const slope = -alpha[0] / alpha[1];
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs>
+                    <Coordinates.Cartesian xAxis={{ lines: false, labels: () => "" }} yAxis={{ lines: false, labels: () => "" }} />
+                    {range(-15, 16, 1).map((A) => (
+                        <Fragment key={A}>
+                            <Plot.OfX y={(x) => slope * x + A/alpha[1]} opacity={0.5} />
+                            {!arrowsInsteadOfNumbers && (
+                                <>
+                                    <Circle center={[2 * A/3, y(2 * A/3)]} radius={0.3} color={Theme.background} fillOpacity={1} />
+                                    <MafsMathJax tex={A} at={[2 * A/3, y(2 * A/3)]} />
+                                </>
+                            )}
+                        </Fragment>
+                    ))}
+                    {vMovable.element}
+                    <Vector tip={vMovable.point} color={color("pink")} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <MathEquation>
+                    {String.raw`\alpha(\vb{v}) = \mqty[${alpha[0]} & ${alpha[1]}] \mqty[${vMovable.point[0].toFixed(2)} \\ ${vMovable.point[1].toFixed(2)}] = ${value.toFixed(2)}`}
+                </MathEquation>
+            </div>
+        </div>
+    )
+}
+
+<CovectorContourVisualizer />
+
+Alternatively, instead of writing the number on each line, we simply draw an arrow pointing in the direction of increasing values of the covector.
+
+### Covector Arithmetic
+
+Covectors can be added and multiplied by scalars in the same way as vectors.
+This is because the dual space $V^*$ is itself a vector space.
+
+When a covector is scaled, say $\alpha \to 2\alpha$, the contour lines look more densely packed.
+When a covector is added to another, say $\alpha + \beta$, the contour lines are the sum of the two covectors.
+These operations follow linearity rules:
+
+$$
+\begin{equation}
+\qty(a\alpha + b\beta)(\vb{v}) = a\alpha(\vb{v}) + b\beta(\vb{v})
+\end{equation}
+$$
+
+### Covector Basis and Components
+
+Just like vectors, covectors have a basis.
+In order to define a basis, they should be linearly independent and span the entire dual space $V^*$.
+We define them using the following: if $V$ has a basis $\qty{\vb{e}_i}$, then $V^*$ has a basis $\qty{\vb{\epsilon}^i}$ such that:
+
+$$
+\begin{equation}
+\vb{\epsilon}^i(\vb{e}_j) = \delta^i_j = \begin{cases} 1 & i = j \\ 0 & i \neq j \end{cases}
+\end{equation}
+$$
+
+where $\delta^i_j$ is the Kronecker delta. Thus a covector can be written as:
+
+$$
+\begin{equation}
+\alpha = \sum_i \alpha_i \vb{\epsilon}^i = \mqty[\alpha_1 & \alpha_2] \mqty[\vb{\epsilon}^1 \\ \vb{\epsilon}^2]
+\end{equation}
+$$
+
+Notice that unlike vector bases, covector bases have a superscript index—covector bases are contravariant.
+To see this more concretely, let $T$ be the transformation matrix from an old basis to a new basis.
+Suppose we apply a covector $\alpha$ to a vector $\vb{v}$. In the old basis, we have:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] \mqty[\class{pink}{v^1} \\ \class{pink}{v^2}]
+\end{equation}
+$$
+
+We know that we can insert the identity matrix in between the two matrices without changing the result.
+As such, we can insert $T\qty(T^{-1})$:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T\qty(T^{-1}) \mqty[\class{pink}{v^1} \\ \class{pink}{v^2}]
+\end{equation}
+$$
+
+We already know that vector components are contravariant and transform with the inverse matrix. As such, $T^{-1} \mqty[\class{pink}{v^1} \\ \class{pink}{v^2}] = \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]$:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]
+\end{equation}
+$$
+
+Now, let's expand $\alpha(\vb{v})$ in the new basis:
+
+$$
+\begin{equation}
+\alpha(\vb{v}) = \mqty[\class{blue}{\tilde{\alpha}_1} & \class{blue}{\tilde{\alpha}_2}] \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]
+\end{equation}
+$$
+
+Comparing the two expressions, we find that $\mqty[\class{blue}{\tilde{\alpha}_1} & \class{blue}{\tilde{\alpha}_2}] = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T$.
+Hence, covector components are **covariant** and transform with the transformation matrix.
+And by the fact that covectors are invariant, we have that the covector basis transforms with the inverse matrix.
+
+## Linear Maps
+
+See [Linear Transformations](/notes/maths/Linear%20Algebra/Matrices%20I/Linear%20Transformations) for a more detailed introduction to linear maps.
+
+See [Matrix Representation of Operators](/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Matrix%20Representations%20of%20Operators) and [Change of Basis](/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Change%20of%20Basis) for an introduction in the context of quantum mechanics.
+
+A more general concept than covectors is that of a **linear map**.
+It is defined as a map of $V \to W$, where $V$ and $W$ are vector spaces.
+Geometrically, when we apply a linear map to every point on a grid, gridlines remain parallel and evenly spaced, and the origin remains fixed.
+Algebraically, a linear map satisfies the following linearity properties:
+
+$$
+\begin{align}
+L(\vb{v} + \vb{w}) &= L(\vb{v}) + L(\vb{w}) \\
+L(c\vb{v}) &= c L(\vb{v})
+\end{align}
+$$
+
+Linear maps can be represented by matrices:
+
+$$
+\begin{equation}
+L \overset{.}{=} \mqty[L^1_1 & L^1_2 & \cdots & L^1_n \\ L^2_1 & L^2_2 & \cdots & L^2_n \\ \vdots & \vdots & \ddots & \vdots \\ L^m_1 & L^m_2 & \cdots & L^m_n]_{\class{red}{\vb{e}_i}}
+\end{equation}
+$$
+
+where each column represents the image of the basis vector $\vb{e}_i$ under $L$.
+Applying $L$ to a vector $\vb{v}$ yields:
+
+$$
+\begin{equation}
+\begin{split}
+L(\vb{v}) &= L(v^1 \vb{e}_1 + v^2 \vb{e}_2 + \cdots + v^n \vb{e}_n) \\
+&= v^1 L(\vb{e}_1) + v^2 L(\vb{e}_2) + \cdots + v^n L(\vb{e}_n) \\
+&= v^1 \mqty[L^1_1 \\ L^2_1 \\ \vdots \\ L^m_1] + v^2 \mqty[L^1_2 \\ L^2_2 \\ \vdots \\ L^m_2] + \cdots + v^n \mqty[L^1_n \\ L^2_n \\ \vdots \\ L^m_n] \\
+&= \mqty[L^1_1 v^1 + L^1_2 v^2 + \cdots + L^1_n v^n \\ L^2_1 v^1 + L^2_2 v^2 + \cdots + L^2_n v^n \\ \vdots \\ L^m_1 v^1 + L^m_2 v^2 + \cdots + L^m_n v^n]
+\end{split}
+\end{equation}
+$$
+
+We can see that the components of the image of $\vb{v}$ are given by the matrix-vector product.
+In other words, if $\vb{w} := L(\vb{v})$, then $w^i = \sum_j L^i_j v^j$.
+
+### Linear Maps under Change of Basis
+
+When we change the basis of the vector space, the components of vectors and linear maps change:
+
+$$
+\begin{equation}
+L \overset{.}{=} \mqty[\class{pink}{L^1_1} & \class{pink}{L^1_2} \\ \class{pink}{L^2_1} & \class{pink}{L^2_2}]_{\class{red}{\vb{e}_i}} = \mqty[? & ? \\ ? & ?]_{\class{blue}{\tilde{\vb{e}}_i}}
+\end{equation}
+$$
+
+Intuitively, to transform a vector $\vb{v}$ by $L$ under a new basis $\class{darkblue}{\tilde{\vb{e}}_i}$, we first transform $\vb{v}$ back to the old basis, apply $L$, and then transform the result back to the new basis:
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}}\qty(\mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]) = T^{-1} \class{pink}{L} T \qty(\mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}])
+\end{equation}
+$$
+
+To prove this more formally, we will introduce the **Einstein summation convention**.
+This states that when an index appears twice in a term, it is implicitly summed over.
+For example, $a^i b_i$ is equivalent to $\sum_i a^i b_i$. This is useful for simplifying expressions.
+See [Change of Basis](/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Change%20of%20Basis) for a different proof.
+
+Let $T$ be the transformation matrix from the old basis to the new basis.
+The components of a new basis vector $\class{darkblue}{\tilde{\vb{e}}_i}$ under a linear map $L$ are given by:
+
+$$
+\begin{equation}
+L(\class{darkblue}{\tilde{\vb{e}}_i}) = \class{blue}{\tilde{L}^q_i} \class{darkblue}{\tilde{\vb{e}}_q}
+\end{equation}
+$$
+
+with an implicit sum over $q$. We also know that, by definition:
+
+$$
+\begin{equation}
+\begin{split}
+\class{blue}{\tilde{L}^q_i} \class{darkblue}{\tilde{\vb{e}}_q} = L(\class{darkblue}{\tilde{\vb{e}}_i}) &= L\qty(T^j_i \class{red}{\vb{e}_j}) \\
+&= T^j_i L(\class{red}{\vb{e}_j}) = T^j_i \class{pink}{L^k_j} \class{red}{\vb{e}_q} \\
+&= T^j_i \class{pink}{L^k_j} \qty(T^{-1})^l_k \class{darkblue}{\tilde{\vb{e}}_l}
+\end{split}
+\end{equation}
+$$
+
+On the left-hand side, we have a sum over $q$, and on the right-hand side, we have a sum over $j$.
+We can rename the indices on the left-hand side $q \to l$:
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}^l_i} \class{darkblue}{\tilde{\vb{e}}_l} = T^j_i \class{pink}{L^k_j} \qty(T^{-1})^l_k \class{darkblue}{\tilde{\vb{e}}_l}
+\end{equation}
+$$
+
+Thus:
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}^l_i} = \qty(T^{-1})^l_k \class{pink}{L^k_j} T^j_i
+\end{equation}
+$$
+
+### Indices vs Matrices
+
+Suppose we have three matrices, $A$, $B$, and $C$, and we want to multiply them.
+Typically, we simply write $M = ABC$.
+
+However, we can also write this as $M^i_j = A^i_k B^k_l C^l_j$.
+Notice that the indices $i$ and $j$ are repeated, and hence we sum over them.
+The question is, is there a way to quickly derive these expressions from the matrix multiplication?
+It turns out, there is a heuristic way to do this.
+Looking back at the indices, we see that the repeated indices connect diagonally:
+
+$$
+\begin{equation}
+M^i_j = A^i_{\class{pink}{k}} B^{\class{pink}{k}}_{\class{blue}{l}} C^{\class{blue}{l}}_j
+\end{equation}
+$$
+
+They "cancel out" and we are left with the indices that are not repeated—$i$ and $j$.
+This also helps us make sure that we are multiplying the matrices in the correct order.
+For instance, in the proof for the transformation of linear maps, we see that the indices are connected diagonally:
+
+$$
+\class{blue}{\tilde{L}^l_i} = \qty(T^{-1})^l_{\class{pink}{k}} L^{\class{pink}{k}}_{\class{blue}{j}} T^{\class{blue}{j}}_i
+$$
+
+This is how we know that the entire matrix $\class{blue}{\tilde{L}}$ is given by $T^{-1} \class{pink}{L} T$ and not any other order.
+
+## Metric Tensor and Bilinear Forms
+
+We will now introduce the concept of a **metric tensor**.
+Suppose we want to find out the dot product of two vectors $\vb{v}$ and $\vb{w}$. We can write this as:
+
+$$
+\begin{equation}
+\vb{v} \cdot \vb{w} = (v^1 \vb{e}_1 + v^2 \vb{e}_2 + \cdots + v^n \vb{e}_n) \cdot (w^1 \vb{e}_1 + w^2 \vb{e}_2 + \cdots + w^n \vb{e}_n)
+\end{equation}
+$$
+
+Because the dot product is linear, we can expand this out:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{v} \cdot \vb{w} &= v^1 w^1 \vb{e}_1 \cdot \vb{e}_1 + v^1 w^2 \vb{e}_1 \cdot \vb{e}_2 + \cdots + v^1 w^n \vb{e}_1 \cdot \vb{e}_n \\
+&\quad {}+ v^2 w^1 \vb{e}_2 \cdot \vb{e}_1 + v^2 w^2 \vb{e}_2 \cdot \vb{e}_2 + \cdots + v^2 w^n \vb{e}_2 \cdot \vb{e}_n \\
+&\quad {}+ \cdots \\
+&\quad {}+ v^n w^1 \vb{e}_n \cdot \vb{e}_1 + v^n w^2 \vb{e}_n \cdot \vb{e}_2 + \cdots + v^n w^n \vb{e}_n \cdot \vb{e}_n
+\end{split}
+\end{equation}
+$$
+
+We are left with a sum of terms of the form $v^i w^j \vb{e}_i \cdot \vb{e}_j$.
+In Einstein summation notation this is simply:
+
+$$
+\begin{equation}
+\vb{v} \cdot \vb{w} = (v^i \vb{e}_i) \cdot (w^j \vb{e}_j) = v^i w^j \vb{e}_i \cdot \vb{e}_j
+\end{equation}
+$$
+
+The dot product of the basis vectors $\vb{e}_i \cdot \vb{e}_j$ is defined by the **metric tensor** $g_{ij}$.
+Notice that we can immediately see that the metric tensor must have two covariant indices because the dot product must be invariant under a change of basis.
+We say that the metric tensor is **twice-covariant**.
+
+While $g_{ij}$ is the $ij$-component of the metric tensor, the tensor itself is denoted by $g$ and is defined as:
+
+$$
+\begin{equation}
+g(\vb{v}, \vb{w}) = \vb{v} \cdot \vb{w}
+\end{equation}
+$$
+
+Because the dot product is linear, the metric tensor is also linear.
+Furthermore, it takes two inputs, so it is more formally written as $g: V \times V \to \mathbb{F}$. This is known as a **bilinear form**;
+
+- **Bilinear**: Linear in both arguments.
+- **Form**: A function that takes vectors and outputs a scalar. For example, covectors are 1-forms.
+
+## Tensor Products
+
+If you have read the quantum mechanics section, you will know that an operator can be written as a sum of projection operators.
+This is known as the **spectral decomposition** of an operator.
+The fundamental idea is that the outer product of a vector and covector gives a linear map:
+
+$$
+\begin{align}
+&\text{Inner product:} \qquad &\mqty[3 & 4] \mqty[1 \\ 2] &= 11 \\
+&\text{Outer product:} \qquad &\mqty[3 \\ 4] \mqty[1 & 2] &= \mqty[3 & 6 \\ 4 & 8]
+\end{align}
+$$
+
+To see why this is the case, matrix multiplication can be carried out as follows:
+
+- Move the second matrix upwards and draw an empty matrix where it used to be.
+- Each element in the empty matrix is the product of the corresponding elements in the two matrices.
+
+Here's a concrete example:
+
+$$
+\begin{equation}
+\vb{A} = \mqty[1 & 2 \\ 3 & 4] \quad \vb{B} = \mqty[5 & 6 \\ 7 & 8]
+\end{equation}
+$$
+
+To multiply them, we can shift $\vb{B}$ up and to the right:
+
+$$
+\begin{split}
+    &\mqty[5 & 6 \\ 7 & 8] \\
+\mqty[1 & 2 \\ 3 & 4] & \mqty[ ? & ? \\ ? & ? ]
+\end{split}
+$$
+
+Then, the elements in the product matrix are given by the sum of the products of the corresponding elements.
+For example, the element in the first row and first column is:
+
+$$
+\begin{split}
+    &\mqty[\mathrlap{\class{pink}{5}} \phantom{(1)(5) + (2)(7)} & 6 \\ \mathrlap{\class{blue}{7}} \phantom{(1)(5) + (2)(7)} & 8] \\
+\mqty[\class{pink}{1} & \class{blue}{2} \\ 3 & 4] & \mqty[ \class{pink}{(1)(5)} + \class{blue}{(2)(7)} & ? \\ ? & ? ]
+\end{split}
+$$
+
+For an outer product, it looks like this:
+
+$$
+\begin{split}
+    &\mqty[3 & 4] \\
+\mqty[1 \\ 2] & \mqty[? & ? \\ ? & ?] \longrightarrow \mqty[3 & 6 \\ 4 & 8]
+\end{split}
+$$
+
+Since the outer product involves scaling one vector by two different scalars (in the covector), each column is a scaled version of the vector.
+As such, the matrix has a determinant of zero; its columns are linearly dependent.
+These matrices are called **pure matrices**.
+
+In order to write *any* linear map in a similar way, we could combine pure matrices together.
+In a sense, the pure matrices act as a "basis" for all linear maps.
+We can make the following four pure matrices the bases:
+
+$$
+\begin{align}
+\vb{e}_1 \vb{\epsilon}^1 &= \mqty[1 \\ 0] \mqty[1 & 0] = \mqty[1 & 0 \\ 0 & 0] \\
+\vb{e}_1 \vb{\epsilon}^2 &= \mqty[1 \\ 0] \mqty[0 & 1] = \mqty[0 & 1 \\ 0 & 0] \\
+\vb{e}_2 \vb{\epsilon}^1 &= \mqty[0 \\ 1] \mqty[1 & 0] = \mqty[0 & 0 \\ 1 & 0] \\
+\vb{e}_2 \vb{\epsilon}^2 &= \mqty[0 \\ 1] \mqty[0 & 1] = \mqty[0 & 0 \\ 0 & 1]
+\end{align}
+$$
+
+Then, any matrix can be written as a sum of these four matrices:
+
+$$
+\begin{equation}
+\begin{split}
+\mqty[a & b \\ c & d] &= a \mqty[1 & 0 \\ 0 & 0] + b \mqty[0 & 1 \\ 0 & 0] + c \mqty[0 & 0 \\ 1 & 0] + d \mqty[0 & 0 \\ 0 & 1] \\
+&= a \vb{e}_1 \vb{\epsilon}^1 + b \vb{e}_1 \vb{\epsilon}^2 + c \vb{e}_2 \vb{\epsilon}^1 + d \vb{e}_2 \vb{\epsilon}^2
+\end{split}
+\end{equation}
+$$
+
+And hence, we can write any linear map as:
+
+$$
+\begin{equation}
+L = L^i_j \vb{e}_i \vb{\epsilon}^j
+\end{equation}
+$$
+
+Formally, each basis pure matrix is the **tensor product** of the basis vectors and covectors.
+They are more formally written as $\vb{e}_i \otimes \vb{\epsilon}^j$. As such:
+
+$$
+\begin{equation}
+L = L^i_j \vb{e}_i \otimes \vb{\epsilon}^j
+\end{equation}
+$$
+
+In fact, a tensor can be defined as a set of vectors and covectors that are combined using tensor products.
+Defining a tensor as such makes it trivial to derive the transformation rules for tensors under a change of basis.
+For example, for a linear map $L$ as above, the components transform as:
+
+$$
+\begin{equation}
+L = \class{pink}{L^i_j} \class{red}{\vb{e}_i} \otimes \class{red}{\vb{e}^j} = \class{pink}{L^i_j} \qty[\qty(T^{-1})^k_i \class{blue}{\tilde{\vb{e}}_k}] \otimes \qty[\qty(T)^j_l \class{blue}{\tilde{\vb{\epsilon}}^l}] = \qty[\qty(T^{-1})^k_i \class{pink}{L^i_j} T^j_l] \class{blue}{\tilde{\vb{e}}_k} \otimes \class{blue}{\tilde{\vb{\epsilon}}^l} = \class{blue}{\tilde{L}^k_l} \class{blue}{\tilde{\vb{e}}_k} \otimes \class{blue}{\tilde{\vb{\epsilon}}^l}
+\end{equation}
+$$
+
+Thus it is clear that $L$ transforms as $\class{blue}{\tilde{L}} = T^{-1} \class{pink}{L} T$.
+
+### Kronecker Product
+
+Tensor products and **Kronecker products** are similar but not the same.
+Tensor products act on tensors, while Kronecker products act on arrays.
+However, they are essentially identical in our context, so we will use the terms interchangeably.
+
+To take an example, a bilinear form is a tensor product of two covectors:
+
+$$
+\begin{equation}
+B = B_{ij} \vb{\epsilon}^i \otimes \vb{\epsilon}^j
+\end{equation}
+$$
+
+To apply the tensor product, we simply give a copy of the left object for each element in the right object:
+
+$$
+\begin{equation}
+\mqty[1 & 2] \otimes \mqty[3 & 4] = \mqty[1 {\mqty[3 & 4]} & 2 {\mqty[3 & 4]}]
+\end{equation}
+$$
+

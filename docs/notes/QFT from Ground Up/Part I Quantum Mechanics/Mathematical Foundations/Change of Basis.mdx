@@ -231,6 +231,28 @@ $$
 Notice that the part in the middle, $U^\dagger A U$, must be the matrix representation of the operator $\hat{A}$ in the new basis.
 The transformation $U^\dagger A U$ is called the **similarity transformation** of the operator $\hat{A}$.
 
+:::info Linear map transformations using tensors
+
+In the language of multilinear algebra, a linear map is a $(1, 1)$ tensor, meaning it has one contravariant index and one covariant index.
+A multilinear map can generally be represented as $A = \class{pink}{A^i_j} \class{red}{\vb{e}_i} \otimes \class{red}{\vb{e}^j}$.
+$\class{red}{\vb{e}_i}$ and $\class{red}{\vb{e}^j}$ are the basis vectors and linear functionals/covectors, corresponding to $\class{red}{\ket{a_i}}$ and $\class{red}{\bra{a_j}}$ in Dirac notation.
+$\otimes$ is the tensor product, similar to the outer product that we have used.
+
+All of this is just a different notation for what we have already seen.
+However, the tensor notation make it very easy to see how the components of a tensor transform under a change of basis.
+Applying a change of basis to both bases in the expression for $A$ yields:
+
+$$
+\begin{equation}
+A = \class{pink}{A^i_j} \class{red}{\vb{e}_i} \otimes \class{red}{\vb{e}^j} = \class{pink}{A^i_j} \qty[\qty(U^\dagger)^k_i \class{blue}{\tilde{\vb{e}}_k}] \otimes \qty[\qty(U)^j_l \class{blue}{\tilde{\vb{e}}^l}] = \qty[\qty(U^\dagger)^k_i \class{pink}{A^i_j} U^j_l] \class{blue}{\tilde{\vb{e}}_k} \otimes \class{blue}{\tilde{\vb{e}}^l} = \class{blue}{\tilde{A}^k_l} \class{blue}{\tilde{\vb{e}}_k} \otimes \class{blue}{\tilde{\vb{e}}^l}
+\end{equation}
+$$
+
+Thus we see that $\class{blue}{\tilde{A}^k_l} = \qty(U^\dagger)^k_i \class{pink}{A^i_j} U^j_l$, and hence $\class{blue}{\tilde{A}} = U^\dagger A U$.
+This is the same as the similarity transformation we have seen before.
+
+:::
+
 ## Trace
 
 The trace of an operator is defined as the sum of the diagonal elements of the matrix representation of the operator.
@@ -312,4 +334,112 @@ Regarding diagonalization, we also have an important theorem:
 We also know that if $A$ and $B$ commute, then they share a common set of eigenvectors.
 Thus, $B$ is diagonal in the basis of eigenvectors of $A$ because they are also the eigenvectors of $B$. $\blacksquare$
 
+### Spectral Decomposition
 
+The spectral decomposition of an operator is a way to write the operator as a sum of projectors onto the eigenvectors of the operator.
+
+Given an operator $\hat{A}$ with eigenvectors $\ket{a_i}$ and eigenvalues $a_i$, we can write the operator as:
+
+$$
+\begin{equation}
+\hat{A} = \sum_i a_i \dyad{a_i}{a_i}
+\end{equation}
+$$
+
+## Appendix: Proof of the Cyclic Property of the Trace
+
+The cyclic property of the trace is a bit more complicated to prove.
+We shall prove that $\Tr(ABC) = \Tr(BCA)$, and the proof for the other cyclic properties follows similarly.
+
+We will use two different notations to prove this property: Dirac notation and tensor notation.
+Eventually, once we start studying relativstic quantum mechanics, we will need a solid grasp of both notations, so it is good to be familiar with both.
+
+### Proof with Dirac Notation
+
+First, start by expanding the trace of $ABC$ and applying the completeness relation twice:
+
+$$
+\begin{equation}
+\begin{split}
+\Tr(ABC) &= \sum_i \mel{a_i}{ABC}{a_i} \\
+&= \sum_i \class{blue}{\sum_j} \class{green}{\sum_k} \mel{a_i}{A \class{blue}{\dyad{a_j}{a_j}} B \class{green}{\dyad{a_k}{a_k}} C}{a_i} \\
+\end{split}
+\end{equation}
+$$
+
+We can re-interpret the expression inside the sum as the product of three numbers: $\mel{a_i}{A}{a_j}$, $\mel{a_j}{B}{a_k}$, and $\mel{a_k}{C}{a_i}$.
+Hence, because complex multiplication is commutative, we can rearrange the terms in the sum:
+
+$$
+\begin{equation}
+\begin{split}
+\Tr(ABC) &= \sum_i \sum_j \sum_k \mel{a_i}{A}{a_j} \mel{a_j}{B}{a_k} \mel{a_k}{C}{a_i} \\
+&= \sum_j \sum_k \sum_i \mel{a_j}{B}{a_k} \mel{a_k}{C}{a_i} \mel{a_i}{A}{a_j}
+\end{split}
+\end{equation}
+$$
+
+Now we re-interpret the expression in the sum back as a big matrix element with projection operators in the middle:
+
+$$
+\begin{equation}
+\Tr(ABC) = \sum_j \class{green}{\sum_k} \class{blue}{\sum_i} \mel{a_j}{B \class{green}{\dyad{a_k}{a_k}} C \class{blue}{\dyad{a_i}{a_i}} A}{a_j}
+\end{equation}
+$$
+
+Now, because $\sum_i \dyad{a_i}{a_i} = I$, we can remove the sums over $k$ and $i$, and remove the projection operators:
+
+$$
+\begin{equation}
+\Tr(ABC) = \sum_j \mel{a_j}{B C A}{a_j} = \Tr(BCA)
+\end{equation}
+$$
+
+Thus we have shown that $\Tr(ABC) = \Tr(BCA)$.
+
+### Proof with Tensor Notation
+
+We can also prove the cyclic property using tensor notation.
+Recall that the matrix representation of an operator is a $(1, 1)$ tensor, and the matrix representation of the operator $ABC$ is a $(1, 1)$ tensor with three indices.
+
+Let $X$ be the matrix representation of $ABC$ and $Y$ be the matrix representation of $BCA$.
+
+Then, the $ij$-th element of $X$ is $X^i_j = A^i_k B^k_l C^l_j$.
+We know that this is the specific representation of $ABC$ in that order from a heuristic: notice that the indices connect diagonally across the three matrices:
+
+$$
+\begin{equation}
+X^i_j = A^i_{\class{red}{k}} B^{\class{red}{k}}_{\class{green}{l}} C^{\class{green}{l}}_j
+\end{equation}
+$$
+
+The indices that are not paired become the indices of the resulting matrix.
+The cyclic property of the trace is then:
+
+The trace of $ABC$ is then:
+
+$$
+\begin{equation}
+\Tr(ABC) = X^i_i = A^i_k B^k_l C^l_i
+\end{equation}
+$$
+
+Notice that we can reorder these terms on the right while retaining the diagonal connection of the indices:
+
+$$
+\begin{equation}
+\Tr(ABC) = B^k_{\class{red}{l}} C^{\class{red}{l}}_{\class{green}{i}} A^{\class{green}{i}}_k = Y^k_k = \Tr(BCA)
+\end{equation}
+$$
+
+Thus we have shown that $\Tr(ABC) = \Tr(BCA)$.
+
+The advantage of tensor notation is that it is very easy to see how the indices connect across the matrices, and how the cyclic property of the trace is a direct consequence of the connection of the indices.
+Einstein's summation convention also helps to make everything more concise.
+In fact, we can write this entire proof in a single line:
+
+$$
+\begin{equation}
+\Tr(ABC) = A^i_k B^k_l C^l_i = B^k_l C^l_i A^i_k = \Tr(BCA)
+\end{equation}
+$$

@@ -1,0 +1,20 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Introduction
+
+In our discussion of quantum field theory, we have so far focused on a nonrelativistic treatment of quantum mechanics.
+Quantum fields, however, are inherently relativistic objects, and we need a consistent framework to describe spacetime.
+This is where special relativity comes in.
+
