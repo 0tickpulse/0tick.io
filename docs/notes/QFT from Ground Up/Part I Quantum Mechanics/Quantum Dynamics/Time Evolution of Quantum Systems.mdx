@@ -398,26 +398,94 @@ Then, acting on a state vector $\ket{\psi}$, we have:
 $$
 \begin{equation}
 \begin{split}
-U(t) \ket{\psi} &= \exp(-\frac{i}{\hbar} H t) \sum_{a'} c_{a'} \ket{a'} \\
+U(t) \ket{\psi} = \ket{\psi, t_0 = 0; t} &= \exp(-\frac{i}{\hbar} H t) \sum_{a'} c_{a'} \ket{a'} \\
 &= \sum_{a'} \ket{a'} \braket{a'}{\psi} \exp(-\frac{i}{\hbar} E_{a'} t)
 \end{split}
 \end{equation}
 $$
 
-## Postulates of Quantum Mechanics
+Looking at the sum, we can see that the time-evolution operator acts on the state vector $\ket{\psi}$ by multiplying each eigenstate $\ket{a'}$ by a phase factor $\exp(-\frac{i}{\hbar} E_{a'} t)$.
 
-With the Schrödinger equation, we have now derived the third postulate of quantum mechanics.
-We are now ready to partially state all the postulates of quantum mechanics:
+If the state were to be an energy eigenstate $\ket{a'}$, then the time-evolution operator would simply give:
 
-1. **State Space**: The state of a quantum system is described by a state vector $\ket{\psi}$ in a Hilbert space.
-    a. The state of a composite system is described by the tensor product of the component systems.
-2. **Observables**: Observables are represented by Hermitian operators.
-    a. The possible outcomes of a measurement are the eigenvalues of the operator.
-    b. Immediately after a measurement, the state of the system is the eigenvector corresponding to the measured eigenvalue.
-    c. The probability of measuring an eigenvalue is given by the Born rule: $P = \abs{\braket{x}{\phi}}^2$.
-    d. The expectation value of an observable is given by the inner product of the state vector and the operator.
-3. **Unitary Evolution**: The time evolution of a quantum system is governed by the Schrödinger equation.
-    a. The time-evolution operator is a unitary operator.
-    b. The time-evolution operator obeys the Schrödinger equation.
+$$
+\begin{equation}
+\begin{split}
+U(t) \ket{a'} &= \exp(-\frac{i}{\hbar} H t) \ket{a'} \\
+&= \exp(-\frac{i}{\hbar} E_{a'} t) \ket{a'}
+\end{split}
+\end{equation}
+$$
 
-There are, of course, more details to each of these postulates, but this is a good starting point.
+Hence, the state vector $\ket{a'}$ would simply pick up a phase factor $\exp(-\frac{i}{\hbar} E_{a'} t)$.
+It will still be an eigenstate of the Hamiltonian.
+
+### Multiple Compatible Observables
+
+Now suppose we have multiple compatible observables $A, B, C \ldots$ where $\comm{A}{B} = \comm{A}{C} = \comm{B}{C} = \ldots = 0$ and they are all compatible with the Hamiltonian $H$.
+This means that any eigenstate of one observable is also an eigenstate of the other observables.
+We can denote this eigenstate as $\ket{a', b', c', \ldots}$ or just $\ket{K}'$ for short.
+Performing the same analysis as above, we have:
+
+$$
+\begin{equation}
+\exp(\frac{-i}{\hbar} H t) = \sum_{K'} \exp(-\frac{i}{\hbar} E_{K'} t) \dyad{K'}
+\end{equation}
+$$
+
+### Stationary States and Expectation Values
+
+A stationary state is a state where the expectation value of the observable does not change in time.
+This means that the expectation value of the observable is constant in time.
+We can show that energy eigenkets are stationary states as follows:
+
+Consider an observable $A$ that is compatible with the Hamiltonian $H$. At $t = 0$, suppose the state of the system is an eigenket of $A$.
+Now let $B$ be another observable that is not compatible with $A$.
+Then, the expectation value of $B$ at time $t$ is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{B} &= \mel{\psi, t_0; t}{B}{\psi, t_0; t} \\
+&= \mel{\psi U(t; t_0)}{B}{\psi U(t; t_0)} \\
+&= \mel{\psi}{U^\dagger(t; t_0) B U(t; t_0)}{\psi} \\
+&= \mel{\psi}{\exp(\frac{i}{\hbar} E_{a'} t) B \exp(-\frac{i}{\hbar} E_{a'} t)}{\psi} \\
+&= \mel{\psi}{B}{\psi}
+\end{split}
+\end{equation}
+$$
+
+This means that the expectation value of $B$ is constant in time.
+
+Now we look at non-stationary states.
+This time, the initial state of the system is not an eigenstate of the Hamiltonian.
+Instead, it is a superposition of energy eigenstates:
+
+$$
+\begin{equation}
+\ket{\psi} = \sum_{a'} c_{a'} \ket{a'}
+\end{equation}
+$$
+
+Then, the expectation value of the observable $B$ at time $t$ is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{B} &= \mel{\psi, t_0; t}{B}{\psi, t_0; t} \\
+&= \mel{\psi U(t; t_0)}{B}{\psi U(t; t_0)} \\
+&= \mel{\sum_{a'} c^*_{a'} \bra{a'} \exp(\frac{i}{\hbar} E_{a'} t)}{B}{\sum_{a''} c_{a''} \ket{a''} \exp(-\frac{i}{\hbar} E_{a''} t)} \\
+&= \sum_{a'} \sum_{a''} c^*_{a'} c_{a''} \mel{a'}{B}{a''} \exp(\frac{i}{\hbar} E_{a'} t) \exp(-\frac{i}{\hbar} E_{a''} t) \\
+&= \sum_{a'} \sum_{a''} c^*_{a'} c_{a''} \mel{a'}{B}{a''} \exp(-\frac{i}{\hbar} (E_{a''} - E_{a'}) t) \\
+\end{split}
+\end{equation}
+$$
+
+So we get a sum of terms that oscillate in time. The frequency of the oscillation is known as Bohr's frequency condition:
+
+$$
+\begin{equation}
+\omega_{a', a''} = \frac{E_{a''} - E_{a'}}{\hbar}
+\end{equation}
+$$
+

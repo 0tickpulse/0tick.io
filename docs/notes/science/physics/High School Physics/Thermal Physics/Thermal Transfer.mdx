@@ -1,0 +1,400 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Thermal Transfer
+
+We begin our discussion of thermal physics by exploring how thermal energy is transferred between systems.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Conduction
+
+Generally, there are three primary ways in which thermal energy can be transferred between systems: conduction, convection, and radiation.
+Conduction is the transfer of thermal energy between systems that are in direct contact with each other.
+Microscopically, conduction occurs when particles in a system collide with each other and transfer energy.
+
+Everyday examples of conduction include the transfer of heat from a hot stove to a pot, or the transfer of heat from a hot cup of coffee to the air around it.
+
+Qualitatively, when two systems are in contact with each other, the particles in the systems collide with each other and transfer energy.
+On average, the particles in the hotter system will transfer energy to the particles in the cooler system.
+This process continues until the two systems reach thermal equilibrium, at which point the average kinetic energy of the particles in both systems is the same.
+
+There are a few factors that affect the rate of conduction.
+When the **temperature difference** between the two systems is larger, the rate of conduction is larger.
+This is because the average kinetic energy of the particles in the hotter system is larger, and therefore they will transfer more energy to the cooler system.
+When the **surface area** of contact between the two systems is larger, the rate of conduction is larger.
+This is because there are more particles in contact with each other, and therefore more collisions occur.
+
+Quantitatively, we can construct an equation to describe the rate of energy transfer, $\frac{\Delta Q}{\Delta t}$, between two systems in contact with each other.
+It is proportional to the temperature gradient $\frac{\Delta T}{\Delta x}$ and the surface area $A$ of contact between the two systems:
+
+$$
+\begin{equation}
+\frac{\Delta Q}{\Delta t} = -k A \frac{\Delta T}{\Delta x} \label{eq:fourier-law-1d}
+\end{equation}
+$$
+
+The proportionality constant $k$ is called the **thermal conductivity** of the material.
+It depends on its chemical composition and structure.
+The larger the value of $k$, the better the material is at conducting thermal energy.
+For example, solids are generally better conductors of thermal energy than liquids, and liquids are generally better conductors than gases.
+This is because the particles in solids are more closely packed together, and therefore they collide with each other more frequently.
+
+The sign of the equation is negative because the temperature gradient $\frac{\Delta T}{\Delta x}$ is negative when the temperature of the cooler system is larger than that of the hotter system.
+It is usually more convenient, however, to first use the equation, then use intuition to determine the sign of the heat transfer.
+
+More fundamentally, this equation comes from **Fourier's law of heat conduction**, which is a differential equation.
+Specifically, it assumes that the temperature gradient is constant over the distance $\Delta x$, and takes a one-dimensional view of the problem.
+I included a brief overview of Fourier's law in the appendix if you are comfortable with vector calculus.
+
+This equation is extremely powerful, and you have probably used it before even if you didn't know it.
+For example, Ohm's law, $\vb{V} = \vb{I} R$, is just the electrical analog of Fourier's law.
+In chemistry, Fick's law of diffusion, $\vb{J} = -D \grad{C}$, is the diffusion analog of Fourier's law.
+
+## Convection
+
+When a fluid is heated, the particles in the fluid gain energy and move faster.
+Generally, this causes the fluid to expand and become less dense.
+As a result, buoyancy causes the heated fluid to rise, while cooler, denser fluid sinks.
+This process is known as **convection**.
+
+Everyday examples of convection include steam and smoke rising into the air, or the movement of warm air in a room.
+Convection is a very important process in nature, and it is responsible for many phenomena, such as ocean currents, weather patterns, and the movement of tectonic plates.
+Practical examples of convection are found in heating and cooling systems, such as radiators and air conditioning units.
+
+Outside of heat transfer, convection is also used for fluid transfer.
+In a mine, it is common to light a fire at the bottom of a shaft.
+This causes the air to heat up and rise, creating a vacuum at the bottom of the shaft.
+Then, the cooler air from the surface is drawn into the shaft, and the hot air is expelled at the top.
+This is known as a convection current, and it is used to ventilate the mine.
+
+Convection is a very efficient way to transfer thermal energy because outside of heating, it does not require any external energy input.
+
+## Radiation
+
+Radiation is the transfer of thermal energy through electromagnetic waves.
+This process does not require any medium, and it can occur in a vacuum.
+Everyday examples of radiation include the heat from the sun, or the heat from a campfire.
+Radiation is a very important process in nature, and it is responsible for many phenomena, such as the greenhouse effect and the warming of the Earth's surface.
+
+Electromagnetic waves are produced by the motion of charged particles, such as electrons.
+When these particles accelerate, they emit electromagnetic radiation in the form of photons.
+This radiation can be absorbed by other particles, causing them to gain energy and increase their temperature.
+
+There are a few quantities that describe radiation, but we will focus on two of them:
+
+- **Luminosity/Power**: The total amount of energy emitted by a source per unit time, measured in watts (W). We use the symbol $L$ to denote luminosity.
+- **Intensity**: The amount of energy emitted by a source per unit time per unit area, measured in watts per square meter (W/m²). We use the symbol $I$ to denote intensity.
+
+The intensity of radiation is inversely proportional to the square of the distance from the source.
+This is because as the distance increases, the same amount of energy is spread over an area that increases with the square of the distance.
+This is known as the **inverse square law**:
+
+$$
+\begin{equation}
+I \propto \frac{1}{r^2}
+\end{equation}
+$$
+
+Specifically, if we have a point source of radiation that emits a total power $L$ in all directions, then at a distance $r$ away, we can imagine a sphere of that radius $r$.
+The surface area of that sphere is $A = 4 \pi r^2$, and the radiation is uniformly distributed over that surface area.
+Thus, *per area*, the intensity is:
+
+$$
+\begin{equation}
+I = \frac{L}{A} = \frac{L}{4 \pi r^2} \label{eq:inverse-square-law}
+\end{equation}
+$$
+
+### Blackbody Radiation
+
+Because all objects are comprised of moving charged particles, all objects emit electromagnetic radiation.
+Their spectra depend on their temperature, and the hotter an object is, the more radiation it emits.
+
+A **blackbody** is an idealized object that absorbs all electromagnetic radiation that falls on it, regardless of the wavelength.
+It is a perfect emitter of radiation, and it emits radiation at all wavelengths.
+The spectrum of radiation emitted by a blackbody is known as the **blackbody spectrum**, and it is determined by the temperature of the object.
+The blackbody spectrum is described by Planck's law:
+
+$$
+\begin{equation}
+I(\lambda, T) = \frac{2 \pi hc^2}{\lambda^5} \frac{1}{\exp(\frac{hc}{\lambda k_B T}) - 1} \label{eq:planck-law}
+\end{equation}
+$$
+
+where $I(\lambda, T)$ is the intensity of radiation at wavelength $\lambda$ and temperature $T$, $h$ is Planck's constant, $c$ is the speed of light, and $k_B$ is Boltzmann's constant.
+The blackbody spectrum is a continuous spectrum, meaning that it emits radiation at all wavelengths.
+(The theoretical basis for Planck's law is quite involved.
+It is based on the idea that electromagnetic radiation is quantized into discrete packets of energy called photons, where $E = h \nu$.)
+
+It is often not necessary to use the full Planck's law, and it is common to use two other equations that are derived from it.
+
+The first is **Wien's law**, which states that the wavelength at which the intensity of radiation is maximized is inversely proportional to the temperature of the object:
+
+$$
+\begin{equation}
+\lambda_{max} = \frac{b}{T} = \frac{2.898 \times 10^{-3} \, \text{m K}}{T} \label{eq:wien-law}
+\end{equation}
+$$
+
+where $b$ is a constant known as Wien's displacement constant, which is approximately equal to $2.898 \times 10^{-3} \, \text{m K}$.
+The second is the **Stefan-Boltzmann law**, which states that the total intensity of radiation emitted by a blackbody is proportional to the fourth power of its temperature:
+
+$$
+\begin{equation}
+I(T) = \sigma T^4 \label{eq:stefan-boltzmann-law}
+\end{equation}
+$$
+
+where $\sigma$ is the Stefan-Boltzmann constant, which is approximately equal to $5.67 \times 10^{-8} \, \text{W/m}^2 \text{K}^4$.
+
+These two equations are, as previously mentioned, derived from Planck's law. If one knows basic calculus, it is not too difficult to derive them.
+The first is derived by taking the derivative of Planck's law with respect to wavelength and setting it equal to zero, which gives the wavelength at which the intensity is maximized.
+The second is derived by integrating Planck's law over all wavelengths, which gives the total intensity of radiation emitted by a blackbody.
+The appendix goes through the full derivation of both equations.
+
+Real objects are not perfect blackbodies, but their deviation from the blackbody spectrum can be described by a parameter known as the **emissivity** $\epsilon$.
+The emissivity of an object is defined as the ratio of the intensity of radiation emitted by the object to the intensity of radiation emitted by a blackbody at the same temperature:
+It can be clearer to think of emissivity as a measure of how well an object emits radiation compared to a blackbody.
+When applied to the Stefan-Boltzmann law, we can write:
+
+$$
+\begin{equation}
+I(T) = \epsilon \sigma T^4 \label{eq:stefan-boltzmann-law-emissivity}
+\end{equation}
+$$
+
+The emissivity of an object can vary with temperature and wavelength, but it is usually a constant for a given material at a given temperature.
+The closer it is to $1$, the better the object is at emitting radiation.
+
+## Summary and Next Steps
+
+In this section, we have explored the three primary ways in which thermal energy can be transferred between systems: conduction, convection, and radiation.
+We have discussed the mechanisms behind each process, as well as the equations that describe them.
+
+Here are the key points to remember:
+
+- **Conduction** is the transfer of thermal energy between systems that are in direct contact with each other. It is described by Fourier's law of heat conduction.
+    In a special case, it can be simplified to:
+
+    $$
+    \begin{equation}
+    \frac{\Delta Q}{\Delta t} = -k A \frac{\Delta T}{\Delta x} \tag{\ref{eq:fourier-law-1d}}
+    \end{equation}
+    $$
+
+    where $k$ is the thermal conductivity of the material, $A$ is the surface area of contact between the two systems, and $\frac{\Delta T}{\Delta x}$ is the temperature gradient.
+
+- **Convection** is the transfer of thermal energy through the movement of fluids. It is a very efficient way to transfer thermal energy because it does not require any external energy input.
+
+- The **intensity** of radiation is the amount of energy emitted by a source per unit time per unit area, while **luminosity** is the total amount of energy emitted by a source per unit time.
+- **Radiation** is the transfer of thermal energy through electromagnetic waves. It does not require any medium, and it can occur in a vacuum.
+    The intensity of radiation is described by the inverse square law, $I \propto \frac{1}{r^2}$.
+    For a point source of radiation that emits a total power $L$ that is uniformly distributed in all directions, the intensity at a distance $r$ from the source is given by:
+
+    $$
+    \begin{equation}
+    I = \frac{L}{4 \pi r^2} \tag{\ref{eq:inverse-square-law}}
+    \end{equation}
+    $$
+
+    where $L$ is the luminosity of the source and $r$ is the distance from the source.
+
+- A **blackbody** is an idealized object that absorbs all electromagnetic radiation that falls on it, regardless of the wavelength.
+    The spectrum of radiation emitted by a blackbody is described by Planck's law:
+
+    $$
+    \begin{equation}
+    I(\lambda, T) = \frac{2 \pi hc^2}{\lambda^5} \frac{1}{\exp(\frac{hc}{\lambda k_B T}) - 1} \tag{\ref{eq:planck-law}}
+    \end{equation}
+    $$
+
+    where $I(\lambda, T)$ is the intensity of radiation at wavelength $\lambda$ and temperature $T$.
+    The wavelength at which the intensity of radiation is maximized is given by Wien's law:
+
+    $$
+    \begin{equation}
+    \lambda_{max} = \frac{b}{T} = \frac{2.898 \times 10^{-3} \, \text{m K}}{T} \tag{\ref{eq:wien-law}}
+    \end{equation}
+    $$
+
+    The total intensity of radiation emitted by a blackbody is given by the Stefan-Boltzmann law:
+
+    $$
+    \begin{equation}
+    I(T) = \epsilon \sigma T^4 \tag{\ref{eq:stefan-boltzmann-law-emissivity}}
+    \end{equation}
+    $$
+
+
+## Appendix: Fourier's Law of Heat Conduction
+
+Fourier's law symbolically states:
+
+$$
+\begin{equation}
+\vb{q} = -k \grad{T}
+\end{equation}
+$$
+
+where $\vb{q}$ is the heat flux vector, measured in dimensions of power per unit area ($\text{W/m}^2$), $k$ is the thermal conductivity of the material, and $\grad{T}$ is the temperature gradient vector, measured in dimensions of temperature per unit length ($\text{K/m}$).
+In ideal scenarios, $k$ is a constant, but in reality, it can vary.
+If it varies with direction (in the case of anisotropic materials), it is a rank-2 tensor, and if it additionally varies with position (in the case of inhomogeneous materials), it is a tensor field.
+
+The heat flux vector can be visualized by considering a small area $A$ in the material.
+The heat flux vector $\vb{q}$ is the amount of thermal energy that flows through the area $A$ per unit time, divided by the area $A$.
+Its direction is the direction of heat flow, and its magnitude is the rate of heat transfer per unit area.
+
+When integrated over the surface, the heat flux vector gives the total heat transfer rate $Q$ through the surface:
+
+$$
+\begin{equation}
+\dot{Q} = \int_{S} \vb{q} \cdot d\vb{a}
+\end{equation}
+$$
+
+Thus, Fourier's law becomes:
+
+$$
+\begin{equation}
+\dot{Q} = -k \int_{S} \grad{T} \cdot d\vb{a}
+\end{equation}
+$$
+
+This is the integral form of Fourier's law.
+When the temperature gradient is constant, we can take it out of the integral, and the integral is just the area $A$ of the surface $S$:
+
+$$
+\begin{equation}
+\dot{Q} = -k \grad{T} A
+\end{equation}
+$$
+
+In one dimension, this becomes:
+
+$$
+\begin{equation}
+\dot{Q} = -k A \frac{\Delta T}{\Delta x}
+\end{equation}
+$$
+
+which is the equation from the beginning of this section.
+
+## Appendix: Derivation of Wien's Law and the Stefan-Boltzmann Law from Planck's Law
+
+Planck's law can be used to derive both Wien's law and the Stefan-Boltzmann law.
+To derive Wien's law, we can take the derivative of Planck's law with respect to $\lambda$ and set it equal to zero:
+
+$$
+\begin{equation}
+\begin{split}
+0 = \dv{I}{\lambda} &= \dv{\lambda} \qty(\frac{2 \pi hc^2}{\lambda^5} \frac{1}{\exp(\frac{hc}{\lambda k_B T}) - 1}) \\
+&= -\frac{10\pi hc^2}{\lambda^6} \frac{1}{\exp(\frac{hc}{\lambda k_B T}) - 1} + \frac{2 \pi hc^2}{\lambda^5} \qty(\frac{hc}{\lambda^2 k_B T} \cdot \frac{\exp(\frac{hc}{\lambda k_B T})}{\qty(\exp(\frac{hc}{\lambda k_B T}) - 1)^2})
+\end{split}
+\end{equation}
+$$
+
+Multiplying both sides by $\lambda^6 \exp(\frac{hc}{\lambda k_B T}) - 1$ and dividing by $-2 \pi hc^2$, we get:
+
+$$
+\begin{equation}
+0 = 5 - \frac{hc}{\lambda k_B T} \cdot \frac{\exp(\frac{hc}{\lambda k_B T})}{\qty(\exp(\frac{hc}{\lambda k_B T}) - 1)}
+\end{equation}
+$$
+
+To simplify calculations, we can introduce the variable $\xi = \frac{hc}{\lambda k_B T}$.
+Then, we can rewrite the equation as:
+
+$$
+\begin{equation}
+0 = 5 - \xi \frac{\exp(\xi)}{\qty(\exp(\xi) - 1)}
+\end{equation}
+$$
+
+Multiplying both sides by $\qty(\exp(\xi) - 1)$, then dividing by $\exp(\xi)$, we get:
+
+$$
+\begin{equation}
+5 - 5 \exp(-\xi) = \xi
+\end{equation}
+$$
+
+This is a transcendental equation, and it can be solved numerically.
+The solution is approximately $\xi \approx 4.96511423174444$.
+This means that:
+
+$$
+\begin{equation}
+\frac{hc}{\lambda_{max} k_B T} \approx 4.96511423174444
+\end{equation}
+$$
+
+Then rearranging gives Wien's law:
+
+$$
+\begin{equation}
+\lambda_{max} \approx \frac{hc}{4.96511423174444 k_B T} = \frac{b}{T}
+\end{equation}
+$$
+
+For the Stefan-Boltzmann law, we can integrate Planck's law over all wavelengths:
+
+$$
+\begin{equation}
+\begin{split}
+I(T) &= \int_0^\infty I(\lambda, T) \, \dd{\lambda} \\
+&= \int_0^\infty \frac{2 \pi hc^2}{\lambda^5} \frac{1}{\exp(\frac{hc}{\lambda k_B T}) - 1} \, \dd{\lambda}
+\end{split}
+\end{equation}
+$$
+
+We can make the same substitution as before, $\xi = \frac{hc}{\lambda k_B T}$.
+This means that $\lambda = \frac{hc}{\xi k_B T}$, and $\dd{\lambda} = -\frac{hc}{\xi^2 k_B T} \dd{\xi}$.
+Then, we can rewrite the integral as:
+
+$$
+\begin{equation}
+\begin{split}
+I(T) &= \int_0^\infty \frac{2 \pi hc^2}{\qty(\frac{hc}{\xi k_B T})^5} \frac{1}{\exp(\xi) - 1} \cdot \qty(-\frac{hc}{\xi^2 k_B T}) \, \dd{\xi} \\
+&= \frac{2 k_B^4 T^4}{h^3 c^2} \int_0^\infty \frac{\xi^3}{\exp(\xi) - 1} \, \dd{\xi}
+\end{split}
+\end{equation}
+$$
+
+The integral $\int_0^\infty \frac{\xi^3}{\exp(\xi) - 1} \, \dd{\xi}$ is a known integral, and it evaluates to $\frac{\pi^4}{15}$.
+Thus, we can write:
+
+$$
+\begin{equation}
+I(T) = \frac{2 k_B^4 T^4}{h^3 c^2} \cdot \frac{\pi^4}{15} = \frac{2\pi^4 k_B^4}{15 h^3 c^2} T^4
+\end{equation}
+$$
+
+This cluster of constants besides $T^4$ is defined as the Stefan-Boltzmann constant $\sigma$:
+
+$$
+\begin{equation}
+\sigma := \frac{2\pi^4 k_B^4}{15 h^3 c^2}
+\end{equation}
+$$
+
+Thus we arrive at the Stefan-Boltzmann law:
+
+$$
+\begin{equation}
+I(T) = \sigma T^4
+\end{equation}
+$$

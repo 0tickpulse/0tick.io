@@ -1,0 +1,132 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Introduction
+
+Thermal physics is the study of heat and temperature and their relation to energy and work.
+It is a branch of physics that deals with the macroscopic behavior of matter and energy, and it is based on the principles of thermodynamics and statistical mechanics.
+
+## The Fundamental Concepts
+
+Matter is made up of building blocks called atoms.
+They make up molecules, which in turn make up solids, liquids, and gases.
+The behavior of matter is governed by the laws of thermodynamics, which describe how energy is transferred between systems and how it affects their properties.
+
+In thermal physics, we study matter from both a macroscopic and microscopic perspective.
+The macroscopic perspective focuses on the bulk properties of matter, such as temperature, pressure, volume, and density.
+Conversely, the microscopic perspective focuses on the behavior of individual atoms and molecules, such as their motion, interactions, and energy levels.
+The two perspectives are related through the principles of statistical mechanics, which provide a framework for understanding how the macroscopic properties of matter arise from the microscopic behavior of its constituent particles.
+
+### Mass and Density
+
+Mass is more difficult to define than it seems. There are a few interpretations of mass in the context of classical physics:
+
+- **Inertial mass**: This is the mass of an object as measured by its resistance to acceleration when a force is applied.
+    Newton's second law states that $\vb{F} = m \vb{a}$, where $m$ is the inertial mass of the object.
+- **Gravitational mass**: This is the mass of an object as measured by the gravitational force it exerts on other objects.
+    The gravitational force between two objects is given by Newton's law of gravitation, which states $\vb{F} = -G \frac{m_1 m_2}{r^2} \hat{r}$, where $m_1$ and $m_2$ are the gravitational masses of the two objects.
+    All experiments have shown that inertial mass and gravitational mass are equivalent. Hence, we can use the term "mass" to refer to either one.
+    This is known as the weak equivalence principle.
+- Sometimes, mass is defined as the amount of matter in an object.
+    This is a more intuitive definition, but it is not as precise as the previous two definitions.
+    In fact, this definition is not even well-defined, since it does not specify what an "amount" of matter is.
+
+The volume of an object is (roughly) the amount of space it occupies, measured in cubic units.
+Once again, this is not a precise definition, but it is good enough for our purposes.
+
+The **density** of an object is defined as its mass per unit volume:
+
+$$
+\begin{equation}
+\rho := \frac{m}{V}
+\end{equation}
+$$
+
+### Temperature
+
+Temperature is a measure of the **average** kinetic energy of the particles in a system.
+It is intuitively defined as the "hotness" or "coldness" of an object.
+In other words, the hotter an object is, the higher its temperature.
+
+Temperature is a scalar quantity, and it is measured in degrees Celsius (°C), Kelvin (K), or Fahrenheit (°F).
+Fahrenheit is not commonly used in scientific contexts, so we will focus on Celsius and Kelvin.
+The reason we use Kelvin in scientific contexts is that it is an absolute temperature scale, meaning that it has a true zero point.
+This has a few advantages—for example, it makes the temperature proportional to the average kinetic energy of the particles in a system.
+If you graph the average kinetic energy of a system as a function of temperature, you will get a straight line that passes through the origin.
+
+The relationship between Celsius and Kelvin is given by:
+
+$$
+\begin{equation}
+T(K) = T(°C) + 273.15
+\end{equation}
+$$
+
+The Kelvin scale is based on the absolute zero point, which is the temperature at which all molecular motion ceases.
+This is the lowest possible temperature, and it is defined as $0 \, \text{K}$.
+Absolute zero is not achievable in practice due to the third law of thermodynamics.
+
+It is worth noting that although Kelvin and Celsius are different scales, they are related by a simple addition/subtraction.
+This means that a change in temperature of $1 \, \text{K}$ is equivalent to a change in temperature of $1 \, °\text{C}$.
+This is not the case for Fahrenheit.
+
+### Internal Energy and Thermal Energy
+
+The **internal energy** of a system is the total energy of all the particles in the system, in the system's rest frame.
+This means that even if the system is moving, the kinetic energy from that overall motion is not included in the internal energy.
+The internal energy consists of:
+
+- The kinetic energy of the particles due to their motion (translational, rotational, and vibrational).
+- The potential energy of the particles due to their interactions with each other (e.g., intramolecular forces and intermolecular forces).
+- The energy associated with the internal structure of the particles (e.g., electronic energy levels).
+- The rest mass energy of the particles (i.e., the energy associated with their mass, $E = mc^2$).
+
+The **thermal energy** of a system is the part of the internal energy that is associated with the temperature of the system.
+It includes the types of energies that are transferred between systems due to a temperature difference.
+
+### Pressure
+
+As previously stated, molecules are in constant motion.
+When they collide with the walls of a container, they exert a force on the walls.
+This is because they bounce off the walls, and this bouncing causes a change in momentum.
+The **pressure** of a system is defined as the force per unit area exerted by the particles in the system on the walls of the container:
+
+$$
+\begin{equation}
+P := \frac{F}{A}
+\end{equation}
+$$
+
+where $P$ is the pressure, $F$ is the force exerted by the particles on the walls, and $A$ is the area of the walls.
+Pressure is a scalar quantity, and it is measured in pascals (Pa), which is equivalent to newtons per square meter ($\text{N/m}^2$).
+
+### Intensive and Extensive Properties
+
+Intensive properties are properties that do not depend on the amount of matter in a system.
+On the other hand, extensive properties are properties that do depend on the amount of matter in a system.
+
+For example, mass is an extensive property because more matter means more mass.
+However, density is an intensive property because it does not depend on the amount of matter in a system.
+
+### Summary of Macroscopic Properties
+
+| Property                     | Type      | Definition                                                              |
+| ---------------------------- | --------- | ----------------------------------------------------------------------- |
+| Mass ($\text{kg}$)           | Extensive | Amount of matter in a system                                            |
+| Volume ($\text{m}^3$)        | Extensive | Amount of space occupied by a system                                    |
+| Density ($\text{kg/m}^3$)    | Intensive | Mass per unit volume                                                    |
+| Temperature ($\text{K}$)     | Intensive | Measure of the average kinetic energy of the particles in a system      |
+| Internal Energy ($\text{J}$) | Extensive | Total energy of all the particles in a system                           |
+| Thermal Energy ($\text{J}$)  | Extensive | Part of the internal energy transferred due to a temperature difference |
+| Pressure ($\text{Pa}$)       | Intensive | Force per unit area exerted by the particles in a system on the walls   |

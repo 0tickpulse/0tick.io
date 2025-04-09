@@ -1,0 +1,186 @@
+---
+sidebar_position: 5
+draft: true # Hides the page from the sidebar
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# A More Rigorous Treatment of Lagrangian Mechanics
+
+We shall now restate the Lagrangian formalism in a more rigorous way.
+This will be very useful especially when we discuss quantum field theory, where we will need to be more careful about the details of the Lagrangian formalism.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Functionals and Variational Calculus
+
+In the previous sections, we have seen how the Lagrangian can be used to describe the dynamics of a system.
+We have tried to avoid using variational calculus in order to keep things simple, but the full power of the Lagrangian formalism comes from the fact that it is based on variational calculus.
+
+While a function is a map from a number to a number, a **functional** is a map from a *function* to a number.
+In other words, a functional is a function of a function:
+
+$$
+\begin{align}
+\text{Function} & : f(x) = 5 \\
+\text{Functional} & : F[f(x)] = 6
+\end{align}
+$$
+
+As shown above, a functional is denoted by $F[f(x)]$, where $F$ is the functional and $f(x)$ is the function.
+
+An example of a functional is the integral of a function over a given interval:
+
+$$
+\begin{equation}
+I[f(x)] = \int_0^{\pi/2} f(x) \, dx
+\end{equation}
+$$
+
+For example, applying this functional to the function $f(x) = \cos(x)$ gives:
+
+$$
+\begin{equation}
+F[\cos(x)] = \int_0^{\pi/2} \cos(x) \, dx = 1
+\end{equation}
+$$
+
+### Functional Derivative
+
+The functional derivative is a generalization of the derivative to functionals.
+We can think of the functional derivative as a way to measure how a functional changes when we change the function that it is applied to.
+
+
+
+
+
+## Appendix: Rigorously Defining the Functional Derivative
+
+To define the functional derivative, we first need to review the ordinary derivative:
+
+$$
+\begin{equation}
+\dv{f}{t}(t) = \lim_{\Delta t \to 0} \frac{f(t + \Delta t) - f(t)}{\Delta t}
+\end{equation}
+$$
+
+Suppose this derivative has a value $L$ at some $t = t_0$.
+Then, we can write:
+
+$$
+\begin{equation}
+f(t_0 + \Delta t) \approx f(t_0) + L \Delta t
+\end{equation}
+$$
+
+This is the first-order Taylor expansion of $f(t)$ around $t_0$. The rest of the terms in the Taylor expansion are higher-order terms:
+
+$$
+\begin{equation}
+f(t_0 + \Delta t) = f(t_0) + L \Delta t + \phi(\Delta t)
+\end{equation}
+$$
+
+where $\phi(\Delta t)$ is a function that goes to zero faster than $\Delta t$ as $\Delta t \to 0$:
+
+$$
+\begin{equation}
+\lim_{\Delta t \to 0} \frac{\phi(\Delta t)}{\Delta t} = 0
+\end{equation}
+$$
+
+Since $\phi$ starts with a factor of $(\Delta t)^2$, we say that $\phi(\Delta t) \in \order{(\Delta t)^2}$.
+We also see that $L$ is a linear map—here it is just $L(\Delta t) = L \Delta t$.
+In other cases, $L$ takes different forms, such as the Jacobian matrix.
+This leads us to an important theorem:
+
+> **Theorem**: If $f(t)$ is a function from $D \subset \mathbb{R}$ to $\mathbb{R}$, then $f(t)$ is differentiable at $t_0 \in D$ if and only if there exists a function $\phi(\Delta t)$ such that $\lim_{\Delta t \to 0} \frac{\phi(\Delta t)}{\Delta t} = 0$ and:
+>
+> $$
+> \begin{equation}
+> f(t_0 + \Delta t) = f(t_0) + L \Delta t + \phi(\Delta t)
+> \end{equation}
+> $$
+>
+> where $L$ is the derivative of $f(t)$ at $t_0$, which is defined as $L = \lim_{\Delta t \to 0} \frac{f(t_0 + \Delta t) - f(t_0)}{\Delta t}$.
+
+In other words, the two definitions of differentiability (1: the limit definition and 2: the Taylor expansion) are equivalent.
+The proof is written below.
+
+<details>
+<summary>Proof of Theorem</summary>
+
+This proof is in fact quite trivial.
+
+We can start from the limit definition and assert this definition of $\phi$:
+
+$$
+\begin{equation}
+\phi := \begin{cases}
+f(t_0 + \Delta t) - f(t_0) - L \Delta t & \text{if } \Delta t \neq 0 \\
+0 & \text{if } \Delta t = 0
+\end{cases}
+\end{equation}
+$$
+
+We can see that $\phi$ satisfies the limit condition:
+
+$$
+\begin{equation}
+\lim_{\Delta t \to 0} \frac{\phi(\Delta t)}{\Delta t} = \lim_{\Delta t \to 0} \frac{f(t_0 + \Delta t) - f(t_0) - L \Delta t}{\Delta t} = \lim_{\Delta t \to 0} \frac{f(t_0 + \Delta t) - f(t_0)}{\Delta t} - L = 0
+\end{equation}
+$$
+
+And simply rearranging the Taylor expansion gives us the limit definition:
+
+$$
+\begin{equation}
+f(t_0 + \Delta t) = f(t_0) + L \Delta t + \phi(\Delta t)
+\end{equation}
+$$
+
+Alternatively, we can start from the Taylor expansion, $f(t_0 + \Delta t) = f(t_0) + L \Delta t + \phi(\Delta t)$. Moving $f(t_0)$ to the left and dividing both sides by $\Delta t$ gives us:
+
+$$
+\begin{equation}
+\frac{f(t_0 + \Delta t) - f(t_0)}{\Delta t} = L + \frac{\phi(\Delta t)}{\Delta t}
+\end{equation}
+$$
+
+Taking the limit as $\Delta t \to 0$ gives us:
+
+$$
+\begin{equation}
+\lim_{\Delta t \to 0} \frac{f(t_0 + \Delta t) - f(t_0)}{\Delta t} = L + \lim_{\Delta t \to 0} \frac{\phi(\Delta t)}{\Delta t} = L
+\end{equation}
+$$
+
+Thus, we have shown that the two definitions of differentiability are equivalent. $\blacksquare$
+
+</details>
+
+Using this theorem, we can now define the functional derivative of $F[x(t)]$.
+We say that $F$ is differentiable if there exists a linear map $L$ and a function $\phi(x, \Delta x(t)) \in \order{(\Delta x(t))^2}$ such that:
+
+$$
+\begin{equation}
+F[x(t) + \Delta x(t)] - F[x(t)] = L(\Delta x(t)) + \phi(x, \Delta x(t))
+\end{equation}
+$$
+
+The linear function $L$ is the **differential** of $F$, which is denoted by $\delta F$.

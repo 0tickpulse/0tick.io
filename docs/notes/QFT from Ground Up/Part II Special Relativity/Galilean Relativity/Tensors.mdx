@@ -19,6 +19,8 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 A **tensor** is a mathematical object that is invariant under a change of basis.
 However, they have *components* that transform in a specific way under a change of basis.
 In this page, we will introduce the concept of tensors and build up our understanding of them.
+We will first explore some examples of tensors, like covectors and linear maps.
+Then, we will formalize our understanding of tensors with tensor products.
 
 ## Table of Contents
 
@@ -555,6 +557,42 @@ $$
 
 Thus it is clear that $L$ transforms as $\class{blue}{\tilde{L}} = T^{-1} \class{pink}{L} T$.
 
+To take another example of a tensor product, consider two qubits (or two spin-1/2 particles).
+The state of a single qubit is given by a vector in a two-dimensional complex vector space, $\mathbb{C}^2$.
+The vector is written as a superposition of the two basis states $\ket{0}$ and $\ket{1}$:
+
+$$
+\begin{equation}
+\ket{\psi} = \alpha_0 \ket{0} + \alpha_1 \ket{1}
+\end{equation}
+$$
+
+Now suppose we have a composite system of these qubits. There are now four basis states, each corresponding to a different combination of the two qubits:
+
+- $\ket{00}$: both qubits are in the state $\ket{0}$.
+- $\ket{01}$: the first qubit is in the state $\ket{0}$ and the second qubit is in the state $\ket{1}$.
+- $\ket{10}$: the first qubit is in the state $\ket{1}$ and the second qubit is in the state $\ket{0}$.
+- $\ket{11}$: both qubits are in the state $\ket{1}$.
+
+These are actually the tensor products of the two qubit states:
+
+$$
+\begin{align}
+\ket{00} &= \ket{0} \otimes \ket{0} \\
+\ket{01} &= \ket{0} \otimes \ket{1} \\
+\ket{10} &= \ket{1} \otimes \ket{0} \\
+\ket{11} &= \ket{1} \otimes \ket{1}
+\end{align}
+$$
+
+And the state of the composite system is given by a linear combination of these basis states:
+
+$$
+\begin{equation}
+\ket{\Psi} = \alpha_{00} \ket{00} + \alpha_{01} \ket{01} + \alpha_{10} \ket{10} + \alpha_{11} \ket{11}
+\end{equation}
+$$
+
 ### Kronecker Product
 
 Tensor products and **Kronecker products** are similar but not the same.
@@ -573,7 +611,7 @@ To apply the tensor product, we simply give a copy of the left object for each e
 
 $$
 \begin{equation}
-\mqty[1 & 2] \otimes \mqty[3 & 4] = \mqty[1 {\mqty[3 & 4]} & 2 {\mqty[3 & 4]}]
+\mqty[\alpha_1 & \alpha_2] \otimes \mqty[\beta_1 & \beta_2] = \mqty[{\mqty[\alpha_1 & \alpha_2] \beta_1} & {\mqty[\alpha_1 & \alpha_2] \beta_2}] = \mqty[{\mqty[\alpha_1 \beta_1 & \alpha_2 \beta_1]} & {\mqty[\alpha_1 \beta_2 & \alpha_2 \beta_2]}]
 \end{equation}
 $$
 
