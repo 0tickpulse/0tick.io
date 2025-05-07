@@ -1,0 +1,30 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Wave Mechanics
+
+Waves are one of the most fundamental phenomena in physics—they are present in *everything*.
+From our everyday experience, we interact with sound waves and light (electromagnetic waves).
+Much of our technology is also based on waves—the internet, for example, relies on electromagnetic waves to transmit data.
+Springs in cars and buildings are designed to absorb mechanical waves, while radio waves are used for communication.
+More fundamentally, quantum mechanics posits that waves are the underlying nature of all particles.
+
+It might be surprising to see that one idea—the wave—can be used to describe so many different phenomena.
+As such, it is important to understand what these phenomena have in common. Fundamentally, they are a result of:
+
+1. Time-translational invariance: The laws of physics do not change over time.
+2. Locality: Causation only occurs in the immediate vicinity of an event.
+3. Linearity: The superposition principle holds, meaning that the sum of two solutions is also a solution.
+
+These three principles are the foundation of wave mechanics, and they will be the focus of this chapter.

@@ -1,0 +1,346 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Deriving General Relativity from Field Theory
+
+In this section, we further explore classical field theory.
+We will see how the Einstein-Hilbert action leads to Einstein's equations.
+
+Previously, we have explored the Klein-Gordon equation, which describes the dynamics of a scalar field.
+Scalar fields are rank-0 tensors, and they are the simplest type of field.
+The central object of study in this section is the metric tensor, which is a rank-2 tensor.
+As such, we are dealing with a rank-2 field theory.
+This is also related to the fact that the hypothetical graviton is a spin-2 particle.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Einstein-Hilbert Action
+
+To begin, we make the assumption that curvature has a relationship with energy-momentum, and the classical limit yields Poisson's equation $\laplacian{\phi} = -4 \pi G \rho$.
+Furthermore, we assume that our expression for action can be split into two parts: one that depends on the metric (the "curvature" part) and one that depends on the matter (the "matter" part);
+
+$$
+\begin{equation}
+S = S_c + S_m
+\end{equation}
+$$
+
+Recall that to integrate over spacetime, we need to use the invariant volume element $\dd{V} = \sqrt{-g} \dd[4]{x}$, where $g$ is the determinant of the metric tensor.
+The inclusion of the determinant can be though of as cancelling the scaling factor from the coordinate transformation.
+The curvature part of the action is given by:
+
+$$
+\begin{equation}
+S_c = \int \dd{V} \mathcal{L}_c = \int \dd[4]{x} \sqrt{-g} \mathcal{L}_c
+\end{equation}
+$$
+
+where $\mathcal{L}_c$ is the Lagrangian density for the curvature part.
+Because $\mathcal{L}_c$ is a scalar, and it has to do with curvature, we conjecture that it is proportional to the Ricci scalar $R$ with some constant $\alpha$.
+We can also add an arbitrary constant $-2\Lambda$ to the Lagrangian density (the specific form is not important).
+Thus, we have:
+
+$$
+\begin{equation}
+\mathcal{L}_c = \alpha (R - 2\Lambda)
+\end{equation}
+$$
+
+The Einstein-Hilbert action is then given by:
+
+$$
+\begin{equation}
+S = \int \dd[4]{x} \sqrt{-g} \mathcal{L}_c + S_m = \alpha \int \dd[4]{x} \sqrt{-g} (R - 2\Lambda) + S_m
+\end{equation}
+$$
+
+### Applying the Calculus of Variations
+
+Now we are ready to apply action principles to this action.
+To begin, we need to vary the action with respect to the metric tensor $g_{\mu\nu}$:
+
+$$
+\begin{equation}
+\var{S} = \var{\alpha\int \dd[4]{x} \sqrt{-g} (R - 2\Lambda)} + \var{S_m}
+\end{equation}
+$$
+
+To bring the variation inside the integral, we add a variation of the metric (similar to $u$-substitution in calculus):
+
+$$
+\begin{equation}
+\var{S} = \alpha \int \dd[4]{x} \var{g^{\mu\nu}} \fdv{g^{\mu\nu}} \sqrt{-g} \var{(R - 2\Lambda)}
+\end{equation}
+$$
+
+Next, we distribute the functional derivative to each term in the integrand:
+
+$$
+\begin{equation}
+\var{S} = \alpha \int \dd[4]{x} \var{g^{\mu\nu}} \qty(\fdv{\sqrt{-g} R}{g^{\mu\nu}} - 2\Lambda \fdv{\sqrt{-g}}{g^{\mu\nu}}) + \var{S_m}
+\end{equation}
+$$
+
+Because both $\sqrt{-g}$ and $R$ depend on the metric, we need to use the product rule to differentiate them:
+
+$$
+\begin{equation}
+\var{S} = \alpha \int \dd[4]{x} \var{g^{\mu\nu}} \qty(\fdv{\sqrt{-g}}{g^{\mu\nu}} R + \sqrt{-g} \fdv{R}{g^{\mu\nu}} - 2\Lambda \fdv{\sqrt{-g}}{g^{\mu\nu}}) + \var{S_m}
+\end{equation}
+$$
+
+Next, because $\sqrt{-g}$ is just $(-g)^{1/2}$, we can differentiate it just like a normal function:
+
+$$
+\begin{equation}
+\fdv{\sqrt{-g}}{g^{\mu\nu}} = \frac{1}{2 \sqrt{-g}} \fdv{(-g)}{g^{\mu\nu}}
+\end{equation}
+$$
+
+Plugging this into the equation, we have:
+
+$$
+\begin{equation}
+\var{S} = \alpha \int \dd[4]{x} \var{g^{\mu\nu}} \qty(-\frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} R + \sqrt{-g} \fdv{R}{g^{\mu\nu}} - \Lambda \frac{1}{\sqrt{-g}} \fdv{(-g)}{g^{\mu\nu}}) + \var{S_m}
+\end{equation}
+$$
+
+Because Hamilton's principle demands that this variation is zero:
+
+$$
+\begin{equation}
+-\var{S_m} = \alpha \int \dd[4]{x} \var{g^{\mu\nu}} \qty(-\frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} R + \sqrt{-g} \fdv{R}{g^{\mu\nu}} - \Lambda \frac{1}{\sqrt{-g}} \fdv{(-g)}{g^{\mu\nu}}) \label{eq:varS-1}
+\end{equation}
+$$
+
+## Calculating the Variations
+
+### Variation of the Matter Action
+
+First, we will calculate the variation of the matter action $S_m$.
+The matter action is given by a spacetime integral of the Lagrangian density $\mathcal{L}_m$:
+
+$$
+\begin{equation}
+S_m = \int \dd[4]{x} \sqrt{-g} \mathcal{L}_m
+\end{equation}
+$$
+
+Then, using the same $u$-substitution trick as before, we can write:
+
+$$
+\begin{equation}
+\var{S_m} = \int \dd[4]{x} \var{g^{\mu\nu}} \fdv{g^{\mu\nu}} \qty(\sqrt{-g} \mathcal{L}_m)
+\end{equation}
+$$
+
+Just like before, we use the product rule and plug in the functional derivative of $\sqrt{-g}$:
+
+$$
+\begin{equation}
+\var{S_m} = \int \dd[4]{x} \var{g^{\mu\nu}} \qty(-\frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} \mathcal{L}_m + \sqrt{-g} \fdv{\mathcal{L}_m}{g^{\mu\nu}})
+\end{equation}
+$$
+
+We can now plug this into Equation $\eqref{eq:varS-1}$:
+
+$$
+\begin{equation}
+-\int \dd[4]{x} \var{g^{\mu\nu}} \qty(-\frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} \mathcal{L}_m + \sqrt{-g} \fdv{\mathcal{L}_m}{g^{\mu\nu}}) = \alpha \int \dd[4]{x} \var{g^{\mu\nu}} \qty(-\frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} R + \sqrt{-g} \fdv{R}{g^{\mu\nu}} - \Lambda \frac{1}{\sqrt{-g}} \fdv{(-g)}{g^{\mu\nu}})
+\end{equation}
+$$
+
+Because we have spacetime integrals on both sides, we can drop them and focus on the integrands.
+This is because for the integrals to be equal for all variations, the integrands must be equal, and their difference is hence zero.
+
+$$
+\begin{equation}
+\alpha \qty(-\frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} R + \sqrt{-g} \fdv{R}{g^{\mu\nu}} - \Lambda \frac{1}{\sqrt{-g}} \fdv{(-g)}{g^{\mu\nu}}) + \qty(\sqrt{-g} \fdv{\mathcal{L}_m}{g^{\mu\nu}} - \frac{1}{2 \sqrt{-g}} \fdv{g}{g^{\mu\nu}} \mathcal{L}_m) = 0
+\end{equation}
+$$
+
+Multiplying both sides by $\frac{2}{\sqrt{-g}}$ gives:
+
+$$
+\begin{equation}
+\alpha \qty(\frac{R}{g} \fdv{g}{g^{\mu\nu}} + 2 \fdv{R}{g^{\mu\nu}} - 2\Lambda \frac{1}{g} \fdv{g}{g^{\mu\nu}}) + \qty(2 \fdv{\mathcal{L}_m}{g^{\mu\nu}} + \frac{1}{g} \fdv{g}{g^{\mu\nu}} \mathcal{L}_m) = 0
+\end{equation}
+$$
+
+And rearranging gives:
+
+$$
+\begin{equation}
+\alpha \qty(\frac{R}{g} \fdv{g}{g^{\mu\nu}} + 2 \fdv{R}{g^{\mu\nu}} - 2\Lambda \frac{1}{g} \fdv{g}{g^{\mu\nu}}) = -2 \fdv{\mathcal{L}_m}{g^{\mu\nu}} - \frac{1}{g} \fdv{g}{g^{\mu\nu}} \mathcal{L}_m
+\end{equation}
+$$
+
+Without an explicit form for the Lagrangian density, we cannot proceed further.
+However, asserting a specific form for the Lagrangian density will make the equation lose generality.
+Instead, we define the entirety of the right-hand side as a new tensor $T_{\mu\nu}$, which is known as the **energy-momentum tensor**;
+
+$$
+\begin{equation}
+T_{\mu\nu} := -\frac{1}{2} \fdv{\mathcal{L}_m}{g^{\mu\nu}} - \frac{1}{g} \fdv{g}{g^{\mu\nu}} \mathcal{L}_m
+\end{equation}
+$$
+
+Thus, we have:
+
+$$
+\begin{equation}
+\alpha \qty(\frac{R}{g} \fdv{g}{g^{\mu\nu}} + 2 \fdv{R}{g^{\mu\nu}} - 2\Lambda \frac{1}{g} \fdv{g}{g^{\mu\nu}}) = T_{\mu\nu}
+\end{equation}
+$$
+
+Dividing both sides by $2\alpha$ gives:
+
+$$
+\begin{equation}
+\fdv{R}{g^{\mu\nu}} + \frac{R}{2g} \fdv{g}{g^{\mu\nu}} - \frac{\Lambda}{g} \fdv{g}{g^{\mu\nu}} = \frac{T_{\mu\nu}}{2\alpha} \label{eq:varS-with-T}
+\end{equation}
+$$
+
+### Variation of the Metric Determinant
+
+The next step is to calculate the variation of the metric determinant $g$.
+Because the metric tensor is essentially a matrix, we can use the following identity:
+
+$$
+\begin{equation}
+\ln(\det(A)) = \tr(\ln(A))
+\end{equation}
+$$
+
+Taking the functional derivative of both sides with respect to an arbitrary parameter $\epsilon$ gives:
+
+$$
+\begin{equation}
+\fdv{\ln(\det(A))}{\epsilon} = \fdv{\tr(\ln(A))}{\epsilon}
+\end{equation}
+$$
+
+The left-hand side gives $\fdv{\ln(\det(A))}{\epsilon} = \frac{1}{\det(A)} \fdv{\det(A)}{\epsilon}$.
+The right-hand side gives $\fdv{\tr(\ln(A))}{\epsilon} = \tr(A^{-1} \fdv{A}{\epsilon})$:
+
+$$
+\begin{equation}
+\frac{1}{\det(A)} \fdv{\det(A)}{\epsilon} = \tr(A^{-1} \fdv{A}{\epsilon})
+\end{equation}
+$$
+
+The variation fo the determinant is then:
+
+$$
+\begin{equation}
+\var{\det(A)} = \det(A) \tr(A^{-1} \var{A})
+\end{equation}
+$$
+
+To apply this to the metric, we set $\det(A) = g$, $A = g_{\mu\nu}$, and $A^{-1} = g^{\mu\nu}$:
+
+$$
+\begin{equation}
+\var{g} = g \tr(g^{\mu\nu} \var{g_{\alpha\beta}})
+\end{equation}
+$$
+
+The trace is just the sum of the diagonal elements, so we can write:
+
+$$
+\begin{equation}
+\var{g} = g g^{\mu\nu} \var{g_{\mu\nu}}
+\end{equation}
+$$
+
+To write this in terms of $\var{g^{\mu\nu}}$ instead of $\var{g_{\mu\nu}}$, we make use of the fact that $g^{\mu\nu} g_{\mu\nu} = 4$ and take the variation of both sides:
+
+$$
+\begin{equation}
+\var{(g^{\mu\nu} g_{\mu\nu})} = \var{4} = 0
+\end{equation}
+$$
+
+The left-hand side can be expanded using the product rule:
+
+$$
+\begin{equation}
+\var{(g^{\mu\nu} g_{\mu\nu})} = \var{g^{\mu\nu}} g_{\mu\nu} + g^{\mu\nu} \var{g_{\mu\nu}} = 0
+\end{equation}
+$$
+
+In other words, $\var{g^{\mu\nu}} g_{\mu\nu} = -g^{\mu\nu} \var{g_{\mu\nu}}$.
+We can plug this back into the equation for $\var{g}$:
+
+$$
+\begin{equation}
+\var{g} = g g^{\mu\nu} \var{g_{\mu\nu}} = -g g_{\mu\nu} \var{g^{\mu\nu}}
+\end{equation}
+$$
+
+And so the functional derivative of the metric determinant is:
+
+$$
+\begin{equation}
+\fdv{g}{g^{\mu\nu}} = -g g_{\mu\nu}
+\end{equation}
+$$
+
+Plugging this into Equation $\eqref{eq:varS-with-T}$ gives:
+
+$$
+\begin{equation}
+\fdv{R}{g^{\mu\nu}} + \frac{1}{2} R g_{\mu\nu} - \Lambda g_{\mu\nu} = \frac{T_{\mu\nu}}{2\alpha}
+\end{equation}
+$$
+
+### Variation of the Ricci Scalar
+
+Finally, we need to calculate the variation of the Ricci scalar $R$.
+The Ricci scalar is given by the trace of the Ricci tensor $R_{\mu\nu}$:
+
+$$
+\begin{equation}
+R = R^\mu_{\mu} = g^{\mu\nu} R_{\mu\nu}
+\end{equation}
+$$
+
+We shall first derive a lemma that will help us with this calculation, known as the Palatini identity:
+
+$$
+\begin{equation}
+\var{R_{\mu\nu}} = \grad_\alpha \var{\Gamma^\alpha_{\mu\nu}} - \grad_\nu \var{\Gamma^\alpha_{\mu\alpha}}
+\end{equation}
+$$
+
+---
+
+**Proof**: Recall that the Ricci tensor is given by:
+
+$$
+\begin{equation}
+R_{\mu\nu} = \partial_\alpha \Gamma^\alpha_{\mu\nu} - \partial_\nu \Gamma^\alpha_{\mu\alpha} + \Gamma^\alpha_{\mu\nu} \Gamma^\beta_{\alpha\beta} - \Gamma^\alpha_{\mu\beta} \Gamma^\beta_{\nu\alpha}
+\end{equation}
+$$
+
+
+
+---

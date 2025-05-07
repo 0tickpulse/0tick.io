@@ -1,0 +1,293 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Pauli Spinors
+
+Pauli spinors are a mathematical representation of spin-1/2 particles in quantum mechanics.
+We have previously introduced spinors in the context of physical systems (e.g., the Stern-Gerlach experiment, light polarization).
+Now we will take a purely mathematical approach to spinors, focusing on their algebraic properties and how they relate to the rotation group.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+[Recall that the spin operators are defined as](../Mathematical%20Foundations/Applying%20to%20Spin%2012%20Systems#observables-and-probabilities):
+
+$$
+\begin{align}
+S_x &= \frac{\hbar}{2} (\dyad{+z}{-z} + \dyad{-z}{+z}) \\
+S_y &= \frac{i\hbar}{2} (-\dyad{+z}{-z} + \dyad{-z}{+z}) \\
+S_z &= \frac{\hbar}{2} (\dyad{+z}{+z} - \dyad{-z}{-z})
+\end{align}
+$$
+
+Also recall that the matrix element of an operator is given by $\mel{a'}{A}{a''}$.
+In this case, the general form of the matrix element is:
+
+$$
+\begin{equation}
+\mel{\pm z}{S_k}{+z} = \frac{\hbar}{2} (\sigma_k)_{\pm z, +z}
+\end{equation}
+$$
+
+The $\sigma_i$ matrices are known as the **Pauli matrices**.
+Their explicit forms are:
+
+$$
+\begin{align}
+\sigma_1 = \sigma_x &:= \mqty[0 & 1 \\ 1 & 0 ] \\
+\sigma_2 = \sigma_y &:= \mqty[0 & -i \\ i & 0] \\
+\sigma_3 = \sigma_z &:= \mqty[1 & 0 \\ 0 & 1]
+\end{align}
+$$
+
+These matrices are traceless ($\text{Tr}(\sigma_i) = 0$) and Hermitian ($\sigma_i^\dagger = \sigma_i$).
+Squaring any of the Pauli matrices gives the identity operator, and they anticommute with each other:
+
+$$
+\begin{equation}
+\sigma_i \sigma_j = -\sigma_j \sigma_i
+\end{equation}
+$$
+
+The last two properties can be combined into the following identity:
+
+$$
+\begin{equation}
+\acomm{\sigma_i}{\sigma_j} = 2 \delta_{ij}
+\end{equation}
+$$
+
+Lastly, they satisfy the following commutation relations:
+
+$$
+\begin{equation}
+\comm{\sigma_i}{\sigma_j} = 2 i \epsilon_{ijk} \sigma_k
+\end{equation}
+$$
+
+with an implicit sum over $k$.
+
+:::info Review: Levi-Civita Symbol
+
+The term $\epsilon_{ijk}$ is known as the Levi-Civita symbol.
+It is defined as:
+
+$$
+\begin{equation}
+\epsilon_{ijk} = \begin{cases}
+1 & \text{if } (i, j, k) \text{ is an even permutation of } (1, 2, 3) \\
+-1 & \text{if } (i, j, k) \text{ is an odd permutation of } (1, 2, 3) \\
+0 & \text{if } i = j \text{ or } j = k \text{ or } k = i
+\end{cases}
+\end{equation}
+$$
+
+:::
+
+Recall that in classical physics, we define a vector as a linear combination of basis vectors:
+
+$$
+\begin{equation}
+\vb{v} = x \vu{x} + y \vu{y} + z \vu{z}
+\end{equation}
+$$
+
+In the Pauli formalism, we replace the basis vectors with the Pauli matrices, $\sigma_x$, $\sigma_y$, and $\sigma_z$.
+This gives us the following expression for a vector:
+
+$$
+\begin{equation}
+\begin{split}
+V &= x \sigma_x + y \sigma_y + z \sigma_z \\
+&= x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & 1] \\
+&= \mqty[z & x - iy \\ x + iy & -z]
+\end{split}
+\end{equation}
+$$
+
+This form of the vector is known as the **Pauli vector**.
+The fundamental benefit of using matrices for basis vectors is that we can now directly multiply vectors with each other.
+
+### Transforming the Pauli Vector
+
+First, consider reflecting the Pauli vector along $z$.
+In other words, we want to find the transformation :
+
+$$
+\begin{equation}
+x \vu{x} + y \vu{y} + z \vu{z} \to x \vu{x} + y \vu{y} - z \vu{z}
+\end{equation}
+$$
+
+In the Pauli formalism, we do this by **negative conjugating** the Pauli vector with the $\class{green}{\sigma_z}$ matrix.
+By conjugating we mean to multiply the Pauli vector by $\class{green}{-\sigma_z}$ on the left and $\class{green}{\sigma_z}$ on the right.
+We will see how this transformation applies to each basis Pauli matrix:
+
+$$
+\begin{equation}
+\begin{split}
+\sigma_x &\to -\class{green}{\sigma_z} \sigma_x \class{green}{\sigma_z} \\
+&= \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_x \\
+&= \sigma_x
+\end{split}
+\end{equation}
+$$
+
+For $\sigma_y$:
+
+$$
+\begin{equation}
+\begin{split}
+\sigma_y &\to -\class{green}{\sigma_z} \sigma_y \class{green}{\sigma_z} \\
+&= \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_y \\
+&= \sigma_y
+\end{split}
+\end{equation}
+$$
+
+And for $\sigma_z$:
+
+$$
+\begin{equation}
+\begin{split}
+\sigma_z &\to -\class{green}{\sigma_z} \sigma_z \class{green}{\sigma_z} \\
+&= \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_z
+\end{split}
+\end{equation}
+$$
+
+Hence, we can see that it takes $\sigma_z$ to $-\sigma_z$ and leaves the other two matrices unchanged, precisely what we wanted.
+To see this more concretely, consider a Pauli vector $V$ and apply the transformation:
+
+$$
+\begin{equation}
+\begin{split}
+V &\to -\class{green}{\sigma_z} V \class{green}{\sigma_z} \\
+&= \class{green}{\sigma_z} \qty(x \sigma_x + y \sigma_y + z \sigma_z) \class{green}{\sigma_z} \\
+&= -(x \class{green}{\sigma_z} \sigma_x \class{green}{\sigma_z} + y \class{green}{\sigma_z} \sigma_y \class{green}{\sigma_z} + z \class{green}{\sigma_z} \sigma_z \class{green}{\sigma_z}) \\
+&= -(-x \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_x - y \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_y + z \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_z) \\
+&= -(-x \sigma_x - y \sigma_y + z\sigma_z) \\
+&= x \sigma_x + y \sigma_y - z \sigma_z
+\end{split}
+\end{equation}
+$$
+
+This is the transformation we wanted to achieve.
+To reflect the Pauli vector along an arbitrary axis, we choose an arbitrary unit vector $U$ (where $UU = 1$) and apply the transformation:
+
+$$
+\begin{equation}
+V \to -\class{green}{U} V \class{green}{U}
+\end{equation}
+$$
+
+To see that this indeed transforms the Pauli vector, we can write $V$ as a sum of its perpendicular and parallel components to $U$:
+
+$$
+\begin{equation}
+V = V_\perp + V_\parallel
+\end{equation}
+$$
+
+Because $V_\parallel$ is parallel to $\class{green}{U}$, it can be written as a scalar multiple of $\class{green}{U}$:
+
+$$
+\begin{equation}
+V = V_\perp + k \class{green}{U}
+\end{equation}
+$$
+
+To multiply the perpendicular component by $\class{green}{U}$, we can use the identity:
+
+$$
+\begin{equation}
+V_\perp \class{green}{U} = -\class{green}{U} V_\perp
+\end{equation}
+$$
+
+This is proven in the appendix.
+
+Putting this all together, we have:
+
+$$
+\begin{equation}
+\begin{split}
+V &\to -\class{green}{U} V \class{green}{U} \\
+&= -\class{green}{U} \qty(V_\perp + V_\parallel) \class{green}{U} \\
+&= -\class{green}{U} \qty(V_\perp + k \class{green}{U}) \class{green}{U} \\
+&= -\class{green}{U} V_\perp \class{green}{U} + \class{green}{U} k \class{green}{U} \class{green}{U} \\
+&= \class{green}{U} \class{green}{U} V_\perp + \class{green}{U} k \\
+&= V_\perp - k \class{green}{U} \\
+&= V_\perp - V_\parallel
+\end{split}
+\end{equation}
+$$
+
+As such, it is clear that the transformation we have defined indeed transforms the Pauli vector as desired.
+It flips the parallel component of the vector while leaving the perpendicular component unchanged.
+
+
+
+
+## Appendix: Proof of Product of Orthogonal Vectors
+
+We want to prove the following theorem:
+
+$$
+\begin{equation}
+VW = -WV
+\end{equation}
+$$
+
+where $V$ and $W$ are orthogonal vectors. Recall that they are orthogonal if:
+
+$$
+\begin{equation}
+\vb{v} \cdot \vb{w} = V^x W^x + V^y W^y + V^z W^z = 0
+\end{equation}
+$$
+
+We can write both as linear combinations of the Pauli matrices:
+
+$$
+\begin{align}
+V &= V^x \sigma_x + V^y \sigma_y + V^z \sigma_z = V^i \sigma_i \\
+W &= W^x \sigma_x + W^y \sigma_y + W^z \sigma_z = W^j \sigma_j
+\end{align}
+$$
+
+Multiplying these two vectors gives us:
+
+$$
+\begin{equation}
+\begin{split}
+VW &= (V^i \sigma_i)(W^j \sigma_j) \\
+&= V^i W^j \sigma_i \sigma_j \\
+&= -V^i W^j \sigma_j \sigma_i \\
+&= -WV
+\end{split}
+\end{equation}
+$$
+
+where we have used implicit summation over $i$ and $j$.
+
+Note that $\sigma_i \sigma_j = -\sigma_j \sigma_i$ only applies to $i \neq j$.
+However, because $V$ and $W$ are orthogonal, we have $V^i W^i = 0$.
+As such, the only terms that survive are those where $i \neq j$, which gives us the desired result.

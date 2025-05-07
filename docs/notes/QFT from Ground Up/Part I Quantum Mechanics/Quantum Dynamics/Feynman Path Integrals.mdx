@@ -1,0 +1,221 @@
+---
+sidebar_position: 6
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Feynman Path Integrals
+
+The Feynman path integral formulation of quantum mechanics is a powerful and elegant way to describe the dynamics of quantum systems.
+Previously, we have seen the state vector formalism of quantum mechanics, which is based on a few postulates.
+The path integral formulation is based on the idea that the probability amplitude for a particle to go from one point to another is given by a sum over all possible paths that the particle can take.
+This is a very different way of thinking about quantum mechanics, and it leads to many interesting results.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Electron Diffraction
+
+We begin with a quantum phenomenon that is very well known: electron diffraction.
+This is a phenomenon that is often used to demonstrate the wave-particle duality of electrons.
+In this experiment, we have a beam of electrons that is incident on a double slit.
+The electrons can either go through the left slit or the right slit, and we can detect them on a screen behind the slits.
+The screen is divided into many small regions, and we can count the number of electrons that hit each region.
+The result is a pattern of bright and dark regions, which is characteristic of wave interference.
+This is a very surprising result, because we would expect that the electrons would behave like particles and go through one slit or the other.
+
+To understand this phenomenon, we need to think about the electrons as waves.
+The electron passes through both slits, and the two "waves" intefere with each other.
+
+Next, consider what happens if we add another slit.
+If we add a third slit, the interference pattern becomes more complicated, but it is still there.
+The procedure is the same—the electron now passes through three slits at once and inteferes with itself.
+
+But now consider what happens if we add a fourth slit, and then a fifth slit, and so on, until we have effectively removed the screen.
+And then, consider adding a second screen, and then a third screen, and so on.
+Although the entire double-slit experiment vanishes, the electron still traverses all possible paths and interferes with itself.
+This is the essence of the Feynman path integral formulation of quantum mechanics.
+
+## The Path Integral (Heuristic Derivation)
+
+We now have a motivation for the idea that particles can take all possible paths.
+Now we can try to formalize this idea.
+
+Suppose we have a particle that is moving in one dimension.
+It traverses every possible path from point $A$ to point $B$.
+Let $x(t)$ be one such path. Because the particle is a wave, it has a phase $\phi$ that changes with time.
+It can be visualized as an arrow on a circle, which rotates with time.
+
+If we split the path into small segments $\Delta x$, each small segment leads to a small change in the phase $\Delta \phi$.
+To find this phase, we borrow from wave mechanics; the phase difference is contributed by both the spatial (wavelength) and temporal (frequency) components.
+The phase difference is given by:
+
+$$
+\begin{equation}
+\Delta \phi = \Delta \phi_{\text{spatial}} + \Delta \phi_{\text{temporal}} = \frac{2\pi}{\lambda} \Delta x - \frac{2\pi}{T} \Delta t
+\end{equation}
+$$
+
+When we sum over all segments, we can write the total phase as:
+
+$$
+\begin{equation}
+A = e^{i \phi} = \exp(i \sum \Delta \phi) = \exp(i \sum \qty(\frac{2\pi}{\lambda} \Delta x - \frac{2\pi}{T} \Delta t))
+\end{equation}
+$$
+
+This is a very complicated expression, but we can simplify it by using the de Broglie relation $\lambda = \frac{h}{p}$ and the energy relation $E = \frac{h}{T}$.
+This gives us:
+
+$$
+\begin{equation}
+A = \exp(i \sum \qty(\frac{2\pi}{\lambda} \Delta x - \frac{2\pi}{T} \Delta t)) = \exp(i \sum \qty(\frac{mv}{\hbar} \Delta x - \frac{E}{\hbar} \Delta t))
+\end{equation}
+$$
+
+Factoring out the $\Delta t$, we have:
+
+$$
+\begin{equation}
+A = \exp(\frac{i}{\hbar} \sum \qty(mv \frac{\Delta x}{\Delta t} - E) \Delta t)
+\end{equation}
+$$
+
+Now, as $\Delta t \to 0$, we can write $\frac{\Delta x}{\Delta t} = v$. The sum becomes an integral:
+
+$$
+\begin{equation}
+A = \lim_{\Delta t \to 0} \exp(\frac{i}{\hbar} \sum \qty(mv \frac{\Delta x}{\Delta t} - E) \Delta t) = \exp(\frac{i}{\hbar} \int \dd{t} \qty(mvv - E))
+\end{equation}
+$$
+
+Next, because $E = \frac{mv^2}{2} + V(x)$, we can write:
+
+$$
+\begin{equation}
+A = \exp(\frac{i}{\hbar} \int \dd{t} \qty(mv^2 - \frac{mv^2}{2} - V(x))) = \exp(\frac{i}{\hbar} \int \dd{t} \qty(\frac{mv^2}{2} - V(x)))
+\end{equation}
+$$
+
+The term $\frac{mv^2}{2}$ is the kinetic energy, and $V(x)$ is the potential energy.
+Thus, we have the Lagrangian!
+
+$$
+\begin{equation}
+A = \exp(\frac{i}{\hbar} \int \dd{t} L_{\text{classical}}) = \exp(\frac{i}{\hbar} S_{\text{classical}})
+\end{equation}
+$$
+
+Now that we have derived the phase for one path, we can sum over all paths.
+Recall from wave mechanics that the amplitude of two intefering waves is related to the sum of their phases.
+In the same way, we can write the total amplitude as a sum over paths:
+
+$$
+\begin{equation}
+P = \sum_{x(t)} A(x(t)) = \sum_{x(t)} \exp(\frac{i}{\hbar} S_{\text{classical}}[x(t)])
+\end{equation}
+$$
+
+Because summing over paths is a continuous action, we can replace the sum with an integral:
+
+$$
+\begin{equation}
+P = \int \mathcal{D}x(t) \exp(\frac{i}{\hbar} S_{\text{classical}}[x(t)])
+\end{equation}
+$$
+
+*This* is the Feynman path integral, where $\mathcal{D}x(t)$ is the **measure** of the path integral.
+
+## Propagators
+
+With the informal derivation out of the way, we shall now formally define the path integral.
+We first consider the matrix elements of the time-evolution operator $U(t)$, which is defined as:
+
+$$
+\begin{equation}
+K(\vb{x}'', t''; \vb{x}', t') = \mel{\vb{x}''}{\exp(-\frac{i}{\hbar} H (t'' - t'))}{\vb{x}'} \label{eq:propagator}
+\end{equation}
+$$
+
+which is to be interpreted as the probability amplitude for a particle to go from point $\vb{x}'$ at time $t'$ to point $\vb{x}''$ at time $t''$.
+More specifically, it is a **transition amplitude** between two states, which is a function of the initial and final states.
+This is known as the **propagator**. To see why this is important, consider the position-space wavefunction $\psi(\vb{x}', t')$, which is defined as:
+
+$$
+\begin{equation}
+\psi(\vb{x}', t') = \mel{\vb{x}'}{U(t')}{\psi(0)}
+\end{equation}
+$$
+
+Now we can insert a completeness relation with another set of states $\ket{\vb{x}''}$:
+
+$$
+\begin{equation}
+\psi(\vb{x}', t') = \int \dd[3]{x} \mel{\vb{x}'}{U(t')}{\vb{x}''} \braket{\vb{x}''}{\psi(0)} = \int \dd[3]{x} K(\vb{x}', t'; \vb{x}'', 0) \psi(\vb{x}'', 0)
+\end{equation}
+$$
+
+Hence, the propagator is a kernel that allows us to evolve the wavefunction in time.
+
+To evaluate the propagator, the key is to split the time interval into $N$ small intervals of size $\Delta t = \frac{t'' - t'}{N}$, where $N \to \infty$.
+To that end, beginning with $\eqref{eq:propagator}$, we can first split the exponential into $N$ factors:
+
+$$
+\begin{equation}
+K(\vb{x}'', t''; \vb{x}', t') = \mel{\vb{x}''}{\exp(-\frac{i}{\hbar} H (t'' - t'))}{\vb{x}'} = \mel{\vb{x}''}{\qty(\exp(-\frac{i}{\hbar} H \Delta t))^N}{\vb{x}'}
+\end{equation}
+$$
+
+Next, we insert $N - 1$ complete relations of $\ket{\vb{x}_1}, \ket{\vb{x}_2}, \ldots, \ket{\vb{x}_{N - 1}}$ between each factor of the exponential:
+
+$$
+\begin{equation}
+\begin{split}
+K(\vb{x}'', t''; \vb{x}', t') &= \mel{\vb{x}''}{\exp(-\frac{i}{\hbar} H \Delta t) \exp(-\frac{i}{\hbar} H \Delta t) \cdots \exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}'} \\
+&= \class{blue}{\int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}}} \bra{\vb{x}''}\exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{\vb{x}_{N - 1}}} \cdots \class{blue}{\dyad{\vb{x}_1}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'}
+\end{split}
+\end{equation}
+$$
+
+We can use a trick to get rid of the vectors $\ket{\vb{x}_i}$.
+To do so, we insert $N$ complete relations, this time of the momentum eigenstates $\ket{\vb{p}_i}$, between each factor of the exponential, recalling that $\braket{\vb{x}}{\vb{p}} = \frac{1}{(2\pi \hbar)^{3/2}} e^{\frac{i}{\hbar} \vb{p} \cdot \vb{x}}$:
+
+$$
+\begin{equation}
+\begin{split}
+K(\vb{x}'', t''; \vb{x}', t') &= \class{blue}{\int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}}} \bra{\vb{x}''}\exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{\vb{x}_{N - 1}}} \cdots \class{blue}{\dyad{\vb{x}_1}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'} \\
+&= \class{blue}{\int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}}} \class{yellow}{\int \dd[3]{p_0} \cdots \dd[3]{p_{N - 1}}} \bra{\vb{x}''} \class{yellow}{\dyad{\vb{p}_{N - 1}}} \exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{\vb{x}_{N - 1}}} \class{yellow}{\dyad{\vb{p}_{N - 2}}} \cdots \class{yellow}{\dyad{\vb{p}_0}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'}
+\end{split}
+\end{equation}
+$$
+
+To simplify the notation, we can use a product notation for the integrand:
+
+$$
+\begin{equation}
+\begin{split}
+K(\vb{x}'', t''; \vb{x}', t') &= \int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}} \int \dd[3]{p_0} \cdots \dd[3]{p_{N - 1}} \bra{\vb{x}''} \dyad{\vb{p}_{N - 1}} \exp(-\frac{i}{\hbar} H \Delta t) \dyad{\vb{x}_{N - 1}} \dyad{\vb{p}_{N - 2}} \cdots \dyad{\vb{p}_0} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'} \\
+&= \int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}} \int \dd[3]{p_0} \cdots \dd[3]{p_{N - 1}} \braket{\vb{x}''}{\vb{p}_{N - 1}} \mel{\vb{p}_{N - 1}}{\exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}_{N - 1}} \\
+    &\qquad \qty(\prod_{i = 2}^{N - 1} \braket{\vb{x}_i}{\vb{p}_{i - 1}} \mel{\vb{p}_{i - 1}}{\exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}_{i - 1}}) \braket{\vb{x}_1}{\vb{p}_0} \mel{\vb{p}_0}{\exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}'}
+\end{split}
+\end{equation}
+$$
+
+> *It is amusing to see this absolute mess of an integral—not only do we have infinitely nested integrals, but the integrand contains infinitely many products, as well as $e$ to the power of a matrix.*
+
+We shall use a theorem known as the Trotter product formula. In our case, it implies:
+
+$$
+\begin{equation}
+\exp(-\frac{i}{N} (A + B)) = \exp(-\frac{i}{N} A) \exp(-\frac{i}{N} B) \qty(1 + \frac{\comm{A}{B}}{N^2} + \order{N^{-3}})
+\end{equation}
+$$

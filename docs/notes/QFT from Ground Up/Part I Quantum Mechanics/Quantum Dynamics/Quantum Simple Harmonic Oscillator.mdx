@@ -1,0 +1,520 @@
+---
+sidebar_position: 7
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+# Quantum Simple Harmonic Oscillator
+
+The quantum simple harmonic oscillator is a fundamental model in quantum mechanics that describes the behavior of a particle in a potential well.
+This is especially useful because many physical systems can be approximated as harmonic oscillators near their equilibrium positions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Recall that for a *classical* harmonic oscillator, simple harmonic motion occurs when a particle is subject to a restoring force proportional to its displacement from equilibrium.
+More abstractly, when the equation of motion is linear and time-translationally invariant, the solution is a combination of harmonic oscillators.
+For example, take this equation of motion:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \Gamma \dv{x}{t} + \omega^2 x = 0
+\end{equation}
+$$
+
+This is a second-order linear ordinary differential equation (ODE) with constant coefficients.
+It is linear because the coefficients of $x$ and its derivatives are constants, and it is time-translationally invariant because the coefficients do not depend on time.
+
+For a simple undamped harmonic oscillator, the equation of motion is:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \omega^2 x = 0
+\end{equation}
+$$
+
+Its solution is a combination of two sinusoidal functions. We typically use complex exponentials to represent the solution instead, because they are easier to manipulate mathematically.
+
+$$
+\begin{equation}
+x(t) = A e^{i \omega t} + B e^{-i \omega t} = C \cos(\omega t + \phi)
+\end{equation}
+$$
+
+where $A$ and $B$ are complex constants, and $C$ and $\phi$ are the amplitude and phase of the oscillation, respectively.
+The energy of the oscillator is given by the sum of its kinetic and potential energy:
+
+$$
+\begin{equation}
+\begin{split}
+E &= \frac{1}{2} m \dot{x}^2 + \frac{1}{2} k x^2 \\
+&= \frac{p^2}{2m} + \frac{m\omega^2}{2} x^2
+\end{split}
+\end{equation}
+$$
+
+where $p$ is the momentum of the particle, $m$ is its mass, and $k$ is the spring constant.
+In the quantum mechanical case, the Hamiltonian can be obtained by replacing the classical variables with their quantum operator equivalents
+
+$$
+\begin{equation}
+H = \frac{p^2}{2m} + \frac{1}{2} m \omega^2 x^2
+\end{equation}
+$$
+
+In the $x$-$p$ representation, the position-space wavefunction is difficult to work with.
+It is more convenient to introduce two (non-Hermitian) operators, $a$ and $a^\dagger$, called the **annihilation** and **creation operators**, respectively.
+Think of this change as changing the basis of the Hilbert space.
+An analogy would be changing from a pair of Cartesian coordinates $(x, y)$ to two complex numbers that are conjugates of each other, $(x + iy, x - iy)$:
+
+$$
+\begin{align}
+a &:= \sqrt{\frac{m \omega}{2 \hbar}} \qty(x + \frac{i}{m \omega} p) \label{eq:annihilation-def} \\
+a^\dagger &:= \sqrt{\frac{m \omega}{2 \hbar}} \qty(x - \frac{i}{m \omega} p) \label{eq:creation-def}
+\end{align}
+$$
+
+Their commutator is:
+
+$$
+\begin{equation}
+\begin{split}
+\comm{a}{a^\dagger} &= \frac{m \omega}{2 \hbar} \comm{x + \frac{i}{m \omega} p}{x - \frac{i}{m \omega} p} \\
+&= \frac{m \omega}{2 \hbar} \qty(\comm{x}{x} - \frac{i}{m \omega} \comm{x}{p} + \frac{i}{m \omega} \comm{p}{x} + \frac{1}{(m \omega)^2} \comm{p}{p}) \\
+&= \frac{m \omega}{2 \hbar} \qty(0 - \frac{i}{m \omega} i \hbar + \frac{i}{m \omega} (-i) \hbar + 0) \\
+&= \frac{m \omega}{2 \hbar} \qty(\frac{\hbar}{m \omega} + \frac{\hbar}{m \omega}) \\
+&= 1
+\end{split}
+\end{equation}
+$$
+
+And we can always rewrite the position and momentum operators in terms of the annihilation and creation operators:
+
+$$
+\begin{align}
+x &= \sqrt{\frac{\hbar}{2 m \omega}} \qty(a + a^\dagger) \label{eq:position-from-a} \\
+p &= -i \sqrt{\frac{\hbar m \omega}{2}} \qty(a - a^\dagger) \label{eq:momentum-from-a}
+\end{align}
+$$
+
+Next, we define the **number operator** $N$ as:
+
+$$
+\begin{equation}
+N := a^\dagger a
+\end{equation}
+$$
+
+This can be evaluated as:
+
+$$
+\begin{equation}
+\begin{split}
+N &= a^\dagger a \\
+&= \frac{m \omega}{2 \hbar} \qty(x - \frac{i}{m \omega} p) \qty(x + \frac{i}{m \omega} p) \\
+&= \frac{m \omega}{2 \hbar} \qty(x^2 + \frac{i}{m \omega} x p - \frac{i}{m \omega} p x + \frac{1}{(m \omega)^2} p^2) \\
+&= \frac{m \omega}{2 \hbar} \qty(x^2 + \frac{i}{m \omega} \comm{x}{p} + \frac{1}{(m \omega)^2} p^2) \\
+&= \frac{m \omega}{2 \hbar} \qty(x^2 - \frac{\hbar}{m \omega} + \frac{1}{(m \omega)^2} p^2) \\
+&= \frac{m \omega}{2 \hbar} \qty(x^2 + \frac{1}{(m \omega)^2} p^2) - \frac{1}{2} \\
+&= \frac{1}{\hbar \omega} H - \frac{1}{2}
+\end{split}
+\end{equation}
+$$
+
+The Hamiltonian can thus be expressed in terms of the number operator as:
+
+$$
+\begin{equation}
+H = \hbar \omega \qty(N + \frac{1}{2})
+\end{equation}
+$$
+
+which is a much simpler form. Since $H$ is linear in $N$, they share the same eigenstates.
+Recall that the eigenstates of $H$ are the energy eigenstates.
+We shall denote the eigenstates of $N$ as $\ket{n}$; $N\ket{n} = n \ket{n}$.
+When we apply $H$ to the eigenstates of $N$, we get:
+
+$$
+\begin{equation}
+H\ket{n} = \hbar \omega \qty(n + \frac{1}{2}) \ket{n}
+\end{equation}
+$$
+
+Hence, the energy eigenvalues are:
+
+$$
+\begin{equation}
+E_n = \hbar \omega \qty(n + \frac{1}{2})
+\end{equation}
+$$
+
+When $n = 0$, we have the **ground state** energy $E_0 = \frac{1}{2} \hbar \omega$.
+As we will see later, we must have $n$ be a non-negative integer.
+If that is the case, then the ground state is the lowest energy state of the system.
+Furthermore, the energy eigenvalues are equally spaced by $\hbar \omega$.
+This means that the energy levels are quantized, and the oscillator can only occupy discrete energy states.
+
+<Mafs>
+    <Coordinates.Cartesian xAxis={{ lines: false, labels: () => "" }} yAxis={{ lines: false, labels: () => "" }} />
+    {/* Potential energy plot */}
+    <Plot.OfX
+        y={x => 0.5 * 1 * x ** 2}
+    />
+
+    {/* Energies */}
+    {range(0, 5).map(n => (
+        <Fragment key={n}>
+            <Plot.OfX
+                y={x => n + 0.5}
+                color={color("red")}
+            />
+            <MafsMathJax
+                at={[0.5, n + 0.5 + 0.3]}
+                tex={`\\ket{${n}}`}
+                color={color("red")}
+            />
+            <Vector tail={[-0.5, n + 0.5]} tip={[-0.5, n + 0.5 + 1]} color={color("blue")} />
+            <Vector tip={[-0.5, n + 0.5]} tail={[-0.5, n + 0.5 + 1]} color={color("blue")} />
+            <MafsMathJax
+                at={[-0.8, n + 0.5 + 0.5]}
+                tex={`\\hbar \\omega`}
+            />
+        </Fragment>
+    ))}
+</Mafs>
+
+### Creation and Annihilation Operators
+
+As we have seen, $a$ and $a^\dagger$ are non-Hermitian operators that act on the energy eigenstates of the harmonic oscillator.
+We call $a$ the **annihilation operator** and $a^\dagger$ the **creation operator**.
+To see why they are named as such, we can apply them to the energy eigenstates.
+
+First, the commutation relations between $N$, $a$, and $a^\dagger$ are:
+
+$$
+\begin{align}
+\comm{N}{a} &= \comm{a^\dagger a}{a} = a^\dagger \comm{a}{a} + \comm{a^\dagger}{a} a = -a \\
+\comm{N}{a^\dagger} &= \comm{a^\dagger a}{a^\dagger} = a^\dagger \comm{a}{a^\dagger} + \comm{a^\dagger}{a} a^\dagger = a^\dagger
+\end{align}
+$$
+
+Recall that $N\ket{n} = n \ket{n}$; so the eigenvalue of $N$ is the energy level of the state.
+Now suppose we take $N a^\dagger \ket{n}$:
+
+$$
+\begin{equation}
+\begin{split}
+N a^\dagger \ket{n} &= \qty(\comm{N}{a^\dagger} + a^\dagger N) \ket{n} \\
+&= \qty(a^\dagger + n a^\dagger) \ket{n} \\
+&= (n + 1) a^\dagger \ket{n}
+\end{split}
+\end{equation}
+$$
+
+In other words, $a^\dagger \ket{n}$ is an eigenstate of $N$ with eigenvalue $n + 1$.
+This means that $a^\dagger \ket{n}$ is the state with one more quantum of energy than $\ket{n}$.
+Hence, $a^\dagger$ "creates" a quantum of energy in the system when it acts on the state $\ket{n}$.
+
+Similarly, we can take $N a \ket{n}$:
+
+$$
+\begin{equation}
+\begin{split}
+N a \ket{n} &= \qty(\comm{N}{a} + a N) \ket{n} \\
+&= \qty(-a + n a) \ket{n} \\
+&= (n - 1) a \ket{n}
+\end{split}
+\end{equation}
+$$
+
+This means that $a \ket{n}$ is an eigenstate of $N$ with eigenvalue $n - 1$.
+As such, $a \ket{n}$ is the state with one less quantum of energy than $\ket{n}$.
+This means that $a$ "annihilates" a quantum of energy in the system when it acts on the state $\ket{n}$.
+
+Because both $\ket{n - 1}$ and $a\ket{n}$ are eigenstates of $N$ with eigenvalue $n - 1$, they must be scalar multiples of each other.
+We can write this as:
+
+$$
+\begin{equation}
+a \ket{n} = c\ket{n - 1}
+\end{equation}
+$$
+
+where $c$ is a constant. We set $c$ to be real and positive by convention.
+To find $c$, we can "square" both sides of the equation by multiplying both sides by their duals:
+
+$$
+\begin{equation}
+\bra{n} a^\dagger a \ket{n} = c^2 \braket{n - 1}{n - 1}
+\end{equation}
+$$
+
+Since $a^\dagger a$ is $N$, the left-hand side is simply $\mel{n}{N}{n} = n \braket{n}{n} = n$.
+The right-hand side is $c^2 \braket{n - 1}{n - 1} = c^2$.
+Thus, we have:
+
+$$
+\begin{equation}
+n = c^2
+\end{equation}
+$$
+
+And since $c$ is real and positive, we have:
+
+$$
+\begin{equation}
+c = \sqrt{n}
+\end{equation}
+$$
+
+Similarly, for the creation operator, we can write:
+
+$$
+\begin{align}
+a^\dagger \ket{n} &= k \ket{n + 1} \\
+\bra{n} a a^\dagger \ket{n} &= k^2 \braket{n + 1}{n + 1} \\
+\mel{n}{a^\dagger a + \comm{a}{a^\dagger}}{n} &= k^2 \\
+\mel{n}{N + 1}{n} &= k^2 \\
+n - 1 &= k^2 \\
+k &= \sqrt{n + 1}
+\end{align}
+$$
+
+Thus we have the following relations:
+
+<Boxed>
+
+$$
+\begin{align}
+a \ket{n} &= \sqrt{n} \ket{n - 1} \label{eq:annihilation} \\
+a^\dagger \ket{n} &= \sqrt{n + 1} \ket{n + 1} \label{eq:creation}
+\end{align}
+$$
+
+</Boxed>
+
+Because $n = \mel{n}{N}{n} = \mel{n}{a^\dagger a}{n}$, we can split the right-hand side into two terms:
+
+$$
+\begin{equation}
+n = \braket{(\bra{n} a^\dagger)}{(a \ket{n})}
+\end{equation}
+$$
+
+$n$ is thus the inner product of two states. Because inner products are positive-definite, we can conclude that $n \geq 0$.
+Next, suppose we take a state $\ket{n}$ and repeatedly apply the annihilation operator to it:
+
+$$
+\begin{align}
+a \ket{n} &= \sqrt{n} \ket{n - 1} \\
+a^2 \ket{n} &= a \qty(\sqrt{n} \ket{n - 1}) = \sqrt{n(n - 1)} \ket{n - 2} \\
+a^3 \ket{n} &= \sqrt{n(n - 1)(n - 2)} \ket{n - 3} \\
+&\vdots
+\end{align}
+$$
+
+If $n$ is an integer, we can keep applying the annihilation operator until we reach $n = 0$. Then, applying the annihilation operator again gives:
+
+$$
+\begin{equation}
+a \ket{0} = \sqrt{0} \ket{-1} = 0
+\end{equation}
+$$
+
+Meaning that the state $\ket{0}$ is completely destroyed by the annihilation operator.
+However, if $n$ is not an integer, we can keep applying the annihilation operator indefinitely, until we reach a state with negative energy.
+This contradicts the fact that $n \geq 0$. Thus, **we must have $n$ be a non-negative integer**.
+
+## Position, Momentum, and Energy
+
+We shall first write down all the possible eigenstates of the system, $\ket{n}$.
+Let $\ket{0}$ be the ground state of the system.
+Then, we can repeatedly apply the creation operator to it to get the other eigenstates:
+
+$$
+\begin{align}
+a^\dagger \ket{0} &= \ket{1} \\
+a^\dagger \ket{1} &= \sqrt{2} \ket{2} \\
+a^\dagger \ket{2} &= \sqrt{3} \ket{3} \\
+&\vdots
+\end{align}
+$$
+
+Thus:
+
+$$
+\begin{align}
+\ket{1} &= a^\dagger \ket{0} \\
+\ket{2} &= \frac{a^\dagger}{\sqrt{2}} \ket{1} = \frac{(a^\dagger)^2}{\sqrt{2}} \ket{0} \\
+\ket{3} &= \frac{a^\dagger}{\sqrt{3}} \ket{2} = \frac{(a^\dagger)^3}{\sqrt{3!}} \ket{0} \\
+&\vdots \\
+\ket{n} &= \frac{(a^\dagger)^n}{\sqrt{n!}} \ket{0}
+\end{align}
+$$
+
+### Matrix Elements of Creation and Annihilation Operators
+
+The matrix elements of the creation and annihilation operators are easy to compute.
+
+For example, for the annihilation operator, we start with Equation $\eqref{eq:annihilation}$ and apply another state $\bra{n'}$ to it:
+
+$$
+\begin{equation}
+\mel{n'}{a}{n} = \mel{n'}{\sqrt{n}}{n - 1}
+\end{equation}
+$$
+
+Recall that eigenstates are orthogonal to each other.
+Therefore, if $n' = n - 1$, we have:
+
+$$
+\begin{equation}
+\mel{n'}{a}{n} = \sqrt{n} \braket{n - 1}{n - 1} = \sqrt{n}
+\end{equation}
+$$
+
+If $n' \neq n - 1$, we have $\braket{n'}{n - 1} = 0$.
+Thus we can summarize the matrix elements of the annihilation operator as:
+
+$$
+\begin{equation}
+\mel{n'}{a}{n} = \sqrt{n} \delta_{n', n - 1} \label{eq:annihilation-matrix}
+\end{equation}
+$$
+
+Similarly, we can compute the matrix elements of the creation operator.
+Begin with Equation $\eqref{eq:creation}$ and apply another state $\bra{n'}$ to it:
+
+$$
+\begin{equation}
+\mel{n'}{a^\dagger}{n} = \mel{n'}{\sqrt{n + 1}}{n + 1} = \sqrt{n + 1} \delta_{n', n + 1} \label{eq:creation-matrix}
+\end{equation}
+$$
+
+### Matrix Elements of Position and Momentum Operators
+
+Using the matrix elements of the creation and annihilation operators, as well as Equations $\eqref{eq:position-from-a}$ and $\eqref{eq:momentum-from-a}$, we can compute the matrix elements of the position and momentum operators.
+For the position operator, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\mel{n'}{x}{n} &= \mel{n'}{\sqrt{\frac{\hbar}{2 m \omega}} \qty(a + a^\dagger)}{n} \\
+&= \sqrt{\frac{\hbar}{2 m \omega}} \qty(\mel{n'}{a}{n} + \mel{n'}{a^\dagger}{n}) \\
+&= \sqrt{\frac{\hbar}{2 m \omega}} \qty(\sqrt{n} \delta_{n', n - 1} + \sqrt{n + 1} \delta_{n', n + 1})
+\end{split} \label{eq:position-matrix}
+\end{equation}
+$$
+
+Similarly, for the momentum operator, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\mel{n'}{p}{n} &= \mel{n'}{-i \sqrt{\frac{\hbar m \omega}{2}} \qty(a - a^\dagger)}{n} \\
+&= -i \sqrt{\frac{\hbar m \omega}{2}} \qty(\mel{n'}{a}{n} - \mel{n'}{a^\dagger}{n}) \\
+&= -i \sqrt{\frac{\hbar m \omega}{2}} \qty(\sqrt{n} \delta_{n', n - 1} - \sqrt{n + 1} \delta_{n', n + 1})
+\end{split} \label{eq:momentum-matrix}
+\end{equation}
+$$
+
+### Energy Eigenfunctions in Position Space
+
+Recall that for a continuous observable, the eigenstates of the observable are represented by wavefunctions in position space.
+In our case, this wavefunction is known as the **energy eigenfunction**.
+The energy eigenfunctions are the wavefunctions of the harmonic oscillator in position space:
+
+$$
+\begin{equation}
+\psi_n(x') = \braket{x'}{n}
+\end{equation}
+$$
+
+This is actually quite tricky to compute.
+Start with the ground state $\ket{0}$, defined by $a \ket{0} = 0$.
+Obviously, applying any operator or product of operators to the ground state will still yield zero.
+Applying a position $\bra{x'}$ to it gives:
+
+$$
+\begin{equation}
+0 = \mel{x'}{a}{0} = \mel{x'}{\sqrt{\frac{m \omega}{2 \hbar}} \qty(x + \frac{i}{m \omega} p)}{0}
+\end{equation}
+$$
+
+[Recall that in the position representation](../Mathematical%20Foundations/Wave%20Functions%20in%20X-P%20Space#mjx-eqn%3Aeq%3Amomentum-operator-position-eigenkets-inner-product), the momentum operator is given by:
+
+$$
+\begin{equation}
+\mel{x'}{p}{\psi} = -i \hbar \dv{x'} \braket{x'}{\psi}
+\end{equation}
+$$
+
+Thus, we can rewrite the equation as:
+
+$$
+\begin{equation}
+0 = \sqrt{\frac{m \omega}{2 \hbar}} \qty(x' + \frac{i}{m \omega} (-i \hbar) \dv{x'}) \braket{x'}{0}
+\end{equation}
+$$
+
+Dividing both sides by $\sqrt{\frac{m \omega}{2 \hbar}}$ gives:
+
+$$
+\begin{equation}
+0 = \qty(x' + \frac{\hbar}{m \omega} \dv{x'}) \braket{x'}{0}
+\end{equation}
+$$
+
+Let $x_0 := \frac{\hbar}{m \omega}$ (where the square root is taken for dimensionality reasons).
+Then we have:
+
+$$
+\begin{equation}
+0 = \qty(x' + x_0^2 \dv{x'}) \braket{x'}{0}
+\end{equation}
+$$
+
+Rearranging this, and using $\braket{x'}{0} = \psi_0(x')$, gives:
+
+$$
+\begin{equation}
+\dv{x'} \psi_0(x') = -\frac{1}{x_0^2} x' \psi_0(x')
+\end{equation}
+$$
+
+This is a separable differential equation;
+
+$$
+\begin{equation}
+\frac{1}{\psi_0(x')} \dd{\psi_0(x')} = -\frac{1}{x_0^2} x' \dd{x'}
+\end{equation}
+$$
+
+Then, integrating both sides gives:
+
+$$
+\begin{equation}
+\psi_0(x') = \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2}) + C] = A \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2})]
+\end{equation}
+$$
+
+To normalize the wavefunction, we can integrate over all space.
+I will skip over the details (it's just a Gaussian integral), but the result is:
+
+$$
+\begin{equation}
+\psi_0(x') = \frac{1}{\pi^{1/4} x_0^{1/2}} \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2})]
+\end{equation}
+$$

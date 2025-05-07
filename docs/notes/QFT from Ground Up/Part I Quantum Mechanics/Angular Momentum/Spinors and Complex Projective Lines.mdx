@@ -1,0 +1,255 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Spinors and Complex Projective Lines
+
+Previously, we have seen a few examples of spinors in physical systems.
+This includes the Jones vector, a spinor describing the polarization of light, as well as quantum spin states in the Stern-Gerlach experiment.
+In this section, we will explore a closely related concept known as the complex projective line, and how spinors are represented as points on this line.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What We Know So Far
+
+### Jones Vectors
+
+We first saw spinors in the context of the Jones vector, a two-dimensional complex vector that describes the polarization of light.
+There are a few interesting properties of the Jones vector:
+
+- Multiplying the Jones vector by a phase factor $e^{i\phi}$ simply phase-shifts the light, but does not change the polarization.
+- Multiplying the Jones vector by a real scaling factor $A$ just scales the amplitude of the light, but does not change the polarization.
+
+As such, generally, we can say that the Jones vector is defined up to a complex scaling factor $A e^{i\phi}$, where $A$ is a real number and $\phi$ is a phase.
+In other words, $\vb{J}$ and $A e^{i\phi} \vb{J}$ represent the same physical state.
+
+Jones vectors can be represented on a Poincaré sphere, where they transform with rotation matrices.
+Because rotations must preserve the magnitude of the vector, their determinant must have magnitude $1$.
+This means that $\vb{v} \cdot \vb{v} = \vb{v}^\dagger \vb{v}$ is invariant under the transformation.
+We know that this means that the transformation is a unitary transformation from a simple proof, starting with $\vb{v}^\dagger \vb{v} = (R\vb{v})^\dagger (R\vb{v})$:
+
+$$
+\begin{equation}
+\begin{split}
+(R\vb{v})^\dagger (R\vb{v}) &= \vb{v}^\dagger R^\dagger R \vb{v} \\
+&= \vb{v}^\dagger \vb{v}
+\end{split}
+\end{equation}
+$$
+
+Hence $R^\dagger R = I$, which is the definition of a unitary transformation.
+We say that $R \in \text{U}(2)$, the group of $2 \times 2$ unitary matrices.
+
+The rotation can also be multiplied by an arbitrary phase factor $e^{i\phi}$, which does not change the length of the vector:
+
+$$
+\begin{equation}
+R \to e^{i\phi} R \implies R^\dagger R = e^{-i\phi} R^\dagger e^{i\phi} R = I
+\end{equation}
+$$
+
+To resolve this ambiguity, we choose a specific phase factor such that the determinant of the matrix is $1$.
+This set of matrices is called the special unitary group $\text{SU}(2)$, which is the group of $2 \times 2$ unitary matrices with determinant $1$.
+
+Lastly, a rotation of $\theta$ of the Jones vector in real physical space corresponds to a rotation of $2\theta$ in the Poincaré sphere.
+
+### Quantum Spin States in the SG Experiment
+
+In the Stern-Gerlach experiment, we saw that the spin states of a particle can be represented as a two-dimensional complex vector $\ket{\psi}$.
+This vector can be expressed in terms of the basis states $\ket{+z}$ and $\ket{-z}$, which represent the spin-up and spin-down states along the $z$-axis, respectively.
+
+The probability of measuring the spin in the $z$-direction is given by the Born rule:
+
+$$
+\begin{equation}
+P(\pm z) = \abs{\braket{\pm z}{\psi}}^2
+\end{equation}
+$$
+
+We once again see two interesting properties of the spin state:
+
+- Multiplying the spin state by a phase factor $e^{i\phi}$ does not change the probability of measuring the spin in the $z$-direction:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \abs{\braket{\pm z}{e^{i\phi} \psi}}^2 &= \abs{e^{i\phi} \braket{\pm z}{\psi}}^2 \\
+    &= \abs{e^{i\phi}}^2 \abs{\braket{\pm z}{\psi}}^2 \\
+    &= \abs{\braket{\pm z}{\psi}}^2
+    \end{split}
+    \end{equation}
+    $$
+
+- Multiplying the spin state by a real scaling factor $A$ does not change the probability of measuring the spin in the $z$-direction.
+    This is because in quantum mechanics, we only care about the direction of the state vector, not its magnitude.
+    To account for this, we either force the state vector to be normalized, or we can add a normalization factor to the Born rule:
+
+    $$
+    \begin{equation}
+    P(\phi \to \psi) = \frac{\abs{\braket{\psi}{\phi}}^2}{\norm{\ket{\phi}}^2 \norm{\ket{\psi}}^2} = \frac{\abs{\braket{\psi}{\phi}}^2}{\braket{\phi}{\phi} \braket{\psi}{\psi}}
+    \end{equation}
+    $$
+
+This means that the spin state is defined up to a complex scaling factor $A e^{i\phi}$, where $A$ is a real number and $\phi$ is a phase.
+In other words, $\ket{\psi}$ and $A e^{i\phi} \ket{\psi}$ represent the same physical state.
+
+We can also represent the spin state on an abstract sphere, now called the Bloch sphere.
+On this sphere, the spin state is represented as a point on the surface of the sphere.
+Similar to Jones vectors, the spin state can be transformed with $\text{SU}(2)$ matrices, which are unitary transformations that have determinant $1$.
+This means that the spin state is invariant under these transformations, and the transformation can be represented as a rotation of the point on the Bloch sphere.
+
+Lastly, a rotation of $\theta$ of the spin state in the vector space corresponds to a rotation of $2\theta$ in the Bloch sphere.
+For example, $\ket{+z}$ and $\ket{-z}$ are $90^\circ$ apart in the vector space (because they are orthogonal), whereas they are $180^\circ$ apart in the Bloch sphere.
+
+### Spinors
+
+We introduced the object known as a spinor as a generalization of the Jones vector and the spin state.
+From what we have seen so far, we can see that:
+
+1. Spinors are two-dimensional complex vectors; $\mqty[\alpha \\ \beta]$
+2. Spinors are defined up to a complex scaling factor $A e^{i\phi}$, where $A$ is a real number and $\phi$ is a phase.
+3. Spinors can be represented on an abstract sphere, where they transform with $\text{SU}(2)$ matrices.
+4. A rotation of $\theta$ of the spinor in the vector space corresponds to a rotation of $2\theta$ in the abstract sphere.
+
+Because of the phase ambiguity, $\mqty[\alpha \\ \beta]$ and $A e^{i\phi} \mqty[\alpha \\ \beta]$ represent the same physical state.
+As such, we can choose $A e^{i\phi} = 1/\alpha$, which means the spinor becomes $\mqty[1 \\ \beta/\alpha]$.
+This means that a single ratio $\beta/\alpha$ uniquely determines the spinor.
+
+## The Real Projective Line
+
+Suppose we have a two-dimensional world, represented as a $xy$ plane.
+Now suppose a person is standing at the origin and looking out into the world through a screen.
+Points in the plane are projected onto the screen and interpreted by the person.
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {/* screen is a line x = 1 */}
+    <Plot.OfY x={() => 1} color={color("blue")} />
+    {/* viewer on origin */}
+    <Point x={0} y={0} color={color("red")} />
+    <Text x={-0} y={-0} attach="sw" color={color("red")} size="25">Viewer</Text>
+    {/* random points */}
+    {[[3, 1.5], [6, 2], [1.5, 1], [3.5, -2]].map((point, i) => (
+        <Point key={i} x={point[0]} y={point[1]} />
+    ))}
+</Mafs>
+
+There are a few ways to do this projection.
+
+- In **orthogonal projection**, each point is projected onto the screen by drawing a line perpendicular to the screen.
+    This means that the projection of a point $(x, y)$ is given by the point $(1, y)$.
+
+- In **perspective projection**, each point is projected onto the screen by drawing a line from the viewer to the point.
+    This means that the projection of a point $(x, y)$ is given by the point $(1, \frac{y}{x})$.
+
+:::info Visualization of Orthogonal and Perspective Projection
+
+<Tabs>
+    <TabItem value="orthogonal" label="Orthogonal Projection" default>
+        <Mafs>
+            <Coordinates.Cartesian />
+            {/* screen is a line x = 1 */}
+            <Plot.OfY x={() => 1} color={color("blue")} />
+            {/* viewer on origin */}
+            <Point x={0} y={0} color={color("red")} />
+            <Text x={-0} y={-0} attach="sw" color={color("red")} size="25">Viewer</Text>
+            {/* random points */}
+            {[[3, 1.5], [6, 2], [1.5, 1], [3.5, -2]].map((point, i) => (
+                <Fragment key={i}>
+                    {/* original point */}
+                    <Point x={point[0]} y={point[1]} />
+                    {/* projection point */}
+                    <Point x={1} y={point[1]} color={color("blue")} />
+                    {/* vector connecting original point to projection point */}
+                    <Vector
+                        tail={[point[0], point[1]]}
+                        tip={[1, point[1]]}
+                    />
+                </Fragment>
+            ))}
+        </Mafs>
+    </TabItem>
+    <TabItem value="perspective" label="Perspective Projection">
+        <Mafs>
+            <Coordinates.Cartesian />
+            {/* screen is a line x = 1 */}
+            <Plot.OfY x={() => 1} color={color("blue")} />
+            {/* viewer on origin */}
+            <Point x={0} y={0} color={color("red")} />
+            <Text x={-0} y={-0} attach="sw" color={color("red")} size="25">Viewer</Text>
+            {/* random points */}
+            {[[3, 1.5], [6, 2], [1.5, 1], [3.5, -2]].map((point, i) => (
+                <Fragment key={i}>
+                    {/* dotted line with slope */}
+                    <Plot.OfX y={(x) => x > 0 ? point[1] / point[0] * x : undefined} style="dashed" opacity={0.35} />
+                    {/* original point */}
+                    <Point x={point[0]} y={point[1]} />
+                    {/* projection point */}
+                    <Point x={1} y={point[1] / point[0]} color={color("blue")} />
+                    {/* vector connecting original point to projection point */}
+                    <Vector
+                        tail={[point[0], point[1]]}
+                        tip={[1, point[1] / point[0]]}
+                    />
+                </Fragment>
+            ))}
+        </Mafs>
+    </TabItem>
+</Tabs>
+
+:::
+
+We will focus on the perspective projection, as it is more relevant to our discussion of spinors.
+In this case, a point $(x, y)$ is projected along a line of constant slope, where the slope is $y/x$.
+In other words, at any point along the line $(x', y')$, the ratio must match $y'/x' = y/x$.
+As such, when projected to $x' = 1$, we have $y' = y/x$.
+This means that the projection of a point $(x, y)$ is given by the point $(1, \frac{y}{x})$.
+
+We see that if we scale the point $(x, y)$ by a factor of $A$, the projection is given by the point $(1, \frac{Ay}{Ax}) = (1, \frac{y}{x})$.
+This means that the projection is invariant under scaling. This can be seen physically—if we move the point further away from the viewer, the projection on the screen does not change.
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {/* screen is a line x = 1 */}
+    <Plot.OfY x={() => 1} color={color("blue")} />
+    {/* viewer on origin */}
+    <Point x={0} y={0} color={color("red")} />
+    <Text x={-0} y={-0} attach="sw" color={color("red")} size="25">Viewer</Text>
+    {/* random points */}
+    {[[2, 1], [2 * 1.5, 1 * 1.5], [2 * 2, 1 * 2]].map((point, i) => (
+        <Fragment key={i}>
+            {/* dotted line with slope */}
+            <Plot.OfX y={(x) => x > 0 ? point[1] / point[0] * x : undefined} style="dashed" opacity={0.35} />
+            {/* original point */}
+            <Point x={point[0]} y={point[1]} />
+            {/* projection point */}
+            <Point x={1} y={point[1] / point[0]} color={color("blue")} />
+            {/* vector connecting original point to projection point */}
+            <Vector
+                tail={[point[0], point[1]]}
+                tip={[1, point[1] / point[0]]}
+            />
+        </Fragment>
+    ))}
+</Mafs>
+
+As such, for any point, the ratio $\frac{y}{x}$ uniquely determines the projection on the screen.
+The image of the plane onto the line is known as the **real projective line** $\mathbb{RP}^1$.
+
+We can already see that the real projective line shares some properties with spinors.
+Both are invariant under scaling, and are uniquely determined by a ratio.

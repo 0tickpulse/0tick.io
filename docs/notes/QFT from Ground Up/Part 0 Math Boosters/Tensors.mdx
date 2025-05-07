@@ -1,7 +1,3 @@
----
-sidebar_position: 2
----
-
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
 
 import { useState, useCallback } from "react";
@@ -16,27 +12,109 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 ## Tensors
 
-A **tensor** is a mathematical object that is invariant under a change of basis.
+A **tensor**, roughly speaking, is a mathematical object that is invariant under a change of basis.
 However, they have *components* that transform in a specific way under a change of basis.
 In this page, we will introduce the concept of tensors and build up our understanding of them.
-We will first explore some examples of tensors, like covectors and linear maps.
+We will first explore some examples of tensors, like dual vectors and linear maps.
 Then, we will formalize our understanding of tensors with tensor products.
 
 ## Table of Contents
 
 <TOCInline toc={toc} />
 
-## Covectors
+## Change of Basis
 
-A **covector** is a linear map that takes a vector and returns a scalar.
-They have many names—dual vectors, one-forms, linear functionals, etc.—but they all refer to the same concept.
-If you have read the quantum mechanics section, you will know that the bra vector $\bra{\psi}$ is a covector.
-The Riesz representation theorem states that every covector can be represented as an inner product with a vector.
-We will re-introduce the concept of covectors, this time in the context of tensors.
+The most fundamental concept in tensors is the idea of a **change of basis**.
+A **basis** is a set of vectors that can be used to represent any vector in a vector space.
+Recall that vectors can be represented as a linear combination of basis vectors:
 
-Let $\alpha$ be a covector. When applied to a vector $\vb{v}$, it returns a scalar, denoted by $\alpha(\vb{v})$.
+$$
+\begin{equation}
+\vb{v} = \class{pink}{v^1} \class{red}{\vb{e}_1} + \class{pink}{v^2} \class{red}{\vb{e}_2} + \cdots + \class{pink}{v^n} \class{red}{\vb{e}_n}
+\end{equation}
+$$
+
+where $\class{red}{\vb{e}_i}$ are the basis vectors and $\class{pink}{v^i}$ are the components of the vector $\vb{v}$.
+A **change of basis** is a transformation that changes the basis vectors from one set to another.
+Suppose we change to a new basis $\class{darkblue}{\tilde{\vb{e}}_i}$.
+We can express the new basis vectors in terms of the old basis vectors:
+
+$$
+\begin{align}
+\class{darkblue}{\tilde{\vb{e}}_1} &= T_{11} \class{red}{\vb{e}_1} + T_{12} \class{red}{\vb{e}_2} + \cdots + T_{1n} \class{red}{\vb{e}_n} \\
+\class{darkblue}{\tilde{\vb{e}}_2} &= T_{21} \class{red}{\vb{e}_1} + T_{22} \class{red}{\vb{e}_2} + \cdots + T_{2n} \class{red}{\vb{e}_n} \\
+\vdots \\
+\class{darkblue}{\tilde{\vb{e}}_n} &= T_{n1} \class{red}{\vb{e}_1} + T_{n2} \class{red}{\vb{e}_2} + \cdots + T_{nn} \class{red}{\vb{e}_n}
+\end{align}
+$$
+
+The coefficients $T_{ij}$ form a **transformation matrix** $T$ that transforms the old basis vectors into the new basis vectors:
+
+$$
+\begin{equation}
+\class{darkblue}{\tilde{\vb{e}}_i} = \sum_{j=1}^n T_{ij} \class{red}{\vb{e}_j}
+\end{equation}
+$$
+
+Written in matrix form, this is:
+
+$$
+\begin{equation}
+\mqty[\class{darkblue}{\tilde{\vb{e}}_1} & \class{darkblue}{\tilde{\vb{e}}_2} & \cdots & \class{darkblue}{\tilde{\vb{e}}_n}] = \mqty[\class{red}{\vb{e}_1} & \class{red}{\vb{e}_2} & \cdots & \class{red}{\vb{e}_n}] \mqty[T_{11} & T_{12} & \cdots & T_{1n} \\ T_{21} & T_{22} & \cdots & T_{2n} \\ \vdots & \vdots & \ddots & \vdots \\ T_{n1} & T_{n2} & \cdots & T_{nn}]
+\end{equation}
+$$
+
+The different theories of relativity essentially boil down to different ways of changing the basis of a vector space.
+Galilean relativity uses the Galilean transformation while special relativity uses the Lorentz transformation.
+In both cases, the transformation matrix is a linear transformation that transforms the old basis vectors into the new basis vectors.
+
+### Vectors Under Change of Basis
+
+When we change the basis, the components of a vector transform in a specific way.
+Suppose we have a vector $\vb{v}$ in the old basis, represented by its components $\class{pink}{v^i}$.
+One reason we use the superscript $i$ (as opposed to a subscript) and the subscript for basis vectors is because vector components are typically placed in a column vector, while basis vectors are typically placed in a row vector;
+
+$$
+\begin{equation}
+\vb{v} = \mqty[\class{red}{\vb{e}_1} & \class{red}{\vb{e}_2} & \cdots & \class{red}{\vb{e}_n}] \mqty[\class{pink}{v^1} \\ \class{pink}{v^2} \\ \vdots \\ \class{pink}{v^n}]
+\end{equation}
+$$
+
+In textbooks, one might often see it just written as:
+
+$$
+\begin{equation}
+\vb{v} = \mqty[\class{pink}{v^1} \\ \class{pink}{v^2} \\ \vdots \\ \class{pink}{v^n}]
+\end{equation}
+$$
+
+This is just a shorthand notation for the above equation with an implied basis.
+If we replace the basis with another one (by introducing a transformation matrix $T$), we must also use the inverse of the transformation matrix to transform the components of the vector to keep the vector the same:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{v} &= \mqty[\class{red}{\vb{e}_1} & \class{red}{\vb{e}_2} & \cdots & \class{red}{\vb{e}_n}] (T) (T^{-1}) \mqty[\class{pink}{v^1} \\ \class{pink}{v^2} \\ \vdots \\ \class{pink}{v^n}] \\
+&= \mqty[\class{darkblue}{\tilde{\vb{e}}_1} & \class{darkblue}{\tilde{\vb{e}}_2} & \cdots & \class{darkblue}{\tilde{\vb{e}}_n}] \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2} \\ \vdots \\ \class{blue}{\tilde{v}^n}]
+\end{split}
+\end{equation}
+$$
+
+As such, vector components transform with the inverse of $T$.
+We say that vector components are **contravariant**.
+On the other hand, because vector bases transform with $T$, we say that vector bases are **covariant**.
+
+## Dual Vectors
+
+A **dual vector** or **covector** is a linear map that takes a vector and returns a scalar.
+They have many names—dual vectors, covectors, one-forms, linear functionals, etc.—but they all refer to the same concept.
+If you have read the quantum mechanics section, you will know that the bra vector $\bra{\psi}$ is a dual vector.
+The Riesz representation theorem states that every dual vector can be represented as an inner product with a vector.
+We will re-introduce the concept of dual vectors, this time in the context of tensors.
+
+Let $\alpha$ be a dual vector. When applied to a vector $\vb{v}$, it returns a scalar, denoted by $\alpha(\vb{v})$.
 They are represented by a row vector.
-For a simple example, consider the covector $\alpha = \mqty[1 & 2]$.
+For a simple example, consider the dual vector $\alpha = \mqty[1 & 2]$.
 When applied to the vector $\vb{v} = \mqty[3 \\ 4]$, we get:
 
 $$
@@ -78,7 +156,7 @@ $$
 \end{equation}
 $$
 
-From these examples, we can see that covectors are **linear** maps, meaning that they satisfy the following properties:
+From these examples, we can see that dual vectors are **linear** maps, meaning that they satisfy the following properties:
 
 $$
 \begin{align}
@@ -87,7 +165,7 @@ $$
 \end{align}
 $$
 
-Hence, more formally, we define covectors symbolically as:
+Hence, more formally, we define dual vectors symbolically as:
 
 $$
 \begin{equation}
@@ -96,12 +174,12 @@ $$
 $$
 
 where $V$ is the vector space and $\mathbb{F}$ is the field that the vector space is defined over.
-The set of all covectors on a vector space $V$ is called the **dual space** of $V$, denoted by $V^*$.
+The set of all dual vectors on a vector space $V$ is called the **dual space** of $V$, denoted by $V^*$.
 
-### Index Notation for Covectors
+### Index Notation for dual vectors
 
-When we apply a covector to a vector, we take each component of the covector and multiply it by the corresponding component of the vector.
-For a covector $\alpha = \mqty[3 & 9 & 5]$, we say that $\alpha_1 = 3$, $\alpha_2 = 9$, and $\alpha_3 = 5$.
+When we apply a dual vector to a vector, we take each component of the dual vector and multiply it by the corresponding component of the vector.
+For a dual vector $\alpha = \mqty[3 & 9 & 5]$, we say that $\alpha_1 = 3$, $\alpha_2 = 9$, and $\alpha_3 = 5$.
 As such, when we apply $\alpha$ to a vector, we get:
 
 $$
@@ -110,11 +188,11 @@ $$
 \end{equation}
 $$
 
-### Visualizing Covectors
+### Visualizing dual vectors
 
-Suppose we have covectors acting on two-dimensional vectors.
-We can imagine a covector as a surface, where the height of the surface at a point $(x, y)$ is given by the value of the covector at that point.
-For example, consider the covector $\alpha = \mqty[1 & 2]$. This is visualized as a plane with a slope of $2$ in the $x$-direction and $1$ in the $y$-direction:
+Suppose we have dual vectors acting on two-dimensional vectors.
+We can imagine a dual vector as a surface, where the height of the surface at a point $(x, y)$ is given by the value of the dual vector at that point.
+For example, consider the dual vector $\alpha = \mqty[1 & 2]$. This is visualized as a plane with a slope of $2$ in the $x$-direction and $1$ in the $y$-direction:
 
 <CustomMathbox>
     <MB.Cartesian>
@@ -123,7 +201,7 @@ For example, consider the covector $\alpha = \mqty[1 & 2]$. This is visualized a
         <MB.Axis axis="z" range={[-5, 5]} />
 
         <MB.Area
-            id="covector"
+            id="dual vector"
             axes="xy"
             rangeX={[-10, 10]}
             rangeY={[-10, 10]}
@@ -135,7 +213,7 @@ For example, consider the covector $\alpha = \mqty[1 & 2]$. This is visualized a
             channels={3}
         />
         <MB.Surface
-            points="#covector"
+            points="#dual vector"
             lineX={true}
             lineY={true}
             opacity={0.75}
@@ -145,11 +223,11 @@ For example, consider the covector $\alpha = \mqty[1 & 2]$. This is visualized a
 </CustomMathbox>
 
 However, these can be difficult to visualize and draw, especially in higher dimensions.
-We instead prefer to use a series of lines to represent covectors, akin to a contour plot.
-Each line represents a constant value of the covector.
+We instead prefer to use a series of lines to represent dual vectors, akin to a contour plot.
+Each line represents a constant value of the dual vector.
 Then, the value of $\alpha$ on a vector $\vb{v}$ is given by how many lines $\vb{v}$ intersects.
 
-export function CovectorContourVisualizer({ alpha = [1, 2], arrowsInsteadOfNumbers = false }) {
+export function DualVectorContourVisualizer({ alpha = [1, 2], arrowsInsteadOfNumbers = false }) {
     const vMovable = useMovablePoint([1, 1]);
     const f = (x, y) => alpha[0] * x + alpha[1] * y;
     const y = (x, value) => -alpha[0] / alpha[1] * x + value / alpha[1];
@@ -186,17 +264,17 @@ export function CovectorContourVisualizer({ alpha = [1, 2], arrowsInsteadOfNumbe
     )
 }
 
-<CovectorContourVisualizer />
+<DualVectorContourVisualizer />
 
-Alternatively, instead of writing the number on each line, we simply draw an arrow pointing in the direction of increasing values of the covector.
+Alternatively, instead of writing the number on each line, we simply draw an arrow pointing in the direction of increasing values of the dual vector.
 
-### Covector Arithmetic
+### dual vector Arithmetic
 
-Covectors can be added and multiplied by scalars in the same way as vectors.
+Dual vectors can be added and multiplied by scalars in the same way as vectors.
 This is because the dual space $V^*$ is itself a vector space.
 
-When a covector is scaled, say $\alpha \to 2\alpha$, the contour lines look more densely packed.
-When a covector is added to another, say $\alpha + \beta$, the contour lines are the sum of the two covectors.
+When a dual vector is scaled, say $\alpha \to 2\alpha$, the contour lines look more densely packed.
+When a dual vector is added to another, say $\alpha + \beta$, the contour lines are the sum of the two dual vectors.
 These operations follow linearity rules:
 
 $$
@@ -205,9 +283,9 @@ $$
 \end{equation}
 $$
 
-### Covector Basis and Components
+### Dual Vector Basis and Components
 
-Just like vectors, covectors have a basis.
+Just like vectors, dual vectors have a basis.
 In order to define a basis, they should be linearly independent and span the entire dual space $V^*$.
 We define them using the following: if $V$ has a basis $\qty{\vb{e}_i}$, then $V^*$ has a basis $\qty{\vb{\epsilon}^i}$ such that:
 
@@ -217,7 +295,7 @@ $$
 \end{equation}
 $$
 
-where $\delta^i_j$ is the Kronecker delta. Thus a covector can be written as:
+where $\delta^i_j$ is the Kronecker delta. Thus a dual vector can be written as:
 
 $$
 \begin{equation}
@@ -225,9 +303,9 @@ $$
 \end{equation}
 $$
 
-Notice that unlike vector bases, covector bases have a superscript index—covector bases are contravariant.
+Notice that unlike vector bases, dual vector bases have a superscript index—dual vector bases are contravariant.
 To see this more concretely, let $T$ be the transformation matrix from an old basis to a new basis.
-Suppose we apply a covector $\alpha$ to a vector $\vb{v}$. In the old basis, we have:
+Suppose we apply a dual vector $\alpha$ to a vector $\vb{v}$. In the old basis, we have:
 
 $$
 \begin{equation}
@@ -244,11 +322,11 @@ $$
 \end{equation}
 $$
 
-We already know that vector components are contravariant and transform with the inverse matrix. As such, $T^{-1} \mqty[\class{pink}{v^1} \\ \class{pink}{v^2}] = \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]$:
+We already know that vector components are contravariant and transform with the inverse matrix. As such, $T^{-1} \mqty[\class{pink}{v^1} \\ \class{pink}{v^2}] = \mqty[\class{darkblue}{\tilde{v}^1} \\ \class{darkblue}{\tilde{v}^2}]$:
 
 $$
 \begin{equation}
-\alpha(\vb{v}) = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]
+\alpha(\vb{v}) = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T \mqty[\class{darkblue}{\tilde{v}^1} \\ \class{darkblue}{\tilde{v}^2}]
 \end{equation}
 $$
 
@@ -256,13 +334,13 @@ Now, let's expand $\alpha(\vb{v})$ in the new basis:
 
 $$
 \begin{equation}
-\alpha(\vb{v}) = \mqty[\class{blue}{\tilde{\alpha}_1} & \class{blue}{\tilde{\alpha}_2}] \mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]
+\alpha(\vb{v}) = \mqty[\class{darkblue}{\tilde{\alpha}_1} & \class{darkblue}{\tilde{\alpha}_2}] \mqty[\class{darkblue}{\tilde{v}^1} \\ \class{darkblue}{\tilde{v}^2}]
 \end{equation}
 $$
 
-Comparing the two expressions, we find that $\mqty[\class{blue}{\tilde{\alpha}_1} & \class{blue}{\tilde{\alpha}_2}] = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T$.
-Hence, covector components are **covariant** and transform with the transformation matrix.
-And by the fact that covectors are invariant, we have that the covector basis transforms with the inverse matrix.
+Comparing the two expressions, we find that $\mqty[\class{darkblue}{\tilde{\alpha}_1} & \class{darkblue}{\tilde{\alpha}_2}] = \mqty[\class{pink}{\alpha_1} & \class{pink}{\alpha_2}] T$.
+Hence, dual vector components are **covariant** and transform with the transformation matrix.
+And by the fact that dual vectors are invariant, we have that the dual vector basis transforms with the inverse matrix.
 
 ## Linear Maps
 
@@ -270,7 +348,7 @@ See [Linear Transformations](/notes/maths/Linear%20Algebra/Matrices%20I/Linear%2
 
 See [Matrix Representation of Operators](/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Matrix%20Representations%20of%20Operators) and [Change of Basis](/notes/QFT%20from%20Ground%20Up/Part%20I%20Quantum%20Mechanics/Mathematical%20Foundations/Change%20of%20Basis) for an introduction in the context of quantum mechanics.
 
-A more general concept than covectors is that of a **linear map**.
+A more general concept than dual vectors is that of a **linear map**.
 It is defined as a map of $V \to W$, where $V$ and $W$ are vector spaces.
 Geometrically, when we apply a linear map to every point on a grid, gridlines remain parallel and evenly spaced, and the origin remains fixed.
 Algebraically, a linear map satisfies the following linearity properties:
@@ -313,7 +391,7 @@ When we change the basis of the vector space, the components of vectors and line
 
 $$
 \begin{equation}
-L \overset{.}{=} \mqty[\class{pink}{L^1_1} & \class{pink}{L^1_2} \\ \class{pink}{L^2_1} & \class{pink}{L^2_2}]_{\class{red}{\vb{e}_i}} = \mqty[? & ? \\ ? & ?]_{\class{blue}{\tilde{\vb{e}}_i}}
+L \overset{.}{=} \mqty[\class{pink}{L^1_1} & \class{pink}{L^1_2} \\ \class{pink}{L^2_1} & \class{pink}{L^2_2}]_{\class{red}{\vb{e}_i}} = \mqty[? & ? \\ ? & ?]_{\class{darkblue}{\tilde{\vb{e}}_i}}
 \end{equation}
 $$
 
@@ -321,7 +399,7 @@ Intuitively, to transform a vector $\vb{v}$ by $L$ under a new basis $\class{dar
 
 $$
 \begin{equation}
-\class{blue}{\tilde{L}}\qty(\mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}]) = T^{-1} \class{pink}{L} T \qty(\mqty[\class{blue}{\tilde{v}^1} \\ \class{blue}{\tilde{v}^2}])
+\class{darkblue}{\tilde{L}}\qty(\mqty[\class{darkblue}{\tilde{v}^1} \\ \class{darkblue}{\tilde{v}^2}]) = T^{-1} \class{pink}{L} T \qty(\mqty[\class{darkblue}{\tilde{v}^1} \\ \class{darkblue}{\tilde{v}^2}])
 \end{equation}
 $$
 
@@ -335,7 +413,7 @@ The components of a new basis vector $\class{darkblue}{\tilde{\vb{e}}_i}$ under 
 
 $$
 \begin{equation}
-L(\class{darkblue}{\tilde{\vb{e}}_i}) = \class{blue}{\tilde{L}^q_i} \class{darkblue}{\tilde{\vb{e}}_q}
+L(\class{darkblue}{\tilde{\vb{e}}_i}) = \class{darkblue}{\tilde{L}^q_i} \class{darkblue}{\tilde{\vb{e}}_q}
 \end{equation}
 $$
 
@@ -344,7 +422,7 @@ with an implicit sum over $q$. We also know that, by definition:
 $$
 \begin{equation}
 \begin{split}
-\class{blue}{\tilde{L}^q_i} \class{darkblue}{\tilde{\vb{e}}_q} = L(\class{darkblue}{\tilde{\vb{e}}_i}) &= L\qty(T^j_i \class{red}{\vb{e}_j}) \\
+\class{darkblue}{\tilde{L}^q_i} \class{darkblue}{\tilde{\vb{e}}_q} = L(\class{darkblue}{\tilde{\vb{e}}_i}) &= L\qty(T^j_i \class{red}{\vb{e}_j}) \\
 &= T^j_i L(\class{red}{\vb{e}_j}) = T^j_i \class{pink}{L^k_j} \class{red}{\vb{e}_q} \\
 &= T^j_i \class{pink}{L^k_j} \qty(T^{-1})^l_k \class{darkblue}{\tilde{\vb{e}}_l}
 \end{split}
@@ -356,7 +434,7 @@ We can rename the indices on the left-hand side $q \to l$:
 
 $$
 \begin{equation}
-\class{blue}{\tilde{L}^l_i} \class{darkblue}{\tilde{\vb{e}}_l} = T^j_i \class{pink}{L^k_j} \qty(T^{-1})^l_k \class{darkblue}{\tilde{\vb{e}}_l}
+\class{darkblue}{\tilde{L}^l_i} \class{darkblue}{\tilde{\vb{e}}_l} = T^j_i \class{pink}{L^k_j} \qty(T^{-1})^l_k \class{darkblue}{\tilde{\vb{e}}_l}
 \end{equation}
 $$
 
@@ -364,7 +442,7 @@ Thus:
 
 $$
 \begin{equation}
-\class{blue}{\tilde{L}^l_i} = \qty(T^{-1})^l_k \class{pink}{L^k_j} T^j_i
+\class{darkblue}{\tilde{L}^l_i} = \qty(T^{-1})^l_k \class{pink}{L^k_j} T^j_i
 \end{equation}
 $$
 
@@ -390,10 +468,10 @@ This also helps us make sure that we are multiplying the matrices in the correct
 For instance, in the proof for the transformation of linear maps, we see that the indices are connected diagonally:
 
 $$
-\class{blue}{\tilde{L}^l_i} = \qty(T^{-1})^l_{\class{pink}{k}} L^{\class{pink}{k}}_{\class{blue}{j}} T^{\class{blue}{j}}_i
+\class{darkblue}{\tilde{L}^l_i} = \qty(T^{-1})^l_{\class{pink}{k}} L^{\class{pink}{k}}_{\class{blue}{j}} T^{\class{blue}{j}}_i
 $$
 
-This is how we know that the entire matrix $\class{blue}{\tilde{L}}$ is given by $T^{-1} \class{pink}{L} T$ and not any other order.
+This is how we know that the entire matrix $\class{darkblue}{\tilde{L}}$ is given by $T^{-1} \class{pink}{L} T$ and not any other order.
 
 ## Metric Tensor and Bilinear Forms
 
@@ -444,13 +522,12 @@ Because the dot product is linear, the metric tensor is also linear.
 Furthermore, it takes two inputs, so it is more formally written as $g: V \times V \to \mathbb{F}$. This is known as a **bilinear form**;
 
 - **Bilinear**: Linear in both arguments.
-- **Form**: A function that takes vectors and outputs a scalar. For example, covectors are 1-forms.
+- **Form**: A function that takes vectors and outputs a scalar. For example, dual vectors are 1-forms.
 
 ## Tensor Products
 
 If you have read the quantum mechanics section, you will know that an operator can be written as a sum of projection operators.
-This is known as the **spectral decomposition** of an operator.
-The fundamental idea is that the outer product of a vector and covector gives a linear map:
+The fundamental idea is that the outer product of a vector and dual vector gives a linear map:
 
 $$
 \begin{align}
@@ -500,7 +577,7 @@ $$
 \end{split}
 $$
 
-Since the outer product involves scaling one vector by two different scalars (in the covector), each column is a scaled version of the vector.
+Since the outer product involves scaling one vector by two different scalars (in the dual vector), each column is a scaled version of the vector.
 As such, the matrix has a determinant of zero; its columns are linearly dependent.
 These matrices are called **pure matrices**.
 
@@ -536,7 +613,7 @@ L = L^i_j \vb{e}_i \vb{\epsilon}^j
 \end{equation}
 $$
 
-Formally, each basis pure matrix is the **tensor product** of the basis vectors and covectors.
+Formally, each basis pure matrix is the **tensor product** of the basis vectors and dual vectors.
 They are more formally written as $\vb{e}_i \otimes \vb{\epsilon}^j$. As such:
 
 $$
@@ -545,17 +622,17 @@ L = L^i_j \vb{e}_i \otimes \vb{\epsilon}^j
 \end{equation}
 $$
 
-In fact, a tensor can be defined as a set of vectors and covectors that are combined using tensor products.
+In fact, a tensor can be defined as a set of vectors and dual vectors that are combined using tensor products.
 Defining a tensor as such makes it trivial to derive the transformation rules for tensors under a change of basis.
 For example, for a linear map $L$ as above, the components transform as:
 
 $$
 \begin{equation}
-L = \class{pink}{L^i_j} \class{red}{\vb{e}_i} \otimes \class{red}{\vb{e}^j} = \class{pink}{L^i_j} \qty[\qty(T^{-1})^k_i \class{blue}{\tilde{\vb{e}}_k}] \otimes \qty[\qty(T)^j_l \class{blue}{\tilde{\vb{\epsilon}}^l}] = \qty[\qty(T^{-1})^k_i \class{pink}{L^i_j} T^j_l] \class{blue}{\tilde{\vb{e}}_k} \otimes \class{blue}{\tilde{\vb{\epsilon}}^l} = \class{blue}{\tilde{L}^k_l} \class{blue}{\tilde{\vb{e}}_k} \otimes \class{blue}{\tilde{\vb{\epsilon}}^l}
+L = \class{pink}{L^i_j} \class{red}{\vb{e}_i} \otimes \class{red}{\vb{e}^j} = \class{pink}{L^i_j} \qty[\qty(T^{-1})^k_i \class{darkblue}{\tilde{\vb{e}}_k}] \otimes \qty[\qty(T)^j_l \class{darkblue}{\tilde{\vb{\epsilon}}^l}] = \qty[\qty(T^{-1})^k_i \class{pink}{L^i_j} T^j_l] \class{darkblue}{\tilde{\vb{e}}_k} \otimes \class{darkblue}{\tilde{\vb{\epsilon}}^l} = \class{darkblue}{\tilde{L}^k_l} \class{darkblue}{\tilde{\vb{e}}_k} \otimes \class{darkblue}{\tilde{\vb{\epsilon}}^l}
 \end{equation}
 $$
 
-Thus it is clear that $L$ transforms as $\class{blue}{\tilde{L}} = T^{-1} \class{pink}{L} T$.
+Thus it is clear that $L$ transforms as $\class{darkblue}{\tilde{L}} = T^{-1} \class{pink}{L} T$.
 
 To take another example of a tensor product, consider two qubits (or two spin-1/2 particles).
 The state of a single qubit is given by a vector in a two-dimensional complex vector space, $\mathbb{C}^2$.
@@ -599,7 +676,7 @@ Tensor products and **Kronecker products** are similar but not the same.
 Tensor products act on tensors, while Kronecker products act on arrays.
 However, they are essentially identical in our context, so we will use the terms interchangeably.
 
-To take an example, a bilinear form is a tensor product of two covectors:
+To take an example, a bilinear form is a tensor product of two dual vectors:
 
 $$
 \begin{equation}

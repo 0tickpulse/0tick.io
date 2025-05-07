@@ -1,0 +1,63 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Additional Topic: Quantum Computing
+
+Quantum computing is a rapidly evolving field that leverages the principles of quantum mechanics to perform computations that are infeasible for classical computers.
+It is, however, often misunderstood and misrepresented in popular media, which tends to oversimplify or exaggerate its capabilities.
+In this section, we will provide a comprehensive introduction to quantum computing, covering its fundamental concepts, principles, and potential applications.
+
+In computer science, we divide concepts into different levels of abstraction.
+
+- In a classical computer, the lowest level of abstraction is the physical layer, which consists of the hardware components that perform computations.
+    This involves the atomic composition of the computer, such as transistors and wires.
+- The next level of abstraction is the logical layer, which abstracts away the physical details and instead represents them as simple $0$s and $1$s.
+    We perform operations on these bits using logical gates, which manipulate the bits to perform computations.
+    These can be classified based on the number of bits they operate on.
+    For example, a NOT gate operates on one bit, while an AND gate operates on two bits.
+    Combined together, they form a powerful computational model known as the Turing machine.
+- The third level of abstraction is the algorithmic layer, which consists of algorithms that perform computations on the logical layer.
+    These algorithms are designed to solve specific problems and can be implemented using various programming languages.
+- The fourth level of abstraction is the programming language layer, which provides a high-level interface for programmers to write algorithms.
+    Programming languages have different levels of abstraction, with some being closer to the hardware and others being more abstract.
+    For example, assembly language is much closer to the hardware than C, which is still closer to the hardware than Python.
+
+On the other hand, quantum computing is a new paradigm that introduces a different set of abstractions.
+
+- The lowest level of abstraction in quantum computing is the physical layer, which consists of quantum systems.
+    These systems can be atoms, ions, photons, or superconducting circuits, among others.
+    The physical layer is governed by the principles of quantum mechanics, which describe the behavior of these systems at the atomic and subatomic levels.
+    We have already thoroughly studied quantum mechanics in the previous sections.
+- The next level of abstraction is the logical layer, which consists of qubits.
+    Many quantum systems can be represented by the same Hilbert space, thus allowing us to use the same mathematics to describe them.
+    One such category of systems is two-level systems, which can be represented by a two-dimensional Hilbert space.
+    For example, spin-1/2 electrons, polarized photons, and superconducting qubits can all be represented by a two-dimensional Hilbert space.
+    We collectively refer to these systems as qubits in this layer of abstraction.
+    By doing so, we ignore the physical details of the systems and focus solely on their mathematical representation.
+    To manipulate qubits, we use quantum gates, which are the quantum analogs of classical logical gates.
+    Mathematically, they are just $\text{U}(2)$ matrices that act on the qubits.
+
+    Combined together, multiple qubits exponentially increase the dimensionality of the Hilbert space.
+    The total Hilbert space is the tensor product of the individual Hilbert spaces of the qubits.
+    For $n$ qubits, the total Hilbert space is $2^n$-dimensional.
+- The third level of abstraction is the algorithmic layer, which consists of quantum algorithms.
+    These algorithms are designed to solve specific problems using quantum gates and qubits.
+    They can be implemented using various programming languages, such as Qiskit, Cirq, and Q#.
+
+Because we have already studied quantum mechanics, we will not go into detail about the physical layer of quantum computing.
+Instead, we will focus on the logical layer and the algorithmic layer.
+We will also briefly discuss the programming language layer, but we will not go into detail about specific programming languages.

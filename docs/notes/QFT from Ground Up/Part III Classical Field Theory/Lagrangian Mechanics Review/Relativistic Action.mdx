@@ -1,0 +1,298 @@
+---
+sidebar_position: 4
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Relativistic Action
+
+Lagrangian mechanics is very powerful in that it can be used to describe the dynamics of a system in a very general way.
+We will show here that it can be used to describe relativistic systems as well.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Proper Time for a Curved Worldline
+
+We shall first show how to define the proper time for a curved worldline.
+This will be important for the Lagrangian formalism, as we will need to define the action in terms of the proper time.
+Recall that the proper time is defined as the time measured by a clock that is moving along with the object.
+
+I will use pink letters for the coordinates in a rest frame, and blue letters for the coordinates in the moving frame.
+The proper time is defined as the time measured by a clock that is moving along with the object, i.e. the time coordinate in the moving frame:
+
+$$
+\begin{equation}
+c\tau = c\class{blue}{\tilde{t}}
+\end{equation}
+$$
+
+To begin with a simpler case, consider the object moving with a constant velocity $u$ in the $x$ direction.
+The beta coefficient is then $\beta = \frac{u}{c}$.
+The Lorentz boost from the moving frame to the rest frame is given by:
+
+$$
+\begin{align}
+c\class{pink}{t} &= \gamma(c\class{blue}{\tilde{t}} + \beta \class{blue}{\tilde{x}}) \\
+\class{pink}{x} &= \gamma(\beta c\class{blue}{\tilde{t}} + \class{blue}{\tilde{x}}) \\
+\end{align}
+$$
+
+However, in the moving frame, the worldline has $\class{blue}{\tilde{x}} = 0$ because the object is at rest in its own frame.
+Applying this to the first equation gives:
+
+$$
+\begin{equation}
+c\class{pink}{t} = \gamma c\class{blue}{\tilde{t}} = \gamma c\tau
+\end{equation}
+$$
+
+Hence:
+
+$$
+\begin{equation}
+c\tau = \frac{1}{\gamma} c\class{pink}{t} \label{eq:proper-time-for-straight-worldline}
+\end{equation}
+$$
+
+For a curved worldline, we can use identical reasoning.
+First, split the worldline into infinitesimal segments, each of them being straight lines.
+Then, for each segment, the proper time is simply the differential of Equation $\eqref{eq:proper-time-for-straight-worldline}$:
+
+$$
+\begin{equation}
+c \dd{\tau} = \frac{1}{\gamma} c \dd{\class{pink}{t}}
+\end{equation}
+$$
+
+We can now integrate this equation to obtain the proper time for the entire worldline:
+
+$$
+\begin{equation}
+c \tau = c \int \dd{\tau} = c \int \frac{1}{\gamma} \dd{\class{pink}{t}}
+\end{equation}
+$$
+
+## The Relativistic Action
+
+The action is defined as the integral of the Lagrangian over time.
+However, we do not currently have an expression for the Lagrangian, nor do we want to use "time" as the parameter (because it is not invariant).
+We will instead use the proper time as the parameter.
+
+An object travels along a path that maximizes the proper time.
+Given that we have a problem involving extreminizing a functional, we can apply action principles.
+In this case, we can *define* the action as the proper time, with some prefactor to give it the same dimensions as the nonrelativistic action:
+
+$$
+\begin{equation}
+S = -m c^2 \int \dd{s}
+\end{equation}
+$$
+
+We also attach a minus sign to the action, so that the action is minimized for a particle moving in a straight line (instead of maximized).
+There are two things to note here:
+
+1. Because we did not assert a specific form of $\dd{s}$, this is regardless of the metric, and hence applies to any spacetime.
+2. The quantity $\dd{s}$ is invariant, so the entire action is invariant.
+
+Because we define $S$ as the integral of the Lagrangian, it must be the case that $S = -m c^2 \int \dd{s} = \int \dd{t} L$.
+This means that the Lagrangian is given by:
+
+$$
+\begin{equation}
+L = -m c^2 \dv{s}{t}
+\end{equation}
+$$
+
+It is a good exercise to show that applying the Euler-Lagrange equations to this Lagrangian gives the relativistic equation of motion, given that we use the Minkowski metric.
+
+### Derivation of Geodesic Equation
+
+Our next task is to show that this action principle leads to the geodesic equation.
+A geodesic is a curve that locally minimizes the distance between two points.
+Geodesics are the "straightest" possible curves in a given space.
+The key is that the principle regarding maximizing proper time still holds.
+Thus, we can use the same action principle as before.
+Expanding the action, we have:
+
+$$
+\begin{equation}
+S = -m c^2 \int \dd{s} = -m c^2 \int \sqrt{g_{\mu\nu} \dd{x}^\mu \dd{x}^\nu} = -m c^2 \int \dd{\lambda} \sqrt{g_{\mu\nu} \dv{x^\mu}{\lambda} \dv{x^\nu}{\lambda}}
+\end{equation}
+$$
+
+Because extremizing the action is independent of multiplying by a constant, we can drop the prefactor $-m c^2$.
+We can also drop the square root; extremizing $\int \dd{x} \sqrt{f(x)}$ is equivalent to extremizing $\int \dd{x} f(x)$ if $f(x)$ is constant along $x$.
+Choosing $\lambda = \tau$ gives the quantity in the square root as $g_{\mu\nu} \dv{x^\mu}{\tau} \dv{x^\nu}{\tau}$, which is just $\qty(\dv{s}{\tau})^2 = c^2$ because $\dd{\tau} = \frac{1}{c} \dd{s}$.
+Thus, the quantity in the square root is constant and we can drop it.
+The Lagrangian is then given by:
+
+$$
+\begin{equation}
+L = \frac{1}{2} g_{\mu\nu} \dv{x^\mu}{\lambda} \dv{x^\nu}{\lambda}
+\end{equation}
+$$
+
+where we have added a factor of $\frac{1}{2}$ for convenience. Our action is:
+
+$$
+\begin{equation}
+S = \int \dd{\lambda} L = \frac{1}{2} \int \dd{\lambda} g_{\mu\nu} \dv{x^\mu}{\lambda} \dv{x^\nu}{\lambda}
+\end{equation}
+$$
+
+We can now apply the Euler-Lagrange equations to this Lagrangian.
+Recall that the Euler-Lagrange equations are given by:
+
+$$
+\begin{equation}
+\pdv{L}{x^\alpha} - \dv{\lambda} \qty(\pdv{L}{\dot{x}^\alpha}) = 0
+\end{equation}
+$$
+
+where the dot signifies a derivative with respect to $\lambda$.
+We can now compute the partial derivatives:
+
+1. $\pdv{L}{x^\alpha}$. Since only the metric explicitly depends on $x^\alpha$, we have:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \pdv{L}{x^\alpha} &= \frac{1}{2} \pdv{g_{\mu\nu}}{x^\alpha} \dv{x^\mu}{\lambda} \dv{x^\nu}{\lambda} \\
+    &= \frac{1}{2} \dot{x}^\mu \dot{x}^\nu \partial_\alpha g_{\mu\nu}
+    \end{split}
+    \end{equation}
+    $$
+
+2. The inner derivative $\pdv{L}{\dot{x}^\alpha}$:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \pdv{L}{\dot{x}^\alpha} &= \frac{1}{2} \pdv{\dot{x}^\alpha} \qty(g_{\mu\nu} \dot{x}^\mu \dot{x}^\nu) \\
+    &= \frac{1}{2} g_{\mu\nu} \pdv{\dot{x}^\mu}{\dot{x}^\alpha} \dot{x}^\nu + \frac{1}{2} g_{\mu\nu} \dot{x}^\mu \pdv{\dot{x}^\nu}{\dot{x}^\alpha} \\
+    &= \frac{1}{2} \qty(g_{\mu\nu} \delta^\mu_\alpha \dot{x}^\nu + g_{\mu\nu} \dot{x}^\mu \delta^\nu_\alpha) \\
+    &= \frac{1}{2} \qty(g_{\alpha\nu} \dot{x}^\nu + g_{\mu\alpha} \dot{x}^\mu)
+    \end{split}
+    \end{equation}
+    $$
+
+    We can rename the dummy index on the very right from $\mu$ to $\nu$, giving:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \pdv{L}{\dot{x}^\alpha} &= \frac{1}{2} \qty(g_{\alpha\nu} \dot{x}^\nu + g_{\nu\alpha} \dot{x}^\nu) \\
+    &= g_{\alpha\nu} \dot{x}^\nu
+    \end{split}
+    \end{equation}
+    $$
+
+3. $\dv{\lambda} \qty(\pdv{L}{\dot{x}^\alpha})$: we can use the value from the previous step.
+    Both $\dot{x}^\nu$ and $g_{\alpha\nu}$ are functions of $\lambda$, so we can use the product rule.
+    But first, we need to compute the derivative of $g_{\alpha\nu}$ with respect to $\lambda$ using the chain rule:
+
+    $$
+    \begin{equation}
+    \dv{g_{\alpha\nu}}{\lambda} = \pdv{g_{\alpha\nu}}{x^\sigma} \dv{x^\sigma}{\lambda} = \partial_\sigma g_{\alpha\nu} \dot{x}^\sigma
+    \end{equation}
+    $$
+
+    We can now compute the derivative:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \dv{\lambda} \qty(\pdv{L}{\dot{x}^\alpha}) &= \dv{\lambda} \qty(g_{\alpha\nu} \dot{x}^\nu) \\
+    &= \qty(\dv{\lambda} g_{\alpha\nu}) \dot{x}^\nu + g_{\alpha\nu} \dv{\lambda} \dot{x}^\nu \\
+    &= \partial_\sigma g_{\alpha\nu} \dot{x}^\sigma \dot{x}^\nu + g_{\alpha\nu} \ddot{x}^\nu
+    \end{split}
+    \end{equation}
+    $$
+
+Plugging all of this into the Euler-Lagrange equations gives:
+
+$$
+\begin{equation}
+\frac{1}{2} \dot{x}^\mu \dot{x}^\nu \partial_\alpha g_{\mu\nu} - \qty(\partial_\sigma g_{\alpha\nu} \dot{x}^\sigma \dot{x}^\nu + g_{\alpha\nu} \ddot{x}^\nu) = 0
+\end{equation}
+$$
+
+To make the equation more suggestive, we can first isolate the second derivative term:
+
+$$
+\begin{equation}
+g_{\alpha\nu} \ddot{x}^\nu = \frac{1}{2} \dot{x}^\mu \dot{x}^\nu \partial_\alpha g_{\mu\nu} - \partial_\sigma g_{\alpha\nu} \dot{x}^\sigma \dot{x}^\nu
+\end{equation}
+$$
+
+Renaming the dummy index $\sigma$ to $\mu$ in the rightmost term, then swapping $\mu$ and $\nu$ gives:
+
+$$
+\begin{equation}
+g_{\alpha\nu} \ddot{x}^\nu = \frac{1}{2} \dot{x}^\mu \dot{x}^\nu \partial_\alpha g_{\mu\nu} - \partial_\nu g_{\alpha\mu} \dot{x}^\nu \dot{x}^\mu
+\end{equation}
+$$
+
+Next, because of the symmetry of the metric tensor, $g_{\alpha\nu} = g_{\nu\alpha}$, then $g_{\alpha\nu} = \frac{1}{2} \qty(g_{\alpha\nu} + g_{\nu\alpha})$ and naturally $\partial_\sigma g_{\alpha\nu} = \frac{1}{2} \qty(\partial_\sigma g_{\alpha\nu} + \partial_\sigma g_{\nu\alpha})$.
+Then, making the swap $\sigma \to \mu$ on the left, and $\sigma \to \nu$ and $\nu \to \mu$ in the rightmost term gives $\partial_\nu g_{\alpha\mu} = \frac{1}{2} \qty(\partial_\mu g_{\alpha\nu} + \partial_\nu g_{\mu\alpha})$.
+
+This means that we can write:
+
+$$
+\begin{equation}
+\begin{split}
+g_{\alpha\nu} \ddot{x}^\nu &= \frac{1}{2} \dot{x}^\mu \dot{x}^\nu \partial_\alpha g_{\mu\nu} - \partial_\nu g_{\alpha\mu} \dot{x}^\nu \dot{x}^\mu \\
+&= \frac{1}{2} \dot{x}^\mu \dot{x}^\nu \partial_\alpha g_{\mu\nu} - \frac{1}{2} \qty(\partial_\mu g_{\alpha\nu} + \partial_\nu g_{\mu\alpha}) \dot{x}^\mu \dot{x}^\nu \\
+&= -\frac{1}{2} \qty(\partial_\nu g_{\alpha\mu} + \partial_\mu g_{\alpha\nu} - \partial_\alpha g_{\mu\nu}) \dot{x}^\mu \dot{x}^\nu
+\end{split}
+\end{equation}
+$$
+
+The quantity inside the parentheses should look familiar—they are the connection coefficients for the Levi-Civita connection;
+
+$$
+\begin{equation}
+g_{\alpha\nu} \ddot{x}^\nu = -\frac{1}{2} \Gamma_{\alpha\mu\nu} \dot{x}^\mu \dot{x}^\nu
+\end{equation}
+$$
+
+Rearranging gives:
+
+$$
+\begin{equation}
+g_{\alpha\nu} \ddot{x}^\nu + \Gamma_{\alpha\mu\nu} \dot{x}^\mu \dot{x}^\nu = 0
+\end{equation}
+$$
+
+Finally, we can raise the index $\alpha$ using the inverse metric $g^{\alpha\rho}$:
+
+$$
+\begin{equation}
+g^{\alpha\rho} \qty(g_{\alpha\nu} \ddot{x}^\nu + \Gamma_{\alpha\mu\nu} \dot{x}^\mu \dot{x}^\nu) = 0
+\end{equation}
+$$
+
+Using $g^{\alpha\rho} g_{\alpha\nu} = \delta^\rho_\nu$, we have:
+
+$$
+\begin{equation}
+\ddot{x}^\rho + \Gamma^{\rho}_{\mu\nu} \dot{x}^\mu \dot{x}^\nu = 0
+\end{equation}
+$$
+
+This is the geodesic equation, which describes the motion of a free particle in a curved spacetime.

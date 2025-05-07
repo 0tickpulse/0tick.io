@@ -1,0 +1,412 @@
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ComplexFourierSeriesVisualizer } from "@site/src/components/visualizers/ComplexFourierSeriesVisualizer";
+
+# Groups
+
+In this section, we will review the concept of groups, which is a fundamental concept in mathematics and physics.
+They are the core of quantum field theory, and it is essential to understand them in order to understand the mathematics of quantum field theory.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What is a Group?
+
+Consider an equilateral triangle in the plane.
+There are a few ways to transform the triangle, such as rotating it or reflecting it.
+Group theory is the study of such transformations.
+
+In particular, we will study the set of all transformations that can be applied to the triangle, and how these transformations can be combined.
+Groups fundamentally represent different ways to transform an object.
+As such, we naturally expect certain properties to hold;
+
+1. There is always one transformation that does nothing to the object. For the rotation group for the triangle, for example, it is akin to rotating the triangle by $0$ degrees.
+    This is called the **identity** transformation.
+2. The transformations can be combined to form new transformations. For example, if we rotate the triangle by $60$ degrees and then by another $60$ degrees, we can combine these two transformations to form a new transformation that rotates the triangle by $120$ degrees.
+    This is called the **closure** property.
+3. The way we combine the transformations is associative. For example, if we rotate the triangle by $60$ degrees and then reflect it, we can combine these two transformations in any way to get the same result.
+    This is called the **associative** property.
+4. Each transformation has an inverse transformation that undoes it. For example, if we rotate the triangle by $60$ degrees, we can undo this transformation by rotating it by $-60$ degrees.
+    This is called the **inverse** property.
+
+Given that we expect these properties to hold, we can define a group as follows:
+
+<Boxed>
+**Group**: A group $(G, \circ)$ is a set $G$ together with a binary operation $\circ$ that combines two elements to form a third element, such that the following properties hold:
+
+1. **Closure**: For all $a, b \in G$, $a \circ b \in G$.
+2. **Associativity**: For all $a, b, c \in G$, $(a \circ b) \circ c = a \circ (b \circ c)$.
+3. **Identity**: There exists an element $e \in G$ such that for all $a \in G$, $e \circ a = a \circ e = a$.
+4. **Inverse**: For each $a \in G$, there exists an element $b \in G$ such that $a \circ b = b \circ a = e$.
+
+</Boxed>
+
+In this definition, $G$ is the set of elements, and $\circ$ is the binary operation that combines the elements.
+$a$ and $b$ are elements of the group, which in our example are the rotations of the triangle.
+$e$ is the identity element, which in our example is the rotation by $0$ degrees.
+
+### Example: Number Line
+
+Consider the set of all integers $\mathbb{Z}$.
+When two numbers are added, this can be visualized as moving the number line twice.
+For example, if we are at $0$ and we add $1$, we shift the number line to the left by $1$;
+
+$$
+\begin{aligned}
+\longleftarrow -3 && -2 && -1 && 0 && 1 && 2 && 3 \\
+\hline
+&& && && \class{red}{0} && && && \\
+\\
+&& && && \downarrow \\
+\\
+-2 && -1 && 0 && 1 && 2 && 3 && 4 \\
+\hline
+&& && && \class{red}{1} && && && \\
+\end{aligned}
+$$
+
+When we add multiple numbers, this is just a matter of moving the number line multiple times, which can be combined into a single movement.
+For example, if we add $1$ and then $2$, we can combine these two movements into a single movement of $3$.
+
+When we visualize addition like this, this gives us a clue that addition is an operation that satisfies the properties of a group.
+While it can be a good exercise to algebraically verify that addition satisfies the properties of a group, it is more insightful to notice the link between addition and its geometric representation.
+In particular, we can see that the number line is a one-dimensional space, and the operation of addition is a way to move along this space.
+This allows us to extend this group to higher dimensions, eventually leading to the concept of a vector space.
+
+In addition to the properties of a group, addition is also commutative.
+In other words, the order in which we add the numbers does not matter.
+Groups that are commutative are called **abelian groups**.
+
+### Example: Rotation of a Square
+
+Consider the set of all rotations of a square.
+We can rotate the square by $0$, $90$, $180$, and $270$ degrees.
+
+We can see that the set of all rotations of a square satisfies the properties of a group.
+
+1. **Closure**: If we rotate the square by $90$ degrees and then by $180$ degrees, we can combine these two transformations to form a new transformation that rotates the square by $270$ degrees.
+2. **Associativity**: The way we combine the transformations is associative. For example, if we rotate the square by $90$ degrees and then reflect it, we can combine these two transformations in any way to get the same result.
+3. **Identity**: The identity transformation is the rotation by $0$ degrees.
+4. **Inverse**: The inverse transformation of a rotation by $90$ degrees is a rotation by $270$ degrees.
+
+Additionally, the set of all rotations of a square is also abelian, since the order in which we apply the transformations does not matter.
+
+## Continuous Transformations
+
+When we talk about groups, we make a distinction between discrete and continuous transformations.
+Discrete transformations are transformations that can be applied in a finite number of steps, while continuous transformations are transformations that can be applied in an infinite number of steps.
+
+For example, the set of all rotations of a square is a discrete group, since we can only rotate the square by $0$, $90$, $180$, and $270$ degrees.
+However, if we allow rotations of any angle, then the set of all rotations of a is a continuous group.
+We call these **Lie groups**.
+
+Previously, we mentioned in quantum mechanics that spinors transform under $\text{SU}(2)$ matrices, whereas physical vectors transform under Euler rotations, which are $\text{SO}(3)$ matrices.
+Together, they form a continuous group, and are hence called **Lie groups**.
+
+Each Lie group has a corresponding Lie algebra.
+Generally, for a Lie group $G$, the Lie algebra $\mathfrak{g}$ is the set of **generators** of the group.
+More specifically, if $M \in \mathfrak{g}$ is a generator of the group, then the Lie group can be expressed as $\exp(M)$.
+
+### Example: Rotations in $xy$
+
+Consider the Lie group of all rotations in the $xy$ plane:
+
+$$
+\mqty[\cos(\theta) & -\sin(\theta) & 0 \\
+\sin(\theta) & \cos(\theta) & 0 \\
+0 & 0 & 1]
+$$
+
+This is a subset of the $\text{SO}(3)$ group, which is the group of all rotations in three-dimensional space.
+Recall that the rotations preserve the length of the vector, and hence are orthogonal (this can be proven using the definition of the inner product).
+The generator of this group is given by:
+
+$$
+\begin{equation}
+\exp(\theta \mqty[0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 0]) = \mqty[\cos(\theta) & -\sin(\theta) & 0 \\ \sin(\theta) & \cos(\theta) & 0 \\ 0 & 0 & 1]
+\end{equation}
+$$
+
+To exponentiate a matrix, we use the Taylor expansion of the exponential function:
+
+$$
+\begin{equation}
+\exp(M) = \sum_{n=0}^{\infty} \frac{M^n}{n!}
+\end{equation}
+$$
+
+If one works out the Taylor expansion of the above matrix, one can see that it is indeed equal to the rotation matrix.
+It's easy to verify that a given matrix is the generator of a Lie group by exponentiating it and checking that the resulting matrix is indeed a rotation matrix.
+In order to think of one, however, more effort is required.
+We can use a trick to find the generator of a Lie group;
+
+1. We know that we need to find $M$ such that $\exp(\theta M) = R(\theta)$, where $R(\theta)$ is the rotation matrix.
+2. We can take the derivative of both sides with respect to $\theta$:
+
+    $$
+    \begin{equation}
+    \dv{\theta} \exp(\theta M) = \dv{\theta} R(\theta)
+    \end{equation}
+    $$
+
+3. It's easy to prove that $\dv{\theta} \exp(\theta M) = M \exp(\theta M)$ (as we expect), thus:
+
+    $$
+    \begin{equation}
+    M \exp(\theta M) = \dv{\theta} R(\theta)
+    \end{equation}
+    $$
+
+4. Setting $\theta = 0$ gives us:
+
+    $$
+    \begin{equation}
+    M = \dv{\theta} R(\theta) \bigg|_{\theta=0}
+    \end{equation}
+    $$
+
+As such, to find any generator matrix $M$, we can take the derivative of the rotation matrix with respect to $\theta$ and set $\theta = 0$.
+
+### Example: Taylor's Formula
+
+We shall use Lie groups to derive an interesting result.
+Consider a function $f(x)$. Suppose we translate the function (to the left) by a small amount $\alpha$.
+This is equivalent to the new function $f(x + \alpha)$.
+
+We can see the translations of this function as a group of transformations.
+Let $T_\alpha$ be the translation operator, which translates the function by $\alpha$.
+This set follows the group properties:
+
+1. **Closure**: $T_\alpha T_\beta = T_{\alpha + \beta}$.
+2. **Associativity**: $T_\alpha (T_\beta T_\gamma) = (T_\alpha T_\beta) T_\gamma$.
+3. **Identity**: $T_0 f = f$.
+4. **Inverse**: $T_\alpha T_{-\alpha} = T_0$.
+
+Now, because $\alpha$ is the variable that we are translating by, we can find the generator of this group by taking the derivative with respect to $\alpha$ and setting $\alpha = 0$:
+
+$$
+\begin{equation}
+M = \dv{\alpha} T_\alpha \bigg|_{\alpha=0}
+\end{equation}
+$$
+
+To find this out, we first apply both sides to a function $f(x)$:
+
+$$
+\begin{equation}
+Mf(x) = \eval{\dv{\alpha} T_\alpha f}_{\alpha=0} = \eval{\dv{\alpha} f(x + \alpha)}_{\alpha=0}
+\end{equation}
+$$
+
+This might seem a bit strange, but if introduce a new variable $x' = x + \alpha$ it becomes a bit clearer:
+
+$$
+\begin{equation}
+\begin{split}
+Mf(x) &= \eval{\dv{f(x')}{\alpha}}_{\alpha=0} \\
+&= \eval{\dv{f(x')}{x'} \dv{x'}{\alpha}}_{\alpha=0} \\
+&= \eval{\dv{f(x')}{x'}}_{\alpha=0} \\
+&= \eval{\dv{f(x + \alpha)}{x}}_{\alpha=0} \\
+&= \dv{f(x)}{x}
+\end{split}
+\end{equation}
+$$
+
+As such, $Mf(x) = \dv{f(x)}{x}$, and we can see that the generator of the translation group is simply the derivative operator;
+
+$$
+\begin{equation}
+M = \dv{x}
+\end{equation}
+$$
+
+This means that, by the definition of the generator, we can write the translation operator as:
+
+$$
+\begin{equation}
+T_\alpha = \exp(\alpha M) = \exp(\alpha \dv{x})
+\end{equation}
+$$
+
+Interestingly, we are exponentiating the derivative operator, which is a bit strange.
+However, this indeed gives us the translation operator.
+This yields **Taylor's formula**:
+
+$$
+\begin{equation}
+\exp(\alpha \dv{x}) f(x) = f(x + \alpha)
+\end{equation}
+$$
+
+To extend it to multiple dimensions, we simply replace $\dv{x}$ with the gradient operator $\grad$ and $\alpha$ with the vector $\Delta \vb{x}$:
+
+$$
+\begin{equation}
+\exp(\Delta \vb{x} \cdot \grad) f(\vb{x}) = f(\vb{x} + \Delta \vb{x})
+\end{equation}
+$$
+
+One application of this is to find the translation operator in quantum mechanics.
+We want a translation operator $\mathcal{J}(x')$ such that $\mathcal{J}(x') \ket{x''} = \ket{x'' + x'}$.
+Treating the ket as a function of $x'' \to \ket{x''}$, we can see that this is the same as the translation operator we derived above.
+As such, we can write:
+
+$$
+\begin{equation}
+\mathcal{J}(x') = \exp(x' \dv{x''})
+\end{equation}
+$$
+
+## Group Homomorphisms
+
+Suppose we have two groups $G$ and $H$.
+Is there a way to relate these two groups?
+If we can find a way to relate the two groups, we can use the properties of one group to study the other group.
+We introduce something known as a **homomorphism**:
+
+$$
+\phi: G \to H
+$$
+
+This is a mapping between the two groups that preserves the group structure:
+
+$$
+\begin{equation}
+\phi(g_1 \circ g_2) = \phi(g_1) \circ \phi(g_2)
+\end{equation}
+$$
+
+where $g_1, g_2 \in G$ and $\circ$ is the group operation (for the group $G$ on the left and for the group $H$ on the right).
+This means that if we take two elements $g_1$ and $g_2$ from group $G$, and we apply the group operation to them, we can map the result to an element in group $H$.
+
+More specifically, we can look for a one-to-one mapping between the two groups, known as a **bijection**.
+This means that we can map each element of $G$ to a unique element of $H$, and vice versa.
+These bijective homomorphisms are called **isomorphisms**.
+
+We shall use this idea to derive Euler's formula without any calculus.
+Suppose we have $e^x$. We know from the laws of exponents that $e^{x + y} = e^x \cdot e^y$.
+As we have done before, we can think of $x + y$ as a translation of the number line, and $e^x \cdot e^y$ as a scalar multiplication of the number line (a stretch).
+
+In other words, we can think of $e^x$ as a homomorphism between the group of translations and the group of stretches; $\phi(x) = e^x$.
+We formally write $\phi$ as:
+
+$$
+\phi: (\mathbb{R}, +) \to (\mathbb{R}^+, \cdot)
+$$
+
+where $(\mathbb{R}, +)$ is the group of translations and $(\mathbb{R}^+, \cdot)$ is the group of stretches (positive real numbers under multiplication).
+
+This means that we can take a translation $x + y$ and map it to a stretch $e^x \cdot e^y$.
+We can quickly prove that this is indeed a homomorphism:
+
+$$
+\begin{equation}
+\phi(x + y) = e^{x + y} = e^x \cdot e^y = \phi(x) \cdot \phi(y)
+\end{equation}
+$$
+
+Indeed, applying the group operation $+$ to the left and the group operation $\cdot$ to the right gives us the same result.
+This means that we can use the properties of the group of translations to study the group of stretches.
+
+Specifically, we will extend the additive group of translations from real numbers to that of complex numbers.
+We will introduce a new homomorphism $\Phi: (\mathbb{C}, +) \to (\mathbb{C} \setminus \{0\}, \cdot)$, where $(\mathbb{C}, +)$ is the group of translations in the complex plane and $(\mathbb{C} \setminus \{0\}, \cdot)$ is the group of stretches in the complex plane.
+in other words, if we have a complex number $z = x + iy$, we can think of $e^z$ as a homomorphism between the group of translations in the complex plane and the group of stretches in the complex plane.
+
+We know that with a translation along real numbers, $x$, $\phi(x)$ is a stretch.
+But what about the imaginary part $iy$?
+
+We first assert that $\Phi(z^*) = \Phi(z)^*$, where $z^*$ is the complex conjugate of $z$.
+Now consider $\Phi(iy)\Phi(-iy)$:
+
+$$
+\begin{equation}
+\Phi(iy) \Phi(-iy) = \Phi(iy + (-iy)) = \Phi(0) = e^0 = 1
+\end{equation}
+$$
+
+This means that $\Phi(iy)$ and $\Phi(-iy)$ are inverses of each other.
+But we also know that $-iy = (iy)^*$, so we can write:
+
+$$
+\begin{equation}
+\Phi(iy) \Phi(iy)^* = 1
+\end{equation}
+$$
+
+When we multiply a complex number by its conjugate, we get the modulus squared of the complex number.
+This means that we can write:
+
+$$
+\begin{equation}
+\abs{\Phi(iy)}^2 = 1 \implies \abs{\Phi(iy)} = 1
+\end{equation}
+$$
+
+Thus, $\Phi(iy)$ is a complex number with modulus $1$. It must lie on the unit circle.
+We can then write:
+
+$$
+\begin{equation}
+\Phi(iy) = \cos(\theta(y)) + i \sin(\theta(y)) \label{eq:Phi(iy)}
+\end{equation}
+$$
+
+where $\theta(y)$ is an angle that depends on $y$.
+Recall that $\Phi$ is a homomorphism, so it must satisfy $\Phi(iy_1 + iy_2) = \Phi(iy_1) \cdot \Phi(iy_2)$.
+This means that we can write:
+
+$$
+\begin{equation}
+\Phi(iy_1 + iy_2) = (\cos(\theta(y_1)) + i \sin(\theta(y_1))) \cdot (\cos(\theta(y_2)) + i \sin(\theta(y_2)))
+\end{equation}
+$$
+
+The left-hand side is just $\cos(\theta(y_1 + y_2)) + i \sin(\theta(y_1 + y_2))$ directly from Equation $\eqref{eq:Phi(iy)}$.
+Thus we have:
+
+$$
+\begin{equation}
+\cos(\theta(y_1 + y_2)) + i \sin(\theta(y_1 + y_2)) = (\cos(\theta(y_1)) + i \sin(\theta(y_1))) \cdot (\cos(\theta(y_2)) + i \sin(\theta(y_2)))
+\end{equation}
+$$
+
+This implies that $\theta(y_1 + y_2) = \theta(y_1) + \theta(y_2)$.
+This means that $\theta(y)$ is a linear function of $y$.
+We can write:
+
+$$
+\begin{equation}
+\theta(y) = ky, \qquad k \in \mathbb{R}
+\end{equation}
+$$
+
+Suppose we set $k = 1$.
+Then we can write:
+
+$$
+\begin{equation}
+\Phi(iy) = \cos(y) + i \sin(y)
+\end{equation}
+$$
+
+Thus, because $\Phi$ was our definition of the exponential function, we can write:
+
+$$
+\begin{equation}
+e^{iy} = \cos(y) + i \sin(y)
+\end{equation}
+$$
+
+which is Euler's formula.
+
+As you can see, we derived this formula almost entirely from the properties of groups.
+Unfortunately, it did rely on some assumptions—that $\Phi(z^*) = \Phi(z)^*$ and that $k = 1$.
+A full proof comes from calculus.

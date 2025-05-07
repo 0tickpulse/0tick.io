@@ -1,0 +1,436 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# The Heisenberg Picture
+
+Previously, we have used the Schrödinger picture to describe the dynamics of a system.
+This involves solving the time-dependent Schrödinger equation to find the time-evolution operator $U(t)$, which describes how the state of the system evolves over time.
+In this section, we will introduce the Heisenberg picture, which is an alternative formulation of quantum mechanics.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+The key difference between the two pictures is how we treat the operators and the states.
+This can be illustrated by considering an unitary operator $U$ and two states $\ket{\psi}$ and $\ket{\phi}$.
+When we take the inner product of the two states along with some operator $A$, we have:
+
+$$
+\begin{equation}
+\mel{\psi}{A}{\phi} = \braket{\psi}{U^\dagger A U \phi}
+\end{equation}
+$$
+
+This means that the inner product is invariant under the time-evolution operator, which is a direct result from the fact that $U$ is unitary.
+Now the key consideration is how we interpret this inner product; there are two approaches:
+
+$$
+\begin{equation}
+(\bra{\psi} U^\dagger) \cdot A \cdot (U \ket{\phi}) = \bra{\psi} \cdot (U^\dagger A U) \cdot \ket{\phi}
+\end{equation}
+$$
+
+(These are equivalent from the associative axiom.)
+
+- The left-hand side takes the approach of $A$ remaining constant while $\phi \to U \phi$.
+- The right-hand side takes the approach of $A \to U^\dagger A U$ while $\phi$ remains constant.
+
+The first approach is the Schrödinger picture, where the operators are time-independent and the states evolve in time.
+The second approach is the Heisenberg picture, where the operators evolve in time and the states are time-independent.
+This is a matter of convention, and both pictures are equivalent.
+To take an example, consider taking the expectation value of $x$ at a certain time $t$, $\expval{x}(t)$:
+
+- In the Schrödinger picture, we have:
+
+    $$
+    \begin{equation}
+    \expval{x}(t) = \class{blue}{\bra{\psi} U^\dagger(t)} x \class{yellow}{U(t) \ket{\psi}} = \class{blue}{\bra{\psi(t)}} x \class{yellow}{\ket{\psi(t)}}
+    \end{equation}
+    $$
+
+- In the Heisenberg picture, we have:
+
+    $$
+    \begin{equation}
+    \expval{x}(t) = \bra{\psi} \class{green}{U^\dagger(t) x U(t)} \ket{\psi} = \bra{\psi} \class{green}{x(t)} \ket{\psi}
+    \end{equation}
+    $$
+
+The Heisenberg picture is more closely related to classical mechanics because it treats the operators as observables that evolve in time, similar to how classical quantities evolve in time.
+To distinguish between the two, we use the superscript $(H)$ to denote the Heisenberg picture and the superscript $(S)$ to denote the Schrödinger picture:
+
+$$
+\begin{equation}
+A^{(H)}(t) = U^\dagger(t) A^{(S)} U(t)
+\end{equation}
+$$
+
+The following table summarizes the differences between the two pictures:
+
+| | Schrödinger Picture | Heisenberg Picture |
+|---|---------------------|--------------------|
+| Operators | Time-independent $A^{(S)}$ | Time-dependent $A^{(H)}(t) = U^\dagger(t) A^{(S)} U(t)$ |
+| States | Time-dependent $\ket{\psi, t_0 = 0; t}$ | Time-independent $\ket{\psi, t_0 = 0; t}$ |
+| Expectation Value | $\expval{A} = {}_S \mel{\psi}{A}{\psi}$ | $\expval{A} = {}_H \mel{\psi}{A}{\psi} = \braket{\psi}{A^{(H)}(t) \psi}$ |
+
+
+## Heisenberg Equation of Motion
+
+Now one may wonder what the Heisenberg-picture equivalent of the Schrödinger equation $i \hbar \dv{t} U(t) = H U(t)$ is.
+First, we rearrange Schrödinger's equation to isolate the derivative of $U$:
+
+$$
+\begin{equation}
+\pdv{U}{t} = \frac{1}{i \hbar} H U
+\end{equation}
+$$
+
+To find the time derivative of $U^\dagger$, we can take the Hermitian conjugate of the above equation to get:
+
+$$
+\begin{equation}
+\pdv{U^\dagger}{t} = -\frac{1}{i \hbar} U^\dagger H
+\end{equation}
+$$
+
+Now, we can take the time derivative of $A^{(H)}(t)$.
+Keep in mind we are assuming that $A^{(S)}$ is time-independent (which is true for most cases):
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{A^{(H)}}{t} &= \pdv{t} (U^\dagger A^{(S)} U) = \pdv{U^\dagger}{t} A^{(S)} U + U^\dagger A^{(S)} \pdv{U}{t} \\
+&= -\frac{1}{i \hbar} U^\dagger H A^{(S)} U + U^\dagger A^{(S)} \frac{1}{i \hbar} H U \\
+&= -\frac{1}{i \hbar} U^\dagger H A^{(S)} U + \frac{1}{i \hbar} U^\dagger A^{(S)} H U
+\end{split}
+\end{equation}
+$$
+
+Since $A^{(H)}(t) = U^\dagger A^{(S)} U$, we can add $U U^\dagger$ to both terms to be able to substitute $A^{(H)}$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{A^{(H)}}{t} &= -\frac{1}{i \hbar} U^\dagger H A^{(S)} U + \frac{1}{i \hbar} U^\dagger A^{(S)} H U \\
+&= -\frac{1}{i \hbar} U^\dagger H \class{blue}{U U^\dagger} A^{(S)} U + \frac{1}{i \hbar} U^\dagger A^{(S)} \class{green}{U U^\dagger} H U \\
+&= -\frac{1}{i \hbar} U^\dagger H U A^{(H)}(t) + \frac{1}{i \hbar} A^{(H)}(t) U^\dagger H U
+\end{split}
+\end{equation}
+$$
+
+Notice that outside of the common factors, the only difference between the two terms is the order of the operators.
+As such, we can rewrite the equation with the commutator $\comm{A^{(H)}(t)}{U^\dagger H U}$:
+
+$$
+\begin{equation}
+\begin{split}
+\pdv{A^{(H)}}{t} &= \frac{1}{i \hbar} \qty(A^{(H)}(t) U^\dagger H U - U^\dagger H U A^{(H)}(t)) \\
+&= \frac{1}{i \hbar} \comm{A^{(H)}(t)}{U^\dagger H U}
+\end{split}
+\end{equation}
+$$
+
+Recall that in the Hamiltonian picture, operators evolve over time as $H^{(H)}(t) = U^\dagger(t) H U(t)$.
+However, since in simple cases $U(t) = \exp(-\frac{i}{\hbar} H t)$, we can see that $U$ commutes with $H$.
+Thus $H^{(H)}(t) = H$ and we can write:
+
+<Boxed>
+$$
+\begin{equation}
+\pdv{A^{(H)}}{t} = \frac{1}{i \hbar} \comm{A^{(H)}(t)}{H}
+\end{equation}
+$$
+</Boxed>
+
+This is the Heisenberg equation of motion, which describes how the operators evolve in time.
+
+If one has studied Hamiltonian mechanics, this should look familiar.
+Hamilton's equations of motion are given by:
+
+$$
+\begin{equation}
+\dv{Q}{t} = \pb{Q}{H}_{\text{classical}}
+\end{equation}
+$$
+
+where $\{\}$ denotes the Poisson bracket.
+
+## Time-Evolution of Base Kets
+
+In the Schrödinger picture, state vectors evolve in time while their base kets and operators remain constant.
+On the other hand, in the Heisenberg picture, base kets *do* change in time.
+To begin with, suppose we have an operator $A$ with eigenket $\ket{a'}$:
+
+$$
+\begin{equation}
+A\ket{a'} = a' \ket{a'}
+\end{equation}
+$$
+
+In the Schrödinger picture, $A$ is time-independent, and hence its eigenkets are naturally also time-independent.
+However, we have in the Heisenberg picture that $A^{(H)}(t) = U^\dagger(t) A^{(S)} U(t)$.
+At time $t = 0$, the two pictures are equivalent, so we can use the eigenvalue equation above in both.
+Begin by applying the eigenvalue equation to $U^\dagger(t) \ket{a'}$:
+
+$$
+\begin{equation}
+U^\dagger(t) A^{(H)} \ket{a'} = a' U^\dagger(t) \ket{a'}
+\end{equation}
+$$
+
+Then, insert $U(t) U^\dagger(t)$ to the middle of the left-hand side;
+
+$$
+\begin{equation}
+U^\dagger(t) A^{(S)} U(t) U^\dagger(t) \ket{a'} = a' U^\dagger(t) \ket{a'}
+\end{equation}
+$$
+
+We see the left-hand side is just $A^{(H)}(t) U^\dagger(t) \ket{a'}$, so we can write:
+
+$$
+\begin{equation}
+A^{(H)}(t) U^\dagger(t) \ket{a'} = a' U^\dagger(t) \ket{a'}
+\end{equation}
+$$
+
+This implies that $U^\dagger(t) \ket{a'}$ is an eigenket of $A^{(H)}(t)$ with eigenvalue $a'$.
+As such, we deduce that base kets evolve in time as:
+
+$$
+\begin{equation}
+\ket{a', t}_H = U^\dagger(t) \ket{a'}
+\end{equation}
+$$
+
+In other words, because of the $^\dagger$ on the time-evolution operator, these base kets rotate opposite to the state vectors.
+
+The coefficient $c_{a'}$ of the state vector $\ket{\psi}$ in the Schrödinger picture is given by:
+
+$$
+\begin{equation}
+c_{a'} = \braket{a'}{U(t) \ket{\psi}}
+\end{equation}
+$$
+
+whereas in the Heisenberg picture, the coefficient $c_{a'}$ is given by:
+
+$$
+\begin{equation}
+c_{a'} = \bra{a'} U(t) \ket{\psi}
+\end{equation}
+$$
+
+because $\bra{a'} U(t)$ is the dual of $U^\dagger(t) \ket{a'}$.
+We see that both are equivalent.
+
+## An Explicit Form of the Hamiltonian (Ehrenfest's Theorem)
+
+Now that we have both the Schrödinger and Heisenberg equations of motion, we can start applying them to real systems.
+Notice that both of them rely on the Hamiltonian $H$, but we do not currently have an expression for it.
+We use a few different ways to derive this expression:
+
+1. Typically, we assume that $H$ is just the quantum equivalent of the classical Hamiltonian, but with the classical variables replaced with operators.
+2. If, using the above method, there are noncommuting observables, we resolve this ambiguity by requiring that the Hamiltonian be Hermitian.
+3. If there is no classical equivalent for the physical system, we make an educated guess for the Hamiltonian based on properties of the system.
+    Then, we use experiments to determine its validity.
+
+We will study a particle in one dimension, which is a simple system that has a well-defined classical Hamiltonian.
+This acts as a sanity-check for quantum mechanics; we will derive results that closely match the equations for classical mechanics:
+
+- Momentum is conserved for a free particle.
+- For a free particle, position evolves in time as $x(t) = x(0) + vt = x(0) + \frac{p}{m} t$.
+- Newton's second law: $m\dv[2]{x}{t} = -\grad{V}$.
+
+First, we will derive two important results regarding the commutator of $x_i$ or $p_i$ with *functions of* $x_i$ and $p_i$:
+
+$$
+\begin{align}
+\comm{x_i}{f(\vb{p})} &= i \hbar \pdv{f}{p_i} \\
+\comm{p_i}{g(\vb{x})} &= -i \hbar \pdv{g}{x_i}
+\end{align}
+$$
+
+---
+
+**Proof**. We assume that $f$ can be expressed as a Taylor series expansion in terms of $p_i$:
+
+$$
+\begin{equation}
+f(\vb{p}) = \sum_{n_1 = 0}^{\infty} \sum_{n_2 = 0}^{\infty} \cdots \sum_{n_k = 0}^{\infty} c_{n_1 n_2 \cdots n_k} p_1^{n_1} p_2^{n_2} \cdots p_k^{n_k}
+\end{equation}
+$$
+
+(If this appears unfamiliar, this is the Taylor series for a function of several variables.)
+To simplify the notation, we can use a multi-index notation, where $\vb{n} = (n_1, n_2, \ldots, n_k)$ and $p^{\vb{n}} = p_1^{n_1} p_2^{n_2} \cdots p_k^{n_k}$.
+Then we can write:
+
+$$
+\begin{equation}
+f(\vb{p}) = \sum_{\vb{n}} c_{\vb{n}} p^{\vb{n}}
+\end{equation}
+$$
+
+Our strategy is to first prove the result for a single monomial term $p_i^{n}$, and then generalize it to the full Taylor series.
+
+---
+
+The Hamiltonian for a free particle is the same as the classical Hamiltonian:
+
+$$
+\begin{equation}
+H = \frac{\vb{p}^2}{2m}
+\end{equation}
+$$
+
+Taking any momentum operator $p_i$ and applying the Heisenberg equation of motion, we have:
+
+$$
+\begin{equation}
+\dv{p_i}{t} = \frac{1}{i \hbar} \comm{p_i}{H}
+\end{equation}
+$$
+
+The commutator $\comm{p_i}{H}$ is zero because $H$ is a function of $p_i$.
+Thus, we have that momentum is conserved for a free particle, satisfying our first classical sanity-check.
+
+If we take the position operator $x_i$ and apply the Heisenberg equation of motion, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{x_i}{t} &= \frac{1}{i \hbar} \comm{x_i}{H} \\
+&= \frac{1}{i \hbar} \comm{x_i}{\frac{\vb{p}^2}{2m}} \\
+&= \frac{1}{2m i \hbar} \comm{x_i}{\vb{p}^2}
+\end{split}
+\end{equation}
+$$
+
+Now we use the result that $\comm{x_i}{f(\vb{p})} = i \hbar \pdv{f}{p_i}$:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{x_i}{t} &= \frac{1}{2m i \hbar} \comm{x_i}{\vb{p}^2} = \frac{1}{2m i \hbar} \comm{x_i}{\sum_{j} p_j^2} \\
+&= \frac{1}{2m i \hbar} \sum_{j} \comm{x_i}{p_j^2} = \frac{1}{2m i \hbar} \sum_{j} i \hbar \pdv{p_j^2}{p_i} \\
+&= \frac{1}{2m} \sum_{j} \pdv{p_j^2}{p_i} = \frac{1}{2m} \sum_{j} 2 p_j \pdv{p_j}{p_i} \\
+&= \frac{1}{m} p_i \pdv{p_i}{p_i} \\
+&= \frac{1}{m} p_i(0)
+\end{split}
+\end{equation}
+$$
+
+where we have used the fact that $\pdv{p_j}{p_i} = \delta_{ij}$.
+This means that $\dv{x_i}{t} = \frac{p_i(0)}{m}$, which is the classical equation of motion for a free particle;
+
+$$
+\begin{equation}
+x_i(t) = x_i(0) + \frac{p_i(0)}{m} t
+\end{equation}
+$$
+
+This satisfies our second classical sanity-check.
+
+Lastly, suppose we now place the particle in a potential $V(\vb{r})$.
+We can write the Hamiltonian as:
+
+$$
+\begin{equation}
+H = \frac{\vb{p}^2}{2m} + V(\vb{r})
+\end{equation}
+$$
+
+We will use the result that $\comm{p_i}{g(\vb{x})} = -i \hbar \pdv{g}{x_i}$ to find the equation of motion for $x_i$.
+Applying Heisenberg's equation of motion, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{p_i}{t} &= \frac{1}{i \hbar} \comm{p_i}{H} = \frac{1}{i \hbar} \comm{p_i}{\frac{\vb{p}^2}{2m}} + \frac{1}{i \hbar} \comm{p_i}{V(\vb{r})} \\
+&= 0 + \frac{1}{i \hbar} \comm{p_i}{V(\vb{r})} = -\frac{1}{i \hbar} i \hbar \pdv{V(\vb{r})}{x_i} = -\pdv{V(\vb{r})}{x_i}
+\end{split}
+\end{equation}
+$$
+
+For $x_i$, we still have $\dv{x_i}{t} = \frac{p_i}{m}$ (the new term $V(\vb{x})$ commutes with position and hence does not contribute).
+Finally, we apply Heisenberg's equation of motion to $\dv{x_i}{t}$:
+
+$$
+\begin{equation}
+\dv[2]{x_i}{t} = \dv{t} \qty(\dv{x_i}{t}) = \frac{1}{i \hbar} \comm{\dv{x_i}{t}}{H} = \frac{1}{i \hbar} \comm{\frac{p_i}{m}}{H}
+\end{equation}
+$$
+
+But because this is just Heisenberg's equation applied to $p_i/m$, we have:
+
+$$
+\begin{equation}
+\dv[2]{x_i}{t} = \frac{1}{m} \dv{p_i}{t}
+\end{equation}
+$$
+
+We know that $\dv{p_i}{t} = -\pdv{V(\vb{r})}{x_i}$, so we can write:
+
+$$
+\begin{equation}
+\dv[2]{x_i}{t} = -\frac{1}{m} \pdv{V(\vb{r})}{x_i}
+\end{equation}
+$$
+
+Finally, if we apply this to all directions, we obtain a vector form of the equation:
+
+$$
+\begin{equation}
+\dv[2]{\vb{x}}{t} = -\frac{1}{m} \grad{V(\vb{r})}
+\end{equation}
+$$
+
+This is the quantum equivalent of Newton's second law, which states that the acceleration of a particle is equal to the force acting on it divided by its mass.
+This satisfies our third classical sanity-check.
+However, this equation still explicitly uses operators, and hence only applies to the Heisenberg picture.
+To generalize this, we can multiply both sides by $m$ and take the expectation value of both sides:
+
+$$
+\begin{equation}
+m \dv[2]{\expval{\vb{x}}}{t} = \dv{\expval{\vb{p}}}{t} = -\expval{\grad{V(\vb{r})}} \label{eq:ehrenfest}
+\end{equation}
+$$
+
+Because expectation values are the same in both pictures, this equation is more general.
+It is known as **Ehrenfest's theorem**.
+
+## Summary and Next Steps
+
+In this section, we have introduced the Heisenberg picture of quantum mechanics, which is an alternative formulation to the Schrödinger picture.
+The differences between the pictures are summarized in the table below.
+
+|                    | Schrödinger Picture                     | Heisenberg Picture                                          |
+| ------------------ | --------------------------------------- | ----------------------------------------------------------- |
+| Operators          | Time-independent $A^{(S)}$              | Time-dependent $A^{(H)}(t) = U^\dagger(t) A^{(S)} U(t)$     |
+| States             | Time-dependent $\ket{\psi, t_0 = 0; t}$ | Time-independent $\ket{\psi, t_0 = 0; t}$                   |
+| Base Kets          | Time-independent $\ket{a'}$             | Time-dependent $\ket{a', t}_H = U^\dagger(t) \ket{a'}$      |
+| Equation of Motion | $i \hbar \dv{t} U(t) = H U(t)$          | $\pdv{A^{(H)}}{t} = \frac{1}{i \hbar} \comm{A^{(H)}(t)}{H}$ |
+
+We also derived Ehrenfest's theorem, an important sanity-check for quantum mechanics:
+
+$$
+\begin{equation}
+m \dv[2]{\expval{\vb{x}}}{t} = \dv{\expval{\vb{p}}}{t} = -\expval{\grad{V(\vb{r})}} \tag{\ref{eq:ehrenfest}}
+\end{equation}
+$$
+
+In the next section, we will study Feynman's path integral formulation of quantum mechanics.
+

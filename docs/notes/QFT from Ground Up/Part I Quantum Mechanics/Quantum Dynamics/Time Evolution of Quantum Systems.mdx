@@ -1,5 +1,5 @@
 ---
-sidebar_position: 7
+sidebar_position: 1
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
@@ -14,13 +14,6 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
 
 # Time Evolution of Quantum Systems
 
-Up to this point, we have discussed the basic principles of quantum mechanics, including the postulates and mathematical formalism.
-We have not yet discussed how quantum systems evolve in time.
-There are typically three ways to describe the time evolution of quantum systems.
-The first is the Schrödinger picture, where the state of the system, $\ket{\psi}$, evolves in time.
-The second is the Heisenberg picture, where the operators themselves evolve in time.
-The third is a different approach called the path integral formalism developed by Richard Feynman.
-We will go through all three of these methods eventually, but we will start with the Schrödinger picture.
 In this section, we will derive the third postulate of quantum mechanics, which requires that the time evolution of quantum systems be governed by a unitary operator.
 
 ## Table of Contents
@@ -290,7 +283,7 @@ Rearranging this gives the **Schrödinger equation**:
 
 $$
 \begin{equation}
-i \hbar \dv{t} \ket{\psi, t_0} = H \ket{\psi, t_0}
+i \hbar \dv{t} \ket{\psi, t_0} = H \ket{\psi, t_0} \label{eq:schrodinger-equation}
 \end{equation}
 $$
 </Boxed>
@@ -302,7 +295,7 @@ Alternatively, we can write the Schrödinger equation in terms of the time-evolu
 
 $$
 \begin{equation}
-i \hbar \dv{t} U(t; t_0) = H U(t; t_0)
+i \hbar \dv{t} U(t; t_0) = H U(t; t_0) \label{eq:schrodinger-equation-time-evolution}
 \end{equation}
 $$
 </Boxed>
@@ -323,7 +316,7 @@ For the time-evolution operator form of the Schrödinger equation, we can solve 
 
     $$
     \begin{equation}
-    U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0))
+    U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0)) \label{eq:time-evolution-operator-time-independent}
     \end{equation}
     $$
 
@@ -354,7 +347,7 @@ In this case, the Schrödinger equation simplifies to the first case:
 
 $$
 \begin{equation}
-U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0))
+U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0)) \tag{\ref{eq:time-evolution-operator-time-independent}}
 \end{equation}
 $$
 
@@ -485,7 +478,54 @@ So we get a sum of terms that oscillate in time. The frequency of the oscillatio
 
 $$
 \begin{equation}
-\omega_{a', a''} = \frac{E_{a''} - E_{a'}}{\hbar}
+\omega_{a', a''} = \frac{E_{a''} - E_{a'}}{\hbar} \label{eq:bohr-frequency-condition}
 \end{equation}
 $$
 
+## Summary and Next Steps
+
+In this section, we began discussing how quantum systems evolve in time.
+
+Here are the key points to remember:
+
+- Quantum systems evolve in time, described by different pictures (Schrödinger, Heisenberg, and path integral).
+- The time-evolution operator is a unitary operator that describes how the state of the system evolves in time.
+    By enforcing the properties of the time-evolution operator, we derived the Schrödinger equation:
+
+    $$
+    \begin{equation}
+    i \hbar \dv{t} \ket{\psi, t_0} = H \ket{\psi, t_0} \tag{\ref{eq:schrodinger-equation}}
+    \end{equation}
+    $$
+
+- We focus on the case of time-independent Hamiltonians, where the time-evolution operator can be expressed as:
+
+    $$
+    \begin{equation}
+    U(t; t_0) = \exp(-\frac{i}{\hbar} H (t - t_0)) \tag{\ref{eq:time-evolution-operator-time-independent}}
+    \end{equation}
+    $$
+
+- Generally, the approach for a time-independent Hamiltonian is to:
+
+    1. Find an operator $A$ that commutes with the Hamiltonian $H$.
+    2. Find the eigenstates of $A$. These are energy eigenkets.
+    3. Given an initial state $\ket{\psi}$, express it in terms of the eigenkets of $A$.
+    4. Apply the time-evolution operator to the state vector $\ket{\psi}$.
+
+- A stationary state is a state where the expectation value of the observable does not change in time.
+    All energy eigenkets are stationary states.
+- Non-stationary states are superpositions of energy eigenstates.
+    They oscillate in time, and the frequency of the oscillation is given by Bohr's frequency condition:
+
+    $$
+    \begin{equation}
+    \omega_{a', a''} = \frac{E_{a''} - E_{a'}}{\hbar} \tag{\ref{eq:bohr-frequency-condition}}
+    \end{equation}
+    $$
+
+In the next page, we will explore some examples of physical systems and apply the Schrödinger equation to them.
+
+### References
+
+- J.J. Sakurai, "Modern Quantum Mechanics", Section 2.1 ("Time Evolution and the Schrödinger Equation")

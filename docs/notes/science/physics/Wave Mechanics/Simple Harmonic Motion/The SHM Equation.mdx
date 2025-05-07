@@ -1,0 +1,514 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# The SHM Equation
+
+To begin the discussion of SHM, we need to understand the equation that describes it.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Suppose we have a mass $m$ attached to a spring with spring constant $k$.
+The spring is fixed at one end and the mass can move freely in the $x$-direction.
+The position of the mass is the only degree of freedom in this system, labeled $x$.
+
+The spring is initially at its natural length $L_0$, where $x = 0$.
+When the mass is displaced from its equilibrium position, it experiences a restoring force that tries to bring it back to its equilibrium position:
+
+$$
+\begin{equation}
+F = -kx
+\end{equation}
+$$
+
+This means that:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} = -kx
+\end{equation}
+$$
+
+This is a second-order differential equation, known as the **equation of motion** of a simple harmonic oscillator.
+
+We can alternatively take a Lagrangian approach to derive the same equation.
+We know that the spring force is conservative, so we can write its potential energy as $V = \frac{1}{2} k x^2$.
+As such, the Lagrangian is given by:
+
+$$
+\begin{equation}
+L = T - V = \frac{1}{2} m \dot{x}^2 - \frac{1}{2} k x^2
+\end{equation}
+$$
+
+Plugging this into the Euler-Lagrange equation, we get:
+
+$$
+\begin{equation}
+-kx = m \dv[2]{x}{t}
+\end{equation}
+$$
+
+This is the same equation we derived earlier.
+It is common to introduce the variable $\omega^2 = \frac{k}{m}$, which gives us the equation:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \omega^2 x = 0
+\end{equation}
+$$
+
+### The Solution
+
+We can solve this equation multiple ways. I will show three methods here.
+
+First, the fastest way is to take an ansatz of the form:
+
+$$
+\begin{equation}
+x(t) = a \cos(\lambda t)
+\end{equation}
+$$
+
+This is a reasonable guess, as we know that the solution must be periodic.
+Plugging this into the equation of motion, we get:
+
+$$
+\begin{equation}
+\dv[2]{x}{t} - \omega^2 x = -a b^2 \cos(\lambda t) + \omega^2 a \cos(\lambda t) = 0
+\end{equation}
+$$
+
+This means that $\lambda^2 = \omega^2$, so we can write the solution as [^1]:
+
+[^1]: The astute reader might notice that this only means that $\lambda = \pm \omega$. However, cosine is an even function, so both solutions are equivalent.
+    Additionally, for the sine term, using $-\omega$ simply adds a factor of $-1$ to the sine term, which can be absorbed into the amplitude.
+
+$$
+\begin{equation}
+x(t) = a \cos(\omega t)
+\end{equation}
+$$
+
+Additionally, since the same reasoning applies to the sine function, we can also write the solution as a linear combination of sine and cosine:
+
+$$
+\begin{equation}
+x(t) = a \cos(\omega t) + b \sin(\omega t)
+\end{equation}
+$$
+
+Secondly, we can enforce energy conservation and derive a solution from there;
+
+$$
+\begin{equation}
+E = \frac{1}{2} m \dot{x}^2 + \frac{1}{2} \omega^2 x^2
+\end{equation}
+$$
+
+We can take $\dot{x}$ on one side and $x$ on the other side:
+
+$$
+\begin{equation}
+\dot{x}^2 = \pm \sqrt{\frac{2}{m} E - \omega^2 x^2}
+\end{equation}
+$$
+
+We can then separate the variables and integrate both sides, which I will not do here (see [this](/notes/science/physics/Mini%20Series/Simple%20Harmonic%20Motion/The%20Undamped%20SHO/Method%201%20From%20Energies) for a detailed derivation).
+
+If one is familiar with Hamiltonian mechanics, one might instead consider the phase space of the system $(x, p)$, where $p = m \dot{x}$.
+We can then write the equation of motion as a first-order differential equation in the phase space:
+
+$$
+\begin{equation}
+\dv{t} \mqty[x \\ p] = \mqty[0 & 1 \\ -\omega^2 & 0] \mqty[x \\ p]
+\end{equation}
+$$
+
+The eigenvalues of the matrix are $\pm i \omega$, and the eigenvectors are $\mqty[1 \\ i \omega]$ and $\mqty[1 \\ -i \omega]$.
+Thus, if we can write the initial conditions as a linear combination of the eigenvectors, we can write the solution as:
+
+$$
+\begin{equation}
+\mqty[x \\ p] = a \mqty[1 \\ i \omega] e^{i \omega t} + b \mqty[1 \\ -i \omega] e^{-i \omega t}
+\end{equation}
+$$
+
+which means $x = a e^{i \omega t} + b e^{-i \omega t}$.
+We can then use Euler's formula to write this as:
+
+$$
+\begin{equation}
+x = a \cos(\omega t) + b \sin(\omega t)
+\end{equation}
+$$
+
+where $a$ and $b$ are determined by the initial conditions.
+
+### Initial Conditions
+
+The solution we derived above is a general solution to the equation of motion.
+Given that it is a second-order differential equation, we need two initial conditions to fully specify the solution.
+The two initial conditions can be the initial position and velocity of the mass.
+
+Plugging in the initial conditions, we eventually get a solution of the form:
+
+$$
+\begin{equation}
+x(t) = x(0) \cos(\omega t) + \frac{\dot{x}(0)}{\omega} \sin(\omega t)
+\end{equation}
+$$
+
+### Parameters of the SHO
+
+Given that we now have a solution to the equation of motion, we can now discuss the parameters of the SHO.
+
+The **amplitude** is the maximum displacement of the mass from its equilibrium position.
+The amplitude is given by $A = \sqrt{x(0)^2 + \frac{\dot{x}(0)^2}{\omega^2}}$.
+
+The **period** is the time it takes for the mass to complete one full oscillation.
+The period is given by $\tau = \frac{2 \pi}{\omega}$ ($\tau$ is the Greek letter tau).
+
+The **frequency** is the number of oscillations per unit time.
+It is given by $\nu = \frac{1}{\tau} = \frac{\omega}{2 \pi}$ (the Greek letter nu).
+The frequency is the inverse of the period.
+
+The **angular frequency** is the rate of change of the phase of the oscillation.
+It is best understood if we consider the solution as the rotation of a complex number.
+Then, the angular frequency is just the angle's rate of change.
+It is given by $\omega = 2 \pi \nu = \frac{2 \pi}{\tau}$.
+
+## Linear and Homogeneous Equations
+
+With the introduction of the SHO, we can now discuss the general form of linear and homogeneous equations.
+The reason that so many physical systems can be modeled as SHOs is that they exhibit common behavior, or at least *approximately* common behavior.
+The behavior that we are interested in include the linearity and time-translational invariance of the system.
+
+In a system (with one degree of freedom $x$), the equation of motion is linear if each term contains at most one factor of $x$.
+This means that the equation of motion can be written in the form:
+
+$$
+\begin{equation}
+\alpha \dv[2]{x}{t} + \beta \dv{x}{t} + \gamma x = f(t)
+\end{equation}
+$$
+
+By varying the coefficients $\alpha$, $\beta$, and $\gamma$, we can model a wide variety of systems.
+Note that they do not need to be constant; they can be functions of time.
+
+The function $f(t)$ is a forcing function, which describes the external forces acting on the system.
+For instance, if a mass-spring system is vertically hung and is subject to gravity, then we can write the equation of motion as:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} = -kx - mg
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} + kx + mg = 0
+\end{equation}
+$$
+
+Suppose we have a solution $X(t)$ to the above equation of motion.
+If we define $x(t) := X(t) - mg/k$, then we can write the equation of motion as:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} + k(X - mg/k) + mg = 0 \implies m \dv[2]{x}{t} + kx = 0
+\end{equation}
+$$
+
+This means that the solution to the equation of motion is the same as if there was no external force acting on the system.
+In other words, the presence of a gravitational force does not change the oscillation of the mass-spring system.
+It only "pushes down" the equilibrium position of the mass.
+
+A **homogeneous** equation is one where the right-hand side ($f(t)$) is zero; all terms have one factor of $x$.
+As such, the homogeneous part of the equation is given by:
+
+$$
+\begin{equation}
+\alpha \dv[2]{x}{t} + \beta \dv{x}{t} + \gamma x = 0
+\end{equation}
+$$
+
+Suppose we have a solution $x_1(t)$ that satisfies the linear equation with $f_1(t)$ and a solution $x_2(t)$ that satisfies the linear equation with $f_2(t)$.
+Then, the linear combination of the two solutions $x(t) = c_1 x_1(t) + c_2 x_2(t)$ is also a solution to the linear equation with $f(t) = c_1 f_1(t) + c_2 f_2(t)$.
+This is known as the **principle of superposition**.
+
+Notice that whenever we have a particular solution to the linear equation, we can always add a solution to the homogeneous equation to get another solution to the linear equation.
+This means that the general solution to the linear equation is given by the sum of the particular solution and the general solution to the homogeneous equation:
+
+$$
+\begin{equation}
+x(t) = x_p(t) + x_h(t)
+\end{equation}
+$$
+
+where $x_p(t)$ is a particular solution to the linear equation and $x_h(t)$ is the general solution to the homogeneous equation.
+
+### Approximations as SHOs
+
+Many systems can be approximated as SHOs.
+To see this, we first write the equation of motion in terms of the potential energy $V(x)$:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} = -\dv{V}{x}
+\end{equation}
+$$
+
+We can then Taylor expand the potential energy around the equilibrium position $x_0$ (which we will take to be zero for simplicity):
+
+$$
+\begin{equation}
+F(x) = -V'(x) = -V'(0) - V''(0) x - \frac{V'''(0)}{2} x^2 - \order{x^3}
+\end{equation}
+$$
+
+For SHOs, the first derivative is also zero because the force is zero and $F = -\dv{V}{x}$.
+For the second derivative, we have $-V''(0) = -\dv{F}{x} = k$.
+
+In a real system, we have higher-order terms in the Taylor expansion.
+With sufficiently small displacements ($x$), the higher-order terms get more and more negligible.
+
+For the $x^2$ term, this term is negligible if the $x$ term overpowers it. In other words, $V''(0) x \gg V'''(0) x^2$.
+Equivalently:
+
+$$
+\begin{equation}
+\abs{x V'''(0)} \ll \abs{V''(0)}
+\end{equation}
+$$
+
+Overall, this means that any $V(x)$ with a local minimum at a point $x_0$ can be approximated as a SHO if the displacement from the equilibrium position is small enough.
+This is the case for many systems, including pendulums, springs, and even the motion of planets around the sun.
+It's also why we can use the harmonic approximation to describe the motion of atoms in a crystal lattice.
+
+When a system fails to be approximated as a SHO, this happens because of two reasons.
+First, the potential energy might not be analytic around the equilibrium position. Then, we cannot Taylor expand the potential energy.
+Second, if $V''(0)$ is zero, then $V'''(0)$ must also be zero (because it is proportional to $x^2$. If it wasn't zero then the system will grow unbounded).
+However, this means that the $x^3$ term will dominate the potential energy.
+
+## Time Translation Invariance
+
+The second property of the SHO is that it is time-translationally invariant.
+Take the homogeneous equation of motion:
+
+$$
+\begin{equation}
+\alpha \dv[2]{x}{t} + \beta \dv{x}{t} + \gamma x = 0
+\end{equation}
+$$
+
+and suppose all the coefficients are constant.
+Then $t$ only appears in the derivatives, and therefore the equation is invariant under time translations.
+In other words, if $x(t)$ is a solution to the equation, then $x(t + t_0)$ is also a solution for any $t_0$.
+
+The simplest way $x(t)$ changes with time is by a multiplicative factor of $h(t_0)$;
+
+$$
+\begin{equation}
+x(t + t_0) = h(t_0) x(t)
+\end{equation}
+$$
+
+Solutions of this form are known as **irreducible solutions** because they behave the simplest under time translations.
+(More precisely, they are irreducible under the action of the time translation group. A full discussion of this involves representation theory.)
+
+We shall now prove an important theorem:
+
+<Boxed>
+
+If a system is linear and time-translationally invariant, then the solution to the equation of motion is a linear combination of irreducible complex exponentials.
+
+</Boxed>
+
+We can prove this for a general equation of motion of a complex variable $z(t)$.
+Essentially, we write $z(t)$ as a linear combination of functions, and then show that these functions have to be complex exponentials.
+
+First, let's write $z(t)$ as a linear combination of functions $z_j(t)$:
+
+$$
+\begin{equation}
+z(t) = \sum_{j} c_j z_j(t)
+\end{equation}
+$$
+
+We can borrow language from linear algebra and call the $z_j(t)$ the *basis functions*.
+They are to be complete, meaning that they can be used to express any function $z(t)$.
+They are also linearly independent, meaning that no $z_j(t)$ can be expressed as a linear combination of the others.
+
+Applying time translation to $z(t)$, we have:
+
+$$
+\begin{equation}
+z(t + t_0) = h(t_0) z(t)
+\end{equation}
+$$
+
+Differentiating both sides with respect to $t_0$ gives us:
+
+$$
+\begin{equation}
+\dv{t_0} z(t + t_0) = z(t) \dv{t_0} h(t_0)
+\end{equation}
+$$
+
+Then, setting $t_0 = 0$ gives us:
+
+$$
+\begin{equation}
+z'(t) = z(t) h'(0)
+\end{equation}
+$$
+
+But this is just a simple differential equation whose solution is:
+
+$$
+\begin{equation}
+z(t) = e^{h'(0) t} z(0)
+\end{equation}
+$$
+
+Indeed, the solution is an irreducible solution of the form $z(t) = e^{h'(0) t} z(0)$.
+
+To find out more about the system, we can apply more linear algebra.
+We apply time translation to $z(t)$, i.e. $z(t + t_0) = h(t_0) z(t)$:
+
+$$
+\begin{equation}
+z(t + t_0) = h(t_0) \sum_{k} c_k z_k(t)
+\end{equation}
+$$
+
+By definition, since $z_k(t)$ is a solution, and the system is time-translationally invariant, $z_k(t + t_0)$ is also a solution.
+We can write this time-translated solution as another linear combination of the basis functions:
+
+$$
+\begin{equation}
+z_j(t + t_0) = \sum_{k} R_{jk} z_k(t)
+\end{equation}
+$$
+
+where $R_{jk}$ is a matrix that describes the transformation of the basis functions under time translation.
+This means that we can write:
+
+$$
+\begin{equation}
+z(t + t_0) = \sum_{j} c_j z_j(t + t_0) = \sum_{j} c_j \sum_{k} R_{jk} z_k(t)
+\end{equation}
+$$
+
+Since this must be equal to $h(t_0) z(t)$, we can write:
+
+$$
+\begin{equation}
+h(t_0) \sum_{k} c_k z_k(t) = \sum_{j} \sum_{k} c_j  R_{jk} z_k(t)
+\end{equation}
+$$
+
+Removing the sum over $k$, we get:
+
+$$
+\begin{equation}
+h(t_0) c_k = \sum_{j} c_j R_{jk} \qquad \forall k
+\end{equation}
+$$
+
+Rearranging this gives us:
+
+$$
+\begin{equation}
+\sum_{j} c_j R_{jk} - h(t_0) c_k = 0 \qquad \forall k
+\end{equation}
+$$
+
+We can combine the two sums into one. To do so, we sum over $j$ in the second term, but introduce a Kronecker delta $\delta_{jk}$;
+
+$$
+\begin{equation}
+h(t_0) c_k = \sum_{j} \delta_{jk} R_{jk}
+\end{equation}
+$$
+
+Plugging this into the equation gives us:
+
+$$
+\begin{equation}
+\sum_{j} \qty(R_{jk} - h(t_0) \delta_{jk}) c_j = 0 \qquad \forall k
+\end{equation}
+$$
+
+Finally, if we introduce $S_{jk} := R_{jk} - h(t_0) \delta_{jk}$, we can write:
+
+$$
+\begin{equation}
+\sum_{j} S_{jk} c_j = 0 \qquad \forall k
+\end{equation}
+$$
+
+Once again, we borrow language from linear algebra.
+We can imagine a vector $\vb{v}$ with coefficients $c_j$ and a matrix $S$ with values $S_{jk}$.
+The equation above can be written as:
+
+$$
+\begin{equation}
+S \vb{v} = 0
+\end{equation}
+$$
+
+The only way this can be satisfied is if the determinant of $S$ is zero.
+We can solve this as a polynomial equation in $h(t_0)$. It has a degree of $n$, where $n$ is the number of basis functions.
+This means that there are $n$ roots $h_j(t_0)$, which are the eigenvalues of the matrix $S$.
+
+## Energies
+
+We conclude this section with a discussion of the energies of the SHO.
+In a most general case, an undamped and unforced SHO obeys the equation of motion:
+
+$$
+\begin{equation}
+\mathcal{M} \dv[2]{\mathcal{X}}{t} + \mathcal{K} \mathcal{X} = 0
+\end{equation}
+$$
+
+where $\mathcal{M}$ is the *generalized mass* and $\mathcal{K}$ is the *generalized spring constant*.
+We use the word "generalized" because they might not literally be the mass and spring constant of the system.
+(For example, a pendulum-like system might use the moment of inertia as the generalized mass.)
+
+The kinetic energy of the system is given by:
+
+$$
+\begin{equation}
+T = \frac{1}{2} \mathcal{M} \qty(\dv{\mathcal{X}}{t})^2
+\end{equation}
+$$
+
+The potential energy of the system is given by:
+
+$$
+\begin{equation}
+V = \frac{1}{2} \mathcal{K} \mathcal{X}^2
+\end{equation}
+$$
+
+For the generalized mass and spring constant to be valid, their dimensions must be set such that $T$ and $V$ have the dimensions of energy.
+

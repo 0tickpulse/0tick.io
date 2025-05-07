@@ -1,0 +1,194 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Elementary Examples of Schrödinger Picture
+
+In this section, we will explore a few elementary examples of the Schrödinger picture that we introduced in the previous section.
+We will start with some physical examples like spin 1/2 particles and neutrinos, and then we will conclude by deriving the energy-time uncertainty relation $\Delta E \Delta t \geq \hbar/2$.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Spin 1/2 Particle in a Magnetic Field
+
+In this example, we will consider a spin 1/2 particle subjected to a magnetic field.
+It has a magnetic moment $e\hbar/2m_{e} c$ and the magnetic field is assumed to be uniform and pointing in the $z$ direction.
+The Hamiltonian for this system is given by:
+
+$$
+\begin{equation}
+H = -\frac{e\hbar}{2m_{e} c} \vb{B} \cdot \vb{S} = -\frac{e\hbar}{2m_{e} c} B S_{z}
+\end{equation}
+$$
+
+The Hamiltonian is a scalar product of the magnetic field $\vb{B}$ and the spin operator $\vb{S}$.
+Since $H$ is a multiple of $S_z$, $S_z$ naturally commutes with $H$. As such, we can use the eigenstates of $S_z$ as our basis states.
+The eigenstates of $S_z$ are given by:
+
+$$
+\begin{equation}
+E_{\pm} = \mp \frac{e\hbar}{2m_{e} c} B
+\end{equation}
+$$
+
+If we introduce the variable $\omega := \frac{|e| B}{m_{e} c}$, then the energy difference between the eigenstates is $\hbar \omega$, and the Hamiltonian can be written as:
+
+$$
+\begin{equation}
+H = \omega S_z
+\end{equation}
+$$
+
+Then, the time-evolution operator becomes:
+
+$$
+\begin{equation}
+U(t) = \exp(-\frac{i}{\hbar} H t) = \exp(-\frac{i}{\hbar} \omega S_z t)
+\end{equation}
+$$
+
+To see how this operator acts on the state vector, we can write it in terms of the eigenstates of $S_z$; $\ket{\psi} = c_{+} \ket{+z} + c_{-} \ket{-z}$.
+Since $S_z \ket{+z} = \frac{\hbar}{2} \ket{+z}$ and $S_z \ket{-z} = -\frac{\hbar}{2} \ket{-z}$, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\ket{\psi, t} &= U(t) \ket{\psi} \\
+&= \exp(-\frac{i}{\hbar} \omega S_z t) \qty(c_{+} \ket{+z} + c_{-} \ket{-z}) \\
+&= c_{+} \exp(-\frac{i}{\hbar} \omega S_z t) \ket{+z} + c_{-} \exp(-\frac{i}{\hbar} \omega S_z t) \ket{-z} \\
+&= c_{+} \exp(-\frac{i}{\hbar} \omega \frac{\hbar}{2} t) \ket{+z} + c_{-} \exp(-\frac{i}{\hbar} \omega \qty(-\frac{\hbar}{2}) t) \ket{-z} \\
+&= c_{+} \exp(-\frac{i}{2} \omega t) \ket{+z} + c_{-} \exp(\frac{i}{2} \omega t) \ket{-z}
+\end{split}
+\end{equation}
+$$
+
+This means that the state vector $\ket{\psi, t}$ is a superposition of the two eigenstates $\ket{+z}$ and $\ket{-z}$, with each eigenstate picking up a phase factor that oscillates in time.
+We will now apply the time-evolution operator to a few different states.
+
+### Example 1: +z State
+
+Suppose we have a spin 1/2 particle in the state $\ket{+z}$ at time $t = 0$.
+The ket $\ket{+z}$ has coefficients $c_{+} = 1$ and $c_{-} = 0$.
+Because the state is an eigenstate of $S_z$, it is an energy eigenket and is hence stationary (time-independent).
+We can see this more clearly by applying the time-evolution operator to the state:
+
+$$
+\begin{equation}
+\begin{split}
+\ket{+z, t} &= U(t) (1 \ket{+z} + 0 \ket{-z}) \\
+&= 1 \exp(-\frac{i}{2} \omega t) \ket{+z} + 0 \exp(\frac{i}{2} \omega t) \ket{-z} \\
+&= \exp(-\frac{i}{2} \omega t) \ket{+z}
+\end{split}
+\end{equation}
+$$
+
+This means that the state vector $\ket{+z, t}$ is simply a phase factor times the original state vector $\ket{+z}$.
+The expectation value of any observable that is compatible with $S_z$ will be constant in time.
+(Recall that the magnitude of a state vector does not matter in the context of quantum mechanics; only the direction matters.)
+
+### Example 2: +x State
+
+Suppose we have a spin 1/2 particle in the state $\ket{+x}$ at time $t = 0$.
+Recall from [previous discussions](../Mathematical%20Foundations/Applying%20to%20Spin%2012%20Systems) that the state $\ket{+x}$ can be written in terms of the $z$ basis states as:
+
+$$
+\begin{equation}
+\ket{\psi} = \frac{1}{\sqrt{2}} \ket{+z} \pm \frac{1}{\sqrt{2}} \ket{-z}
+\end{equation}
+$$
+
+Hence $\ket{\psi}$ has coefficients $c_{+} = \frac{1}{\sqrt{2}}$ and $c_{-} = \frac{1}{\sqrt{2}}$.
+We can apply the time-evolution operator to the state:
+
+$$
+\begin{equation}
+\begin{split}
+\ket{\psi, t} &= U(t) \qty(\frac{1}{\sqrt{2}} \ket{+z} + \frac{1}{\sqrt{2}} \ket{-z}) \\
+&= \frac{1}{\sqrt{2}} \qty(\exp(-\frac{i}{2} \omega t) \ket{+z} + \exp(\frac{i}{2} \omega t) \ket{-z})
+\end{split}
+\end{equation}
+$$
+
+Applying the Born rule, we can find the probability of measuring the state $\ket{\pm x}$ at time $t$:
+
+$$
+\begin{equation}
+\begin{split}
+P_{\pm x} &= \abs{\braket{\pm x}{\psi, t}}^2 \\
+&= \abs{\braket{\frac{1}{\sqrt{2}} \bra{+z} \pm \frac{1}{\sqrt{2}} \bra{-z}}{\frac{1}{\sqrt{2}} \qty(\exp(-\frac{i}{2} \omega t) \ket{+z} + \exp(\frac{i}{2} \omega t) \ket{-z})}}^2 \\
+&= \abs{\frac{1}{2} \exp(-\frac{i}{2} \omega t) \pm \frac{1}{2} \exp(\frac{i}{2} \omega t)}^2
+\end{split}
+\end{equation}
+$$
+
+Recall $\frac{e^{ix} + e^{-ix}}{2} = \cos(x)$ and $\frac{e^{ix} - e^{-ix}}{2i} = \sin(x)$.
+Using this, we can rewrite the above equation depending on the sign of the second term:
+
+$$
+\begin{equation}
+P_{\pm x} = \begin{cases}
+\cos^2(\omega t/2) & \text{if } +x \\
+\sin^2(\omega t/2) & \text{if } -x
+\end{cases}
+\end{equation}
+$$
+
+And the expectation value of the observable $S_x$ is given by:
+
+$$
+\begin{equation}
+\begin{split}
+\expval{S_x} &= \frac{\hbar}{2} P_{+ x} + \frac{-\hbar}{2} P_{- x} \\
+&= \frac{\hbar}{2} \cos^2(\omega t/2) + \frac{-\hbar}{2} \sin^2(\omega t/2) \\
+&= \frac{\hbar}{2} \qty(\cos^2(\omega t/2) - \sin^2(\omega t/2)) \\
+&= \frac{\hbar}{2} \cos(\omega t)
+\end{split}
+\end{equation}
+$$
+
+where we have first used the definition of the expectation value from probability; $\expval{S_x} = \sum_{i} S_i P_i$, and then used the trigonometric identity $\cos^2(x) - \sin^2(x) = \cos(2x)$.
+This means that the expectation value of $S_x$ oscillates in time with a frequency $\omega$.
+Physically, this is because when a spin 1/2 particle in the state $\ket{\pm x}$ is subject to a magnetic field in the $z$ direction, the field causes the spin to precess about the $z$ axis.
+This is similar to how a top precesses about the vertical axis when it is spinning.
+
+To be sure, we can see that this matches Born's frequency condition, $\omega_{a', a''} = \frac{E_{a''} - E_{a'}}{\hbar}$.
+The energy difference between the two eigenstates is $\hbar \omega$, and so the frequency of oscillation is $\frac{\hbar \omega}{\hbar} = \omega$, which matches our result.
+
+## Neutrino Oscillation
+
+Before the 1930s, when beta decay was being studied, it was thought that it only involved the decay of a neutron into a proton and an electron.
+However, it was found that the decay of a neutron into a proton and an electron was not possible without violating conservation of energy.
+This is because the neutron is heavier than the proton and electron combined.
+Wolfgang Pauli proposed the existence of a new particle, which he called the "neutrino", to explain this discrepancy.
+In 1956, Clyde Cowan and Frederick Reines experimentally confirmed the existence of the neutrino.
+
+The neutrino is a neutral particle with a very small mass, and it interacts very weakly with matter.
+Each lepton (electron, muon, and tau) has a corresponding neutrino (electron neutrino, muon neutrino, and tau neutrino).
+These are called the different *flavors* of neutrinos.
+The neutrino is a fermion, and it has a spin of 1/2.
+
+For simplicity we will consider two neutrinos, the electron neutrino $\nu_e$ and the muon neutrino $\nu_\mu$.
+These are the eigenstates of the Hamiltonian for the interaction of the neutrinos with the weak force.
+Neutrinos also have other interactions in which their eigenstates are the *mass eigenstates* $\nu_1$ and $\nu_2$.
+To convert between flavor and mass eigenstates, we can use the following transformation:
+
+$$
+\begin{align}
+\ket{\nu_e} &= \cos(\theta) \ket{\nu_1} - \sin(\theta) \ket{\nu_2} \\
+\ket{\nu_\mu} &= \sin(\theta) \ket{\nu_1} + \cos(\theta) \ket{\nu_2}
+\end{align}
+$$
+
+In other words, we use a simple rotation with a mixing angle $\theta$ to convert between the two bases.

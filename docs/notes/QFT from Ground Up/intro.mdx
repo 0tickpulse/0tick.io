@@ -26,26 +26,29 @@ $$
 \end{equation}
 $$
 
-As one can see, there are a bunch of probably unfamiliar symbols in the equation above.
-Being very abstract and mathematical, QFT is often considered one of the most challenging subjects in theoretical physics, and it is usually taught at the graduate level.
-(The other challenging subject being General Relativity. Personally I find QFT more challenging.)
+We classify particles into two categories: fermions and bosons.
+Fermions are, in essence, matter particles, while bosons are force carriers.
+Fermions are spin-1/2 particles, while bosons are spin-0 or spin-1 particles. The spin-0 boson is the Higgs boson.
+Spin-1/2 particles are described by spinors, spin-0 by scalars, and spin-1 by vectors.
 
-However, QFT is incredibly successful in describing the behavior of elementary particles and their interactions.
+In quantum field theory, all particles are treated as excitations of their respective fields.
+For example, electrons are excitations of the electron field, while photons are excitations of the electromagnetic field.
+The Lagrangian density describes the dynamics of these fields and their interactions.
+Additionally, the fields interact with each other through the exchange of force-carrying particles, which are also excitations of their respective fields.
 
-This set of notes aims to introduce the basics of quantum field theory from the ground up.
-The goal is to start from high-school level physics and mathematics and build up all the way to the full theory of quantum field theory, with all of its complexities and subtleties.
-The main topics covered will be:
+To study quantum field theory, we need to have a solid understanding of three key concepts:
 
-- Quantum mechanics arose in the early 20th century as a response to the failure of classical mechanics to explain the behavior of certain things.
-    It is a fundamental theory in physics that describes the behavior of matter and energy on the smallest scales.
+1. **Quantum Mechanics**: In the early 20th century, various physical phenomena could not be explained by classical physics.
+    Quantum mechanics emerged as a new framework to describe the behavior of particles at the atomic and subatomic levels.
+    Understanding quantum mechanics is essential for grasping the principles of quantum field theory because QFT builds upon the foundations of quantum mechanics.
 
-- Classical field theory is a generalization of classical mechanics that describes fields, which are functions of space and time.
-    It is generally described by the Lagrangian density, which is a function of the fields and their derivatives.
+2. **Special Relativity**: Special relativity, formulated by Albert Einstein, describes the behavior of objects moving at high speeds, close to the speed of light.
+    Fundamentally, its core postulate leads to the Lorentz transformation, which relates the space and time coordinates of two observers in relative motion.
+    QFT is a relativistic theory, meaning it incorporates the principles of special relativity into its framework.
 
-- Special relativity is a theory that describes the relationship between space and time.
-    Starting from the postulates of special relativity, we can derive the Lorentz transformations, which describe how coordinates change under a change of reference frame.
-    **I will assume that the reader is familiar with special relativity.**
+3. **Classical Field Theory**: Classical field theory describes the behavior of classical fields, such as electromagnetic fields, gravitational fields, and scalar fields.
+    Classical field theory ensures that the principle of locality is satisfied, meaning that interactions occur at a single point in space and time.
+    For example, Newtonian gravity does not satisfy locality, as it acts instantaneously at a distance. This is why a field theory of gravity is required (general relativity).
+    Once we attempt to make quantum mechanics relativistic, we realize that we need to use a field-theoretic approach to describe particles and their interactions.
 
-These are then combined into relativistic field theory, relativistic quantum mechanics, and nonrelativistic quantum field theory, which are then finally combined into quantum field theory.
-
-This will be a very long set of notes, starting from the foundations of all these theories and building up to the full theory of quantum field theory.
+Quantum field theory can be thought of as a method to ensure quantum mechanics adheres to both the principles of special relativity and locality.
