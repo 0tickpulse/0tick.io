@@ -1,0 +1,45 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Densities
+
+One of the most important concepts in field theory is the shift from particles to fields.
+Part of this shift is the shift from quantities like energy, momentum, the Lagrangian, etc, to their densities.
+This is a very important concept in field theory, and it is worth spending some time on it.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+One way to introduce a field theory from a particle theory is to create a force field.
+For example, a common field everyone is familiar with is the electric field.
+The fundamental concept is that a force depends on two particles—their positions and their charges.
+In this case, we have $\vb{F} = k qQ/r^2 \hat{r}$.
+On the other hand, if we fix one of the particles, we can think of the force as a function of the other particle's position.
+This leads to the electric field, defined such that $\vb{F} = q \vb{E}$.
+
+We can further generalize a force field to its potential.
+Unlike the electric field, which is a vector field, its associated electric potential is a scalar field.
+The electric potential is defined such that $\vb{F} = -\nabla \phi$.
+The reason that a single scalar can encapsulate all information in the electric field is that the electric field is conservative.
+This incurs many constraints on the electric field, which leads it to have a lower amount of information.
+
+

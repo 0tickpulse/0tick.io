@@ -52,3 +52,223 @@ To study quantum field theory, we need to have a solid understanding of three ke
     Once we attempt to make quantum mechanics relativistic, we realize that we need to use a field-theoretic approach to describe particles and their interactions.
 
 Quantum field theory can be thought of as a method to ensure quantum mechanics adheres to both the principles of special relativity and locality.
+In modern physics, quantum field theory is mostly used for two purposes:
+
+1. **Particle Physics**: QFT is the theoretical framework for understanding the fundamental particles and their interactions.
+    The Standard Model of particle physics is a quantum field theory that describes all known fundamental interactions except for gravity.
+2. **Condensed Matter Physics**: QFT is also used to describe many-body systems in condensed matter physics.
+    While particle physics focuses on a single particle or a few particles, condensed matter physics deals with systems containing a large number of particles.
+    Instead of describing each particle individually, we use statistics to describe the collective behavior of the system.
+
+In addition to the physics, quantum field theory also has a very rich mathematical structure.
+This includes concepts from group theory, topology, and differential geometry.
+We will encounter many of these concepts throughout the course, such as group representations, Lie algebras, fiber bundles, Clifford algebras, and much more.
+As such, I have included a section purely dedicated to mathematical concepts.
+This section will be a reference for the mathematical concepts we will encounter throughout the course.
+
+## Prerequisites
+
+The prerequisites for this set of notes are not strict.
+I will assume that the reader knows calculus, linear algebra, and some basic physics.
+No prior knowledge of quantum mechanics or special relativity is required.
+
+Here are some resources for the prerequisites. Although they are by no means exhaustive, they should be enough to get you started.
+
+- Basic Mathematics:
+    - [Khan Academy: Algebra](https://www.khanacademy.org/math/algebra) (Video series and exercises)
+    - [Khan Academy: Precalculus](https://www.khanacademy.org/math/precalculus) (Video series and exercises)
+    - [Paul's Online Math Notes: Algebra](http://tutorial.math.lamar.edu/Classes/Alg/Alg.aspx) (Course materials)
+- Calculus:
+    - [3Blue1Brown: Essence of Calculus](https://www.youtube.com/watch?v=WUvTyaaNkzM) (Video series)
+    - [Khan Academy: Calculus 1](https://www.khanacademy.org/math/calculus-1) (Video series and exercises)
+    - [Khan Academy: Calculus 2](https://www.khanacademy.org/math/calculus-2) (Video series and exercises)
+    - [Khan Academy: Multivariable Calculus](https://www.khanacademy.org/math/multivariable-calculus) (Video series and exercises)
+    - [Paul's Online Math Notes: Calculus I](http://tutorial.math.lamar.edu/Classes/CalcI/CalcI.aspx) (Course materials)
+    - [Paul's Online Math Notes: Calculus II](http://tutorial.math.lamar.edu/Classes/CalcII/CalcII.aspx) (Course materials)
+    - [Paul's Online Math Notes: Calculus III](http://tutorial.math.lamar.edu/Classes/CalcIII/CalcIII.aspx) (Course materials)
+    - [Paul's Online Math Notes: Differential Equations](http://tutorial.math.lamar.edu/Classes/DE/DE.aspx) (Course materials)
+    - [MIT OpenCourseWare: Single Variable Calculus](https://ocw.mit.edu/courses/mathematics/18-01sc-single-variable-calculus-fall-2010/) (Course materials)
+    - [MIT OpenCourseWare: Multivariable Calculus](https://ocw.mit.edu/courses/mathematics/18-02sc-multivariable-calculus-fall-2010/) (Course materials)
+    - [MIT OpenCourseWare: Differential Equations](https://ocw.mit.edu/courses/mathematics/18-03sc-differential-equations-fall-2011/) (Course materials)
+    - Any calculus textbook, such as Stewart, Spivak, or Apostol. (One can find online forums that discuss the merits of each book.)
+- Linear Algebra:
+    - [3Blue1Brown: Essence of Linear Algebra](https://www.youtube.com/watch?v=fNk_zzaMoSs) (Video series)
+    - [Khan Academy: Linear Algebra](https://www.khanacademy.org/math/linear-algebra) (Video series and exercises)
+    - [MIT OpenCourseWare: Linear Algebra](https://ocw.mit.edu/courses/mathematics/18-06-linear-algebra-spring-2010/) (Course materials)
+    - Any linear algebra textbook, such as Strang, Axler, or Lay.
+- Classical Mechanics:
+    - [MIT OpenCourseWare: Classical Mechanics](https://ocw.mit.edu/courses/physics/8-01sc-classical-mechanics-fall-2016/) (Course materials)—this one is calculus-based, but purely Newtonian mechanics.
+    - [Khan Academy: Physics](https://www.khanacademy.org/science/physics) (Video series and exercises)—this one is more of a survey course, but it covers a lot of topics in classical mechanics.
+    - [The Feynman Lectures on Physics](https://www.feynmanlectures.caltech.edu/) (Book series)
+    - Mechanics textbooks vary greatly on the level of rigor and the topics covered. Some indicators of difficulty are the use of calculus and the use of Lagrangian and Hamiltonian mechanics.
+        Check out Schwichtenberg's "No Nonsense Classical Mechanics" and Taylor, or Goldstein for a more rigorous treatment.
+- Electricity and Magnetism:
+    - [MIT OpenCourseWare: Electricity and Magnetism](https://ocw.mit.edu/courses/physics/8-02sc-electricity-and-magnetism-fall-2010/) (Course materials)
+    - [Khan Academy: Electricity and Magnetism](https://www.khanacademy.org/science/physics/electricity-and-magnetism) (Video series and exercises)
+    - [The Feynman Lectures on Physics](https://www.feynmanlectures.caltech.edu/) (Book series)
+    - For textbooks, check out Griffiths, Purcell, or Jackson, or Schwichtenberg's "No Nonsense Electrodynamics".
+
+
+I will also assume that the reader understands basic Lagrangian and Hamiltonian mechanics, along with some other concepts.
+
+Below are some "cards" that summarizes key concepts.
+
+### Lagrangian Mechanics
+
+:::info Lagrangian mechanics
+
+Lagrangian mechanics is a reformulation of classical mechanics that uses the principle of least action to derive the equations of motion for a system.
+
+In simple systems, the Lagrangian is given by the difference between the kinetic and potential energy of the system:
+
+$$
+\begin{equation}
+L(x, \dot{x}, t) = T - V
+\end{equation}
+$$
+
+The principle of stationary action states that the path taken by a system between two points in configuration space is the one that has a stationary action.
+This is similar to how functions have stationary points (extrema), except instead of points, we have paths.
+It can be shown that the principle leads to the Euler-Lagrange equations:
+
+$$
+\begin{equation}
+\pdv{L}{x} - \dv{t} \qty(\pdv{L}{\dot{x}}) = 0
+\end{equation}
+$$
+
+We can relate this to Newton's laws by considering the following:
+
+1. In simple systems, the kinetic energy only depends on the velocity of the system, while the potential energy only depends on the position.
+    Thus, $\pdv{L}{x}$ is just $\pdv{V}{x}$, which is the force acting on the system.
+2. The term $\pdv{L}{\dot{x}}$ is just $\pdv{T}{\dot{x}} = \pdv{x} \frac{1}{2} m \dot{x}^2 = m \dot{x}$, which is the momentum of the system.
+3. So we can rewrite the Euler-Lagrange equations as
+
+    $$
+    \begin{equation}
+    F(x) - \dv{t} \qty(m \dot{x}) = 0,
+    \end{equation}
+    $$
+
+    which is just Newton's second law.
+
+:::
+
+### Hamiltonian Mechanics
+
+:::info Hamiltonian mechanics
+
+Hamiltonian mechanics is another reformulation of classical mechanics that uses the Hamiltonian function to derive the equations of motion for a system.
+
+The Hamiltonian is defined as
+
+$$
+\begin{equation}
+H(x, p, t) = p \dot{x} - L(x, \dot{x}, t)
+\end{equation}
+$$
+
+The momentum is no longer defined as $p = m \dot{x}$, but rather as the derivative of the Lagrangian with respect to the velocity:
+
+$$
+\begin{equation}
+p = \pdv{L}{\dot{x}}.
+\end{equation}
+$$
+
+In simple systems, the Hamiltonian is given by the sum of the kinetic and potential energy of the system:
+
+$$
+\begin{equation}
+H(x, p, t) = T + V
+\end{equation}
+$$
+
+The equations of motion are given by Hamilton's equations:
+
+$$
+\begin{align}
+\dot{x} &= \pdv{H}{p} \\
+\dot{p} &= -\pdv{H}{x}
+\end{align}
+$$
+
+A Poisson bracket of two functions $f$ and $g$ is defined as
+
+$$
+\begin{equation}
+\pb{f}{g} = \sum_i \qty(\pdv{f}{q_i} \pdv{g}{p_i} - \pdv{f}{p_i} \pdv{g}{q_i}).
+\end{equation}
+$$
+
+When the Lagrangian is differentiated with respect to some quantity, we get another quantity:
+
+$$
+\begin{align}
+\pdv{L}{t} &= -\pdv{H}{x} \\
+\pdv{L}{x} &= \pdv{p}{t} \\
+\pdv{L}{p} &= \pdv{x}{t} \\
+\pdv{L}{\theta} &= \pdv{(\text{Angular momentum})}{t}
+\end{align}
+$$
+
+We say that the quantity on the right is the generator of the quantity on the left.
+For example, looking at the first line, $H$ is the generator of differentiating by $t$—time translations.
+$p$ is the generator of spatial translations, and $x$ is the generator of momentum translations.
+
+:::
+
+### Electricity and Magnetism
+
+:::info Electricity and Magnetism
+
+The basic equations of electromagnetism are given by Maxwell's equations, which, in SI units, are given by
+
+$$
+\begin{align}
+\div{\vb{E}} &= \frac{\rho}{\epsilon_0} \\
+\div{\vb{B}} &= 0 \\
+\curl{\vb{E}} &= -\pdv{\vb{B}}{t} \\
+\curl{\vb{B}} &= \mu_0 \vb{J} + \mu_0 \epsilon_0 \pdv{\vb{E}}{t}
+\end{align}
+$$
+
+where $\vb{E}$ is the electric field, $\vb{B}$ is the magnetic field, $\rho$ is the charge density, and $\vb{J}$ is the current density.
+
+The first law is Gauss's law, which states that the divergence of the electric field is proportional to the charge density.
+It can equivalently be written in terms of the electric potential $\phi$ as
+
+$$
+\begin{equation}
+-\laplacian{\phi} = \frac{\rho}{\epsilon_0}.
+\end{equation}
+$$
+
+The second law is Gauss's law for magnetism, which states that the divergence of the magnetic field is zero.
+This means that there are no "sources" or "sinks" of magnetic field lines, and thus magnetic monopoles do not exist.
+
+The third law is Faraday's law of induction, which states that the curl of the electric field is equal to the negative rate of change of the magnetic field.
+This is important because it means that a changing magnetic field induces an electric field.
+
+The fourth law is Ampère's law with Maxwell's addition, which relates the magnetic field to the electric current and the rate of change of the electric field.
+
+The force on a charged particle in an electric and magnetic field is given by the Lorentz force law:
+
+$$
+\begin{equation}
+\vb{F} = q \qty(\vb{E} + \vb{v} \cross \vb{B}),
+\end{equation}
+$$
+
+Lastly, from Maxwell's equations, we can derive the wave equation for electromagnetic waves (I won't derive it here, but just take the curl of Faraday's law in a vacuum):
+
+$$
+\begin{equation}
+\laplacian{\vb{E}} - \frac{1}{c^2} \pdv[2]{\vb{E}}{t} = 0,
+\end{equation}
+$$
+
+and similarly for the magnetic field.
+$c$ is defined as $\frac{1}{\sqrt{\epsilon_0 \mu_0}}$, which is the speed of light in a vacuum.
+
+:::

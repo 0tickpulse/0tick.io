@@ -1,0 +1,382 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+# Weyl Spinors
+
+We have previously seen in quantum mechanics that Pauli matrices are a set of matrices that are used to represent the spin operators for spin-1/2 particles.
+Pauli vectors (which are actually matrices) are used to represent the spin states of particles, and they can be factored into the tensor product of two 2-component vectors.
+We call these vectors Pauli spinors.
+
+Normally, a vector is rotated using a $\text{SO}(3)$ transformation.
+When we transform a Pauli vector, we instead place two $\text{SU}(2)$ transformationson the left and right of the vector, where one is the Hermitian conjugate of the other.
+When the Pauli vector is factored, each spinor takes one of the transformations. This is why spinors transform half as much as the vector.
+
+Pauli vectors are associated with three-dimensional space.
+However, if we want to make quantum mechanics relativistic, we need a four-dimensional object.
+One such object is the **Weyl spinor**.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Review of Lorentz Transformations
+
+Recall that Lorentz transformations are transformations that preserve the Minkowski metric $\eta$.
+In Minkowski geometry, we define the square-magnitude of a vector as:
+
+$$
+\begin{equation}
+\norm{\vb{v}}^2 = \vb{v}^T \eta \vb{v}
+\end{equation}
+$$
+
+If we apply a Lorentz transformation $\Lambda$ to a vector $\vb{v}$, and assert that the square-magnitude is invariant, we have:
+
+$$
+\begin{equation}
+(\Lambda \vb{v})^T \eta (\Lambda \vb{v}) = \vb{v}^T \eta \vb{v}
+\end{equation}
+$$
+
+We know that the transpose of a product of matrices is the product of the transposes in reverse order.
+Thus, we can write the left-hand side as $\vb{v}^T \Lambda^T \eta \Lambda \vb{v}$.
+This implies that
+
+$$
+\begin{equation}
+\Lambda^T \eta \Lambda = \eta.
+\end{equation}
+$$
+
+The group of transformations satisfying this equation is $\text{O}(1, 3)$, the group of orthogonal transformations in one time and three space dimensions.
+If we forbid spatial reflections, we have the group $\text{SO}(1, 3)$, the group of ** orthogonal transformations in one time and three space dimensions.
+Finally, if we also forbid time reflections, we have the group $\text{SO}^+(1, 3)$, the group of **proper orthochronous transformations in one time and three space dimensions.
+This has the effect of making $\Lambda^0_0$ positive.
+
+We summarize the groups as follows:
+
+1. $\Lambda \in \text{O}(1, 3)$:
+    - $\Lambda^T \eta \Lambda = \eta$
+2. $\Lambda \in \text{SO}(1, 3)$:
+    - $\Lambda^T \eta \Lambda = \eta$
+    - $\det(\Lambda) = 1$
+3. $\Lambda \in \text{SO}^+(1, 3)$:
+    - $\Lambda^T \eta \Lambda = \eta$
+    - $\det(\Lambda) = 1$
+    - $\Lambda^0_0 > 0$
+
+There are six basic Lorentz transformations, defined by pairs of coordinate axes:
+
+<table>
+    <thead>
+        <tr>
+            <th>
+
+            Rotation in $xy$-plane
+
+            </th>
+            <th>
+
+            Rotation in $xz$-plane
+
+            </th>
+            <th>
+
+            Rotation in $yz$-plane
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+
+            $\mqty[1 & 0 & 0 & 0 \\ 0 & \cos(\theta) & -\sin(\theta) & 0 \\ 0 & \sin(\theta) & \cos(\theta) & 0 \\ 0 & 0 & 0 & 1]$
+
+            </td>
+            <td>
+
+            $\mqty[1 & 0 & 0 & 0 \\ 0 & \cos(\theta) & 0 & -\sin(\theta) \\ 0 & 0 & 1 & 0 \\ 0 & \sin(\theta) & 0 & \cos(\theta)]$
+
+            </td>
+            <td>
+
+            $\mqty[1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0 \\ 0 & 0 & \cos(\theta) & -\sin(\theta) \\ 0 & 0 & \sin(\theta) & \cos(\theta)]$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th>
+
+            Boost in $tx$-plane
+
+            </th>
+            <th>
+
+            Boost in $ty$-plane
+
+            </th>
+            <th>
+
+            Boost in $tz$-plane
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+
+            $\mqty[\cosh(\phi) & -\sinh(\phi) & 0 & 0 \\ -\sinh(\phi) & \cosh(\phi) & 0 & 0 \\ 0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1]$
+
+            </td>
+            <td>
+
+            $\mqty[\cosh(\phi) & 0 & -\sinh(\phi) & 0 \\ 0 & 1 & 0 & 0 \\ -\sinh(\phi) & 0 & \cosh(\phi) & 0 \\ 0 & 0 & 0 & 1]$
+
+            </td>
+            <td>
+
+            $\mqty[\cosh(\phi) & 0 & 0 & -\sinh(\phi) \\ 0 & 1 & 0 & 0 \\ 0 & 0 & 1 & 0 \\ -\sinh(\phi) & 0 & 0 & \cosh(\phi)]$
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+## Weyl Vectors
+
+Suppose we have a 4-vector $\vb{v} = ct \vb{e}_t + x \vb{e}_x + y \vb{e}_y + z \vb{e}_z$.
+Let the time basis vector be $\vb{e}_t = 1$ (to be interpreted as the identity matrix), and the rest be Pauli matrices.
+Then we can write the vector as:
+
+$$
+\begin{equation}
+\begin{split}
+V &= ct (1) + x \sigma_x + y \sigma_y + z \sigma_z \\
+&= ct \mqty[1 & 0 \\ 0 & 1] + x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & 1] \\
+&= \mqty[ct + z & x - iy \\ x + iy & ct - z]
+\end{split}
+\end{equation}
+$$
+
+This is the **Weyl vector**. It is Hermitian.
+The determinant of a Weyl vector is the spacetime interval of its corresponding 4-vector.
+This can be proven easily:
+
+$$
+\begin{equation}
+\begin{split}
+\det(V) &= \det(\mqty[ct + z & x - iy \\ x + iy & ct - z]) \\
+&= (ct + z)(ct - z) - (x - iy)(x + iy) \\
+&= c^2 t^2 - z^2 - (x^2 + y^2) \\
+&= (ct)^2 - x^2 - y^2 - z^2 \\
+&= s^2
+\end{split}
+\end{equation}
+$$
+
+### Transformations of Weyl Vectors
+
+Normally, we transform a 4-vector by multiplying it by a Lorentz transformation ($\text{SO}(1, 3)$).
+What are its corresponding transformation pairs?
+
+In other words, given a 4-vector $\vb{v}$ that transforms to $\Lambda \vb{v}$, we want to find a transformation pair $A, B$ such that $AVB$ corresponds to $\Lambda \vb{v}$.
+To find out, let's first leverage the fact that the Weyl vector is Hermitian; $(AVB)^\dagger = AVB$:
+
+$$
+\begin{equation}
+B^\dagger V A^\dagger = AVB
+\end{equation}
+$$
+
+We postulate that this implies $B^\dagger = A$ and $A^\dagger = B$.
+
+Next, we leverage the determinant property of the Weyl vector, $\det(AVB) = \det(V)$:
+
+$$
+\begin{equation}
+\det(AVB) = \det(A) \det(V) \det(B) = \det(V)
+\end{equation}
+$$
+
+This means that
+
+$$
+\begin{equation}
+\det(A) \det(B) = \det(A) \det(A^\dagger) = \det(A) \det(A)^* = |\det(A)|^2 = 1
+\end{equation}
+$$
+
+This means that $\det(A)$ is a complex number of unit modulus, which can be read as $\det(A) = e^{i \phi}$.
+We can thus arbitrarily introduce a phase factor $e^{i \phi}$ into the transformation.
+Plugging this back into the transformed Weyl vector, we have:
+
+$$
+\begin{equation}
+AVA^\dagger \to (A e^{i \phi} A^\dagger) V (A e^{-i \phi} A^\dagger) = A V A^\dagger
+\end{equation}
+$$
+
+In other words, adding a phase factor to the transformation does not change the Weyl vector.
+This means that there are multiple matrices that represent a single transformation.
+To pick one, we can enforce the condition that $\det(A) = 1$.
+
+The transformation that we just derived is a member of the group $\text{SL}(2, \mathbb{C})$, the group of $2 \times 2$ complex matrices with determinant 1.
+$S$ stands for special, and $L$ stands for linear.
+
+### Matrix Representations of SL(2, C) Transformations
+
+We now seek a specific form of the transformation matrix.
+A $2 \times 2$ matrix can be written as:
+
+$$
+\begin{equation}
+A = \mqty[\alpha & \beta \\ \gamma & \delta]
+\end{equation}
+$$
+
+Without any conditions, this matrix has four complex degrees of freedom, or eight real degrees of freedom.
+However, we can impose the condition that $\det(A) = 1$:
+
+$$
+\begin{equation}
+\det(A) = \alpha \delta - \beta \gamma = 1
+\end{equation}
+$$
+
+Given that the determinant can be written as $\det(A) = r e^{i \phi}$, we reduce the degrees of freedom to six ($r = 1, \phi = 0$).
+
+The six degrees of freedom correspond to the six transformations.
+They are given by the following matrices:
+
+<table>
+    <thead>
+        <tr>
+            <th>
+
+            Boost in $tz$-plane
+
+            </th>
+            <th>
+
+            Boost in $tx$-plane
+
+            </th>
+            <th>
+
+            Boost in $ty$-plane
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+
+            $\mqty[e^{-\phi/2} & 0 \\ 0 & e^{\phi/2}]$
+
+            </td>
+            <td>
+
+            $\mqty[\cosh(\phi/2) & -\sinh(\phi/2) \\ -\sinh(\phi/2) & \cosh(\phi/2)]$
+
+            </td>
+            <td>
+
+            $\mqty[\cosh(\phi/2) & i \sinh(\phi/2) \\ i \sinh(\phi/2) & \cosh(\phi/2)]$
+
+            </td>
+        </tr>
+    </tbody>
+    <thead>
+        <tr>
+            <th>
+
+            Rotation in $xy$-plane
+
+            </th>
+            <th>
+
+            Rotation in $yz$-plane
+
+            </th>
+            <th>
+
+            Rotation in $zx$-plane
+
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+
+            $\mqty[e^{-i \theta/2} & 0 \\ 0 & e^{i \theta/2}]$
+
+            </td>
+            <td>
+
+            $\mqty[\cos(\theta/2) & -i \sin(\theta/2) \\ -i \sin(\theta/2) & \cos(\theta/2)]$
+
+            </td>
+            <td>
+
+            $\mqty[\cos(\theta/2) & -\sin(\theta/2) \\ \sin(\theta/2) & \cos(\theta/2)]$
+
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+### Abstract Form of SL(2, C) Transformations
+
+Alternatively, if we do not want to use matrices, we can use the abstract form of the transformation.
+The rotations are the same as Pauli matrices, while the boosts use hyperbolic trigonometric functions instead of the circular ones.
+
+$$
+\begin{align}
+\text{Boost in $\class{green}{tx}$}: & \quad \cosh(\frac{\phi}{2}) - \sinh(\frac{\phi}{2}) \class{green}{\sigma_t \sigma_x} &&= \mqty[\cosh(\frac{\phi}{2}) & -\sinh(\frac{\phi}{2}) \\ -\sinh(\frac{\phi}{2}) & \cosh(\frac{\phi}{2})] \\
+\text{Boost in $\class{green}{ty}$}: & \quad \cosh(\frac{\phi}{2}) - \sinh(\frac{\phi}{2}) \class{green}{\sigma_t \sigma_y} &&= \mqty[\cosh(\frac{\phi}{2}) & i \sinh(\frac{\phi}{2}) \\ i \sinh(\frac{\phi}{2}) & \cosh(\frac{\phi}{2})] \\
+\text{Boost in $\class{green}{tz}$}: & \quad \cosh(\frac{\phi}{2}) - \sinh(\frac{\phi}{2}) \class{green}{\sigma_t \sigma_z} &&= \mqty[e^{-\phi/2} & 0 \\ 0 & e^{\phi/2}] \\
+\text{Rotation in $\class{green}{xy}$}: & \quad \cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \class{green}{\sigma_x \sigma_y} &&= \mqty[\cos(\frac{\theta}{2}) & -i \sin(\frac{\theta}{2}) \\ -i \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})] \\
+\text{Rotation in $\class{green}{zx}$}: & \quad \cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \class{green}{\sigma_z \sigma_x} &&= \mqty[\cos(\frac{\theta}{2}) & -\sin(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})] \\
+\text{Rotation in $\class{green}{yz}$}: & \quad \cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \class{green}{\sigma_y \sigma_z} &&= \mqty[\cos(\frac{\theta}{2}) & -i \sin(\frac{\theta}{2}) \\ -i \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})]
+\end{align}
+$$
+
+## Weyl Spinors
+
+With the fundamental properties of Weyl vectors and $\text{SL}(2, \mathbb{C})$ transformations in mind, we can now define Weyl spinors.
+Recall that Pauli spinors were obtained by factoring the Pauli vector as a tensor product of two 2-component vectors.
+We can do the same with Weyl vectors.
+
+First, we can write the Weyl vector as:
+
+$$
+\begin{equation}
+V = \mqty[ct + z & x - iy \\ x + iy & ct - z] = \mqty[\alpha \\ \beta] \otimes \mqty[\gamma & \delta]
+\end{equation}
+$$
+
+In this case, the tensor product is just an outer product. We can write the resulting matrix as:
+
+$$
+\begin{equation}
+\mqty[\alpha \gamma & \alpha \delta \\ \beta \gamma & \beta \delta] = \mqty[ct + z & x - iy \\ x + iy & ct - z]
+\end{equation}
+$$

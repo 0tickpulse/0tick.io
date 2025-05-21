@@ -1,0 +1,520 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Coupled Harmonic Oscillators
+
+We begin our study of quantum field theory with a nonrelativistic system of coupled harmonic oscillators.
+We have already studied this system as a classical system in the previous section.
+Now, we apply quantization to this system.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Uncoupled Harmonic Oscillators
+
+In modern particle physics, it is common knowledge that particles can be created and destroyed.
+For example, an electron and positron can annihilate to create a pair of photons.
+This means that our state vector $\ket{\psi}$ turns from $\ket{e^+, e^-}$ to $\ket{\gamma, \gamma}$.
+To take another example, a neutron can decay into a proton, electron, and antineutrino.
+The state vector turns from $\ket{n}$ to $\ket{p, e^-, \bar{\nu}}$.
+
+This means that we must abandon single-particle wavefunctions.
+Instead, we take inspiration from the quantum harmonic oscillator and its creation and annihilation operators $a^\dagger$ and $a$.
+We can think of these operators as the creation and annihilation of particles.
+
+We shall now consider a system of uncoupled harmonic oscillators.
+In this case, "uncoupled" simply means that the oscillators do not interact with each other.
+The Hamiltonian for a single harmonic oscillator is given by:
+
+$$
+\begin{equation}
+H_k = \frac{p_k^2}{2m_k} + \frac{1}{2} m_k \omega_k^2 x_k^2
+\end{equation}
+$$
+
+The Hamiltonian for a system of $N$ uncoupled harmonic oscillators is just the sum of the Hamiltonians for each oscillator:
+
+$$
+\begin{equation}
+H = \sum_{k = 1}^N H_k = \sum_{k = 1}^N \qty(\frac{p_k^2}{2m_k} + \frac{1}{2} m_k \omega_k^2 x_k^2)
+\end{equation}
+$$
+
+Next, we can promote the creation and annihilation operators to act on the entire system of oscillators.
+The creation operator $a_k^\dagger$ creates a quanta of energy $\hbar \omega_k$ in the $k$-th oscillator.
+The annihilation operator $a_k$ destroys a quanta of energy $\hbar \omega_k$ in the $k$-th oscillator.
+
+They act on the system as:
+
+$$
+\begin{align}
+a_k^\dagger \ket{n_1, n_2, \ldots, \class{blue}{n_k}, \ldots, n_N} &= \sqrt{n_k + 1} \ket{n_1, n_2, \ldots, \class{blue}{n_k + 1}, \ldots, n_N} \\
+a_k \ket{n_1, n_2, \ldots, \class{blue}{n_k}, \ldots, n_N} &= \sqrt{n_k} \ket{n_1, n_2, \ldots, \class{blue}{n_k - 1}, \ldots, n_N}
+\end{align}
+$$
+
+and obey the following commutation relations:
+
+$$
+\begin{align}
+\comm{a_j}{a_k} &= 0 \\
+\comm{a_j^\dagger}{a_k^\dagger} &= 0 \\
+\comm{a_j}{a_k^\dagger} &= \delta_{jk}
+\end{align}
+$$
+
+The vacuum state $\ket{0}$ is defined as the state with no quanta in any of the oscillators:
+
+$$
+\begin{equation}
+\ket{0} = \ket{0, 0, \ldots, 0}, \quad a_k \ket{0} = 0
+\end{equation}
+$$
+
+And since the oscillators are independent of each other, we can easily rewrite the Hamiltonian in terms of the creation and annihilation operators:
+
+$$
+\begin{equation}
+H_k = \hbar \omega_k \qty(a_k^\dagger a_k + \frac{1}{2})
+\end{equation}
+$$
+
+We can now write a state vector in terms of the vacuum state and the creation and annihilation operators. Recall that for a single oscillator, we have
+
+$$
+\begin{equation}
+\ket{n} = \frac{(a^\dagger)^n}{\sqrt{n!}} \ket{0}
+\end{equation}
+$$
+
+We can just extend this to a system of $N$ oscillators (once again assuming they are uncoupled):
+
+$$
+\begin{equation}
+\begin{split}
+\ket{n_1, n_2, \ldots, n_N} &= \frac{(a_1^\dagger)^{n_1}}{\sqrt{n_1!}} \frac{(a_2^\dagger)^{n_2}}{\sqrt{n_2!}} \cdots \frac{(a_N^\dagger)^{n_N}}{\sqrt{n_N!}} \ket{0} \\
+&= \prod_{k = 1}^N \frac{(a_k^\dagger)^{n_k}}{\sqrt{n_k!}} \ket{0}
+\end{split}
+\end{equation}
+$$
+
+## Two Coupled Harmonic Oscillators
+
+We shall now consider two coupled harmonic oscillators.
+The first oscillator has a distance $x_1$ and the second has a distance $x_2$.
+Their state vectors live in the Hilbert spaces $\mathcal{H}_1$ and $\mathcal{H}_2$, respectively.
+They also each have their own position, momentum, creation, and annihilation operators.
+
+Recall that in a coupled state, the overall state vector exists in the tensor product of the two Hilbert spaces:
+
+$$
+\begin{equation}
+\ket{\psi} \in \mathcal{H}_1 \otimes \mathcal{H}_2
+\end{equation}
+$$
+
+Each position ket $\ket{x_1}$ and $\ket{x_2}$ is a vector in the Hilbert space of the respective oscillator.
+The combined state vector is given by:
+
+$$
+\begin{equation}
+\ket{x_1, x_2} = \ket{x_1} \otimes \ket{x_2}
+\end{equation}
+$$
+
+To upgrade our operators to the coupled case, we can just take the tensor product of the two operators:
+
+$$
+\begin{align}
+x_1 \to x_1 \otimes 1 \\
+p_1 \to p_1 \otimes 1 \\
+x_2 \to 1 \otimes x_2 \\
+p_2 \to 1 \otimes p_2
+\end{align}
+$$
+
+This works because tensor products on sums act by $(a \otimes b)(\ket{c} \otimes \ket{d}) = a \ket{c} \otimes b \ket{d}$.
+We can verify this by checking the action of the operators on the state vector.
+For example, acting $x_1$ on the state vector gives
+
+$$
+\begin{equation}
+\begin{split}
+x_1 \ket{x_1, x_2} &= (x_1 \otimes 1) (\ket{x_1} \otimes \ket{x_2}) \\
+&= x_1 \ket{x_1} \otimes 1 \ket{x_2} \\
+&= x_1 \ket{x_1} \otimes \ket{x_2} \\
+&= x_1 \ket{x_1, x_2}
+\end{split}
+\end{equation}
+$$
+
+Indeed, we get the correct eigenvalue $x_1$.
+
+Next, we can show that the two position operators commute with each other:
+
+$$
+\begin{equation}
+\begin{split}
+\comm{x_1}{x_2} &= (x_1 \otimes 1)(1 \otimes x_2) - (1 \otimes x_2)(x_1 \otimes 1) \\
+&= x_1 \otimes x_2 - x_1 \otimes x_2 \\
+&= 0
+\end{split}
+\end{equation}
+$$
+
+This means that the two positions are compatible observables, and we can hence measure them simultaneously.
+Skipping some details, here are all the commutation relations for the two oscillators:
+
+$$
+\begin{align}
+\comm{x_i}{x_j} &= 0 \\
+\comm{p_i}{p_j} &= 0 \\
+\comm{x_i}{p_j} &= i \hbar \delta_{ij} \\
+\comm{a_i}{a_j} &= 0 \\
+\comm{a_i^\dagger}{a_j^\dagger} &= 0 \\
+\comm{a_i}{a_j^\dagger} &= \delta_{ij}
+\end{align}
+$$
+
+### Hamiltonian for Two Coupled Oscillators
+
+To write the Hamiltonian for two coupled oscillators, we start with the classical Hamiltonian and apply first quantization.
+The classical Hamiltonian for two coupled oscillators is given by:
+
+$$
+\begin{equation}
+H = \frac{p_1^2}{2m} + \frac{p_2^2}{2m} + \frac{1}{2} k x_1^2 + \frac{1}{2} k x_2^2 + \kappa (x_1 - x_2)^2
+\end{equation}
+$$
+
+where we have the kinetic energy terms for each oscillator, the potential energy terms for each oscillator, and the coupling term $\kappa (x_1 - x_2)^2$.
+
+We can just replace $p$ and $x$ with their corresponding operators to get the Hamiltonian in terms of the operators:
+
+$$
+\begin{equation}
+H = \frac{p_1^2}{2m} + \frac{p_2^2}{2m} + \frac{1}{2} k x_1^2 + \frac{1}{2} k x_2^2 + \kappa (x_1 - x_2)^2
+\end{equation}
+$$
+
+(in our notation, since we don't use hats for operators, this looks the same as the classical Hamiltonian. But they are indeed different.)
+
+Recall that when we analyzed the classical system, we found that the normal modes of the system were
+
+1. The center of mass mode, where both oscillators move in the same direction with the same amplitude.
+2. The relative mode, where both oscillators move in opposite directions with the same amplitude.
+
+Their vectors are $\vb{x}_1 = \mqty[1 \\ 1]$ and $\vb{x}_2 = \mqty[1 \\ -1]$.
+We now define the quantum operator analogues of these normal modes:
+
+$$
+\begin{align}
+X_1 &= \frac{1}{\sqrt{2}} (x_1 + x_2) \\
+X_2 &= \frac{1}{\sqrt{2}} (x_1 - x_2)
+\end{align}
+$$
+
+where we have defined $X_1$ and $X_2$ to be the center of mass and relative coordinates, respectively.
+We also included a factor of $\frac{1}{\sqrt{2}}$ to normalize the operators.
+Similarly, the momentum operators are defined as:
+
+$$
+\begin{align}
+P_1 &= \frac{1}{\sqrt{2}} (p_1 + p_2) \\
+P_2 &= \frac{1}{\sqrt{2}} (p_1 - p_2)
+\end{align}
+$$
+
+We can now rewrite the Hamiltonian in terms of these new operators:
+
+$$
+\begin{equation}
+H = \frac{P_1^2}{2m} + \frac{P_2^2}{2m} + \frac{1}{2} k X_1^2 + \frac{1}{2} (k^2 + 2 \kappa) X_2^2
+\end{equation}
+$$
+
+The key is that we no longer have the coupling term $\kappa (x_1 - x_2)^2$ in the Hamiltonian.
+This is because we have already diagonalized the Hamiltonian by changing to the normal mode coordinates.
+
+The commutation relations for the new operators are given by:
+
+$$
+\begin{align}
+\comm{X_i}{X_j} &= 0 \\
+\comm{P_i}{P_j} &= 0 \\
+\comm{X_i}{P_j} &= i \hbar \delta_{ij}
+\end{align}
+$$
+
+which are the same as the original commutation relations.
+We can also define the creation and annihilation operators for the new normal modes:
+
+$$
+\begin{align}
+A_i &:= \sqrt{\frac{m \Omega_i}{2 \hbar}} \qty(X_i + \frac{i}{m \Omega_i} P_i) \\
+A_i^\dagger &:= \sqrt{\frac{m \Omega_i}{2 \hbar}} \qty(X_i - \frac{i}{m \Omega_i} P_i) \\
+\end{align}
+$$
+
+where $\Omega_1 = \sqrt{\frac{k}{m}}$ and $\Omega_2 = \sqrt{\frac{k + 2 \kappa}{m}}$ are the frequencies of the normal modes.
+Then, the Hamiltonian is just
+
+$$
+\begin{equation}
+H = \hbar \Omega_1 \qty(A_1^\dagger A_1 + \frac{1}{2}) + \hbar \Omega_2 \qty(A_2^\dagger A_2 + \frac{1}{2}).
+\end{equation}
+$$
+
+which is the same as the Hamiltonian for two uncoupled harmonic oscillators.
+Notice that with a change of coordinates, we have made the Hamiltonian diagonal.
+This means that the two normal modes are independent of each other, just like the uncoupled oscillators.
+
+## Our First Quantum Field Theory
+
+We now have a system of two coupled harmonic oscillators.
+Now suppose we have a system of $N$ coupled harmonic oscillators, and $N \to \infty$.
+We will go through the same process as before, but now we have a continuous system of oscillators.
+I will not go through the details of the derivation—rather, I will just give an outline of the steps.
+We will go into far more detail in the future. Think of this as a preview of what is to come.
+
+Each oscillator has a state vector $\ket{\psi_k} \in \mathcal{H}_k$.
+The overall state vector exists in the tensor product of the Hilbert spaces:
+
+$$
+\begin{equation}
+\ket{\psi} \in \mathcal{H}_1 \otimes \mathcal{H}_2 \otimes \cdots
+\end{equation}
+$$
+
+The key is that we now rotate the system 90 degrees such that the oscillators now oscillate vertically.
+$x$ is now an index that labels the oscillators, and $\phi$ is the position of the oscillator.
+The field position operator $\phi(x)$ is now a function of the index $x$.
+It is defined such that:
+
+$$
+\begin{equation}
+\phi(x_i) \ket{\phi(x_1), \phi(x_2), \cdots, \class{blue}{\phi(x_i)}, \cdots} = \phi(x_i) \ket{\phi(x_1), \phi(x_2), \cdots, \class{blue}{\phi(x_i)}, \cdots}
+\end{equation}
+$$
+
+(To be sure, $\phi(x_i)$ outside the ket is an operator, while $\phi(x_i)$ inside the ket is a number.)
+This is analogous to the previous case $x_1 \ket{x_1, x_2} = x_1 \ket{x_1, x_2}$ (where $x_1$ on the left is an operator and $x_1$ on the right is its eigenvalue).
+
+We can also define the momentum operator $\pi(x)$ such that:
+
+$$
+\begin{equation}
+\pi(x_i) \ket{\phi(x_1), \phi(x_2), \cdots, \class{blue}{\phi(x_i)}, \cdots} = \pi(x_i) \ket{\phi(x_1), \phi(x_2), \cdots, \class{blue}{\phi(x_i)}, \cdots}
+\end{equation}
+$$
+
+And to promote these operators, we need to add tensor products with the identity operator;
+
+$$
+\begin{align}
+\phi(x) &\to \cdots 1 \otimes \phi(x) \otimes 1 \cdots \\
+\pi(x) &\to \cdots 1 \otimes \pi(x) \otimes 1 \cdots
+\end{align}
+$$
+
+The commutation relations are now:
+
+| Coupled Harmonic Oscillator | Quantum Field Theory |
+|-----------------------------|----------------------|
+| $\comm{x_i}{x_j} = 0$ | $\comm{\phi(x)}{\phi(y)} = 0$ |
+| $\comm{p_i}{p_j} = 0$ | $\comm{\pi(x)}{\pi(y)} = 0$ |
+| $\comm{x_i}{p_j} = i \hbar \delta_{ij}$ | $\comm{\phi(x_1)}{\pi(x_2)} = i \hbar \delta(x_1 - x_2)$ |
+
+And we can define the creation and annihilation operators for the field theory as:
+
+| Coupled Harmonic Oscillator | Quantum Field Theory |
+|-----------------------------|----------------------|
+| $\displaystyle a_i = \sqrt{\frac{m \Omega_i}{2 \hbar}} \qty(X_i + \frac{i}{m \Omega_i} P_i)$ | $\displaystyle a(x) = \sqrt{\frac{m}{2 \hbar}} \qty(\phi(x) + \frac{i}{m} \pi(x))$ |
+| $\displaystyle a_i^\dagger = \sqrt{\frac{m \Omega_i}{2 \hbar}} \qty(X_i - \frac{i}{m \Omega_i} P_i)$ | $\displaystyle a^\dagger(x) = \sqrt{\frac{m}{2 \hbar}} \qty(\phi(x) - \frac{i}{m} \pi(x))$ |
+| $\displaystyle \comm{a_i}{a_j} = 0$ | $\displaystyle \comm{a(x_1)}{a(x_2)} = 0$ |
+| $\displaystyle \comm{a_i^\dagger}{a_j^\dagger} = 0$ | $\displaystyle \comm{a^\dagger(x_1)}{a^\dagger(x_2)} = 0$ |
+| $\displaystyle \comm{a_i}{a_j^\dagger} = \delta_{ij}$ | $\displaystyle \comm{a(x_1)}{a^\dagger(x_2)} = \delta(x_1 - x_2)$ |
+
+### Hamiltonian for Quantum Field Theory
+
+Here is where we use field quantization (or historically, second quantization).
+The Hamiltonian density for the classical field theory is given by:
+
+$$
+\begin{equation}
+\mathcal{H} = \frac{1}{2} (\partial_t \phi)^2 + \frac{1}{2} (\nabla \phi)^2 + \frac{1}{2} m^2 \phi^2
+\end{equation}
+$$
+
+where $\partial_t \phi$ is the time derivative of the field, and $\nabla \phi$ is the spatial derivative of the field.
+Now we just replace $\phi$ with the operator $\phi(x)$ and $\partial_t \phi$ with the operator $\pi(x)$ to get the Hamiltonian density in terms of the operators:
+
+$$
+\begin{equation}
+\mathcal{H} = \frac{1}{2} (\partial_t \phi(x))^2 + \frac{1}{2} (\nabla \phi(x))^2 + \frac{1}{2} m^2 \phi(x)^2
+\end{equation}
+$$
+
+For a Klein-Gordon field, $\partial_t \phi(x)$ is equivalent to $\pi(x)$, so we can just write:
+
+$$
+\begin{equation}
+\mathcal{H} = \frac{1}{2} \pi(x)^2 + \frac{1}{2} (\nabla \phi(x))^2 + \frac{1}{2} m^2 \phi(x)^2
+\end{equation}
+$$
+
+The normal modes of the field theory are given by:
+
+$$
+\begin{equation}
+\phi_k(t, x) = A(k) e^{i\varphi(k)} e^{i \omega t} e^{-ikx}
+\end{equation}
+$$
+
+where $A(k)$ is the amplitude of the mode, $\varphi(k)$ is the phase of the mode, $\omega$ is the frequency of the mode, and $k$ is the wavevector of the mode.
+We use natural units, so $c = 1$.
+The constraint is that $\omega^2 = k^2 + m^2$.
+
+Since $e^{i\varphi(k)}$ is just a phase factor, we can absorb it into the amplitude $A(k)$ to get a complex amplitude $\mathcal{A}(k)$.
+At a constant time, the field is thus given by:
+
+$$
+\begin{equation}
+\phi(x) = \mathcal{A}(k) e^{-ikx}
+\end{equation}
+$$
+
+Now, what is the analogue of the normal mode operators $X_i$ and $P_i$ that was previously defined?
+Recall that these normal modes were linear combinations of the position operators.
+We can thus define a linear combination of $\phi(x)$ to get the normal mode operators.
+Since $k$ is continuous, instead of a discrete sum, we have an integral over $k$:
+
+$$
+\begin{equation}
+\Phi(k) = \frac{1}{\sqrt{2 \pi}} \int \dd{x} \phi(x) e^{-ikx}
+\end{equation}
+$$
+
+where $\Phi(k)$ is the normal mode operator.
+Notice that this is just a Fourier transform of the field $\phi(x)$.
+Similarly, we can define the momentum operator of the normal mode as:
+
+$$
+\begin{equation}
+\Pi(k) = \frac{1}{\sqrt{2 \pi}} \int \dd{x} \pi(x) e^{-ikx}
+\end{equation}
+$$
+
+and we can always invert the Fourier transform to get the field $\phi(x)$ and momentum $\pi(x)$ in terms of the normal mode operators:
+
+$$
+\begin{align}
+\phi(x) &= \frac{1}{\sqrt{2 \pi}} \int \dd{k} \Phi(k) e^{ikx} \\
+\pi(x) &= \frac{1}{\sqrt{2 \pi}} \int \dd{k} \Pi(k) e^{ikx}
+\end{align}
+$$
+
+The eigenvalues of $\Phi(k)$ are $\Phi(k) \ket{\phi(x)} = A(k) e^{ikx} \ket{\phi(x)}$.
+We can see that we don't necessarily have real eigenvalues, so $\Phi(k)$ is not a Hermitian operator.
+Thus, in the Hamiltonian, we use the magnitude of the operator instead of just the operator itself:
+
+$$
+\begin{equation}
+\mathcal{H} = \frac{1}{2} \abs{\pi(x)}^2 + \frac{1}{2} \abs{\nabla \phi(x)}^2 + \frac{1}{2} m^2 \abs{\phi(x)}^2
+\end{equation}
+$$
+
+The commutation relations for the normal mode operators are given by:
+
+$$
+\begin{equation}
+\comm{\Phi(k_1)}{\Pi(k_2)} = i \hbar \delta(k_1 + k_2)
+\end{equation}
+$$
+
+The proof is given in the appendix.
+
+
+## Appendix: Proof of Commutation Relation of Normal Mode Operators
+
+This is quite trivial to prove, but it is quite tedious.
+
+Before we begin, note that the following is a Dirac delta function:
+
+$$
+\begin{equation}
+\delta(k) = \frac{1}{2 \pi} \int \dd{x} e^{-ikx}
+\end{equation}
+$$
+
+Now we prove the commutation relation:
+
+$$
+\begin{equation}
+\begin{split}
+\comm{\Phi(k_1)}{\Pi(k_2)} &= \comm{\frac{1}{\sqrt{2 \pi}} \int \dd{x_1} \phi(x_1) e^{-ik_1 x_1}}{\frac{1}{\sqrt{2 \pi}} \int \dd{x_2} \pi(x_2) e^{-ik_2 x_2}} \\
+&= \frac{1}{2 \pi} \int \dd{x_1} \int \dd{x_2} e^{-ik_1 x_1} e^{-ik_2 x_2} \comm{\phi(x_1)}{\pi(x_2)} \\
+&= \frac{1}{2 \pi} \iint \dd{x_1} \dd{x_2} e^{-ik_1 x_1} e^{-ik_2 x_2} i \hbar \delta(x_1 - x_2) \\
+&= \frac{i \hbar}{2 \pi} \int \dd{x_1} e^{-ik_1 x_1} e^{-ik_2 x_1} \\
+&= \frac{i \hbar}{2 \pi} \int \dd{x_1} e^{-i(k_1 + k_2)x_1} \\
+&= i \hbar \delta(k_1 + k_2)
+\end{split}
+\end{equation}
+$$
+
+This is the desired result. $\blacksquare$
+
+## Appendix: Proof of Plancherel Theorem
+
+We want to prove Plancherel's theorem, which states that the Fourier transform is unitary.
+In other words,
+
+$$
+\begin{equation}
+\int \dd{x} \abs{\phi(x)}^2 = \int \dd{k} \abs{\Phi(k)}^2.
+\end{equation}
+$$
+
+where $\Phi(k)$ is the Fourier transform of $\phi(x)$.
+
+Noting that $\delta(k) = \frac{1}{2 \pi} \int \dd{x} e^{-ikx}$ is a Dirac delta function, we can just expand $\abs{\phi(x)}^2$ with the inverse Fourier transform;
+
+$$
+\begin{equation}
+\begin{split}
+\abs{\phi(x)}^2 &= \phi^\dagger(x) \phi(x) \\
+&= \qty(\frac{1}{\sqrt{2 \pi}} \int \dd{k_1} \Phi(k_1) e^{ik_1 x})^\dagger \qty(\frac{1}{\sqrt{2 \pi}} \int \dd{k_2} \Phi(k_2) e^{ik_2 x}) \\
+&= \qty(\frac{1}{\sqrt{2 \pi}} \int \dd{k_1} \Phi^\dagger(k_1) e^{-ik_1 x}) \qty(\frac{1}{\sqrt{2 \pi}} \int \dd{k_2} \Phi(k_2) e^{ik_2 x}) \\
+&= \frac{1}{2 \pi} \iint \dd{k_1} \dd{k_2} \Phi^\dagger(k_1) \Phi(k_2) e^{i(k_2 - k_1)x}
+\end{split}
+\end{equation}
+$$
+
+Now we can integrate over $x$ (this gives the left-hand side of Plancherel's theorem):
+
+$$
+\begin{equation}
+\begin{split}
+\int \dd{x} \abs{\phi(x)}^2 &= \int \dd{x} \qty(\frac{1}{2 \pi} \iint \dd{k_1} \dd{k_2} \Phi^\dagger(k_1) \Phi(k_2) e^{i(k_2 - k_1)x}) \\
+&= \iint \dd{k_1} \dd{k_2} \Phi^\dagger(k_1) \Phi(k_2) \qty(\frac{1}{2 \pi} \int \dd{x} e^{i(k_2 - k_1)x}) \\
+&= \iint \dd{k_1} \dd{k_2} \Phi^\dagger(k_1) \Phi(k_2) \delta(k_2 - k_1) \\
+&= \iint \dd{k_1} \Phi^\dagger(k_1) \Phi(k_1) \\
+&= \int \dd{k_1} \abs{\Phi(k_1)}^2
+\end{split}
+\end{equation}
+$$
+
+Hence both sides of Plancherel's theorem are equal, and we have proven that the Fourier transform is unitary. $\blacksquare$
+

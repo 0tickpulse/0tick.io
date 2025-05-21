@@ -1,0 +1,67 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Introduction
+
+Congratulations on making it this far!
+We have covered all of the necessary background material to understand quantum field theory.
+We extensively studied quantum mechanics, special relativity, and classical field theory.
+Now we are ready to dive into quantum field theory.
+
+The basis of quantum field theory lies in quantization;
+First quantization is the process of taking a classical system and turning it into a quantum system.
+Then, field quantization (or historically known as second quantization) is the process of taking a quantum system and turning it into a field theory.
+For example, take Einstein's energy-momentum relation:
+
+$$
+\begin{equation}
+E^2 - p^2 c^2 - m^2 c^4 = 0
+\end{equation}
+$$
+
+First quantization involves replacing the classical variables $E$, $p$, and $m$ with their quantum mechanical counterparts, which are operators:
+
+$$
+\begin{equation}
+(i \partial_t)^2 \psi - (-i \partial_x)^2 c^2 \psi - m^2 c^4 \psi = 0
+\end{equation}
+$$
+
+This is the Klein-Gordon equation.
+Finally, we can take the Klein-Gordon equation and promote it to a field theory by replacing the wavefunction $\psi$ with a field $\phi(x)$.
+
+$$
+\begin{equation}
+\partial_t^2 \phi - \partial_x^2 c^2 \phi - m^2 c^4 \phi = 0
+\end{equation}
+$$
+
+This is the Klein-Gordon field equation.
+
+## Natural Units
+
+In theoretical physics, we often use natural units, where $c = \hbar = 1$.
+There are many advantages to this.
+For one, it simplifies equations and makes them easier to read.
+For example, the Klein-Gordon equation in natural units is:
+
+$$
+\begin{equation}
+\partial_t^2 \phi - \partial_x^2 \phi - m^2 \phi = 0
+\end{equation}
+$$
+
+Second, in computation, it reduces floating point errors.
+Constants like $\hbar$ are very small ($10^{-34}$), and when we multiply them by other small numbers, we can get floating point errors.
+This is especially true in quantum field theory, where we often deal with very small numbers.

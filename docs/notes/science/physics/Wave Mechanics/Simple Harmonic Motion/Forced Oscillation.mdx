@@ -1,0 +1,177 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Forced Oscillation
+
+We now explore the case of a forced oscillation.
+There are a few types of forced oscillations; the first is a damped forced oscillation, which is a forced oscillation with a damping force.
+The second is a driven forced oscillation, which is a forced oscillation with a driving force.
+Critical damping is a special case of a damped forced oscillation, where the damping force is equal to the spring force.
+The effect of this is that the system will damp out to zero in the shortest time possible.
+We will explore these cases (and more) in this section.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Damped Oscillation
+
+Suppose we have a spring-mass system submerged in a viscous fluid (like water).
+The spring-mass system will experience a damping force, which is proportional to the velocity of the mass.
+
+Before we derive the mathematical model, let's first consider a qualitative picture of the system.
+If the spring-mass system is submerged in a viscous fluid, the oscillation will slow down over time.
+If we plot the position of the mass as a function of time, we will see that the amplitude of the oscillation decreases over time.
+This is because the damping force is always acting in the opposite direction of the velocity of the mass.
+The mass will eventually come to a stop, and the system will reach an equilibrium position.
+
+There are three cases of damping: underdamped, critically damped, and overdamped.
+In the underdamped case, the system will oscillate with a decreasing amplitude.
+In the critically damped case, the system will return to equilibrium in the shortest time possible without oscillating.
+In the overdamped case, the system will return to equilibrium without oscillating, but it will take longer than in the critically damped case.
+
+Now we can analyze the system mathematically.
+This damping force is given by
+
+$$
+\begin{equation}
+F_d = -m \Gamma \dv{x}{t},
+\end{equation}
+$$
+
+where $\Gamma$ is a damping constant that depends on the properties of the fluid.
+Combining this with the spring force, we have
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} = F = -kx - m \Gamma \dv{x}{t},
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+\dv[2]{x}{t} + \Gamma \dv{x}{t} + \omega_0^2 x = 0.
+\end{equation}
+$$
+
+We have a second-order linear ordinary differential equation (ODE) with constant coefficients.
+In the previous section, we proved that any linear and time-translation invariant system has a solution that is a linear combination of irreducible exponentials.
+As such, we can justifiably create the ansatz
+
+$$
+\begin{equation}
+z(t) := e^{\alpha t}
+\end{equation}
+$$
+
+and substitute this into the ODE.
+This gives us
+
+$$
+\begin{equation}
+\alpha^2 + \Gamma \alpha + \omega_0^2 = 0,
+\end{equation}
+$$
+
+which is a quadratic equation in $\alpha$.
+The power of exponentials is that they are their own derivatives.
+As such, linear differential equations simply become polynomials.
+The solutions to this quadratic equation are given by the quadratic formula;
+
+$$
+\begin{equation}
+\alpha = \frac{-\Gamma \pm \sqrt{\Gamma^2 - 4 \omega_0^2}}{2}.
+\end{equation}
+$$
+
+The solutions to this equation depend on the value of $\Gamma$.
+We can classify the solutions into three cases based on the discriminant $\Gamma^2 - 4 \omega_0^2$.
+
+### Overdamped Oscillation
+
+In the overdamped case, we have $\Delta = \Gamma^2 - 4 \omega_0^2 > 0$, or equivalently $\Gamma > 2 \omega_0$.
+This means that we have two real, distinct solutions to the quadratic equation.
+
+The general solution is just
+
+$$
+\begin{equation}
+z(t) = A e^{\alpha_+ t} + B e^{\alpha_{-} t},
+\end{equation}
+$$
+
+where
+
+$$
+\begin{equation}
+\alpha_{\pm} = \frac{-\Gamma \pm \sqrt{\Gamma^2 - 4 \omega_0^2}}{2}.
+\end{equation}
+$$
+
+### Underdamped Oscillation
+
+In the underdamped case, we have $\Delta = \Gamma^2 - 4 \omega_0^2 < 0$, or equivalently $\Gamma < 2 \omega_0$.
+This means that we have two complex solutions to the quadratic equation.
+We know that polynomials have complex roots that come in conjugate pairs, so we expect the solutions to be complex conjugates.
+
+We can write the solutions as
+
+$$
+\begin{equation}
+\alpha_{\pm} = \frac{-\Gamma}{2} \pm i \frac{\sqrt{4 \omega_0^2 - \Gamma^2}}{2}.
+\end{equation}
+$$
+
+We can rewrite this as
+
+$$
+\begin{equation}
+\alpha_{\pm} = \frac{-\Gamma}{2} \pm i \omega_d,
+\end{equation}
+$$
+
+where $\omega_d = \frac{\sqrt{4 \omega_0^2 - \Gamma^2}}{2}$ is the damped frequency.
+Then the general solution is
+
+$$
+\begin{equation}
+z(t) = A e^{-\frac{\Gamma}{2} t} e^{i \omega_d t} + B e^{-\frac{\Gamma}{2} t} e^{-i \omega_d t}.
+\end{equation}
+$$
+
+We can factor out the $e^{-\frac{\Gamma}{2} t}$ term to get
+
+$$
+\begin{equation}
+z(t) = e^{-\frac{\Gamma}{2} t} \qty(A e^{i \omega_d t} + B e^{-i \omega_d t}),
+\end{equation}
+$$
+
+and we can use Euler's formula to rewrite this as
+
+$$
+\begin{equation}
+z(t) = e^{-\frac{\Gamma}{2} t} \qty(A \cos(\omega_d t) + Ai \sin(\omega_d t) + B \cos(\omega_d t) - Bi \sin(\omega_d t)),
+\end{equation}
+$$
+
+from which we can rearrange to get
+
+$$
+\begin{equation}
+z(t) = e^{-\frac{\Gamma}{2} t} \qty((A + B) \cos(\omega_d t) + i (A - B) \sin(\omega_d t)).
+\end{equation}
+$$

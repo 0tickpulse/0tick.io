@@ -23,144 +23,31 @@ This is a very different way of thinking about quantum mechanics, and it leads t
 
 <TOCInline toc={toc} />
 
-## Electron Diffraction
-
-We begin with a quantum phenomenon that is very well known: electron diffraction.
-This is a phenomenon that is often used to demonstrate the wave-particle duality of electrons.
-In this experiment, we have a beam of electrons that is incident on a double slit.
-The electrons can either go through the left slit or the right slit, and we can detect them on a screen behind the slits.
-The screen is divided into many small regions, and we can count the number of electrons that hit each region.
-The result is a pattern of bright and dark regions, which is characteristic of wave interference.
-This is a very surprising result, because we would expect that the electrons would behave like particles and go through one slit or the other.
-
-To understand this phenomenon, we need to think about the electrons as waves.
-The electron passes through both slits, and the two "waves" intefere with each other.
-
-Next, consider what happens if we add another slit.
-If we add a third slit, the interference pattern becomes more complicated, but it is still there.
-The procedure is the same—the electron now passes through three slits at once and inteferes with itself.
-
-But now consider what happens if we add a fourth slit, and then a fifth slit, and so on, until we have effectively removed the screen.
-And then, consider adding a second screen, and then a third screen, and so on.
-Although the entire double-slit experiment vanishes, the electron still traverses all possible paths and interferes with itself.
-This is the essence of the Feynman path integral formulation of quantum mechanics.
-
-## The Path Integral (Heuristic Derivation)
-
-We now have a motivation for the idea that particles can take all possible paths.
-Now we can try to formalize this idea.
-
-Suppose we have a particle that is moving in one dimension.
-It traverses every possible path from point $A$ to point $B$.
-Let $x(t)$ be one such path. Because the particle is a wave, it has a phase $\phi$ that changes with time.
-It can be visualized as an arrow on a circle, which rotates with time.
-
-If we split the path into small segments $\Delta x$, each small segment leads to a small change in the phase $\Delta \phi$.
-To find this phase, we borrow from wave mechanics; the phase difference is contributed by both the spatial (wavelength) and temporal (frequency) components.
-The phase difference is given by:
-
-$$
-\begin{equation}
-\Delta \phi = \Delta \phi_{\text{spatial}} + \Delta \phi_{\text{temporal}} = \frac{2\pi}{\lambda} \Delta x - \frac{2\pi}{T} \Delta t
-\end{equation}
-$$
-
-When we sum over all segments, we can write the total phase as:
-
-$$
-\begin{equation}
-A = e^{i \phi} = \exp(i \sum \Delta \phi) = \exp(i \sum \qty(\frac{2\pi}{\lambda} \Delta x - \frac{2\pi}{T} \Delta t))
-\end{equation}
-$$
-
-This is a very complicated expression, but we can simplify it by using the de Broglie relation $\lambda = \frac{h}{p}$ and the energy relation $E = \frac{h}{T}$.
-This gives us:
-
-$$
-\begin{equation}
-A = \exp(i \sum \qty(\frac{2\pi}{\lambda} \Delta x - \frac{2\pi}{T} \Delta t)) = \exp(i \sum \qty(\frac{mv}{\hbar} \Delta x - \frac{E}{\hbar} \Delta t))
-\end{equation}
-$$
-
-Factoring out the $\Delta t$, we have:
-
-$$
-\begin{equation}
-A = \exp(\frac{i}{\hbar} \sum \qty(mv \frac{\Delta x}{\Delta t} - E) \Delta t)
-\end{equation}
-$$
-
-Now, as $\Delta t \to 0$, we can write $\frac{\Delta x}{\Delta t} = v$. The sum becomes an integral:
-
-$$
-\begin{equation}
-A = \lim_{\Delta t \to 0} \exp(\frac{i}{\hbar} \sum \qty(mv \frac{\Delta x}{\Delta t} - E) \Delta t) = \exp(\frac{i}{\hbar} \int \dd{t} \qty(mvv - E))
-\end{equation}
-$$
-
-Next, because $E = \frac{mv^2}{2} + V(x)$, we can write:
-
-$$
-\begin{equation}
-A = \exp(\frac{i}{\hbar} \int \dd{t} \qty(mv^2 - \frac{mv^2}{2} - V(x))) = \exp(\frac{i}{\hbar} \int \dd{t} \qty(\frac{mv^2}{2} - V(x)))
-\end{equation}
-$$
-
-The term $\frac{mv^2}{2}$ is the kinetic energy, and $V(x)$ is the potential energy.
-Thus, we have the Lagrangian!
-
-$$
-\begin{equation}
-A = \exp(\frac{i}{\hbar} \int \dd{t} L_{\text{classical}}) = \exp(\frac{i}{\hbar} S_{\text{classical}})
-\end{equation}
-$$
-
-Now that we have derived the phase for one path, we can sum over all paths.
-Recall from wave mechanics that the amplitude of two intefering waves is related to the sum of their phases.
-In the same way, we can write the total amplitude as a sum over paths:
-
-$$
-\begin{equation}
-P = \sum_{x(t)} A(x(t)) = \sum_{x(t)} \exp(\frac{i}{\hbar} S_{\text{classical}}[x(t)])
-\end{equation}
-$$
-
-Because summing over paths is a continuous action, we can replace the sum with an integral:
-
-$$
-\begin{equation}
-P = \int \mathcal{D}x(t) \exp(\frac{i}{\hbar} S_{\text{classical}}[x(t)])
-\end{equation}
-$$
-
-*This* is the Feynman path integral, where $\mathcal{D}x(t)$ is the **measure** of the path integral.
-
 ## Propagators
 
-With the informal derivation out of the way, we shall now formally define the path integral.
 We first consider the matrix elements of the time-evolution operator $U(t)$, which is defined as:
 
 $$
 \begin{equation}
-K(\vb{x}'', t''; \vb{x}', t') = \mel{\vb{x}''}{\exp(-\frac{i}{\hbar} H (t'' - t'))}{\vb{x}'} \label{eq:propagator}
+K(x'', t''; x', t') = \mel{x''}{\exp(-\frac{i}{\hbar} H (t'' - t'))}{x'} \label{eq:propagator}
 \end{equation}
 $$
 
-which is to be interpreted as the probability amplitude for a particle to go from point $\vb{x}'$ at time $t'$ to point $\vb{x}''$ at time $t''$.
+which is to be interpreted as the probability amplitude for a particle to go from point $x'$ at time $t'$ to point $x''$ at time $t''$.
 More specifically, it is a **transition amplitude** between two states, which is a function of the initial and final states.
-This is known as the **propagator**. To see why this is important, consider the position-space wavefunction $\psi(\vb{x}', t')$, which is defined as:
+This is known as the **propagator**. To see why this is important, consider the position-space wavefunction $\psi(x', t')$, which is defined as:
 
 $$
 \begin{equation}
-\psi(\vb{x}', t') = \mel{\vb{x}'}{U(t')}{\psi(0)}
+\psi(x', t') = \mel{x'}{U(t')}{\psi(0)}
 \end{equation}
 $$
 
-Now we can insert a completeness relation with another set of states $\ket{\vb{x}''}$:
+Now we can insert a completeness relation with another set of states $\ket{x''}$:
 
 $$
 \begin{equation}
-\psi(\vb{x}', t') = \int \dd[3]{x} \mel{\vb{x}'}{U(t')}{\vb{x}''} \braket{\vb{x}''}{\psi(0)} = \int \dd[3]{x} K(\vb{x}', t'; \vb{x}'', 0) \psi(\vb{x}'', 0)
+\psi(x', t') = \int \dd{x} \mel{x'}{U(t')}{x''} \braket{x''}{\psi(0)} = \int \dd{x} K(x', t'; x'', 0) \psi(x'', 0)
 \end{equation}
 $$
 
@@ -171,51 +58,511 @@ To that end, beginning with $\eqref{eq:propagator}$, we can first split the expo
 
 $$
 \begin{equation}
-K(\vb{x}'', t''; \vb{x}', t') = \mel{\vb{x}''}{\exp(-\frac{i}{\hbar} H (t'' - t'))}{\vb{x}'} = \mel{\vb{x}''}{\qty(\exp(-\frac{i}{\hbar} H \Delta t))^N}{\vb{x}'}
+K(x'', t''; x', t') = \mel{x''}{\exp(-\frac{i}{\hbar} H (t'' - t'))}{x'} = \mel{x''}{\qty(\exp(-\frac{i}{\hbar} H \Delta t))^N}{x'}
 \end{equation}
 $$
 
-Next, we insert $N - 1$ complete relations of $\ket{\vb{x}_1}, \ket{\vb{x}_2}, \ldots, \ket{\vb{x}_{N - 1}}$ between each factor of the exponential:
+Next, we insert $N - 1$ complete relations of $\ket{x_1}, \ket{x_2}, \ldots, \ket{x_{N - 1}}$ between each factor of the exponential:
 
 $$
 \begin{equation}
 \begin{split}
-K(\vb{x}'', t''; \vb{x}', t') &= \mel{\vb{x}''}{\exp(-\frac{i}{\hbar} H \Delta t) \exp(-\frac{i}{\hbar} H \Delta t) \cdots \exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}'} \\
-&= \class{blue}{\int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}}} \bra{\vb{x}''}\exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{\vb{x}_{N - 1}}} \cdots \class{blue}{\dyad{\vb{x}_1}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'}
+K(x'', t''; x', t') &= \mel{x''}{\exp(-\frac{i}{\hbar} H \Delta t) \exp(-\frac{i}{\hbar} H \Delta t) \cdots \exp(-\frac{i}{\hbar} H \Delta t)}{x'} \\
+&= \class{blue}{\int \dd{x_1} \cdots \dd{x_{N - 1}}} \bra{x''}\exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{x_{N - 1}}} \cdots \class{blue}{\dyad{x_1}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{x'}
 \end{split}
 \end{equation}
 $$
 
-We can use a trick to get rid of the vectors $\ket{\vb{x}_i}$.
-To do so, we insert $N$ complete relations, this time of the momentum eigenstates $\ket{\vb{p}_i}$, between each factor of the exponential, recalling that $\braket{\vb{x}}{\vb{p}} = \frac{1}{(2\pi \hbar)^{3/2}} e^{\frac{i}{\hbar} \vb{p} \cdot \vb{x}}$:
+For notation convenience, let's relabel $x''$ as $x_N$ and $x'$ as $x_0$:
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \int \dd{x_1} \cdots \dd{x_{N - 1}} \mel{x_N}{\exp(-\frac{i}{\hbar} H \Delta t) \dyad{x_{N - 1}} \cdots \dyad{x_1} \exp(-\frac{i}{\hbar} H \Delta t)}{x_0}
+\end{equation}
+$$
+
+We can examine each term in the integrand; we have a general expression (a mini-propagator) of the form:
+
+$$
+\begin{equation}
+K_n = \mel{x_{n + 1}}{\exp(-\frac{i}{\hbar} H \Delta t)}{x_n},
+\end{equation}
+$$
+
+where the indices $n$ run from $0$ to $N - 1$. The propagator is then
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \int \dd{x_1} \cdots \dd{x_{N - 1}} \prod_{n = 0}^{N - 1} K_n
+\end{equation}
+$$
+
+First, plug in $H = \frac{p^2}{2m} + V(x)$:
+
+$$
+\begin{equation}
+K_n = \mel{x_{n + 1}}{\exp(-\frac{i}{\hbar} \qty(\frac{p^2}{2m} + V(x)) \Delta t)}{x_n}
+\end{equation}
+$$
+
+Next, we need to use the Trotter product formula to split the exponential into two parts.
+Recall that the Trotter product formula states that for any two operators $A$ and $B$,
+
+$$
+\begin{equation}
+\exp(-\frac{i}{N}(A + B)) = \exp(-\frac{i}{N} A) \exp(-\frac{i}{N} B) \qty(1 + \frac{\comm{A}{B}}{N^2} + \order{\frac{1}{N^3}})
+\end{equation}
+$$
+
+For a proof, see the appendix.
+Because we are taking the limit $N \to \infty$ or $\Delta t \to 0$, we can ignore the higher-order terms.
+Applying this back into the mini-propagator, we have:
+
+$$
+\begin{equation}
+K_n = \mel{x_{n + 1}}{\exp(-\frac{i}{\hbar} \frac{p^2}{2m} \Delta t)\exp(-\frac{i}{\hbar} V(x) \Delta t)}{x_n}
+\end{equation}
+$$
+
+It would be nice if we could replace the operators $p$ and $V(x)$ with their eigenvalues, but although $\ket{x_n}$ is an eigenstate of $V(x)$, none of the states $\ket{x_n}$ are eigenstates of $p$.
+As such, we can insert a completeness relation of the momentum eigenstates $\ket{p}$:
+
+$$
+\begin{equation}
+K_n = \int \dd{p'} \braket{x_{n + 1}}{p'} \mel{p'}{\exp(-\frac{i}{\hbar} \frac{p^2}{2m} \Delta t)\exp(-\frac{i}{\hbar} V(x) \Delta t)}{x_n}
+\end{equation}
+$$
+
+The inner product of the position and momentum eigenstates is given by:
+
+$$
+\begin{equation}
+\braket{x_{n + 1}}{p'} = \frac{1}{\sqrt{2 \pi \hbar}} \exp(\frac{i}{\hbar} p' x_{n + 1})
+\end{equation}
+$$
+
+For the second term (matrix element), because all the exponentials are Hermitian, we can freely extract them out of the inner product.
+We can apply the $p$ exponential to the momentum eigenstate $\ket{p'}$ and the $V(x)$ exponential to the position eigenstate $\ket{x_n}$.
+
+$$
+\begin{equation}
+K_n = \int \dd{p'} \frac{1}{\sqrt{2 \pi \hbar}} \exp(\frac{i}{\hbar} p' x_{n + 1}) \exp(-\frac{i}{\hbar} \frac{p'^2}{2m} \Delta t) \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \braket{p'}{x_n}
+\end{equation}
+$$
+
+We also get another inner product of the momentum and position eigenstates. Plugging that in, we have
 
 $$
 \begin{equation}
 \begin{split}
-K(\vb{x}'', t''; \vb{x}', t') &= \class{blue}{\int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}}} \bra{\vb{x}''}\exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{\vb{x}_{N - 1}}} \cdots \class{blue}{\dyad{\vb{x}_1}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'} \\
-&= \class{blue}{\int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}}} \class{yellow}{\int \dd[3]{p_0} \cdots \dd[3]{p_{N - 1}}} \bra{\vb{x}''} \class{yellow}{\dyad{\vb{p}_{N - 1}}} \exp(-\frac{i}{\hbar} H \Delta t) \class{blue}{\dyad{\vb{x}_{N - 1}}} \class{yellow}{\dyad{\vb{p}_{N - 2}}} \cdots \class{yellow}{\dyad{\vb{p}_0}} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'}
+K_n &= \int \dd{p'} \frac{1}{2 \pi \hbar} \exp(\frac{i}{\hbar} p' x_{n + 1}) \exp(-\frac{i}{\hbar} \frac{p'^2}{2m} \Delta t) \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \exp(-\frac{i}{\hbar} p' x_n) \\
+&= \int \dd{p'} \frac{1}{2 \pi \hbar} \exp(\frac{i}{\hbar} p' (x_{n + 1} - x_n) -\frac{i}{\hbar} \frac{p'^2}{2m} \Delta t) \exp(-\frac{i}{\hbar} V(x_n) \Delta t)
 \end{split}
 \end{equation}
 $$
 
-To simplify the notation, we can use a product notation for the integrand:
+with a negative sign in front of the last exponential because the inner product is conjugate symmetric.
+This is just a Gaussian integral. Recall $\int \dd{x} \exp(-\frac{a}{2} x^2 + bx) = \sqrt{\frac{2 \pi}{a}} \exp(\frac{b^2}{2a})$.
+In our case we have $a = \frac{i}{m \hbar} \Delta t$ and $b = \frac{i}{\hbar} (x_{n + 1} - x_n)$.
 
 $$
 \begin{equation}
 \begin{split}
-K(\vb{x}'', t''; \vb{x}', t') &= \int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}} \int \dd[3]{p_0} \cdots \dd[3]{p_{N - 1}} \bra{\vb{x}''} \dyad{\vb{p}_{N - 1}} \exp(-\frac{i}{\hbar} H \Delta t) \dyad{\vb{x}_{N - 1}} \dyad{\vb{p}_{N - 2}} \cdots \dyad{\vb{p}_0} \exp(-\frac{i}{\hbar} H \Delta t) \ket{\vb{x}'} \\
-&= \int \dd[3]{x_1} \cdots \dd[3]{x_{N - 1}} \int \dd[3]{p_0} \cdots \dd[3]{p_{N - 1}} \braket{\vb{x}''}{\vb{p}_{N - 1}} \mel{\vb{p}_{N - 1}}{\exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}_{N - 1}} \\
-    &\qquad \qty(\prod_{i = 2}^{N - 1} \braket{\vb{x}_i}{\vb{p}_{i - 1}} \mel{\vb{p}_{i - 1}}{\exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}_{i - 1}}) \braket{\vb{x}_1}{\vb{p}_0} \mel{\vb{p}_0}{\exp(-\frac{i}{\hbar} H \Delta t)}{\vb{x}'}
+K_n &= \frac{1}{2 \pi \hbar} \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \int \dd{p'} \exp(-\frac{i}{\hbar} \frac{p'^2}{2m} \Delta t) \exp(\frac{i}{\hbar} p' (x_{n + 1} - x_n)) \\
+&= \frac{1}{2 \pi \hbar} \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \sqrt{\frac{2 \pi}{\frac{i}{m \hbar} \Delta t}} \exp(\frac{\qty(\frac{i}{\hbar})^2 (x_{n + 1} - x_n)^2}{\frac{2i}{m \hbar} \Delta t}) \\
+&= \sqrt{-\frac{im}{2 \pi \hbar \Delta t}} \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \exp(\frac{im}{2 \hbar} \frac{\qty(x_{n + 1} - x_n)^2}{\Delta t}).
 \end{split}
 \end{equation}
 $$
 
-> *It is amusing to see this absolute mess of an integral—not only do we have infinitely nested integrals, but the integrand contains infinitely many products, as well as $e$ to the power of a matrix.*
-
-We shall use a theorem known as the Trotter product formula. In our case, it implies:
+With this, we can finally plug this back into the propagator
 
 $$
 \begin{equation}
-\exp(-\frac{i}{N} (A + B)) = \exp(-\frac{i}{N} A) \exp(-\frac{i}{N} B) \qty(1 + \frac{\comm{A}{B}}{N^2} + \order{N^{-3}})
+K(x'', t''; x', t') = \prod_{n = 0}^{N - 1} \int \dd{x_1} \cdots \dd{x_{N - 1}} \sqrt{-\frac{im}{2 \pi \hbar \Delta t}} \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \exp(\frac{im}{2 \hbar} \frac{\qty(x_{n + 1} - x_n)^2}{\Delta t}),
 \end{equation}
 $$
+
+and take the limit $N \to \infty$, $\Delta t \to 0$:
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \lim_{N \to \infty} \prod_{n = 0}^{N - 1} \int \dd{x_n} \sqrt{-\frac{im}{2 \pi \hbar \Delta t}} \exp(-\frac{i}{\hbar} V(x_n) \Delta t) \exp(\frac{im}{2 \hbar} \frac{\qty(x_{n + 1} - x_n)^2}{(\Delta t)^2} \Delta t).
+\end{equation}
+$$
+
+We can expand the product on each term:
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \qty(-\frac{im}{2 \pi \hbar \Delta t})^\frac{N}{2} \lim_{N \to \infty} \int \dd{x_n} \qty(\prod_{n = 0}^{N - 1} \exp(-\frac{i}{\hbar} V(x_n) \Delta t)) \qty(\prod_{n = 0}^{N - 1} \exp(\frac{im}{2 \hbar} \frac{\qty(x_{n + 1} - x_n)^2}{(\Delta t)^2} \Delta t)).
+\end{equation}
+$$
+
+A product of exponentials is just the exponential of the sum, so we can instead write this as
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \qty(-\frac{im}{2 \pi \hbar \Delta t})^\frac{N}{2} \lim_{N \to \infty} \int \dd{x_n} \qty(\exp(-\sum_{n = 0}^{N - 1} \frac{i}{\hbar} V(x_n) \Delta t)) \qty(\exp(\sum_{n = 0}^{N - 1} \frac{im}{2 \hbar} \frac{\qty(x_{n + 1} - x_n)^2}{(\Delta t)^2} \Delta t)).
+\end{equation}
+$$
+
+As the limit is taken, we have $\frac{\qty(x_{n + 1} - x_n)^2}{(\Delta t)^2} \to \dot{x}^2$, where $\dot{x}$ is the velocity of the particle (this is just the definition of velocity).
+We also have $\sum_{n = 0}^{N - 1} \Delta t \to \int \dd{t}$.
+Thus, we can write the propagator as
+
+$$
+\begin{equation}
+\begin{split}
+K(x'', t''; x', t') &= \qty(-\frac{im}{2 \pi \hbar \Delta t})^\frac{N}{2} \lim_{N \to \infty} \int \dd{x_n} \exp(-\frac{i}{\hbar} \int_{t'}^{t''} V(x_n) \dd{t}) \exp(\frac{im}{2 \hbar} \int_{t'}^{t''} \dot{x}^2 \dd{t}) \\
+&= \qty(-\frac{im}{2 \pi \hbar})^\frac{N}{2} \lim_{N \to \infty} \int \dd{x_n} \exp(\frac{i}{\hbar} \int_{t'}^{t''} \dd{t} \qty(\frac{1}{2} m\dot{x}^2 - V(x_n)))
+\end{split} \label{eq:propagator-final}
+\end{equation}
+$$
+
+Miraculously, we have the action $S[x(t)] = \int_{t'}^{t''} \dd{t} \qty(\frac{1}{2} m\dot{x}^2 - V(x_n))$ in the exponent.
+The shorthand notation for the propagator is
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \int \mathcal{D}[x(t)] \exp(\frac{i}{\hbar} S[x(t)]). \label{eq:propagator-path-integral}
+\end{equation}
+$$
+
+This is known as a **functional integral** because instead of integrating over a range of values, we are integrating over all possible functions $x(t)$.
+The notation $\mathcal{D}[x(t)]$ is the **integration measure**, defined as
+
+$$
+\begin{equation}
+\mathcal{D}[x(t)] := \lim_{N \to \infty} \prod_{n = 0}^{N - 1} \int \dd{x_n} \sqrt{-\frac{im}{2 \pi \hbar \Delta t}}. \label{eq:measure}
+\end{equation}
+$$
+
+:::warning
+
+Some sources try to state that in the path integral formulation, particles explore "all possible paths" between two points.
+This is technically not true due to a subtle issue—these paths are not paths in physical space, but rather in the abstract configuration space of the system.
+If, for instance, we have two particles, the configuration space is 6-dimensional while the physical space still has 3 spatial dimensions.
+This will be crucial when discussing historical attempts to make quantum mechanics relativistic.
+
+:::
+
+## Evaluating Path Integrals
+
+If it is not obvious, the path integral is a very difficult object to evaluate.
+It is perhaps the most difficult object in all of quantum mechanics.
+
+As vaguely mentioned before, Gaussian integrals are involved in the path integral.
+We already know that
+
+$$
+\begin{equation}
+\int \dd{x} \exp(-\frac{a}{2} x^2) = \sqrt{\frac{2 \pi}{a}},
+\end{equation}
+$$
+
+where $a$ is a positive real number.
+Now let's try to generalize this to integrating over vectors.
+Suppose we have an $N$-dimensional vector $\vb{x}$, and we want to integrate over all of $\mathbb{R}^N$.
+Let's consider the integral
+
+$$
+\begin{equation}
+I_1 = \int \dd[N]{x} \exp(-\frac{1}{2} \vb{x}^T A \vb{x}),
+\end{equation}
+$$
+
+where $A$ is a real, symmetric matrix.
+When compared to the Gaussian integral, we have just replaced scalars with vectors and matrices.
+First, we consider a similarity transformation $A = O^T D O$, where $O$ is an orthogonal matrix and $D$ is a diagonal matrix with the eigenvalues of $A$ on the diagonal:
+
+$$
+\begin{equation}
+I_1 = \int \dd[N]{x} \exp(-\frac{1}{2} \vb{x}^T O^T D O \vb{x})
+\end{equation}
+$$
+
+Next, we can change variables to $\vb{y} = O \vb{x}$.
+When we integrate over volumes, we need to consider how much the volume element changes as we change variables.
+For example, if we have $\int \dd[2]{x}$ and we change coordinates to $\vb{y} = 2 \vb{x}$, then the volume element changes to $\int \dd[2]{y} = 4 \int \dd[2]{x}$.
+The amount by which the volume element changes is given by the determinant of the Jacobian matrix.
+But we have $O$ as an orthogonal matrix, so the determinant is just $1$.
+Thus, we have
+
+$$
+\begin{equation}
+I_1 = \int \dd[N]{y} \exp(-\frac{1}{2} \vb{y}^T D \vb{y})
+\end{equation}
+$$
+
+As $D$ is diagonal, $\vb{y}^T D \vb{y} = \sum_{i = 1}^N D_{ii} y_i^2$:
+
+$$
+\begin{equation}
+I_1 = \int \dd[N]{y} \exp(-\frac{1}{2} \sum_{i = 1}^N D_{ii} y_i^2) = \prod_{i = 1}^N \int \dd{y_i} \exp(-\frac{1}{2} D_{ii} y_i^2)
+\end{equation}
+$$
+
+Now we just have an ordinary Gaussian integral in the product:
+
+$$
+\begin{equation}
+I_1 = \prod_{i = 1}^N \sqrt{\frac{2 \pi}{D_{ii}}}
+\end{equation}
+$$
+
+When we sum over the elements of a diagonal matrix, that is just the determinant:
+
+$$
+\begin{equation}
+I_1 = \prod_{i = 1}^N \sqrt{\frac{2 \pi}{D_{ii}}} = \sqrt{\frac{(2 \pi)^N}{\det(A)}},
+\end{equation}
+$$
+
+and the determinant of $D$ is the same as the determinant of $A$ because it is invariant under similarity transformations.
+
+Next, suppose we add a linear term to the exponent:
+
+$$
+\begin{equation}
+I_2 = \int \dd[N]{x} \exp(-\frac{1}{2} \vb{x}^T A \vb{x} + \vb{b}^T \vb{x}),
+\end{equation}
+$$
+
+where $\vb{b}$ is a vector. This is similar to a shifted Gaussian integral:
+
+$$
+\begin{equation}
+\int \dd{x} \exp(-\frac{1}{2} a x^2 + b x) = \sqrt{\frac{2 \pi}{a}} \exp(-\frac{b^2}{2a}).
+\end{equation}
+$$
+
+When we derive this result, we have to complete the square in the exponent.
+This involves finding the minimum of the polynomial $-\frac{1}{2} a x^2 + b x$.
+Likewise, we can follow the same procedure for the vector case.
+
+Define the polynomial as
+
+$$
+\begin{equation}
+P(\vb{x}) = -\frac{1}{2} \vb{x}^T A \vb{x} + \vb{b}^T \vb{x}.
+\end{equation}
+$$
+
+To find its minimum, we set the derivative of $P(\vb{x})$ to zero:
+
+$$
+\begin{equation}
+\begin{split}
+0 = \pdv{P}{x_i} &= \pdv{x_i} \qty(-\frac{1}{2} \vb{x}^T A \vb{x}) + \pdv{x_i} \qty(\vb{b}^T \vb{x}) \\
+&= \sum_j \pdv{x_i} \qty[\qty(-\frac{1}{2} A_{ij} x_j x_i) + \pdv{x_i} \qty(b_j x^j)] \\
+&= \sum_j \qty(-\frac{1}{2} A_{ij} \qty(\pdv{x_i}{x_j} x_i + x_j \pdv{x_i}{x_i}) + b_j \pdv{x_i}{x_j}) \\
+&= \sum_j \qty(-\frac{1}{2} A_{ij} (\delta_{ij} x_i + x_j \delta_{ij}) + b_j \delta_{ij}) \\
+&= -A_{ii} x_i + b_i \\
+&= -(A \vb{x} - \vb{b})_i = 0,
+\end{split}
+\end{equation}
+$$
+
+where we have used the fact that $\pdv{x_i}{x_j} = \delta_{ij}$.
+This is because if $i = j$, then $\pdv{x_i}{x_j} = \pdv{x_i}{x_i} = 1$, and if $i \neq j$, then since coordinates are independent, $\pdv{x_i}{x_j} = 0$.
+(Yes, it is better to use tensor notation here, but we have not yet introduced it).
+Anyways, the solution to this equation is
+
+$$
+\begin{equation}
+\vb{x} = A^{-1} \vb{b}.
+\end{equation}
+$$
+
+Plugging this back into the polynomial, we have
+
+$$
+\begin{equation}
+\begin{split}
+P(A^{-1} \vb{b}) &= -\frac{1}{2} \qty(A^{-1} \vb{b})^T A \qty(A^{-1} \vb{b}) + \vb{b}^T A^{-1} \vb{b} \\
+&= -\frac{1}{2} \vb{b}^T (A^{-1})^T \vb{b} + \vb{b}^T A^{-1} \vb{b} \\
+&= \frac{1}{2} \vb{b}^T A^{-1} \vb{b}.
+\end{split}
+\end{equation}
+$$
+
+The reason we are doing this is because now we can complete the square in the exponent.
+Recall that in normal Gaussian integrals, we find $P(x) - P_\text{min}(x) = -\frac{1}{2} a (x - x_0)^2$.
+This helps us rewrite the integral as
+
+$$
+\int \dd{x} \exp(-\frac{1}{2} ax^2 + bx) = \int \dd{x} e^{P(x)} = \int \dd{x} e^{P(x) - P_\text{min}(x)} e^{P_\text{min}(x)} = e^{P_\text{min}(x)} \int \dd{x} e^{-\frac{1}{2} a (x - x_0)^2},
+$$
+
+from which we just make the substitution $y = x - x_0$.
+Likewise, let's find $P(\vb{x}) - P_\text{min}(\vb{x})$:
+
+$$
+\begin{equation}
+\begin{split}
+P(\vb{x}) - P_\text{min}(\vb{x}) &= -\frac{1}{2} \vb{x}^T A \vb{x} + \vb{b}^T \vb{x} - \frac{1}{2} \vb{b}^T A^{-1} \vb{b} \\
+&= -\frac{1}{2} \qty(\vb{x}^T A \vb{x} - \vb{b}^T A^{-1} \vb{b} + 2 \vb{b}^T \vb{x}) \\
+&= -\frac{1}{2} (\vb{x} - A^{-1} \vb{b})^T A (\vb{x} - A^{-1} \vb{b}).
+\end{split}
+\end{equation}
+$$
+
+Now, we make the substitution $\vb{y} = \vb{x} - A^{-1} \vb{b}$.
+This gives us
+
+$$
+\begin{equation}
+\begin{split}
+I_2 &= \int \dd[N]{x} \exp(P(\vb{x})) \\
+&= \int \dd[N]{x} e^{P(\vb{x}) - P_\text{min}(\vb{x})} e^{P_\text{min}(\vb{x})} \\
+&= e^{P_\text{min}(\vb{x})} \int \dd[N]{y} e^{-\frac{1}{2} \vb{y}^T A \vb{y}} \\
+&= \exp(\frac{1}{2} \vb{b}^T A^{-1} \vb{b}) \int \dd[N]{y} I_1 \\
+&= \exp(\frac{1}{2} \vb{b}^T A^{-1} \vb{b}) \sqrt{\frac{(2 \pi)^N}{\det(A)}}.
+\end{split}
+\end{equation}
+$$
+
+As one can see, we just have a prefactor of $e^{\frac{1}{2} \vb{b}^T A^{-1} \vb{b}}$.
+
+*Why are we doing this?* Consider the fact that functions can be represented as an infinite-dimensional vector space.
+We can represent the function $f(x)$ as a vector $\vb{f}$, where the components of the vector are the values of the function at each point in space.
+So our next goal is to evaluate the path integral
+
+$$
+\begin{equation}
+I_3 = \int \mathcal{D}[f(x)] \exp(-\frac{1}{2} \int \dd{x} \dd{y} f(x) A(x, y) f(y) + \int \dd{x} b(x) f(x)).
+\end{equation}
+$$
+
+We just convert this to vector form, evaluate it, and then convert it back to functional form:
+
+$$
+\begin{equation}
+\begin{split}
+I_3 &= \int \mathcal{D}[f(x)] \exp(-\frac{1}{2} \int \dd{x} \dd{y} f(x) A(x, y) f(y) + \int \dd{x} b(x) f(x)) \\
+&= \int \dd[N]{x} \exp(-\frac{1}{2} \vb{x}^T A \vb{x} + \vb{b}^T \vb{x}) \\
+&= \sqrt{\frac{(2 \pi)^N}{\det(A)}} \exp(\frac{1}{2} \vb{b}^T A^{-1} \vb{b}) \\
+&= \sqrt{\frac{(2 \pi)^N}{\det(A(x, y))}} \exp(\frac{1}{2} \int \dd{x} \dd{y} b(x) A^{-1}(x, y) b(y))
+\end{split}
+\end{equation}
+$$
+
+There are a few things to note about this result.
+
+1. The prefactor is the same as the Gaussian integral, but now we have a functional determinant instead of a matrix determinant.
+2. The inverse of a multivariable function is a bit more nuanced to define.
+    For a single-variabled function, we just have $f^{-1}(x)$ such that $f(f^{-1}(x)) = x$.
+    For a multivariable function, we have to define the inverse in terms of the Dirac delta:
+
+    $$
+    \begin{equation}
+    \int \dd{\xi} A(x, \xi) A^{-1}(\xi, y) = \delta(x - y). \label{eq:inverse-multivariable}
+    \end{equation}
+    $$
+
+    In other words, the inverse of $A$ is just the Green's function of the operator $A$.
+
+## The Three Approaches
+
+We have now seen three different approaches to analyzing time evolution in quantum mechanics:
+
+1. The Schrödinger picture in the state vector formalism, where we have the time-evolution operator $U(t)$ acting on the state vector $\ket{\psi(t)}$.
+    The equation of motion is given by the Schrödinger equation:
+
+    $$
+    \begin{equation}
+    i \hbar \dv{t} \ket{\psi(t)} = H \ket{\psi(t)}.
+    \end{equation}
+    $$
+
+2. The Heisenberg picture in the state vector formalism, where we have the time-evolution operator $U(t)$ acting on the operators $A^{(H)}(t)$.
+    The equation of motion is given by the Heisenberg equation of motion:
+
+    $$
+    \begin{equation}
+    i \hbar \pdv{A^{(H)}(t)}{t} = \comm{A^{(H)}(t)}{H}.
+    \end{equation}
+    $$
+
+3. The path integral formulation, where we have the propagator $K(x'', t''; x', t')$ defined as the matrix element of the time-evolution operator $U(t)$.
+    The equation of motion is given by the path integral:
+
+    $$
+    \begin{equation}
+    K(x'', t''; x', t') = \int \mathcal{D}[x(t)] \exp(\frac{i}{\hbar} S[x(t)]). \tag{\ref{eq:propagator-path-integral}}
+    \end{equation}
+    $$
+
+Currently, it may seem like the path integral formulation is just far more complicated than the other two approaches.
+This is the case for simple systems, but path integrals are extensively used in quantum field theory and statistical mechanics.
+
+## Physical Interpretations
+
+If one looks at the path integrals, notice that we have the integrand as a complex exponential.
+The complex exponential is a periodic function that oscillates over time.
+This means that the path integral is a sum of oscillating functions, which can lead to interference effects.
+
+This is similar to wave behavior in classical physics, where waves can interfere with each other to create constructive or destructive interference.
+In order to derive an expression for the intensity of light given a wave, we have to take all the possible paths that light can take to get from point A to point B.
+For each path, we associate a phase factor, then sum over all the paths.
+If the phases cancel out, we get destructive interference, and if they add up, we get constructive interference.
+
+Similarly, in the path integral formulation, we can think of the paths as being weighted by a phase factor of $\exp(\frac{i}{\hbar} S[x(t)])$.
+Here's the key insight: since there are infinitely many paths, most of them will cancel out with one another.
+However, in paths where the phase factors $\frac{i}{\hbar} S[x(t)]$ are very close to each other, they will add up constructively.
+This provides a theoretical basis for the idea that particles travel along paths that have a stationary classical action.
+This is known as the **principle of stationary action**, which is to be fully discussed in the chapter on field theories.
+
+## Summary and Next Steps
+
+The path integral formulation of quantum mechanics is a powerful and elegant way to describe the dynamics of quantum systems.
+
+Here are the key points to remember:
+
+- The propagator $K(x'', t''; x', t')$ is the probability amplitude for a particle to go from point $x'$ at time $t'$ to point $x''$ at time $t''$.
+    It is the matrix element of the time-evolution operator $U(t)$.
+- Through a series of steps, we can express the propagator as
+
+    $$
+    \begin{equation}
+    K(x'', t''; x', t') = \qty(-\frac{im}{2 \pi \hbar})^\frac{N}{2} \lim_{N \to \infty} \int \dd{x_n} \exp(\frac{i}{\hbar} \int_{t'}^{t''} \dd{t} \qty(\frac{1}{2} m\dot{x}^2 - V(x_n))). \tag{\ref{eq:propagator-final}}
+    \end{equation}
+    $$
+
+    Equivalently, we write a shorthand notation for the propagator as
+
+    $$
+    \begin{equation}
+    K(x'', t''; x', t') = \int \mathcal{D}[x(t)] \exp(\frac{i}{\hbar} S[x(t)]), \tag{\ref{eq:propagator-path-integral}}
+    \end{equation}
+    $$
+
+    where $S[x(t)]$ is the action of the system and $\mathcal{D}[x(t)]$ is the integration measure, defined as
+
+    $$
+    \begin{equation}
+    \mathcal{D}[x(t)] := \lim_{N \to \infty} \prod_{n = 0}^{N - 1} \int \dd{x_n} \sqrt{-\frac{im}{2 \pi \hbar \Delta t}}. \tag{\ref{eq:measure}}
+    \end{equation}
+    $$
+
+- We can solve one class of path integrals, inspired by the Gaussian integral, by completing the square in the exponent:
+
+    $$
+    \begin{equation}
+    \int \mathcal{D}[f(x)] e^{-\frac{1}{2} \int \dd{x} \dd{y} f(x) A(x, y) f(y) + \int \dd{x} b(x) f(x)} = \sqrt{\frac{(2 \pi)^N}{\det(A(x, y))}} e^{\frac{1}{2} \int \dd{x} \dd{y} b(x) A^{-1}(x, y) b(y)}
+    \end{equation}
+    $$
+
+    where $A(x, y)$ is a real, symmetric matrix and $A^{-1}(x, y)$ is the inverse of the operator $A$, defined such that
+
+    $$
+    \begin{equation}
+    \int \dd{\xi} A(x, \xi) A^{-1}(\xi, y) = \delta(x - y). \tag{\ref{eq:inverse-multivariable}}
+    \end{equation}
+    $$
+
+- The path integral formulation is a powerful tool in quantum field theory and statistical mechanics, allowing us to analyze complex systems and derive results that are difficult to obtain using other methods.
+- Path integrals provide a natural way to incorporate the principle of stationary action, where paths that contribute significantly to the integral are those for which the action is stationary.
+
+In the next section, we will finally discuss our first system, the quantum harmonic oscillator.
