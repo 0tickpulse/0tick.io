@@ -1,0 +1,74 @@
+---
+sidebar_position: 8
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback, Fragment } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+# Time Evolution of Quantum Harmonic Oscillator
+
+Previously, we deried all the important results of the quantum harmonic oscillator.
+We will now use these results to study the time evolution of the quantum harmonic oscillator from multiple approaches.
+First, we will use the Heisenberg picture, and then we will use Feynman path integrals.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Heisenberg Picture
+
+Recall that
+
+$$
+\begin{align}
+\dv{p_i}{t} &= -\pdv{x_i} V(\vb{x}), \\
+\dv{x_i}{t} &= \frac{p_i}{m}.
+\end{align}
+$$
+
+We know that $V(x) = \frac{1}{2} m \omega^2 x^2$ for the harmonic oscillator.
+Thus, the first equation becomes
+
+$$
+\begin{equation}
+\dv{p}{t} = -m \omega^2 x.
+\end{equation}
+$$
+
+There are a few ways to solve this system of equations.
+One enlightening way is to consider the phase space and use matrices to represent the equations.
+We will instead first rewrite the equations using the creation and annihilation operators.
+
+First,
+
+$$
+\begin{equation}
+\dv{a}{t} = \dv{t} \qty[\sqrt{\frac{m \omega}{2 \hbar}} \qty(x + \frac{i}{m \omega} p)] = \sqrt{\frac{m \omega}{2 \hbar}} \qty[\frac{p}{m} - i \omega x] = -i \omega a,
+\end{equation}
+$$
+
+where we have used the equations of motion for $x$ and $p$.
+Similarly, we have
+
+$$
+\begin{equation}
+\dv{a^\dagger}{t} = \dv{t} \qty[\sqrt{\frac{m \omega}{2 \hbar}} \qty(x - \frac{i}{m \omega} p)] = \sqrt{\frac{m \omega}{2 \hbar}} \qty[\frac{p}{m} + i \omega x] = i \omega a^\dagger.
+\end{equation}
+$$
+
+The solutions to these equations are obvious; these are just complex exponentials:
+
+$$
+\begin{align}
+a(t) &= e^{-i \omega t} a(0), \\
+a^\dagger(t) &= e^{i \omega t} a^\dagger(0).
+\end{align}
+$$

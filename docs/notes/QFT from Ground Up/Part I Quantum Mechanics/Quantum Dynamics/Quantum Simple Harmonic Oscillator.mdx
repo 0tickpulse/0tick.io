@@ -70,7 +70,7 @@ In the quantum mechanical case, the Hamiltonian can be obtained by replacing the
 
 $$
 \begin{equation}
-H = \frac{p^2}{2m} + \frac{1}{2} m \omega^2 x^2
+H = \frac{p^2}{2m} + \frac{1}{2} m \omega^2 x^2 \label{eq:qho-hamiltonian}
 \end{equation}
 $$
 
@@ -113,7 +113,7 @@ Next, we define the **number operator** $N$ as:
 
 $$
 \begin{equation}
-N := a^\dagger a
+N := a^\dagger a \label{eq:number-operator}
 \end{equation}
 $$
 
@@ -137,7 +137,7 @@ The Hamiltonian can thus be expressed in terms of the number operator as:
 
 $$
 \begin{equation}
-H = \hbar \omega \qty(N + \frac{1}{2})
+H = \hbar \omega \qty(N + \frac{1}{2}) \label{eq:hamiltonian-from-n}
 \end{equation}
 $$
 
@@ -156,7 +156,7 @@ Hence, the energy eigenvalues are:
 
 $$
 \begin{equation}
-E_n = \hbar \omega \qty(n + \frac{1}{2})
+E_n = \hbar \omega \qty(n + \frac{1}{2}) \label{eq:energy-eigenvalues}
 \end{equation}
 $$
 
@@ -284,7 +284,7 @@ Similarly, for the creation operator, we can write:
 $$
 \begin{align}
 a^\dagger \ket{n} &= k \ket{n + 1} \\
-\bra{n} a a^\dagger \ket{n} &= k^2 \braket{n + 1}{n + 1} \\
+\bra{n} a a^\dagger \ket{n} &= k^2 \braket{n + 1}{n + 1} \label{eq:n-a-adagger-n} \\
 \mel{n}{a^\dagger a + \comm{a}{a^\dagger}}{n} &= k^2 \\
 \mel{n}{N + 1}{n} &= k^2 \\
 n - 1 &= k^2 \\
@@ -477,7 +477,7 @@ $$
 \end{equation}
 $$
 
-Let $x_0 := \frac{\hbar}{m \omega}$ (where the square root is taken for dimensionality reasons).
+Let $x_0 := \sqrt{\frac{\hbar}{m \omega}}$ (where the square root is taken for dimensionality reasons).
 Then we have:
 
 $$
@@ -518,3 +518,321 @@ $$
 \psi_0(x') = \frac{1}{\pi^{1/4} x_0^{1/2}} \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2})]
 \end{equation}
 $$
+
+The subsequent eigenstates can be computed by applying the creation operator to the ground state.
+For example,
+
+$$
+\begin{equation}
+\braket{x'}{1} = \mel{x'}{a^\dagger}{0}.
+\end{equation}
+$$
+
+Recall that the creation operator is given by
+
+$$
+\begin{equation}
+\begin{split}
+a^\dagger &= \sqrt{\frac{m \omega}{2 \hbar}} \qty(x - \frac{i}{m \omega} p) \\
+&= \frac{1}{\sqrt{2} x_0} \qty(x - \frac{i}{m \omega} (-i \hbar) \dv{x'}) \\
+&= \frac{1}{\sqrt{2} x_0} \qty(x + \frac{\hbar}{m \omega} \dv{x'}) \\
+&= \frac{1}{\sqrt{2} x_0} \qty(x + x_0^2 \dv{x'}),
+\end{split}
+\end{equation}
+$$
+
+so we have
+
+$$
+\begin{equation}
+\begin{split}
+\braket{x'}{1} &= \mel{x'}{a^\dagger}{0} \\
+&= \mel{x'}{\frac{1}{\sqrt{2} x_0} \qty(x + x_0^2 \dv{x'})}{0} \\
+&= \frac{1}{\sqrt{2} x_0} \qty(x' + x_0^2 \dv{x'}) \braket{x'}{0}.
+\end{split}
+\end{equation}
+$$
+
+For the general case $\braket{x'}{n}$, we have:
+
+$$
+\begin{equation}
+\begin{split}
+\braket{x'}{n} &= \mel{x'}{\frac{(a^\dagger)^n}{\sqrt{n!}}}{0} \\
+&= \frac{1}{\sqrt{n!}} \mel{x'}{\qty(\frac{1}{\sqrt{2} x_0} \qty(x + x_0^2 \dv{x'}))^n}{0} \\
+&= \frac{1}{\sqrt{n!}} \frac{1}{\sqrt{2^n} x_0^n} \qty(x' + x_0^2 \dv{x'})^n \braket{x'}{0} \\
+&= \frac{1}{\sqrt{n!}} \frac{1}{\sqrt{2^n} x_0^n} \qty(x' + x_0^2 \dv{x'})^n \frac{1}{\pi^{1/4} x_0^{1/2}} \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2})] \\
+&= \frac{1}{\pi^{1/4} x_0^{n + 1/2} \sqrt{2^n n!}} \qty(x' + x_0^2 \dv{x'})^n \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2})].
+\end{split} \label{eq:position-energy-eigenfunction}
+\end{equation}
+$$
+
+We can also express the energy eigenfunctions in terms of Hermite polynomials.
+The Hermite polynomials are defined as
+
+$$
+\begin{equation}
+H_n(x') := (-1)^n e^{(x')^2} \dv[2n]{x'} e^{-(x')^2}. \label{eq:hermite-def}
+\end{equation}
+$$
+
+The Hermite polynomials are orthogonal polynomials, meaning that they are orthogonal to each other with respect to the weight function $e^{-x'^2}$.
+In other words,
+
+$$
+\begin{equation}
+\int_{-\infty}^{\infty} H_n(x') H_m(x') e^{-x'^2} \dd{x'} = \sqrt{\pi} 2^n n! \delta_{n, m}.
+\end{equation}
+$$
+
+Then, the energy eigenfunctions can be expressed as:
+
+<Boxed>
+
+$$
+\begin{equation}
+\braket{x'}{n} = \frac{1}{\sqrt{2^n n!}} \qty(\frac{m \omega}{\pi \hbar})^{1/4} H_n\qty(\sqrt{\frac{m \omega}{\hbar}} x') \exp(-\frac{1}{2} \qty(\frac{m \omega}{\hbar} x'^2)). \label{eq:hermite-energy-eigenfunction}
+\end{equation}
+$$
+
+</Boxed>
+
+## Expectation Values
+
+We now compute the expectation values of the position and momentum operators in the energy eigenstates.
+
+We know that $x^2$ is
+
+$$
+\begin{equation}
+x^2 = \frac{\hbar}{2 m \omega} \qty(a + a^\dagger)^2 = \frac{\hbar}{2 m \omega} \qty(a^2 + a^{\dagger 2} + a a^\dagger + a^\dagger a),
+\end{equation}
+$$
+
+so the expectation value of $x^2$ is:
+
+$$
+\begin{equation}
+\expval{x^2} = \mel{n}{x^2}{n} = \frac{\hbar}{2 m \omega} \qty(\mel{n}{a^2}{n} + \mel{n}{a^{\dagger 2}}{n} + \mel{n}{a a^\dagger}{n} + \mel{n}{a^\dagger a}{n}).
+\end{equation}
+$$
+
+The first term is zero because $a^2\ket{n} = \sqrt{n(n - 1)} \ket{n - 2}$, and $\braket{n}{n - 2} = 0$.
+The second term is also zero because $a^{\dagger 2}\ket{n} = \sqrt{(n + 1)(n + 2)} \ket{n + 2}$, and $\braket{n}{n + 2} = 0$.
+The third term is
+
+$$
+\begin{equation}
+\mel{n}{a a^\dagger}{n} = \mel{n}{N + 1}{n} = n + 1,
+\end{equation}
+$$
+
+and the last term is
+
+$$
+\begin{equation}
+\mel{n}{a^\dagger a}{n} = n.
+\end{equation}
+$$
+
+THus we have
+
+$$
+\begin{equation}
+\expval{x^2} = \frac{\hbar}{2 m \omega} \qty(0 + 0 + n + 1 + n) = \frac{\hbar}{m \omega} \qty(n + \frac{1}{2}). \label{eq:position-expval}
+\end{equation}
+$$
+
+In the ground state this is just $\frac{\hbar}{2 m \omega} = \frac{x_0^2}{2}$.
+The expectation value of $x$ is zero from Equation $\eqref{eq:position-matrix}$.
+The expectation value of $p$ is also zero from Equation $\eqref{eq:momentum-matrix}$.
+
+We can also compute the expectation value of $p^2$.
+Recall that $p^2$ is given by
+
+$$
+\begin{equation}
+p^2 = -\frac{\hbar m \omega}{2} \qty(a - a^\dagger)^2 = -\frac{\hbar m \omega}{2} \qty(a^2 + a^{\dagger 2} - a a^\dagger - a^\dagger a),
+\end{equation}
+$$
+
+so the expectation value is
+
+$$
+\begin{equation}
+\begin{split}
+\expval{p^2} &= \mel{n}{p^2}{n} \\
+&= -\frac{\hbar m \omega}{2} \qty(\mel{n}{a^2}{n} + \mel{n}{a^{\dagger 2}}{n} - \mel{n}{a a^\dagger}{n} - \mel{n}{a^\dagger a}{n}) \\
+&= -\frac{\hbar m \omega}{2} \qty(0 + 0 - n - 1 - n) \\
+&= -\frac{\hbar m \omega}{2} \qty(-2n - 1) \\
+&= \frac{\hbar m \omega}{2} \qty(2n + 1),
+\end{split} \label{eq:momentum-expval}
+\end{equation}
+$$
+
+which, in the ground state, is just $\frac{\hbar m \omega}{2}$.
+
+Lastly, for the kinetic and potential energies, we have
+
+$$
+\begin{align}
+\expval{T} &= \frac{1}{2m} \expval{p^2} = \frac{\hbar \omega}{4} = \frac{\expval{H}}{2} \label{eq:kinetic-expval} \\
+\expval{V} &= \frac{1}{2} m \omega^2 \expval{x^2} = \frac{\hbar \omega}{4} = \frac{\expval{H}}{2} \label{eq:potential-expval}
+\end{align}
+$$
+
+Thus, the expectation values of the kinetic and potential energies are equal, and they are both equal to half of the total energy.
+
+## Uncertainty Relation
+
+We conclude this section with the uncertainty relation.
+First, the uncertainty in position squared is given by
+
+$$
+\begin{equation}
+\expval{(\Delta x)^2} = \expval{x^2} - \expval{x}^2 = \frac{\hbar}{m \omega} \qty(n + \frac{1}{2}) - 0 = \frac{\hbar}{m \omega} \qty(n + \frac{1}{2}),
+\end{equation}
+$$
+
+which, in the ground state, is $\frac{\hbar}{2 m \omega}$.
+
+The uncertainty in momentum squared is given by
+
+$$
+\begin{equation}
+\expval{(\Delta p)^2} = \expval{p^2} - \expval{p}^2 = \frac{\hbar m \omega}{2} \qty(2n + 1) - 0 = \frac{\hbar m \omega}{2} \qty(2n + 1),
+\end{equation}
+$$
+
+which, in the ground state, is $\frac{\hbar m \omega}{2}$.
+
+Multiplying these two uncertainties gives:
+
+$$
+\begin{equation}
+\expval{(\Delta x)^2} \expval{(\Delta p)^2} = \frac{\hbar^2}{4} \qty(n + \frac{1}{2}) \qty(2n + 1) = \hbar^2 \qty(n + \frac{1}{2})^2 \label{eq:uncertainty-product}
+\end{equation}
+$$
+
+In the ground state, this reduces to $\frac{\hbar^2}{4}$, just like in the Gaussian wave packet.
+This is expected because the ground state has a Gaussian shape.
+
+Notice that as $n$ increases, the product of the uncertainties increases.
+This also obeys the Heisenberg uncertainty principle, as expected.
+
+## Summary and Next Steps
+
+We have derived many important results relating to the quantum harmonic oscillator.
+We have shown that the energy eigenvalues are quantized and equally spaced, and we have derived the energy eigenfunctions in position space.
+
+Below is a summary of the results we have derived:
+
+- The Hamiltonian of the quantum harmonic oscillator is given by:
+
+    $$
+    \begin{equation}
+    H = \frac{p^2}{2m} + \frac{1}{2} m \omega^2 x^2 \tag{\ref{eq:qho-hamiltonian}}
+    \end{equation}
+    $$
+
+- The creation and annihilation operators are given by:
+
+    $$
+    \begin{align}
+    a &= \sqrt{\frac{m \omega}{2 \hbar}} \qty(x + \frac{i}{m \omega} p) \tag{\ref{eq:annihilation-def}} \\
+    a^\dagger &= \sqrt{\frac{m \omega}{2 \hbar}} \qty(x - \frac{i}{m \omega} p) \tag{\ref{eq:creation-def}} \\
+    x &= \sqrt{\frac{\hbar}{2 m \omega}} \qty(a + a^\dagger) \tag{\ref{eq:position-from-a}} \\
+    p &= i \sqrt{\frac{m \hbar \omega}{2}} \qty(a^\dagger - a) \tag{\ref{eq:momentum-from-a}} \\
+    \end{align}
+    $$
+
+    And they obey the commutation relation $\comm{a}{a^\dagger} = 1$.
+    The Hamiltonian can be expressed in terms of the creation and annihilation operators as:
+
+    $$
+    \begin{equation}
+    H = \hbar \omega \qty(N + \frac{1}{2}) \tag{\ref{eq:hamiltonian-from-n}}
+    \end{equation}
+    $$
+
+- The number operator is given by:
+
+    $$
+    \begin{equation}
+    N := a^\dagger a = \frac{m \omega}{2 \hbar} \qty(x^2 + \frac{1}{(m \omega)^2} p^2) - \frac{1}{2} \tag{\ref{eq:number-operator}}
+    \end{equation}
+    $$
+
+- The energy eigenvalues are the eigenvalues of the number operator:
+
+    $$
+    \begin{equation}
+    N \ket{n} = n \ket{n} \implies E_n = \hbar \omega \qty(n + \frac{1}{2}) \tag{\ref{eq:energy-eigenvalue}}
+    \end{equation}
+    $$
+
+    They are evenly spaced, and the ground state energy is $\frac{1}{2} \hbar \omega$.
+    The creation and annihilation operators act on the energy eigenstates as
+
+    $$
+    \begin{align}
+    a \ket{n} &= \sqrt{n} \ket{n - 1} \tag{\ref{eq:annihilation}} \\
+    a^\dagger \ket{n} &= \sqrt{n + 1} \ket{n + 1} \tag{\ref{eq:creation}} \\
+    \end{align}
+    $$
+
+    In position-space, the energy eigenfunctions are
+
+    $$
+    \begin{equation}
+    \braket{x'}{n} = \frac{1}{\pi^{1/4} x_0^{n + 1/2} \sqrt{2^n n!}} \qty(x' + x_0^2 \dv{x'})^n \exp\qty[-\frac{1}{2} \qty(\frac{x'^2}{x_0^2})], \tag{\ref{eq:position-energy-eigenfunction}}
+    \end{equation}
+    $$
+
+    where $x_0 = \sqrt{\frac{\hbar}{m \omega}}$. Using Hermite polynomials, we can also express the energy eigenfunctions as
+
+    $$
+    \begin{equation}
+    \braket{x'}{n} = \frac{1}{\sqrt{2^n n!}} \qty(\frac{m \omega}{\pi \hbar})^{1/4} H_n\qty(\sqrt{\frac{m \omega}{\hbar}} x') \exp(-\frac{1}{2} \qty(\frac{m \omega}{\hbar} x'^2)), \tag{\ref{eq:hermite-energy-eigenfunction}}
+    \end{equation}
+    $$
+
+    where
+
+    $$
+    \begin{equation}
+    H_n(x') := (-1)^n e^{(x')^2} \dv[2n]{x'} e^{-(x')^2}. \tag{\ref{eq:hermite-def}}
+    \end{equation}
+    $$
+
+- The matrix elements of the various operators are given by:
+
+    $$
+    \begin{align}
+    \mel{n'}{a}{n} &= \sqrt{n} \delta_{n', n - 1} \tag{\ref{eq:annihilation-matrix}} \\
+    \mel{n'}{a^\dagger}{n} &= \sqrt{n + 1} \delta_{n', n + 1} \tag{\ref{eq:creation-matrix}} \\
+    \mel{n'}{x}{n} &= \sqrt{\frac{\hbar}{2 m \omega}} \qty(\sqrt{n} \delta_{n', n - 1} + \sqrt{n + 1} \delta_{n', n + 1}) \tag{\ref{eq:position-matrix}} \\
+    \mel{n'}{p}{n} &= i \sqrt{\frac{m \hbar \omega}{2}} \qty(\sqrt{n + 1} \delta_{n', n + 1} - \sqrt{n} \delta_{n', n - 1}) \tag{\ref{eq:momentum-matrix}}
+    \end{align}
+    $$
+
+- The expectation values of the various operators are given by:
+
+    $$
+    \begin{align}
+    \expval{x^2} &= \frac{\hbar}{m \omega} \qty(n + \frac{1}{2}) \tag{\ref{eq:position-expval}} \\
+    \expval{p^2} &= \frac{\hbar m \omega}{2} \qty(2n + 1) \tag{\ref{eq:momentum-expval}} \\
+    \expval{T} &= \frac{\hbar \omega}{4} = \frac{\expval{H}}{2} \tag{\ref{eq:kinetic-expval}} \\
+    \expval{V} &= \frac{\hbar}{4} = \frac{\expval{H}}{2} \tag{\ref{eq:potential-expval}}
+    \end{align}
+    $$
+
+- The uncertainty relation is given by:
+
+    $$
+    \begin{equation}
+    \expval{(\Delta x)^2} \expval{(\Delta p)^2} = \hbar^2 \qty(n + \frac{1}{2})^2 \geq \frac{\hbar^2}{4} \tag{\ref{eq:uncertainty-product}}
+    \end{equation}
+    $$
+
+In the next section, we will discuss the time-evolution of the quantum harmonic oscillator.

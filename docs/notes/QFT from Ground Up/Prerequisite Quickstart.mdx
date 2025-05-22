@@ -1,0 +1,699 @@
+---
+sidebar_position: 1.1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Prerequisite Quickstart
+
+This is a quickstart guide to the prerequisites for quantum field theory.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Calculus 1/2
+
+### Derivatives
+
+If $x(t)$ represents the position of a particle at time $t$, then the average velocity of the particle over the time interval $[t_0, t_0 + \Delta t]$ is given by
+
+$$
+\begin{equation}
+\bar{v} = \frac{\Delta x}{\Delta t} = \frac{x(t_0 + \Delta t) - x(t_0)}{\Delta t}.
+\end{equation}
+$$
+
+As $\Delta t \to 0$, the average velocity approaches the instantaneous velocity, which is defined as
+
+$$
+\begin{equation}
+v(t) = \lim_{\Delta t \to 0} \bar{v} = \lim_{\Delta t \to 0} \frac{x(t_0 + \Delta t) - x(t_0)}{\Delta t}
+\end{equation}
+$$
+
+This limit is called the derivative of $x(t)$ with respect to $t$, and is denoted in Leibniz notation as $\dv{x}{t}$, in Newtonian notation as $\dot{x}$, and in Lagrange notation as $x'$.
+
+We can always take second derivatives, which are defined as the derivative of the derivative.
+For example, the derivative of the velocity is called the acceleration, and is denoted as $\dv{v}{t}$, $\dv[2]{x}{t}$, or $\ddot{x}$.
+
+For single-variable functions, the derivative can be visualized as the slope of the tangent line to the curve at a given point.
+If the slope is zero, then the function is at a local maximum or minimum.
+If the second derivative is positive, then the function is concave up, and if it is negative, then the function is concave down.
+If the second derivative is zero at a point, there is an inflection point at that point.
+
+| First derivative | Second derivative | Info |
+|------------------|-------------------|------|
+| $f'(x) > 0$ | $f''(x) > 0$ | Increasing, concave up |
+| $f'(x) > 0$ | $f''(x) < 0$ | Increasing, concave down |
+| $f'(x) < 0$ | $f''(x) > 0$ | Decreasing, concave up |
+| $f'(x) < 0$ | $f''(x) < 0$ | Decreasing, concave down |
+| $f'(x) = 0$ | $f''(x) > 0$ | Local minimum |
+| $f'(x) = 0$ | $f''(x) < 0$ | Local maximum |
+| $f'(x) = 0$ | $f''(x) = 0$ | Horizontal inflection point |
+| $f'(x) \neq 0$ | $f''(x) = 0$ | Non-horizontal inflection point |
+
+Here are some common derivatives:
+
+$$
+\begin{align}
+\dv{x} (af(x) + bg(x)) &= a \dv{x} f(x) + b \dv{x} g(x) \\
+\dv{x^n}{x} &= n x^{n-1} \\
+\dv{\sin x}{x} &= \cos x \\
+\dv{\cos x}{x} &= -\sin x \\
+\dv{\tan x}{x} &= \sec^2 x \\
+\dv{\ln x}{x} &= \frac{1}{x} \\
+\dv{e^x}{x} &= e^x \\
+\dv{\sin^{-1} x}{x} &= \frac{1}{\sqrt{1 - x^2}} \\
+\dv{\cos^{-1} x}{x} &= -\frac{1}{\sqrt{1 - x^2}} \\
+\dv{\tan^{-1} x}{x} &= \frac{1}{1 + x^2} \\
+\dv{\sec x}{x} &= \sec x \tan x \\
+\dv{\csc x}{x} &= -\csc x \cot x \\
+\dv{\cot x}{x} &= -\csc^2 x \\
+\dv{\sinh x}{x} &= \cosh x \\
+\dv{\cosh x}{x} &= \sinh x \\
+\dv{\tanh x}{x} &= \sech^2 x
+\end{align}
+$$
+
+and three useful rules:
+
+1. Chain rule:
+
+    $$
+    \begin{equation}
+    \dv{f(g(x))}{x} = \dv{f}{g} \cdot \dv{g}{x}
+    \end{equation}
+    $$
+
+    For example:
+
+    $$
+    \begin{equation}
+    \dv{\sin^2 x}{x} = \dv{(\sin x)^2}{\sin x} \cdot \dv{\sin x}{x} = 2 \sin x \cos x = \sin(2x)
+    \end{equation}
+    $$
+
+2. Product rule:
+
+    $$
+    \begin{equation}
+    \dv{f(x) g(x)}{x} = f(x) \dv{g}{x} + g(x) \dv{f}{x}
+    \end{equation}
+    $$
+
+    For example:
+
+    $$
+    \begin{equation}
+    \dv{x^2 \sin x}{x} = x^2 \cos x + 2x \sin x
+    \end{equation}
+    $$
+
+3. Quotient rule:
+
+    $$
+    \begin{equation}
+    \dv{\frac{f(x)}{g(x)}}{x} = \frac{g(x) \dv{f}{x} - f(x) \dv{g}{x}}{g(x)^2}
+    \end{equation}
+    $$
+
+    For example:
+
+    $$
+    \begin{equation}
+    \dv{\frac{x^2}{\sin x}}{x} = \frac{\sin x (2x) - x^2 (\cos x)}{\sin^2 x}
+    \end{equation}
+    $$
+
+Implicit differentiation is a technique used to find the derivative of a function that is defined implicitly, rather than explicitly.
+A full understanding of implicit differentiation requires some multivariable calculus, but the basic idea is to think of two variables $x$ and $y$ as functions of a third variable $t$.
+For example, consider the equation $x^2 + y^2 = 1$, which describes a circle.
+
+We make these variables functions of $t$:
+
+$$
+\begin{equation}
+x(t)^2 + y(t)^2 = 1.
+\end{equation}
+$$
+
+Then, we can differentiate both sides with respect to $t$, using the chain rule:
+
+$$
+\begin{equation}
+\dv{x^2}{t} + \dv{y^2}{t} = \dv{x^2}{x} \dv{x}{t} + \dv{y^2}{y} \dv{y}{t} = 2x \dv{x}{t} + 2y \dv{y}{t} = 0.
+\end{equation}
+$$
+
+Multiplying both sides by $\frac{1}{2} \dd{t}$ gives us
+
+$$
+\begin{equation}
+x \dd{x} = -y \dd{y},
+\end{equation}
+$$
+
+which we can rearrange to get
+
+$$
+\begin{equation}
+\dv{y}{x} = -\frac{x}{y}.
+\end{equation}
+$$
+
+### Integrals
+
+Now suppose we know the velocity of a particle as a function of time, $v(t)$.
+To find out how far the particle has traveled over a time interval, we can add up the infinitesimal distances traveled over each infinitesimal time interval.
+Each infinitesimal distance is given by $\Delta x = v(t) \Delta t$, and we sum them over the time interval $[t_0, t_0 + \Delta t]$:
+
+$$
+\begin{equation}
+\Delta x = \sum_{t = t_0}^{t_0 + \Delta t} v(t) \Delta t.
+\end{equation}
+$$
+
+As $\Delta t \to 0$, this sum approaches something called the integral, which is written as:
+
+$$
+\begin{equation}
+\Delta x = \int_{t_0}^{t_0 + \Delta t} v(t) \dd{t}.
+\end{equation}
+$$
+
+This is called the definite integral of $v(t)$ from $t_0$ to $t_0 + \Delta t$.
+The formal statement of what we derived is the Fundamental Theorem of Calculus, which states that if $x(t)$ is a differentiable function, then
+
+$$
+\begin{align}
+\int_{t_0}^{t_0 + \Delta t} \dv{x}{t} \dd{t} &= x(t_0 + \Delta t) - x(t_0) \\
+\dv{T} \int_{t_0}^T \dv{x}{t} \dd{t} &= x(T)
+\end{align}
+$$
+
+where $T$ is the upper limit of the integral.
+There are a few techniques for evaluating integrals, most of which are the reverse of the techniques for evaluating derivatives:
+
+1. **Substitution**: This is the reverse of the chain rule.
+   For example, if we have
+
+   $$
+   \begin{equation}
+   I = \int \sin^2(x) \cos(x) \dd{x},
+   \end{equation}
+   $$
+
+   we can use the substitution $u = \sin(x)$, which means $\dd{u} = \cos(x) \dd{x}$.
+   Substituting gives us
+
+   $$
+   \begin{equation}
+   I = \int u^2 \dd{u} = \frac{u^3}{3} + C = \frac{\sin^3(x)}{3} + C.
+   \end{equation}
+   $$
+
+2. **Integration by parts**: This is the reverse of the product rule.
+    For example, if we have
+
+    $$
+    \begin{equation}
+    I = \int x e^x \dd{x},
+    \end{equation}
+    $$
+
+    we can use the formula
+
+    $$
+    \begin{equation}
+    I = u v - \int v \dd{u},
+    \end{equation}
+    $$
+
+    where $u = x$ and $v = e^x$.
+    This gives us
+
+    $$
+    \begin{equation}
+    I = x e^x - \int e^x \dd{x} = x e^x - e^x + C.
+    \end{equation}
+    $$
+
+There are some others that essentially boil down to using algebraic manipulation to rewrite the integral in a more convenient form.
+
+### Series
+
+A sequence is a list of numbers.
+A series is the sum of a sequence.
+
+For example, the sequence $1, 2, 3, \ldots$ is the sequence of natural numbers.
+The series $1 + 2 + 3 + \ldots$ is the sum of the natural numbers.
+The series $1 + 2 + 3 + \ldots$ diverges, meaning it does not converge to a finite value.
+
+The partial sum of a series is the sum of the first $n$ terms of the series:
+
+$$
+\begin{equation}
+S_n = \sum_{k=1}^n a_k,
+\end{equation}
+$$
+
+where $a_k$ is the $k$th term of the series.
+The series converges if the limit of the partial sum exists as $n \to \infty$:
+
+$$
+\begin{equation}
+\lim_{n \to \infty} S_n = S.
+\end{equation}
+$$
+
+The series diverges if the limit does not exist.
+
+Below are the tests for convergence and divergence of series:
+
+1. **Divergence test**: If $\lim_{n \to \infty} a_n \neq 0$, then the series diverges.
+2. **Integral test**: If $f(x)$ is a positive, continuous, and decreasing function for $x \geq N$, then the series converges if and only if the integral converges:
+
+    $$
+    \begin{equation}
+    \int_N^\infty f(x) \dd{x} < \infty.
+    \end{equation}
+    $$
+
+3. **Comparison test**: If $0 \leq a_n \leq b_n$ for all $n \geq N$, then the series converges if and only if the series $\sum_{n=N}^\infty b_n$ converges.
+4. **Limit comparison test**: If $a_n > 0$ and $b_n > 0$ for all $n \geq N$, then the series converges if and only if the series $\sum_{n=N}^\infty b_n$ converges:
+
+    $$
+    \begin{equation}
+    \lim_{n \to \infty} \frac{a_n}{b_n} = c,
+    \end{equation}
+    $$
+
+    where $c$ is a positive constant.
+5. **Ratio test**: If $\lim_{n \to \infty} \frac{a_{n+1}}{a_n} = L$, then the series converges if $L < 1$ and diverges if $L > 1$.
+6. **Root test**: If $\lim_{n \to \infty} \sqrt[n]{a_n} = L$, then the series converges if $L < 1$ and diverges if $L > 1$.
+7. **Alternating series test**: If $a_n$ is a decreasing sequence of positive numbers and $\lim_{n \to \infty} a_n = 0$, then the series converges.
+
+We can approximate any function as a power series, known as the Taylor series expansion.
+It is defined so that all the derivatives of the function at a point $x_0$ are equal to the derivatives of the Taylor series at that point:
+
+$$
+\begin{equation}
+f(x) = \sum_{n=0}^\infty \frac{f^{(n)}(x_0)}{n!} (x - x_0)^n,
+\end{equation}
+$$
+
+where $f^{(n)}(x_0)$ is the $n$th derivative of $f(x)$ at $x_0$.
+The Taylor series expansion is a powerful tool for approximating functions, especially when the function is difficult to evaluate directly.
+Here are some common Taylor series expansions around $x_0 = 0$:
+
+$$
+\begin{align}
+\sin x &= \sum_{n=0}^\infty \frac{(-1)^n}{(2n + 1)!} x^{2n + 1} = x - \frac{x^3}{3!} + \frac{x^5}{5!} - \frac{x^7}{7!} + \cdots \\
+\cos x &= \sum_{n=0}^\infty \frac{(-1)^n}{(2n)!} x^{2n} = 1 - \frac{x^2}{2!} + \frac{x^4}{4!} - \frac{x^6}{6!} + \cdots \\
+e^x &= \sum_{n=0}^\infty \frac{x^n}{n!} = 1 + x + \frac{x^2}{2!} + \frac{x^3}{3!} + \cdots \\
+\ln(1 + x) &= \sum_{n=1}^\infty \frac{(-1)^{n - 1}}{n} x^n = x - \frac{x^2}{2} + \frac{x^3}{3} - \frac{x^4}{4} + \cdots \\
+\end{align}
+$$
+
+## Calculus 3
+
+### Vectors
+
+A vector can be thought of as a directed line segment.
+It has a magnitude (length) and a direction.
+
+It is often represented as an arrow, with the tail of the arrow at the origin and the head of the arrow at the point in space.
+A vector can be constructed as a linear combination of basis vectors.
+Let $\vu{x}$ be a vector with length 1 pointing in the $x$ direction, $\vu{y}$ be a vector with length 1 pointing in the $y$ direction, and $\vu{z}$ be a vector with length 1 pointing in the $z$ direction.
+Then, we can write any vector as
+
+$$
+\begin{equation}
+\vb{v} = x \vu{x} + y \vu{y} + z \vu{z},
+\end{equation}
+$$
+
+where $x$, $y$, and $z$ are the **components** of the vector.
+
+The vector $\vb{v}$ can also be represented as a column vector:
+
+$$
+\begin{equation}
+\vb{v} = \mqty[x \\ y \\ z].
+\end{equation}
+$$
+
+The length of the vector is given by the **norm** or magnitude of the vector, which is defined as
+
+$$
+\begin{equation}
+\norm{\vb{v}} = \sqrt{x^2 + y^2 + z^2}.
+\end{equation}
+$$
+
+A unit vector is a vector with length 1.
+It is often denoted with a hat, like this: $\vu{v}$.
+
+A linear transformation is a transformation that preserves the operations of vector addition and scalar multiplication.
+For example, the transformation $T$ defined by
+
+$$
+\begin{equation}
+T(\vb{v}) = 2 \vb{v}
+\end{equation}
+$$
+
+is a linear transformation, because it preserves vector addition and scalar multiplication.
+More precisely, a linear transformation $T$ satisfies the following properties:
+
+$$
+\begin{align}
+T(\vb{u} + \vb{v}) &= T(\vb{u}) + T(\vb{v}) \\
+T(c \vb{v}) &= c T(\vb{v}),
+\end{align}
+$$
+
+where $\vb{u}$ and $\vb{v}$ are vectors and $c$ is a scalar.
+It can be represented as a matrix, which is a rectangular array of numbers.
+
+A matrix can be thought of as a linear transformation that takes a vector as input and produces another vector as output.
+For example, the matrix
+
+$$
+\begin{equation}
+A = \mqty[1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 3]
+\end{equation}
+$$
+
+acts on the vector $\vb{v}$ as follows:
+
+$$
+\begin{equation}
+A \vb{v} = \mqty[1 & 0 & 0 \\ 0 & 2 & 0 \\ 0 & 0 & 3] \mqty[x \\ y \\ z] = \mqty[x \\ 2y \\ 3z].
+\end{equation}
+$$
+
+The matrix $A$ is a diagonal matrix, because all the non-diagonal elements are zero.
+
+### Scalar Functions of Multiple Variables
+
+Consider a function $\phi(x, y)$ of two variables.
+The function $\phi(x, y)$ can be thought of as a surface in three-dimensional space.
+Such a function is called a scalar field.
+
+We can also think of $x$ and $y$ as two components of a vector $\vb{r}$ in two-dimensional space.
+Then the function can be written as $\phi(\vb{r})$.
+
+When we take a derivative, we need to consider which variable we are taking the derivative with respect to.
+The **partial derivative** of $\phi(x, y)$ with respect to $x$ is defined as the derivative of $\phi(x, y)$ with respect to $x$, while holding $y$ constant.
+This is denoted as $\pdv{\phi}{x}$, $\partial_x \phi$, $\phi_x$, $D_x \phi$, or $D_1 \phi$ (there are many notations).
+Formally, it is defined as
+
+$$
+\begin{equation}
+\pdv{\phi}{x} = \lim_{\Delta x \to 0} \frac{\phi(x + \Delta x, y) - \phi(x, y)}{\Delta x}.
+\end{equation}
+$$
+
+The partial derivative of $\phi(x, y)$ with respect to $y$ is defined similarly:
+
+$$
+\begin{equation}
+\pdv{\phi}{y} = \lim_{\Delta y \to 0} \frac{\phi(x, y + \Delta y) - \phi(x, y)}{\Delta y}.
+\end{equation}
+$$
+
+The **gradient** of $\phi(x, y)$ is a vector whose direction is the direction of steepest ascent of the function $\phi(x, y)$.
+Its magnitude is the rate of change of the function in that direction.
+It is denoted as $\grad{\phi}$.
+In Cartesian coordinates, it has the convenient form
+
+$$
+\begin{equation}
+\grad{\phi} = \mqty[\pdv{\phi}{x} \\ \pdv{\phi}{y}]
+\end{equation}
+$$
+
+The **directive** of $\phi(x, y)$ in the direction of a unit vector $\vu{u}$ is the rate of change of the function in that direction.
+It is denoted as $\dv{\phi}{\vu{u}}$ or $\nabla_{\vu{u}} \phi$.
+It can be calculated as
+
+$$
+\begin{equation}
+\dv{\phi}{\vu{u}} = \grad{\phi} \cdot \vu{u} = \pdv{\phi}{x} u_x + \pdv{\phi}{y} u_y.
+\end{equation}
+$$
+
+Next, consider two inputs $\vb{r}_1 = (x_1, y_1)$ and $\vb{r}_2 = (x_1 + \dd{x}, y_1 + \dd{y})$.
+The change in $z$ from $\vb{r}_1$ to $\vb{r}_2$ is given by the sum of contributions from the change in $x$ and the change in $y$, similar to the chain rule:
+
+$$
+\begin{equation}
+\dd{\phi} = \pdv{\phi}{x} \dd{x} + \pdv{\phi}{y} \dd{y}.
+\end{equation}
+$$
+
+This is known as the **multivariable chain rule**.
+We can write this equation with a vector as
+
+$$
+\begin{equation}
+\dd{\phi} = \mqty[\pdv{\phi}{x} \\ \pdv{\phi}{y}] \cdot \mqty[\dd{x} \\ \dd{y}] = \grad{\phi} \cdot \dd{\vb{r}}. \label{eq:multivariable-chain-rule}
+\end{equation}
+$$
+
+This is similar to the single-variable chain rule, where we have $\dd{f} = \dv{f}{x} \dd{x}$.
+As such, we can think of the gradient as a generalization of the derivative to multiple variables.
+
+The reason the gradient points in the direction of steepest ascent can be seen from the following argument.
+Suppose we have a function $\phi(x, y)$ and we want to find the directional derivative in the direction of a unit vector $\vu{u}$.
+The value of that is $\grad{\phi} \cdot \vu{u} = \norm{\grad{\phi}} \norm{\vu{u}} \cos(\theta)$, where $\theta$ is the angle between the gradient and the unit vector.
+The maximum value of this expression occurs when $\theta = 0$, or when the gradient and the unit vector are in the same direction.
+Thus, the directional derivative is maximized in the direction of the gradient.
+
+Taking the multivariable chain rule in Equation $\eqref{eq:multivariable-chain-rule}$, we can consider what happens with a non-infinitesimal change in $x$ and $y$.
+In other words, suppose the input goes along a path from $\vb{r}_1$ to $\vb{r}_2$.
+What is the change in $\phi$ along that path?
+
+We can write the change in $\phi$ as the accumulation of the infinitesimal changes in $\phi$ along the path:
+
+$$
+\begin{equation}
+\Delta \phi = \sum_{i=1}^N \dd{\phi}_i = \sum_{i=1}^N \grad{\phi} \cdot \dd{\vb{r}}_i
+\end{equation}
+$$
+
+As the number of infinitesimal changes goes to infinity, we can replace the sum with an integral:
+
+$$
+\begin{equation}
+\Delta \phi = \int_{\vb{r}_1}^{\vb{r}_2} \grad{\phi} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+This is known as a **line integral**, and what we have derived is the **fundamental theorem of line integrals** or **gradient theorem**.
+
+### Vector Functions of Single Variable
+
+A vector function is a function that takes a single variable as input and produces a vector as output.
+For example, the function $\vb{r}(t) = \mqty[x(t) \\ y(t) \\ z(t)]$ is a vector function of the single variable $t$.
+The function $\vb{r}(t)$ can be thought of as a curve in three-dimensional space.
+
+The function $\vb{r}(t)$ can be differentiated with respect to $t$ to give the velocity of the particle at time $t$:
+
+$$
+\begin{equation}
+\dv{\vb{r}}{t} = \mqty[\dv{x}{t} \\ \dv{y}{t} \\ \dv{z}{t}] = \vb{v}(t).
+\end{equation}
+$$
+
+Next, suppose we have a velocity vector $\vb{v}(t) = \mqty[v_x(t) \\ v_y(t) \\ v_z(t)]$ and we want to find out how much the particle has moved over a time interval $[t_0, t_0 + \Delta t]$.
+We can do this by integrating the velocity vector over the time interval:
+
+$$
+\begin{equation}
+\Delta \vb{r} = \int_{t_0}^{t_0 + \Delta t} \vb{v}(t) \dd{t}
+\end{equation}
+$$
+
+This is similar to the line integral we derived earlier, but in this case, we are integrating over a time interval instead of a path in space.
+
+The **curvature** of a curve is a measure of how much the curve deviates from being a straight line.
+Its value is given by the formula
+
+$$
+\begin{equation}
+\kappa = \frac{\norm{\dv{\vb{r}}{t} \times \dv[2]{\vb{r}}{t}}}{\norm{\dv{\vb{r}}{t}}^3}.
+\end{equation}
+$$
+
+For a curve in two dimensions, the curvature is given by
+
+$$
+\begin{equation}
+\kappa = \frac{\abs{y''x' - x''y'}}{(x'^2 + y'^2)^{3/2}}.
+\end{equation}
+$$
+
+### Vector Functions of Multiple Variables
+
+A vector function of multiple variables is a function that takes multiple variables as input and produces a vector as output.
+It is also called a vector field.
+
+For example, the function $\vb{E}(x, y, z) = \mqty[E_x(x, y, z) \\ E_y(x, y, z) \\ E_z(x, y, z)]$ is a vector function of three variables.
+As always, we can think of the vector function as a function of a single vector variable $\vb{r} = \mqty[x \\ y \\ z]$.
+
+The **flux** of a vector field $\vb{E}(x, y, z)$ through a surface $S$ is defined as the integral of the vector field over the surface.
+The intuition comes from the idea of the vector field as a flow of fluid.
+Split the surface into pieces of area $\dd{a}$.
+The flux through each piece of area is given by the dot product of the vector field and the area vector $\dd{\vb{a}} = \vu{n} \dd{a}$, where $\vu{n}$ is the unit normal vector to the surface.
+
+$$
+\begin{equation}
+\dd{\Phi} = \vb{E} \cdot \dd{\vb{a}}
+\end{equation}
+$$
+
+The total flux through the surface is given by the integral of the flux over the surface:
+
+$$
+\begin{equation}
+\Phi = \int_S \vb{E} \cdot \dd{\vb{a}} = \int_S \vb{E} \cdot \vu{n} \dd{a}
+\end{equation}
+$$
+
+The flux is a measure of how much of the vector field passes through the surface.
+A related concept is the **divergence** of a vector field, which is a measure of how much the vector field spreads out from a singular point.
+We can find it by considering the flux-per-unit-volume as the volume shrinks to zero:
+
+$$
+\begin{equation}
+\dv{\Phi}{V} = \frac{1}{V} \int_S \vb{E} \cdot \dd{\vb{a}}
+\end{equation}
+$$
+
+The divergence is defined as the limit of the flux-per-unit-volume as the volume shrinks to zero:
+
+$$
+\begin{equation}
+\div{\vb{E}} = \lim_{V \to 0} \dv{\Phi}{V} = \lim_{V \to 0} \frac{1}{V} \int_S \vb{E} \cdot \dd{\vb{a}}.
+\end{equation}
+$$
+
+As the notation suggests, in Cartesian coordinates, the divergence of a vector field $\vb{E}(x, y, z)$ is given by
+
+$$
+\begin{equation}
+\div{\vb{E}} = \pdv{E_x}{x} + \pdv{E_y}{y} + \pdv{E_z}{z}.
+\end{equation}
+$$
+
+The divergence is a scalar field, which means it takes a vector as input and produces a scalar as output.
+
+The **circulation** of a vector field $\vb{E}(x, y, z)$ is defined as the line integral of the vector field around a closed curve $C$:
+
+$$
+\begin{equation}
+\Gamma = \oint_C \vb{E} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+The circulation is a measure of how much the vector field "circulates" around the closed curve.
+A related concept is the **curl** of a vector field, which is a measure of how much the vector field "curls" around a point.
+We can find it by considering the circulation-per-unit-area as the area shrinks to zero:
+
+$$
+\begin{equation}
+\dv{\Gamma}{A} = \frac{1}{A} \oint_C \vb{E} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+The curl is defined as the limit of the circulation-per-unit-area as the area shrinks to zero:
+
+$$
+\begin{equation}
+(\curl{\vb{E}}) \cdot \vu{n} = \lim_{A \to 0} \dv{\Gamma}{A} = \lim_{A \to 0} \frac{1}{A} \oint_C \vb{E} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+Unlike the divergence, the curl is a vector field, which means it takes a vector as input and produces a vector as output.
+
+In Cartesian coordinates, the curl of a vector field $\vb{E}(x, y, z)$ is given by
+
+$$
+\begin{equation}
+\curl{\vb{E}} = \mqty[\pdv{E_z}{y} - \pdv{E_y}{z} \\ \pdv{E_x}{z} - \pdv{E_z}{x} \\ \pdv{E_y}{x} - \pdv{E_x}{y}]
+\end{equation}
+$$
+
+### Laplacian
+
+The Laplacian of a scalar field $\phi(x, y, z)$ is defined as the divergence of the gradient of the scalar field:
+
+$$
+\begin{equation}
+\laplacian{\phi} = \div{\grad{\phi}} = \pdv[2]{\phi}{x} + \pdv[2]{\phi}{y} + \pdv[2]{\phi}{z}.
+\end{equation}
+$$
+
+It is similar to the second derivative of a function of a single variable, which is defined as the derivative of the derivative.
+
+It can be shown that the Laplacian is a measure of the average value of the function in a small neighborhood around a point.
+In other words, if we take a small volume around a point and average the value of the function over that volume, the Laplacian is the rate of change of that average value as the volume shrinks to zero.
+The Laplacian is a scalar field, which means it takes a vector as input and produces a scalar as output.
+
+If the Laplacian of a function is zero, then the function is said to be **harmonic**.
+
+### Theorems
+
+There are a few theorems that are useful for working with vector fields.
+
+1. **Divergence theorem/Gauss's theorem**, applicable for a surface enclosing a volume $V$:
+
+    $$
+    \begin{equation}
+    \int_V \div{\vb{E}} \dd{V} = \int_S \vb{E} \cdot \dd{\vb{a}}.
+    \end{equation}
+    $$
+
+2. **Stokes' theorem**, applicable for a curve $C$ bounding a surface $S$:
+
+    $$
+    \begin{equation}
+    \int_S \curl{\vb{E}} \cdot \dd{\vb{a}} = \int_C \vb{E} \cdot \dd{\vb{r}}.
+    \end{equation}
+    $$
+
+3. **Gradient theorem**, applicable for two points enclosing a curve $C$:
+
+    $$
+    \begin{equation}
+    \int_C \grad{\phi} \cdot \dd{\vb{r}} = \phi(\vb{r}_2) - \phi(\vb{r}_1).
+    \end{equation}
+    $$
+
+The following are some useful vector calculus identities:
+
+$$
+\begin{align}
+\grad{(fg)} &= f \grad{g} + g \grad{f} \\
+\grad{(\vb{v} \cdot \vb{w})} &= \vb{v} \times (\curl{\vb{w}}) + \vb{w} \times (\curl{\vb{v}}) + (\div{\vb{v}}) \vb{w} + (\div{\vb{w}}) \vb{v} \\
+\div{(\phi \vb{v})} &= \phi \div{\vb{v}} + \vb{v} \cdot \grad{\phi} \\
+\div{(\vb{v} \times \vb{w})} &= \vb{w} \cdot (\curl{\vb{v}}) - \vb{v} \cdot (\curl{\vb{w}}) \\
+\curl{(\phi \vb{v})} &= \grad{\phi} \times \vb{v} + \phi (\curl{\vb{v}}) \\
+\curl{(\vb{v} \times \vb{w})} &= \vb{w} \cdot (\curl{\vb{v}}) - \vb{v} \cdot (\curl{\vb{w}}) + \div{\vb{v}} \vb{w} - \div{\vb{w}} \vb{v} \\
+\curl{(\curl{\vb{v}})} &= \grad{(\div{\vb{v}})} - \laplacian{\vb{v}} \\
+\div{(\curl{\vb{v}})} &= 0
+\end{align}
+$$
+
+
