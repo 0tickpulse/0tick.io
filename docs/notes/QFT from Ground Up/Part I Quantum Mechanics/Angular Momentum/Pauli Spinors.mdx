@@ -25,7 +25,7 @@ Now we will take a purely mathematical approach to spinors, focusing on their al
 
 <TOCInline toc={toc} />
 
-## Introduction
+## Pauli Vectors
 
 [Recall that the spin operators are defined as](../Mathematical%20Foundations/Applying%20to%20Spin%2012%20Systems#observables-and-probabilities):
 
@@ -51,9 +51,9 @@ Their explicit forms are:
 
 $$
 \begin{align}
-\sigma_1 = \sigma_x &:= \mqty[0 & 1 \\ 1 & 0 ] \\
+\sigma_1 = \sigma_x &:= \mqty[0 & 1 \\ 1 & 0] \\
 \sigma_2 = \sigma_y &:= \mqty[0 & -i \\ i & 0] \\
-\sigma_3 = \sigma_z &:= \mqty[1 & 0 \\ 0 & 1]
+\sigma_3 = \sigma_z &:= \mqty[1 & 0 \\ 0 & -1]
 \end{align}
 $$
 
@@ -116,7 +116,7 @@ $$
 \begin{equation}
 \begin{split}
 V &= x \sigma_x + y \sigma_y + z \sigma_z \\
-&= x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & 1] \\
+&= x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & -1] \\
 &= \mqty[z & x - iy \\ x + iy & -z]
 \end{split}
 \end{equation}
@@ -125,7 +125,7 @@ $$
 This form of the vector is known as the **Pauli vector**.
 The fundamental benefit of using matrices for basis vectors is that we can now directly multiply vectors with each other.
 
-### Transforming the Pauli Vector
+### Reflecting the Pauli Vector
 
 First, consider reflecting the Pauli vector along $z$.
 In other words, we want to find the transformation :
@@ -242,6 +242,392 @@ $$
 
 As such, it is clear that the transformation we have defined indeed transforms the Pauli vector as desired.
 It flips the parallel component of the vector while leaving the perpendicular component unchanged.
+
+### Rotation of the Pauli Vector
+
+To rotate the Pauli vector, we leverage the fact that a rotation is just two successive reflections.
+More specifically, to rotate a vector by an angle $\theta$, we reflect it twice, where the "mirrors" are at an angle of $\theta/2$ to the axis of rotation.
+
+For example, consider a vector $V$ reflected along the $x$-axis and then the $y$-axis.
+Because they are at a right angle to each other, the resulting vector is rotated by $180^\circ$.
+We can prove this by applying the transformation
+
+$$
+\begin{equation}
+\begin{split}
+V &\to -\sigma_y (-\sigma_x V \sigma_x) \sigma_y \\
+&= \sigma_y \sigma_x V \sigma_x \sigma_y \\
+&= \sigma_y \sigma_x V \sigma_x^\dagger \sigma_y^\dagger \\
+&= \sigma_y \sigma_x V (\sigma_y \sigma_x)^\dagger
+\end{split}
+\end{equation}
+$$
+
+to the vector $V = x \sigma_x + y \sigma_y + z \sigma_z$, yielding
+
+$$
+\begin{equation}
+\begin{split}
+\sigma_y \sigma_x V (\sigma_y \sigma_x)^\dagger &= \sigma_y \sigma_x (x \sigma_x + y \sigma_y + z \sigma_z) \sigma_x \sigma_y \\
+&= x \sigma_y \sigma_x \sigma_x \sigma_x \sigma_y + y \sigma_y \sigma_x \sigma_y \sigma_x \sigma_y + z \sigma_y \sigma_x \sigma_z \sigma_x \sigma_y \\
+&= -x \sigma_x - y \sigma_y + z \sigma_z,
+\end{split}
+\end{equation}
+$$
+
+which is indeed the vector rotated by $180^\circ$.
+
+To generalize, we can define a rotation by an angle $\theta$ as follows.
+We need to reflect around two mirrors at an angle $\theta/2$ to the axis of rotation.
+Choose the first mirror to just be the $y$-axis, and the second mirror to be at an angle $\theta/2$ to the $x$-axis.
+
+The normal vector to the first mirror is $\sigma_x$, and the normal vector to the second mirror is
+
+$$
+\begin{equation}
+\tau = \cos(\theta/2) \sigma_x + \sin(\theta/2) \sigma_y.
+\end{equation}
+$$
+
+<Mafs>
+    <Line.Segment point1={[0, -3]} point2={[0, 3]} color={color("blue")} />
+    <Vector tail={[0, 0]} tip={[1, 0]} color={color("blue")} />
+    <MafsMathJax tex="\sigma_x" at={[1.2, 0]} color={color("blue")} />
+    <Transform rotate={1}>
+        <Line.Segment point1={[0, -3]} point2={[0, 3]} color={color("pink")} />
+        <Vector tail={[0, 0]} tip={[1, 0]} color={color("pink")} />
+        <MafsMathJax tex="\tau" at={[1.2, 0]} color={color("pink")} />
+    </Transform>
+</Mafs>
+
+Algebraically, we can write the rotation as
+
+$$
+\begin{equation}
+\begin{split}
+V &\to -\class{pink}{\tau} (-\class{blue}{\sigma_x} V \class{blue}{\sigma_x}) \class{pink}{\tau} \\
+&= \class{pink}{\tau} \class{blue}{\sigma_x} V \class{blue}{\sigma_x} \class{pink}{\tau} \\
+&= \qty(\cos(\frac{\theta}{2}) \sigma_x + \sin(\frac{\theta}{2}) \sigma_y) \class{blue}{\sigma_x} V \class{blue}{\sigma_x} (\cos(\frac{\theta}{2}) \sigma_x + \sin(\frac{\theta}{2}) \sigma_y) \\
+&= \qty(\cos(\frac{\theta}{2}) \sigma_x \class{blue}{\sigma_x} + \sin(\frac{\theta}{2}) \sigma_y \class{blue}{\sigma_x}) V \qty(\cos(\frac{\theta}{2}) \class{blue}{\sigma_x} \sigma_x + \sin(\frac{\theta}{2}) \class{blue}{\sigma_x} \sigma_y) \\
+&= \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger .
+\end{split}
+\end{equation}
+$$
+
+To see that this indeed rotates the Pauli vector, consider a Pauli vector $V = x \sigma_x + y \sigma_y + z \sigma_z$.
+Applying the transformation gives us:
+
+$$
+\begin{equation}
+\begin{split}
+ & \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
+=& \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (x \sigma_x + y \sigma_y + z \sigma_z) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
+=& \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (x \sigma_x) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
+& \quad {}+ \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (y \sigma_y) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
+& \quad {}+ \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (z \sigma_z) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
+=& \qty(x \cos(\frac{\theta}{2}) \sigma_x - x \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_x) \qty(\cos(\frac{\theta}{2}) + \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
+& \quad {}+ \qty(y \cos(\frac{\theta}{2}) \sigma_y - y \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_y) \qty(\cos(\frac{\theta}{2}) + \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
+& \quad {}+ \qty(z \cos(\frac{\theta}{2}) \sigma_z - z \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z) \qty(\cos(\frac{\theta}{2}) + \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
+=& \qty(x \cos(\frac{\theta}{2}) \sigma_x \cos(\frac{\theta}{2}) + x \cos(\frac{\theta}{2}) \sigma_x \sin(\frac{\theta}{2}) \sigma_x \sigma_y - x \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_x \cos(\frac{\theta}{2}) + x \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_x \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
+& \quad {}+ \qty(y \cos(\frac{\theta}{2}) \sigma_y \cos(\frac{\theta}{2}) + y \cos(\frac{\theta}{2}) \sigma_y \sin(\frac{\theta}{2}) \sigma_x \sigma_y - y \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_y \cos(\frac{\theta}{2}) + y \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_y \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
+& \quad {}+ \qty(z \cos(\frac{\theta}{2}) \sigma_z \cos(\frac{\theta}{2}) + z \cos(\frac{\theta}{2}) \sigma_z \sin(\frac{\theta}{2}) \sigma_x \sigma_y - z \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z \cos(\frac{\theta}{2}) + z \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
+=& \qty(x \cos[2](\frac{\theta}{2}) \sigma_x + x \cos(\frac{\theta}{2}) \sin(\frac{\theta}{2}) \sigma_y + x \sin(\frac{\theta}{2}) \cos(\frac{\theta}{2}) \sigma_y + x \sin[2](\frac{\theta}{2}) \sigma_x) \\
+& \quad {}+ \qty(y \cos[2](\frac{\theta}{2}) \sigma_y - y \cos(\frac{\theta}{2}) \sin(\frac{\theta}{2}) \sigma_x - y \sin(\frac{\theta}{2}) \cos(\frac{\theta}{2}) \sigma_x + y \sin[2](\frac{\theta}{2}) \sigma_y) \\
+& \quad {}+ \qty(z \cos[2](\frac{\theta}{2}) \sigma_z + z \cos(\frac{\theta}{2}) \sin(\frac{\theta}{2}) \sigma_z \sigma_x \sigma_y - z \sin(\frac{\theta}{2}) \cos(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z + z \sin[2](\frac{\theta}{2}) \sigma_z) \\
+=& \qty(x \sigma_x + x \sin(\theta) \sigma_y) + \qty(y \sigma_y - y \sin(\theta) \sigma_x) + z \sigma_z \\
+&= \qty(x \cos(\theta) + y \sin(\theta)) \sigma_x + \qty(y \cos(\theta) - x \sin(\theta)) \sigma_y + z \sigma_z.
+\end{split} \label{eq:pauli-rotation-algebraic}
+\end{equation}
+$$
+
+This matches the expected result of a rotation by an angle $\theta$.
+There are mainly two approaches to derive this result.
+We can either use the algebraic approach as we just did, or we can use the matrix representations.
+Matrices typically make the derivation more straightforward, but they could be argued to be less pure.
+This will be important when we discuss Clifford algebras and Lie algebras in the future.
+Anyways, the matrix derivation is as follows.
+
+First, the half-rotation on each side can be expressed as
+
+$$
+\begin{equation}
+\begin{split}
+\qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) &= \cos(\frac{\theta}{2}) \mqty[1 & 0 \\ 0 & 1] - \sin(\frac{\theta}{2}) \mqty[0 & 1 \\ 1 & 0] \mqty[0 & -i \\ i & 0] \\
+&= \cos(\frac{\theta}{2}) \mqty[1 & 0 \\ 0 & 1] - \sin(\frac{\theta}{2}) \mqty[0 & -i \\ i & 0] \\
+&= \mqty[\cos(\frac{\theta}{2}) - i \sin(\frac{\theta}{2}) & 0 \\ 0 & \cos(\frac{\theta}{2}) + i \sin(\frac{\theta}{2})] \\
+&= \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})].
+\end{split}
+\end{equation}
+$$
+
+Then, we can write the rotated Pauli vector as
+
+$$
+\begin{equation}
+\begin{split}
+V &\to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
+&= \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})] \mqty[z & x - iy \\ x + iy & -z] \mqty[\exp(i \frac{\theta}{2}) & 0 \\ 0 & \exp(-i \frac{\theta}{2})] \\
+&= \mqty[\exp(-i \frac{\theta}{2}) z & \exp(-i \frac{\theta}{2}) (x - iy) \\ \exp(i \frac{\theta}{2}) (x + iy) & -\exp(i \frac{\theta}{2}) z] \mqty[\exp(i \frac{\theta}{2}) & 0 \\ 0 & \exp(-i \frac{\theta}{2})] \\
+&= \mqty[\exp(-i \frac{\theta}{2}) z \exp(i \frac{\theta}{2}) & \exp(-i \frac{\theta}{2}) (x - iy) \exp(-i \frac{\theta}{2}) \\ \exp(i \frac{\theta}{2}) (x + iy) \exp(i \frac{\theta}{2}) & -\exp(i \frac{\theta}{2}) z \exp(-i \frac{\theta}{2})] \\
+&= \mqty[z & \exp(-i \frac{\theta}{2}) (x - iy) \\ \exp(i \frac{\theta}{2}) (x + iy) & -z].
+\end{split}
+\end{equation}
+$$
+
+In other words, the matrix elements of the rotated Pauli vector are equivalent to transforming $x + iy$ and $x - iy$ by a phase factor of $\exp(\pm i \frac{\theta}{2})$.
+We also see from Equation $\eqref{eq:pauli-rotation-algebraic}$ that the $x$ and $y$ components transform as
+
+$$
+\begin{align}
+x &\to x \cos(\theta) + y \sin(\theta) \\
+y &\to y \cos(\theta) - x \sin(\theta).
+\end{align}
+$$
+
+This matches the regular rotation of a vector in the $xy$-plane by an angle $\theta$
+
+$$
+\begin{equation}
+\mqty[x \\ y] \to \mqty[\cos(\theta) & -\sin(\theta) \\ \sin(\theta) & \cos(\theta)] \mqty[x \\ y].
+\end{equation}
+$$
+
+### U(2) and SU(2) Groups
+
+We have seen how to reflect and rotate Pauli vectors using the Pauli matrices.
+A summary of the transformations is given in the table below.
+
+<table>
+    <thead>
+        <tr>
+            <th>Transformation</th>
+            <th>Form</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td rowspan={2}>
+                Reflection along $x$
+
+                $(x, y, z) \to (-x, y, z)$
+            </td>
+            <td>
+                $V \to -\sigma_x V \sigma_x$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $V \to -\mqty[0 & 1 \\ 1 & 0] V \mqty[0 & 1 \\ 1 & 0]$
+            </td>
+        </tr>
+        <tr>
+            <td rowspan={2}>
+                Reflection along $y$
+
+                $(x, y, z) \to (x, -y, z)$
+            </td>
+            <td>
+                $V \to -\sigma_y V \sigma_y$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $V \to -\mqty[0 & -i \\ i & 0] V \mqty[0 & -i \\ i & 0]$
+            </td>
+        </tr>
+        <tr>
+            <td rowspan={2}>
+                Reflection along $z$
+
+                $(x, y, z) \to (x, y, -z)$
+            </td>
+            <td>
+                $V \to -\sigma_z V \sigma_z$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $V \to -\mqty[1 & 0 \\ 0 & -1] V \mqty[1 & 0 \\ 0 & -1]$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Reflection along an arbitrary axis $U$, where $UU = 1$
+                $(x, y, z) \to (x', y', z')$
+            </td>
+            <td>$V \to -U V U$</td>
+        </tr>
+        <tr>
+            <td rowspan={2}>
+                Rotation by an angle $\theta$ in the $xy$-plane
+
+                $(x, y, z) \to (x \cos(\theta) + y \sin(\theta), y \cos(\theta) - x \sin(\theta), z)$
+            </td>
+            <td>
+                $V \to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $V \to \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})] V \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})]^\dagger$
+            </td>
+        </tr>
+        <tr>
+            <td rowspan={2}>
+                Rotation by an angle $\theta$ in the $zx$-plane
+
+                $(x, y, z) \to (x \cos(\theta) + z \sin(\theta), y, z \cos(\theta) - x \sin(\theta))$
+            </td>
+            <td>
+                $V \to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_z \sigma_x) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_z \sigma_x)^\dagger$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $V \to \mqty[\cos(\frac{\theta}{2}) & -\sin(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})] V \mqty[\cos(\frac{\theta}{2}) & -\sin(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})]^\dagger$
+            </td>
+        </tr>
+        <tr>
+            <td rowspan={2}>
+                Rotation by an angle $\theta$ in the $yz$-plane
+
+                $(x, y, z) \to (x, y \cos(\theta) + z \sin(\theta), z \cos(\theta) - y \sin(\theta))$
+            </td>
+            <td>
+                $V \to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_y \sigma_z) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_y \sigma_z)^\dagger$
+            </td>
+        </tr>
+        <tr>
+            <td>
+                $V \to \mqty[\cos(\frac{\theta}{2}) & -i \sin(\frac{\theta}{2}) \\ -i \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})] V \mqty[\cos(\frac{\theta}{2}) & -i \sin(\frac{\theta}{2}) \\ -i \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})]^\dagger$
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+All these transformations are performed by conjugating the Pauli vector with the appropriate Pauli matrix or combination of Pauli matrices.
+These matrices are unitary, and are therefore within the unitary group $\text{U}(2)$.
+Additionally, the rotations also have a positive determinant, and are therefore within the special unitary group $\text{SU}(2)$.
+
+Now, let's prove that rotations must be performed by conjugating the Pauli vector with a $\text{SU}(2)$ matrix.
+The key point is that the norm of the Pauli vector must remain invariant under rotations.
+We shall now prove a few important lemmas in order to show this.
+
+---
+
+**Lemma**. In the matrix representation of a Pauli vector, the determinant is the negative of the norm squared of the corresponding vector.
+
+**Proof**. This is trivial.
+
+$$
+\begin{equation}
+\begin{split}
+\det(V) &= \det\mqty[z & x - iy \\ x + iy & -z] \\
+&= z(-z) - (x - iy)(x + iy) \\
+&= -z^2 - (x^2 + y^2) \\
+&= -(x^2 + y^2 + z^2) \\
+&= -\norm{\vb{v}}^2.
+\end{split}
+\end{equation}
+$$
+
+Thus, the determinant of the Pauli vector is indeed the negative of the norm squared of the corresponding vector. $\blacksquare$
+
+---
+
+We also know that all Pauli vectors are Hermitian, and therefore the rotated Pauli vector must also be Hermitian.
+This means that
+
+$$
+\begin{equation}
+V \to (AVB) = (AVB)^\dagger = B^\dagger V A^\dagger
+\end{equation}
+$$
+
+As such, we can guess that $A = B^\dagger$ and $B = A^\dagger$.
+Thus, the transformed Pauli vector takes the form $V \to A V A^\dagger$.
+We just need to show that $A \in \text{SU}(2)$ now.
+
+---
+
+**Lemma**. Under the transformation $V \to A V A^\dagger$, the norm of the Pauli vector is invariant if and only if $\det(A) \in \mathbb{S}^1$.
+
+**Proof**. Since the norm is just the determinant of the Pauli vector, we need to show that
+
+$$
+\begin{equation}
+\det(V) = \det(AVA^\dagger) = \det(A) \det(V) \det(A^\dagger).
+\end{equation}
+$$
+
+The $\det(V)$ terms cancel out, and we are left with
+
+$$
+\begin{equation}
+1 = \det(A) \det((A^T)^*) = \det(A) \det(A)^* = \abs{\det(A)}^2.
+\end{equation}
+$$
+
+This means that $\det(A)$ must lie on the unit circle, i.e., $\det(A) \in \mathbb{S}^1$. $\blacksquare$
+
+---
+
+We also show that $A$ is phase-ambiguous, meaning that we can multiply it by a phase factor without changing the transformation.
+
+---
+
+**Lemma**. The matrix $A$ performs the same transformation as $A \exp(i \phi)$ for any $\phi \in \mathbb{R}$.
+
+**Proof**. This is quite straightforward.
+
+$$
+\begin{equation}
+\begin{split}
+(A \exp(i \phi)) V (A \exp(i \phi))^\dagger &= A \exp(i \phi) V A^\dagger \exp(-i \phi) \\
+&= A V A^\dagger.
+\end{split}
+\end{equation}
+$$
+
+Thus, the transformation is indeed invariant under multiplication by a phase factor. $\blacksquare$
+
+---
+
+To resolve the phase ambiguity, we just multiply the transformation by a certain phase factor such that $\det(A) = 1$.
+It can be shown that given $\det(A) = e^{i \phi}$, then $\det(A \exp(-i \phi/2)) = 1$.
+Finally,
+
+---
+
+**Theorem**. The transformation $V \to A V A^\dagger$ preserves the norm of the Pauli vector if and only if $A \in \text{U}(2)$.
+
+**Proof**. We know that $V$ is always traceless, so
+
+$$
+\begin{equation}
+\tr(V) = 0 = \tr(AVA^\dagger) = \tr(A^\dagger AV).
+\end{equation}
+$$
+
+The only way for $\tr(A^\dagger A)$ to be zero is if $A^\dagger A$ is a scaled identity operator; $A^\dagger A = k$ for some scalar $k$.
+This is because the trace of a matrix is the sum of its eigenvalues, and the only way for this sum to be zero is if all eigenvalues are zero.
+Next, we take the determinant of both sides,
+
+$$
+\begin{equation}
+\det(k) = \det(A^\dagger A) = k^2.
+\end{equation}
+$$
+
+This means that $k = \pm 1$.
+However, since we know that $A$ is positive along the diagonal (because it is a rotation), we have $k = 1$.
+Therefore we have $\det(A^\dagger A) = 1 \implies A^\dagger A = 1$.
+This is the definition of a unitary matrix, and therefore $A \in \text{U}(2)$. $\blacksquare$
+
+---
+
+### SU(2) as the Double Cover of SO(3)
+
 
 
 

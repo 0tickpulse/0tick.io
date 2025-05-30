@@ -19,4 +19,7 @@ export const MATH_MACROS: Record<string, string | [string, number]> = {
     "khatc": "\\class{green}{\\vu{k}}",
     "rhatc": "\\class{red}{\\vu{r}}",
     "thhatc": "\\class{purple}{\\vu{\\theta}}",
+
+    // Feynman slash
+    "slashed": ["\\not{#1}", 1],
 };

@@ -51,13 +51,13 @@ $$
 The first approach is the Schrödinger picture, where the operators are time-independent and the states evolve in time.
 The second approach is the Heisenberg picture, where the operators evolve in time and the states are time-independent.
 This is a matter of convention, and both pictures are equivalent.
-To take an example, consider taking the expectation value of $x$ at a certain time $t$, $\expval{x}(t)$:
+To take an example, consider taking the expectation value of $x$ at a certain time $t$, $\expval{x}_t$:
 
 - In the Schrödinger picture, we have:
 
     $$
     \begin{equation}
-    \expval{x}(t) = \class{blue}{\bra{\psi} U^\dagger(t)} x \class{yellow}{U(t) \ket{\psi}} = \class{blue}{\bra{\psi(t)}} x \class{yellow}{\ket{\psi(t)}}
+    \expval{x}_t = \class{blue}{\bra{\psi} U^\dagger(t)} x \class{yellow}{U(t) \ket{\psi}} = \class{blue}{\bra{\psi(t)}} x \class{yellow}{\ket{\psi(t)}}
     \end{equation}
     $$
 
@@ -65,7 +65,7 @@ To take an example, consider taking the expectation value of $x$ at a certain ti
 
     $$
     \begin{equation}
-    \expval{x}(t) = \bra{\psi} \class{green}{U^\dagger(t) x U(t)} \ket{\psi} = \bra{\psi} \class{green}{x(t)} \ket{\psi}
+    \expval{x}_t = \bra{\psi} \class{green}{U^\dagger(t) x U(t)} \ket{\psi} = \bra{\psi} \class{green}{x(t)} \ket{\psi}
     \end{equation}
     $$
 

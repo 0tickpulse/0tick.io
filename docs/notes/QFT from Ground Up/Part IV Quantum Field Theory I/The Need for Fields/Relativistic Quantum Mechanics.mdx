@@ -1,0 +1,231 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Relativistic Quantum Mechanics
+
+Here, we will try to find a relativistic version of the Schrödinger equation, but without using fields.
+Then, we will see why this ultimately fails.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Klein-Gordon Equation
+
+Historically speaking, the first attempt to make quantum mechanics compatible with special relativity was the Klein-Gordon equation, named after Walter Gordon and Oskar Klein (although it was actually first discovered by Erwin Schrödinger).
+However, it has a major flaw.
+
+First, let's analyze the Schrödinger wave equation
+
+$$
+\begin{equation}
+i \hbar \pdv{t} \psi(t, \vb{x}') = -\frac{\hbar^2}{2m} \nabla'^2 \psi(t, \vb{x}') + V(\vb{x}') \psi(t, \vb{x}'),
+\end{equation}
+$$
+
+where $\psi(t, \vb{x}')$ is the position space wavefunction.
+We can obviously see that this is not Lorentz invariant, as it is not invariant under the Lorentz transformation.
+For one, there is one time derivative and two spatial derivatives.
+
+We will try to make this equation relativistic by treating the wavefunction $\psi$ as a scalar field of 4-dimensional spacetime.
+We can write the wavefunction as a function of spacetime coordinates $x^\mu = (t, \vb{x})$,
+
+$$
+\begin{equation}
+\psi(x) = \psi(t, \vb{x}) = \psi(x^\mu).
+\end{equation}
+$$
+
+Note that this is ultimately a flawed approach.
+Scalar fields are functions of physical spacetime, but wavefunctions are functions of coordinates in the configuration space of the system.
+If, for instance, we added another particle, the wavefunction would become a function of the spatiotemporal coordinates of both particles, and so on.
+
+Recall that the Schrödinger equation can be derived from the first quantization of the classical Hamiltonian,
+
+$$
+\begin{equation}
+H = \frac{p^2}{2m} + V(x).
+\end{equation}
+$$
+
+By applying $H \to i \hbar \pdv{t}$ and $p \to -i \hbar \nabla$, we get the Schrödinger equation.
+We can try to do the same thing but instead, we begin with a relativistic equation.
+Using the energy-momentum relation,
+
+$$
+\begin{equation}
+(mc)^2 = \qty(\frac{E}{c})^2 - (p^x)^2 - (p^y)^2 - (p^z)^2,
+\end{equation}
+$$
+
+we can use the substitutions $E \to i \hbar \pdv{t}$ and $p^i \to -i \hbar \pdv{x^i}$ to get
+
+$$
+\begin{equation}
+(mc)^2 = \qty(i \hbar \frac{1}{c} \pdv{t})^2 - \qty(-i \hbar \pdv{x})^2 - \qty(-i \hbar \pdv{y})^2 - \qty(-i \hbar \pdv{z})^2.
+\end{equation}
+$$
+
+First, the time term can be simplified to
+
+$$
+\begin{equation}
+\qty(i \hbar \frac{1}{c} \pdv{t})^2 = \qty(i \hbar \pdv{ct})^2.
+\end{equation}
+$$
+
+Next, we can factor out the $i^2 \hbar^2$ from the right-hand side to get
+
+$$
+\begin{equation}
+(mc)^2 = -\hbar^2 \qty(\pdv[2]{ct} - \pdv[2]{x} - \pdv[2]{y} - \pdv[2]{z}).
+\end{equation}
+$$
+
+We can (incorrectly) apply both sides to a wavefunction (field) $\psi$ to get
+
+$$
+\begin{equation}
+(mc)^2 \psi = -\hbar^2 \qty(\pdv[2]{ct} - \pdv[2]{x} - \pdv[2]{y} - \pdv[2]{z}) \psi.
+\end{equation}
+$$
+
+Of course, the term inside the parantheses can be rewritten as
+
+$$
+\begin{equation}
+\pdv[2]{ct} - \pdv[2]{x} - \pdv[2]{y} - \pdv[2]{z} = \partial_\mu \partial_\nu \eta^{\mu \nu} = \partial_\mu \partial^\mu = \partial^2 = \Box,
+\end{equation}
+$$
+
+where $\eta^{\mu \nu}$ is the Minkowski metric.
+This operator is known as the d'Alembertian operator.
+Thus, the equation becomes
+
+$$
+\begin{equation}
+(mc)^2 \psi = -\hbar^2 \partial_\mu \partial^\mu \psi,
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+\qty(\partial_\mu \partial^\mu + \frac{m^2 c^2}{\hbar^2}) \psi = 0.
+\end{equation}
+$$
+
+This is the **Klein-Gordon equation**.
+Unlike the Schrödinger equation, this *is* Lorentz invariant.
+For one, there are equal numbers of spatial and temporal derivatives.
+This ensures that the equation respects the principles of relativity and can be applied consistently across different inertial frames.
+
+In natural units, we express mass in terms of energy—essentially we absorb the factor of $c$ into the mass term.
+We also take $\hbar = 1$, so the Klein-Gordon equation simplifies to
+
+$$
+\begin{equation}
+(\partial_\mu \partial^\mu + m^2) \psi = 0.
+\end{equation}
+$$
+
+Note that Klein-Gordon equation is not a specific equation that pertains to a particular particle.
+We saw in the previous chapter that it also appeared in the context of classical field theory.
+As such, the equation is instead a general equation that describes the dynamics of a relativistic scalar field.
+
+The solution to the Klein-Gordon equation is a wavefunction that is a superposition of plane waves.
+First, we take the ansatz
+
+$$
+\begin{equation}
+\psi(t, \vb{x}) = Ne^{-iEt + i \vb{p} \cdot \vb{x}} = Ne^{-i p_\mu x^\mu}.
+\end{equation}
+$$
+
+This does indeed satisfy the Klein-Gordon equation, so we can take a linear combination of these solutions (with different $E$ and $\vb{p}$) to get the general solution
+
+$$
+\begin{equation}
+\psi(t, \vb{x}) = \int \frac{d^3 p}{(2\pi)^3} \frac{1}{\sqrt{2E}} e^{-i p_\mu x^\mu},
+\end{equation}
+$$
+
+where $E = \sqrt{\vb{p}^2 + m^2}$ is the relativistic energy-momentum relation.
+
+## The Dirac Equation
+
+As we just saw, the Klein-Gordon equation has major flaws.
+Dirac sought to fix these flaws by introducing the Dirac equation.
+He did this by attempting to take the "square root" of both sides of the Klein-Gordon equation.
+In other words, he tried to factor the Klein-Gordon equation into two first-order equations;
+
+$$
+\begin{equation}
+0 = \qty(\partial^2 + \frac{m^2 c^2}{\hbar^2}) \psi = \qty(\sqrt{\partial^2} + i \frac{mc}{\hbar}) \qty(\sqrt{\partial^2} - i \frac{mc}{\hbar}) \psi.
+\end{equation}
+$$
+
+What is the square root of the d'Alembertian operator?
+We know that in the time coordinate, the d'Alembertian operator is the positive second derivative, and in the spatial coordinates, it is the negative second derivative.
+This means that if we square this new operator, in the time coordinate, we get the positive second derivative, and in the spatial coordinates, we get the negative second derivative;
+
+$$
+\begin{align}
+(\sqrt{\partial_t \partial^t})^2 &= \partial_t \partial^t, \\
+(\sqrt{\partial_i \partial^i})^2 &= -\partial_i \partial^i.
+\end{align}
+$$
+
+Let's write this operator as
+
+$$
+\begin{equation}
+\sqrt{\partial^2} = \gamma^\mu \partial_\mu.
+\end{equation}
+$$
+
+From our conditions, we know that $\mu = 0$ corresponds to $\gamma^0 \gamma^0 = 1$ and $\mu = i$ corresponds to $\gamma^i \gamma^i = -1$.
+This is precisely the rules that govern the spacetime algebra $\text{Cl}(1, 3)$, whose basis is the Dirac gamma matrices.
+Anyways, we can thus rewrite the Klein-Gordon equation as
+
+$$
+\begin{equation}
+\qty(\gamma^\mu \partial_\mu + i \frac{mc}{\hbar}) \qty(\gamma^\nu \partial_\nu - i \frac{mc}{\hbar}) \psi = 0.
+\end{equation}
+$$
+
+Finally, just taking the second factor to be zero, we get the **Dirac equation**,
+
+$$
+\begin{equation}
+\qty(\gamma^\mu \partial_\mu - i \frac{mc}{\hbar}) \psi = 0.
+\end{equation}
+$$
+
+In natural units, this simplifies to
+
+$$
+\begin{equation}
+\qty(\gamma^\mu \partial_\mu - m) \psi = 0,
+\end{equation}
+$$
+
+and if we use the slash notation $\slashed{\partial} = \gamma^\mu \partial_\mu$, we can write the Dirac equation as
+
+$$
+\begin{equation}
+(\slashed{\partial} - m) \psi = 0.
+\end{equation}
+$$

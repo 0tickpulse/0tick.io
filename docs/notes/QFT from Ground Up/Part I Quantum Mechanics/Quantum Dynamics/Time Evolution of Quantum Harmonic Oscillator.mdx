@@ -25,6 +25,8 @@ First, we will use the Heisenberg picture, and then we will use Feynman path int
 
 ## Heisenberg Picture
 
+### Deriving from the Equations of Motion
+
 Recall that
 
 $$
@@ -72,3 +74,647 @@ a(t) &= e^{-i \omega t} a(0), \\
 a^\dagger(t) &= e^{i \omega t} a^\dagger(0).
 \end{align}
 $$
+
+This is to be expected. The quantum harmonic oscillator is still a harmonic oscillator, so it should somewhat resemble the classical harmonic oscillator (which has solutions of the form $e^{\pm i \omega t}$).
+We simply need to convert these solutions back to the position and momentum operators to see the time evolution of the quantum harmonic oscillator.
+The two equations above can be rewritten as
+
+$$
+\begin{align}
+\sqrt{\frac{m \omega}{2 \hbar}} \qty(x(t) + \frac{i}{m \omega} p(t)) &= e^{-i \omega t} \sqrt{\frac{m \omega}{2 \hbar}} \qty(x(0) + \frac{i}{m \omega} p(0)), \\
+\sqrt{\frac{m \omega}{2 \hbar}} \qty(x(t) - \frac{i}{m \omega} p(t)) &= e^{i \omega t} \sqrt{\frac{m \omega}{2 \hbar}} \qty(x(0) - \frac{i}{m \omega} p(0)).
+\end{align}
+$$
+
+Dividing both sides of the first equation by $\sqrt{\frac{m \omega}{2 \hbar}}$ and applying Euler's formula gives
+
+$$
+\begin{align}
+x(t) + \frac{i}{m \omega} p(t) &= (\cos(\omega t) - i \sin(\omega t)) \qty(x(0) + \frac{i}{m \omega} p(0)), \\
+x(t) - \frac{i}{m \omega} p(t) &= (\cos(\omega t) + i \sin(\omega t)) \qty(x(0) - \frac{i}{m \omega} p(0)).
+\end{align}
+$$
+
+$x(t)$ and $p(t)$ can be solved by equating the real and imaginary parts of these equations.
+This gives us
+
+$$
+\begin{align}
+x(t) &= x(0) \cos(\omega t) + \frac{p(0)}{m \omega} \sin(\omega t), \\
+p(t) &= -m \omega x(0) \sin(\omega t) + p(0) \cos(\omega t).
+\end{align}
+$$
+
+These equations are the time evolution of the quantum harmonic oscillator in the Heisenberg picture.
+It is worth noting that these equations are the same as the classical equations of motion for a harmonic oscillator, except that the initial conditions are quantum operators instead of classical variables.
+Recall that the classical equations of motion for a harmonic oscillator are
+
+$$
+\begin{align}
+x(t) &= x(0) \cos(\omega t) + \frac{p(0)}{m \omega} \sin(\omega t), \label{eq:x-t} \\
+p(t) &= -m \omega x(0) \sin(\omega t) + p(0) \cos(\omega t). \label{eq:p-t}
+\end{align}
+$$
+
+### Deriving it Directly
+
+We can also derive the time evolution of the quantum harmonic oscillator directly by the definition of the time evolution operator.
+Recall that we time-evolve a quantum state by applying the time evolution operator $U$ to the state.
+For instance, for the inner product $\mel{\psi}{x}{\psi}$, we have
+
+$$
+\begin{equation}
+\mel{\psi(t)}{x}{\psi(t)} \to \mel{\psi(0)}{U^\dagger x U}{\psi(0)}.
+\end{equation}
+$$
+
+In the Heisenberg picture, we group the three operators together and define it as $x(t) = U^\dagger x U$.
+As such, we can directly evolve the position operator $x$ in time by applying the time evolution operator $U$ to it, which means
+
+$$
+\begin{equation}
+x(t) = \exp(\frac{i H t}{\hbar}) x(0) \exp(-\frac{i H t}{\hbar}),
+\end{equation}
+$$
+
+where $H$ is the Hamiltonian of the system.
+To evaluate this, we rely on the Campbell identity, a corollary of the Baker-Campbell-Hausdorff formula.
+The Campbell identity states that if $A$ and $B$ are two operators, then
+
+$$
+\begin{equation}
+e^A X e^{-A} = X + \comm{A}{X} + \frac{1}{2!} \comm{A}{\comm{A}{X}} + \frac{1}{3!} \comm{A}{\comm{A}{\comm{A}{X}}} + \cdots,
+\end{equation}
+$$
+
+Using $A = \exp(\frac{i H t}{\hbar})$, we have
+
+$$
+\begin{equation}
+\exp(\frac{i H t}{\hbar}) x(0) \exp(-\frac{i H t}{\hbar}) = x(0) + \frac{it}{\hbar} \comm{H}{x(0)} + \frac{1}{2!} \qty(\frac{it}{\hbar})^2 \comm{H}{\comm{H}{x(0)}} + \frac{1}{3!} \qty(\frac{it}{\hbar})^3 \comm{H}{\comm{H}{\comm{H}{x(0)}}} + \cdots.
+\end{equation}
+$$
+
+We can now compute the commutators.
+The commutator of the Hamiltonian $H$ and the position operator $x(0)$ is
+
+$$
+\begin{equation}
+\begin{split}
+\comm{H}{x(0)} &= \comm{\frac{p(0)^2}{2m} + \frac{1}{2} m \omega^2 x(0)^2}{x(0)} \\
+&= \frac{1}{2m} \comm{p(0)^2}{x(0)} \\
+&= \frac{1}{2m} \qty(p(0) \comm{p(0)}{x(0)} + \comm{p(0)}{x(0)} p(0)) \\
+&= \frac{1}{2m} \qty(p(0) (-i \hbar) + (-i \hbar) p(0)) \\
+&= \frac{-i \hbar}{m} p(0).
+\end{split}
+\end{equation}
+$$
+
+Similarly, the commutator of the Hamiltonian $H$ and the momentum operator $p(0)$ is
+
+$$
+\begin{equation}
+\begin{split}
+\comm{H}{p(0)} &= \comm{\frac{p(0)^2}{2m} + \frac{1}{2} m \omega^2 x(0)^2}{p(0)} \\
+&= \frac{1}{2} m \omega^2 \comm{x(0)^2}{p(0)} \\
+&= \frac{1}{2} m \omega^2 \qty(x(0) \comm{x(0)}{p(0)} + \comm{x(0)}{p(0)} x(0)) \\
+&= \frac{1}{2} m \omega^2 \qty(x(0) (i \hbar) + (i \hbar) x(0)) \\
+&= i \hbar m \omega^2 x(0).
+\end{split}
+\end{equation}
+$$
+
+As such, the commutator $\comm{H}{\comm{H}{x(0)}}$ is
+
+$$
+\begin{equation}
+\begin{split}
+\comm{H}{\comm{H}{x(0)}} &= \comm{H}{\frac{-i \hbar}{m} p(0)} \\
+&= \frac{-i \hbar}{m} \comm{H}{p(0)} \\
+&= \frac{-i \hbar}{m} i \hbar m \omega^2 x(0) \\
+&= \hbar^2 \omega^2 x(0).
+\end{split}
+\end{equation}
+$$
+
+The commutator $\comm{H}{\comm{H}{\comm{H}{x(0)}}}$ is
+
+$$
+\begin{equation}
+\begin{split}
+\comm{H}{\comm{H}{\comm{H}{x(0)}}} &= \comm{H}{\hbar^2 \omega^2 x(0)} \\
+&= \hbar^2 \omega^2 \comm{H}{x(0)} \\
+&= \hbar^2 \omega^2 \frac{-i \hbar}{m} p(0) \\
+&= \frac{-i \hbar^3 \omega^2}{m} p(0).
+\end{split}
+\end{equation}
+$$
+
+The pattern goes on.
+Every other commutator will be proportional to $x(0)$, and every other commutator will be proportional to $p(0)$.
+They multiply by a factor of $\hbar^2 \omega^2$ for every two subsequent commutators:
+
+$$
+\begin{align}
+\comm{H}{\comm{H}{x(0)}} &= \hbar^2 \omega^2 x(0), \\
+\comm{H}{\comm{H}{\comm{H}{x(0)}}} &= \frac{-i \hbar^3 \omega^2}{m} p(0), \\
+\comm{H}{\comm{H}{\comm{H}{\comm{H}{x(0)}}}} &= \hbar^4 \omega^4 x(0), \\
+\comm{H}{\comm{H}{\comm{H}{\comm{H}{\comm{H}{x(0)}}}}} &= \frac{-i \hbar^5 \omega^4}{m} p(0), \\
+\comm{H}{\comm{H}{\comm{H}{\comm{H}{\comm{H}{\comm{H}{x(0)}}}}}} &= \hbar^6 \omega^6 x(0), \\
+\comm{H}{\comm{H}{\comm{H}{\comm{H}{\comm{H}{\comm{H}{\comm{H}{x(0)}}}}}}} &= \frac{-i \hbar^7 \omega^6}{m} p(0), \\
+\vdots
+\end{align}
+$$
+
+We can now substitute these commutators back into the equation for $x(t)$:
+
+$$
+\begin{equation}
+\begin{split}
+x(t) &= x(0) + \frac{it}{\hbar} \comm{H}{x(0)} + \frac{1}{2!} \qty(\frac{it}{\hbar})^2 \comm{H}{\comm{H}{x(0)}} + \frac{1}{3!} \qty(\frac{it}{\hbar})^3 \comm{H}{\comm{H}{\comm{H}{x(0)}}} + \cdots \\
+&= x(0) + \frac{it}{\hbar} \qty(\frac{-i \hbar}{m} p(0)) + \frac{1}{2!} \qty(\frac{it}{\hbar})^2 \hbar^2 \omega^2 x(0) + \frac{1}{3!} \qty(\frac{it}{\hbar})^3 \qty(\frac{-i \hbar^3 \omega^2}{m} p(0)) + \cdots \\
+&= x(0) - \frac{p(0)}{m} - \frac{x(0)}{2!} \omega^2 t^2 - \frac{p(0)}{3!} \qty(\frac{\omega^2}{m}) t^3 + \cdots.
+\end{split}
+\end{equation}
+$$
+
+We can now factor out the $x(0)$ and $p(0)$ terms:
+
+$$
+\begin{equation}
+x(t) = x(0) \qty[1 - \frac{\omega^2 t^2}{2!} + \cdots] - \frac{p(0)}{m} \qty[t + \frac{\omega^2}{3!} t^3 + \cdots].
+\end{equation}
+$$
+
+These series are the Taylor series for $\cos(\omega t)$ and $\sin(\omega t)$, respectively.
+Thus, we have
+
+$$
+\begin{equation}
+x(t) = x(0) \cos(\omega t) - \frac{p(0)}{m \omega} \sin(\omega t), \tag{\ref{eq:x-t}}
+\end{equation}
+$$
+
+which is the same result we derived earlier.
+
+## Feynman Path Integrals
+
+We can also derive the time evolution of the quantum harmonic oscillator using Feynman path integrals.
+
+### Classical Action of Simple Harmonic Oscillator
+
+First, we need to write down the classical action for the quantum harmonic oscillator, which is just
+
+$$
+\begin{equation}
+S[x(t)] = \int_{t'}^{t''} \dd{t} \qty[\frac{1}{2} m \dot{x}(t)^2 - \frac{1}{2} m \omega^2 x(t)^2].
+\end{equation}
+$$
+
+Splitting the integral into two parts, we have
+
+$$
+\begin{equation}
+S[x(t)] = \int_{t'}^{t''} \dd{t} \frac{1}{2} m \dot{x}(t)^2 - \int_{t'}^{t''} \dd{t} \frac{1}{2} m \omega^2 x(t)^2.
+\end{equation}
+$$
+
+The first term can be evaluated using integration by parts, where $u = \dot{x}(t)$ and $\dv{v}{t} = \dot{x}(t)$.
+Using integration by parts, we have
+
+$$
+\begin{equation}
+\begin{split}
+\int_{t'}^{t''} \dd{t} \frac{1}{2} m \dot{x}(t)^2 &= \frac{m}{2} \int_{t'}^{t''} \dd{t} \qty(u\dv{v}{t}) \\
+&= \frac{m}{2} \qty[\eval{uv}_{t'}^{t''} - \int_{t'}^{t''} v \dv{u}{t} \dd{t}] \\
+&= \frac{m}{2} \qty[\dot{x}(t'') x(t'') - \dot{x}(t') x(t')] - \frac{m}{2} \int_{t'}^{t''} \dd{t} x(t) \ddot{x}(t).
+\end{split}
+\end{equation}
+$$
+
+Since $\ddot{x}(t) = -\omega^2 x(t)$,
+
+$$
+\begin{equation}
+\int_{t'}^{t''} \dd{t} \frac{1}{2} m \dot{x}(t)^2 = \frac{m}{2} \qty[\dot{x}(t'') x(t'') - \dot{x}(t') x(t')] + \frac{m \omega^2}{2} \int_{t'}^{t''} \dd{t} x(t)^2.
+\end{equation}
+$$
+
+Substituting this back into the action, we have
+
+$$
+\begin{equation}
+\begin{split}
+S[x(t)] &= \frac{m}{2} \qty[\dot{x}(t'') x(t'') - \dot{x}(t') x(t')] + \frac{m \omega^2}{2} \int_{t'}^{t''} \dd{t} x(t)^2 - \int_{t'}^{t''} \dd{t} \frac{1}{2} m \omega^2 x(t)^2 \\
+&= \frac{m}{2} \qty[\dot{x}(t'') x(t'') - \dot{x}(t') x(t')].
+\end{split}
+\end{equation}
+$$
+
+To continue, we know that $x(t) = A \cos(\omega t) + B \sin(\omega t)$, where $A$ and $B$ are constants determined by the initial conditions.
+We can shift the time variable to $t' = 0$ and $t'' = T$, where $T$ is the total time of the evolution.
+Plugging the boundary conditions into the action, we have
+
+$$
+\begin{align}
+x(0) &= A, \\
+x(T) &= A \cos(\omega T) + B \sin(\omega T).
+\end{align}
+$$
+
+As such, $B$ is just
+
+$$
+\begin{equation}
+B = \frac{x(T) - A \cos(\omega T)}{\sin(\omega T)} = \frac{x(T) - x(0) \cos(\omega T)}{\sin(\omega T)}.
+\end{equation}
+$$
+
+So
+
+$$
+\begin{equation}
+x(t) = x(0) \cos(\omega t) + \frac{x(T) - x(0) \cos(\omega T)}{\sin(\omega T)} \sin(\omega t).
+\end{equation}
+$$
+
+Similarly, $\dot{x}(t)$ is
+
+$$
+\begin{equation}
+\dot{x}(t) = -\omega x(0) \sin(\omega t) + \frac{x(T) - x(0) \cos(\omega T)}{\sin(\omega T)} \omega \cos(\omega t).
+\end{equation}
+$$
+
+At $t = 0$, we have $\dot{x}(0) = \frac{x(T) - x(0) \cos(\omega T)}{\sin(\omega T)} \omega$.
+Thus, the action becomes
+
+$$
+\begin{equation}
+\begin{split}
+S[x(t)] &= \frac{m}{2} \qty[\dot{x}(T) x(T) - \dot{x}(0) x(0)] \\
+&= \frac{m}{2} \qty[\qty(-\omega x(0) \sin(\omega T) + \frac{x(T) - x(0) \cos(\omega T)}{\sin(\omega T)} \omega \cos(\omega T)) x(T) - \frac{x(T) - x(0) \cos(\omega T)}{\sin(\omega T)} \omega x(0)] \\
+&= \frac{m \omega}{2 \sin(\omega T)} \qty[-x(0) x(T) \sin^2(\omega T) + x(T)^2 \cos(\omega T) + x(0) x(T) \cos^2(\omega T) - x(0) x(T) + x(0)^2 \cos(\omega T)] \\
+&= \frac{m \omega}{2 \sin(\omega T)} \qty[(x(0)^2 + x(T)^2) \cos(\omega T) - 2x(0)x(T)].
+\end{split}
+\end{equation}
+$$
+
+### Path Integral
+
+With the classical action in hand, we can now write down the path integral for the quantum harmonic oscillator.
+Recall that the propagator can be written as
+
+$$
+\begin{equation}
+K(x'', T; x', 0) = \int \mathcal{D}[x(t)] \exp(\frac{i}{\hbar} S[x(t)]),
+\end{equation}
+$$
+
+where $x''$ and $x'$ are the final and initial positions, respectively, and $T$ is the total time of the evolution.
+The path integral is taken over all paths $x(t)$ that satisfy the boundary conditions $x(0) = x'$ and $x(T) = x''$.
+
+We now introduce a technique known as the stationary phase approximation.
+We can split it into two parts—one for the classical path (stationary action) and one for quantum fluctuations around the classical path.
+Then, $x(t) = x_c(t) + y(t)$, where $x_c(t)$ is the classical path and $y(t)$ is the quantum fluctuation.
+The action of the path is then
+
+$$
+\begin{equation}
+\begin{split}
+S[x(t)] &= S[x_c(t) + y(t)] \\
+&= \frac{m \omega}{2 \sin(\omega T)} \qty[(x(0)^2 + x(T)^2) \cos(\omega T) - 2x(0)x(T)] + \int_{0}^{T} \dd{t} \qty[\frac{1}{2} m \dot{y}(t)^2 - \frac{1}{2} m \omega^2 y(t)^2].
+\end{split}
+\end{equation}
+$$
+
+The path integral can then be written as
+
+$$
+\begin{equation}
+\begin{split}
+K(x'', T; x', 0) &= \int \mathcal{D}[x(t)] \exp(\frac{i}{\hbar} S[x(t)]) \\
+&= \int \mathcal{D}[y(t)] \exp(\frac{i}{\hbar} S[x_c(t)]) \exp(\frac{i}{\hbar} S[y(t)]) \\
+&= \exp(\frac{i}{\hbar} S[x_c(t)]) \int \mathcal{D}[y(t)] \exp(\frac{i}{\hbar} S[y(t)]).
+\end{split}
+\end{equation}
+$$
+
+Why was this helpful? After all, we get another identical path integral just over $y(t)$.
+However, there is a key difference—there are different boundary conditions for $y(t)$.
+Namely, $y(0) = 0$ and $y(T) = 0$.
+In other words, we have
+
+$$
+\begin{equation}
+K(x'', T; x', 0) = \exp(\frac{i}{\hbar} S[x_c(t)]) K(0, T; 0, 0), \label{eq:K-x-T-x-0}
+\end{equation}
+$$
+
+This has a crucial role that we will see very soon.
+
+Let's first expand the path integral over $y(t)$ into
+
+$$
+\begin{equation}
+\begin{split}
+K(0, T; 0, 0) &= \int \mathcal{D}[y(t)] \exp(\frac{i}{\hbar} \int_{0}^{T} \dd{t} \qty[\frac{1}{2} m \dot{y}(t)^2 - \frac{1}{2} m \omega^2 y(t)^2]) \\
+&= \int \mathcal{D}[y(t)] \exp(\frac{im}{2\hbar} \int_{0}^{T} \dd{t} \qty[\dot{y}(t)^2 - \omega^2 y(t)^2]).
+\end{split}
+\end{equation}
+$$
+
+Let's use integration by parts again on the first term. This gives
+
+$$
+\begin{equation}
+\begin{split}
+\int \dd{t} \dot{y}(t)^2 &= \int \dd{t} \dot{y}(t) \dv{y(t)}{t} \\
+&= \eval{\dot{y}(t) y(t)}_{0}^{T} - \int \dd{t} y(t) \ddot{y}(t) \\
+&= \dot{y}(T) y(T) - \dot{y}(0) y(0) - \int \dd{t} y(t) \ddot{y}(t).
+\end{split}
+\end{equation}
+$$
+
+This time, since $y(0) = 0$ and $y(T) = 0$, we have
+
+$$
+\begin{equation}
+\int \dd{t} \dot{y}(t)^2 = -\int \dd{t} y(t) \pdv[2]{t} y(t).
+\end{equation}
+$$
+
+Thus, we can rewrite the path integral as
+
+$$
+\begin{equation}
+\begin{split}
+K(0, T; 0, 0) &= \int \mathcal{D}[y(t)] \exp(\frac{im}{2\hbar} \int_{0}^{T} \dd{t} \qty[-y(t) \ddot{y}(t) - \omega^2 y(t)^2]) \\
+&= \int \mathcal{D}[y(t)] \exp(\frac{1}{2} \int_{0}^{T} \dd{t} y(t) \qty[-\frac{im}{\hbar} \pdv[2]{t} - \frac{im \omega^2}{\hbar}] y(t)) \\
+&= \int \mathcal{D}[y(t)] \exp(-\frac{1}{2} \int_{0}^{T} \dd{t} y(t) (-iC) y(t)),
+\end{split}
+\end{equation}
+$$
+
+where we have defined the operator $C = -\frac{m}{\hbar} \pdv[2]{t} - \frac{m \omega^2}{\hbar}$.
+The term on the right-hand side resembles an expression of the form $qAq$, where $A = -iC$.
+This allows us to use the trick which, if you remember, is
+
+$$
+\begin{equation}
+\int \mathcal{D}[f(x)] e^{-\frac{1}{2} \int f A f + \int b f} = B \det(A)^{-\frac{1}{2}} e^{\frac{1}{2} b A^{-1} b},
+\end{equation}
+$$
+
+Plugging in $f = y(t)$, $A = -iC = -\frac{im}{\hbar} \pdv[2]{t} - \frac{im \omega^2}{\hbar}$, and $b = 0$, we have
+
+$$
+\begin{equation}
+K(0, T; 0, 0) = B \det\qty(-\frac{im}{\hbar} \pdv[2]{t} - \frac{im \omega^2}{\hbar})^{-\frac{1}{2}}.
+\end{equation}
+$$
+
+<details>
+<summary>Let's find the determinant!</summary>
+
+For a finite matrix, there is a standard procedure using the elements of the matrix.
+For an operator, we need to use another approach.
+Recall that the determinant of an operator is equal to the product of its eigenvalues.
+As such, instead of trying to find matrix elements, we can find the eigenfunctions of the operator.
+
+First, we need to solve the eigenvalue equation for the operator $C$:
+
+$$
+C x(t) = \qty(-\frac{m}{\hbar} \pdv[2]{t} - \frac{m \omega^2}{\hbar}) x(t) = \lambda_n x(t),
+$$
+
+where $\lambda_n$ are the eigenvalues. This can be rewritten as
+
+$$
+\begin{equation}
+\pdv[2]{t} x(t) + \qty(\omega^2 + \frac{\hbar}{m} \lambda_n) x(t) = 0.
+\end{equation}
+$$
+
+Since $\omega^2 + \frac{\hbar}{m} \lambda_n > 0$, we can write the solution as
+
+$$
+\begin{equation}
+x(t) = c \sin(u_n t),
+\end{equation}
+$$
+
+where $c$ is a constant and $u_n$ is a constant that satisfies $u_n^2 = \omega^2 + \frac{\hbar}{m} \lambda_n$.
+$\lambda_n$ is thus, by definition,
+
+$$
+\begin{equation}
+\lambda_n = \frac{m}{\hbar} \qty(u_n^2 - \omega^2).
+\end{equation}
+$$
+
+Since we must have $x(0) = 0$ and $x(T) = 0$, we have $c \sin(u_n T) = 0$.
+This means that $u_n T = n \pi$, where $n$ is a positive integer.
+Thus, we have
+
+$$
+\begin{equation}
+u_n = \frac{n \pi}{T}.
+\end{equation}
+$$
+
+The determinant is thus
+
+$$
+\begin{equation}
+\det(C) = \prod_{n=1}^{\infty} \qty[\frac{m}{\hbar} \qty(\qty(\frac{n \pi}{T})^2 - \omega^2)],
+\end{equation}
+$$
+
+</details>
+
+
+and so the propagator is
+
+$$
+\begin{equation}
+K(0, T; 0, 0) = B \qty(\prod_{n=1}^{\infty} \qty[\frac{m}{\hbar} \qty(\qty(\frac{n \pi}{T})^2 - \omega^2)])^{-\frac{1}{2}}. \label{eq:K-0-T-0-0-with-B}
+\end{equation}
+$$
+
+The constant $B$ is a normalization constant that ensures that the propagator is properly normalized.
+To find it, let's take the limit as $\omega \to 0$. This should yield the free particle propagator, which is a known result:
+
+$$
+\begin{equation}
+K(0, T; 0, 0)_\text{free} = \qty(-\frac{im}{2 \pi \hbar T})^{\frac{1}{2}}.
+\end{equation}
+$$
+
+We can compare this to $\eqref{eq:K-0-T-0-0-with-B}$ as $\omega \to 0$.
+The product becomes
+
+$$
+\begin{equation}
+K(0, T; 0, 0)_{\omega \to 0} = B \qty(\prod_{n=1}^{\infty} \qty[\frac{m}{\hbar} \qty(\frac{n \pi}{T})^2])^{-\frac{1}{2}}.
+\end{equation}
+$$
+
+Next, we just multiply Equation $\eqref{eq:K-0-T-0-0-with-B}$ by $\frac{K_(0, T; 0, 0)_\text{free}}{K(0, T; 0, 0)_{\omega \to 0}}$ to get
+
+$$
+\begin{equation}
+\begin{split}
+K(0, T; 0, 0) &= K(0, T; 0, 0) \frac{K(0, T; 0, 0)_\text{free}}{K(0, T; 0, 0)_{\omega \to 0}} \\
+&= B \qty(\prod_{n=1}^{\infty} \qty[\frac{m}{\hbar} \qty(\qty(\frac{n \pi}{T})^2 - \omega^2)])^{-\frac{1}{2}} \frac{\qty(-\frac{im}{2 \pi \hbar T})^{\frac{1}{2}}}{B \qty(\prod_{n=1}^{\infty} \qty[\frac{m}{\hbar} \qty(\frac{n \pi}{T})^2])^{-\frac{1}{2}}} \\
+&= \qty[\prod_{n=1}^{\infty} \frac{\frac{m}{\hbar} \qty(\qty(\frac{n \pi}{T})^2 - \omega^2)}{\frac{m}{\hbar} \qty(\frac{n \pi}{T})^2}^{-\frac{1}{2}}] \qty(-\frac{im}{2 \pi \hbar T})^{\frac{1}{2}} \\
+&= \qty[\prod_{n=1}^{\infty} \qty(1 - \qty[\frac{\omega T}{n \pi}]^2)^{-\frac{1}{2}}] \qty(-\frac{im}{2 \pi \hbar T})^{\frac{1}{2}}.
+\end{split}
+\end{equation}
+$$
+
+We know that $\prod_{n=1}^{\infty} (1 - \frac{x}{n\pi})^{-1/2} = x/\sin(x)$, so this is thus
+
+$$
+\begin{equation}
+K(0, T; 0, 0) = \qty(\frac{\omega T}{\sin(\omega T)})^{\frac{1}{2}} \qty(-\frac{im}{2 \pi \hbar T})^{\frac{1}{2}} = \qty(\frac{-im \omega}{2 \pi \hbar \sin(\omega T)})^{\frac{1}{2}}.
+\end{equation}
+$$
+
+Finally, we can substitute this back into Equation $\eqref{eq:K-x-T-x-0}$ to get the full propagator for the quantum harmonic oscillator,
+
+<Boxed>
+
+$$
+\begin{equation}
+\begin{split}
+K(x'', T; x', 0) &= \exp(\frac{i}{\hbar} S[x_c(t)]) \qty(\frac{-im \omega}{2 \pi \hbar \sin(\omega T)})^{\frac{1}{2}} \\
+&= \exp(\frac{im \omega}{2 \hbar \sin(\omega T)} \qty[(x'(0)^2 + x''^2) \cos(\omega T) - 2 x'(0) x''(T)]) \qty(\frac{-im \omega}{2 \pi \hbar \sin(\omega T)})^{\frac{1}{2}}.
+\end{split}
+\end{equation}
+$$
+
+</Boxed>
+
+### Equivalence to Heisenberg EOM
+
+We now show that the propagator yields the same equations of motion as derived using the Heisenberg picture.
+Recall that operator time-evolution is unique to the Heisenberg picture, so the equation will not be exactly the same.
+However, recall that expectation values of operators are independent of which picture we use.
+As such, we just need to show that both approaches yield
+
+$$
+\begin{equation}
+\expval{x}_t = \expval{x}_0 \cos(\omega t) + \frac{\expval{p}_0}{m \omega} \sin(\omega t).
+\end{equation}
+$$
+
+This is trivial to show for the Heisenberg picture—just use $\expval{x}_t = \mel{\psi}{x(t)}{\psi}$ and $\expval{p}_t = \mel{\psi}{p(t)}{\psi}$, where $\ket{\psi}$ is the state of the system.
+
+For the path integral, there are two ways to show this.
+One is more straightforward but more tedious, while the other is more elegant.
+
+The straightforward way is to directly use the propagator.
+Begin with an initial state $\ket{\psi(0)}$ at time $t=0$.
+We can assume it to be a Gaussian wave packet given by
+
+$$
+\begin{equation}
+\psi(0, x) = N \exp(-\frac{(x - x(0))^2}{2 \sigma^2} + \frac{ip(0)x(0)}{\hbar}),
+\end{equation}
+$$
+
+where $N$ is a normalization constant, $x(0)$ is the initial position, and $p(0)$ is the initial momentum.
+For a coherent state, $\sigma^2 = \hbar/2m\omega$.
+Then, at a time $t$, the position-space wavefunction is given by
+
+$$
+\begin{equation}
+\psi(t, x) = \int \dd{x'} K(x, t; x', 0) \psi(0, x').
+\end{equation}
+$$
+
+Plugging in the propagator and initial state will yield a Gaussian wave packet at time $t$.
+The expected value of the position operator will then match the equation of motion derived in the Heisenberg picture.
+I will not go through the tedious details here, but you can try it out yourself.
+
+The better way is to use the following argument.
+Recall that the propagator obeys Schrödinger's time-dependent wave equation
+
+$$
+\begin{equation}
+i \hbar \pdv{K(x'', t''; x', t')}{t''} = -\frac{\hbar^2}{2m} \pdv[2]{K(x'', t''; x', t'')}{x''} + V(x'') K(x'', t''; x', t').
+\end{equation}
+$$
+
+Therefore, any state that evolves according to the propagator will also obey Schrödinger's equation.
+The key point is that for any such state, Ehrenfest's theorem must hold. Therefore,
+
+$$
+\begin{equation}
+m \pdv[2]{\expval{x}}{t} = -\pdv{\expval{V}}{x} = -\omega^2 \expval{x}.
+\end{equation}
+$$
+
+Taking the leftmost and rightmost terms, we have
+
+$$
+\begin{equation}
+m \pdv[2]{\expval{x}}{t} + \omega^2 \expval{x} = 0.
+\end{equation}
+$$
+
+This is exactly the same as a simple harmonic oscillator, which has the solution
+
+$$
+\begin{equation}
+\expval{x}_t = \expval{x}_0 \cos(\omega t) + \frac{\expval{p}_0}{m \omega} \sin(\omega t).
+\end{equation}
+$$
+
+This is the same equation of motion we derived using the Heisenberg picture.
+
+## Coherent States
+
+For a stationary state (i.e., an energy eigenket) $\ket{n}$, we have that the expected values of observables do not change in time.
+This means that for any energy eigenket, $\mel{n}{x(t)}{n} = \mel{n}{x(0)}{n}$ and $\mel{n}{p(t)}{n} = \mel{n}{p(0)}{n}$.
+This is different from the classical case, where the position and momentum of a particle do change (oscillate) in time.
+
+However, there is a special class of states called **coherent states** that do oscillate in time.
+These are superpositions of energy eigenstates that yield the same equations of motion as the classical harmonic oscillator.
+Such a state is defined using the eigenvalue equation
+
+$$
+\begin{equation}
+a \ket{\lambda} = \lambda \ket{\lambda},
+\end{equation}
+$$
+
+where $a$ is the annihilation operator, $\lambda$ is a complex number, and $\ket{\lambda}$ is the coherent state.
+
+Since it is a superposition, we can write it as
+
+$$
+\begin{equation}
+\ket{\lambda} = \sum_{n=0}^{\infty} c_n \ket{n}.
+\end{equation}
+$$
+
+It turns out that $\abs{c_n}^2$, taken as a function of $n$, is a Poisson distribution given by
+
+$$
+\begin{equation}
+\abs{c_n}^2 = \frac{\bar{n}^n}{n!} e^{-\bar{n}}.
+\end{equation}
+$$
+
+The uncertainty relations for coherent states will always satisfy the minimum uncertainty relation.
+This means that the uncertainty in position and momentum will always satisfy
+
+$$
+\begin{equation}
+\Delta x \Delta p = \frac{\hbar}{2}.
+\end{equation}
+$$
+
+Lastly, coherent states are just translated ground states.

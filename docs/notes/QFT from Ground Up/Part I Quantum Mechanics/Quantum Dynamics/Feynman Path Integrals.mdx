@@ -252,6 +252,8 @@ This will be crucial when discussing historical attempts to make quantum mechani
 If it is not obvious, the path integral is a very difficult object to evaluate.
 It is perhaps the most difficult object in all of quantum mechanics.
 
+### Gaussian Integrals
+
 As vaguely mentioned before, Gaussian integrals are involved in the path integral.
 We already know that
 
@@ -463,6 +465,88 @@ There are a few things to note about this result.
 
     In other words, the inverse of $A$ is just the Green's function of the operator $A$.
 
+### Lattice Discretization
+
+Another approach to evaluating path integrals is to discretize the path integral into a lattice.
+In this approach, we divide the time interval into $N$ small intervals of size $\Delta t = \frac{t'' - t'}{N}$, where the position of the particle at each time step is represented by $x_n = x(t_n)$.
+This is essentially what we had in the derivation, before we took the limit $N \to \infty$.
+
+First, consider the action
+
+$$
+\begin{equation}
+S[x(t)] = \int_{t'}^{t''} \dd{t} L(x(t), \dot{x}(t)),
+\end{equation}
+$$
+
+where $L$ is the Lagrangian of the system.
+Recall that integrals can be approximated by Riemann sums (for a simple function, it can be visualized as a series of rectangles under the curve).
+We can approximate the action as
+
+$$
+\begin{equation}
+S[x(t)] \approx \sum_{n = 0}^{N - 1} \Delta t L(x_n, \dot{x}_n),
+\end{equation}
+$$
+
+where $x_n = x(t' + n \Delta t)$ and $\dot{x}_n = \frac{x_{n + 1} - x_n}{\Delta t}$.
+This gives us the discretized action
+
+$$
+\begin{equation}
+S[x(t)] \approx \sum_{n = 0}^{N - 1} \Delta t L\qty(x_n, \frac{x_{n + 1} - x_n}{\Delta t}).
+\end{equation}
+$$
+
+Recall that we define the path integral as
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \int \mathcal{D}[x(t)] \exp(\frac{i}{\hbar} S[x(t)]) = \lim_{N \to \infty} \prod_{n = 0}^{N - 1} \int \dd{x_n} \sqrt{-\frac{im}{2 \pi \hbar \Delta t}} \exp(\frac{i}{\hbar} S[x(t)]).
+\end{equation}
+$$
+
+Removing the limit of $N$ in the measure and plugging in the discretized action, we have
+
+$$
+\begin{equation}
+K(x'', t''; x', t') \approx \prod_{n = 0}^{N - 1} \int \dd{x_n} \sqrt{-\frac{im}{2 \pi \hbar \Delta t}} \exp(\frac{i}{\hbar} \sum_{n = 0}^{N - 1} \Delta t L\qty(x_n, \frac{x_{n + 1} - x_n}{\Delta t})).
+\end{equation}
+$$
+
+This is a discretized version of the path integral, where we have replaced the functional integral with a product of ordinary integrals over the position at each time step.
+The key is that instead of a functional integral, we have a well-defined, albeit very high-dimensional, integral over the position at each time step.
+
+We will see that this approach is useful for numerical simulations of quantum systems, such as in quantum Monte Carlo methods.
+This technique is especially important for lattice gauge theories (such as quantum chromodynamics), where the path integral is evaluated on a discrete spacetime lattice.
+
+### Stationary Phase Approximation
+
+Another way to approximate path integrals is to use the **stationary phase approximation**.
+The key is that for some systems, we already know what the classical path is, and we can use that to approximate the path integral.
+The stationary phase approximation is based on the idea that the main contribution to the path integral comes from paths where the action is stationary, i.e., where the action does not change much as we vary the path.
+
+Let the classical path of the system be $x_c(t)$, which is the path that extremizes the action.
+Each path can then be written as a perturbation around the classical path as
+
+$$
+\begin{equation}
+x(t) = x_c(t) + \delta x(t),
+\end{equation}
+$$
+
+The action can then be written as a Taylor expansion around the classical path.
+This gives us
+
+$$
+\begin{equation}
+S[x(t)] = S[x_c(t)] + \int_{t'}^{t''} \dd{t} \frac{\delta S}{\delta x(t)} \bigg|_{x_c(t)} \delta x(t) + \frac{1}{2} \int_{t'}^{t''} \dd{t} \int_{t'}^{t''} \dd{t'} \frac{\delta^2 S}{\delta x(t) \delta x(t')} \bigg|_{x_c(t)} \delta x(t) \delta x(t') + \cdots
+\end{equation}
+$$
+
+
+
+
 ## The Three Approaches
 
 We have now seen three different approaches to analyzing time evolution in quantum mechanics:
@@ -513,6 +597,43 @@ Here's the key insight: since there are infinitely many paths, most of them will
 However, in paths where the phase factors $\frac{i}{\hbar} S[x(t)]$ are very close to each other, they will add up constructively.
 This provides a theoretical basis for the idea that particles travel along paths that have a stationary classical action.
 This is known as the **principle of stationary action**, which is to be fully discussed in the chapter on field theories.
+
+### Propagators as Green's Functions
+
+Taking the definition of the propagator in Equation $\eqref{eq:propagator}$ and inserting a completeness relation of an arbitrary complete set of states $\ket{a'}$, we can express the propagator as
+
+$$
+\begin{equation}
+K(x'', t''; x', t') = \sum_{a'} \braket{x''}{a'} \braket{a'}{x'} \exp(-\frac{i}{\hbar} E_{a'} (t'' - t')). \label{eq:propagator-with-completeness}
+\end{equation}
+$$
+
+First, notice that the term $\braket{x''}{a'} \exp(-\frac{i}{\hbar} E_{a'} (t'' - t'))$ is just the wave function $\psi_{a'}(x'')$ of the state $\ket{a'}$ at position $x''$ and time $t''$.
+Thus, with $x'$ and $t'$ fixed, the propagator is another wave function, and therefore it obeys the Schrödinger's time-dependent wave equation
+
+$$
+\begin{equation}
+i \hbar \pdv{K(x'', t''; x', t')}{t''} = -\frac{\hbar^2}{2m} \pdv[2]{K(x'', t''; x', t'')}{x''} + V(x'') K(x'', t''; x', t').
+\end{equation}
+$$
+
+Second, consider what happens as $t'' \to t'$.
+In this case, the propagator in $\eqref{eq:propagator-with-completeness}$ becomes
+
+$$
+\begin{equation}
+K(x'', t'; x', t') = \sum_{a'} \braket{x''}{a'} \braket{a'}{x'} = \braket{x''}{x'} = \delta(x'' - x').
+\end{equation}
+$$
+
+These two properties of the propagator, that it is a solution to the Schrödinger equation and that it reduces to the Dirac delta function as $t'' \to t'$, make it a **Green's function** of the Schrödinger equation.
+In other words, it obeys
+
+$$
+\begin{equation}
+\qty(-\frac{\hbar^2}{2m} \pdv[2]{x''} + V(x'') - i \hbar \pdv{t''}) K(x'', t''; x', t') = -i \hbar \delta(x'' - x') \delta(t'' - t').
+\end{equation}
+$$
 
 ## Summary and Next Steps
 

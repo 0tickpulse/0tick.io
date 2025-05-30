@@ -482,6 +482,74 @@ $$
 \end{equation}
 $$
 
+## Schrödinger Wave Equation
+
+The Schrödinger equation can also be written in the form of a wave equation.
+Suppose we take both sides of the Schrödinger equation $\eqref{eq:schrodinger-equation}$ and take an inner product with a position eigenket $\ket{\va{r}'}$.
+This gives
+
+$$
+\begin{equation}
+\braket{\va{r}'}{i \hbar \dv{t} \ket{\psi, t_0}} = \braket{\va{r}'}{H \ket{\psi, t_0}}.
+\end{equation}
+$$
+
+We can rewrite the left-hand side as
+
+$$
+\begin{equation}
+i \hbar \dv{t} \braket{\va{r}'}{\psi, t_0} = i \hbar \dv{t} \psi(\va{r}', t_0).
+\end{equation}
+$$
+
+For the right-hand side, we use a specific form of the Hamiltonian, such as
+
+$$
+\begin{equation}
+H = -\frac{\hbar^2}{2m} \nabla'^2 + V(\va{r}')
+\end{equation}
+$$
+
+for a particle in a potential $V(\va{r}')$.
+Then, the right-hand side becomes
+
+$$
+\begin{equation}
+\braket{\va{r}'}{H \ket{\psi, t_0}} = \mel{\va{r}'}{-\frac{\hbar^2}{2m} \nabla'^2 + V(\va{r}')}{\psi, t_0} = -\frac{\hbar^2}{2m} \nabla'^2 \psi(\va{r}', t_0) + V(\va{r}') \psi(\va{r}', t_0).
+\end{equation}
+$$
+
+Putting both sides together, we have the Schrödinger wave equation, which states
+
+$$
+\begin{equation}
+i \hbar \dv{t} \psi(\va{r}', t_0) = -\frac{\hbar^2}{2m} \nabla'^2 \psi(\va{r}', t_0) + V(\va{r}') \psi(\va{r}', t_0). \label{eq:schrodinger-wave-equation}
+\end{equation}
+$$
+
+This equation describes how the position-space wavefunction $\psi(\va{r}', t_0)$ evolves in time under the influence of a potential $V(\va{r}')$.
+Although in the state vector formalism, this is just a specific representation of the Schrödinger equation, it is often used as a starting point in introductory quantum mechanics courses.
+The mathematics using this as a starting point is often referred to as **wave mechanics**.
+
+If the Hamiltonian is time-independent, then the wavefunction is
+
+$$
+\begin{equation}
+\braket{\va{r}'}{\psi, t_0; t} = \psi(\va{r}', t_0) \exp(-\frac{i}{\hbar} H (t - t_0)) = \psi(\va{r}', t_0) \exp(-\frac{i}{\hbar} E_{a'} (t - t_0)).
+\end{equation}
+$$
+
+If we plug this into the Schrödinger wave equation $\eqref{eq:schrodinger-wave-equation}$, we get
+
+$$
+\begin{equation}
+-\frac{\hbar^2}{2m} \nabla'^2 u_E(\va{r}', t_0) \exp(-\frac{i}{\hbar} E_{a'} (t - t_0)) + V(\va{r}') u_E(\va{r}', t_0) \exp(-\frac{i}{\hbar} E_{a'} (t - t_0)) = E_{a'} u_E(\va{r}', t_0), \label{eq:schrodinger-time-independent}
+\end{equation}
+$$
+
+where $u_E$ is the position-space wavefunction of the energy eigenstate $\ket{a'}$.
+This is **Schrödinger's time-independent wave equation**.
+
 ## Summary and Next Steps
 
 In this section, we began discussing how quantum systems evolve in time.
@@ -521,6 +589,23 @@ Here are the key points to remember:
     $$
     \begin{equation}
     \omega_{a', a''} = \frac{E_{a''} - E_{a'}}{\hbar} \tag{\ref{eq:bohr-frequency-condition}}
+    \end{equation}
+    $$
+
+- The Schrödinger equation can also be expressed in the form of a wave equation, which describes how the position-space wavefunction evolves in time under the influence of a potential.
+    It is given by:
+
+    $$
+    \begin{equation}
+    i \hbar \dv{t} \psi(\va{r}', t_0) = -\frac{\hbar^2}{2m} \nabla'^2 \psi(\va{r}', t_0) + V(\va{r}') \psi(\va{r}', t_0). \tag{\ref{eq:schrodinger-wave-equation}}
+    \end{equation}
+    $$
+
+    If the Hamiltonian is time-independent, then we have the time-independent Schrödinger wave equation:
+
+    $$
+    \begin{equation}
+    -\frac{\hbar^2}{2m} \nabla'^2 u_E(\va{r}', t_0) + V(\va{r}') u_E(\va{r}', t_0) = E_{a'} u_E(\va{r}', t_0), \tag{\ref{eq:schrodinger-time-independent}}
     \end{equation}
     $$
 
