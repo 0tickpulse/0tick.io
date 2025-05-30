@@ -389,6 +389,45 @@ $$
 
 These come from the definitions for matrix multiplication.
 
+## Euclidean Metric
+
+We conclude this section with a discussion of the Euclidean metric tensor.
+This is to prepare us for the next sections, where we discuss various metrics in relativity.
+
+Recall that the metric tensor represents the inner product of two vectors.
+Generally, the inner product of two vectors $\vb{a}$ and $\vb{b}$ is given by:
+
+$$
+\begin{equation}
+\vb{a} \cdot \vb{b} = g(\vb{a}, \vb{b})
+\end{equation}
+$$
+
+We know that we can write the inner product in terms of the basis vectors:
+
+$$
+\begin{equation}
+\vb{a} \cdot \vb{b} = \sum_{\mu, \nu} a^\mu b^\nu g_{\mu \nu} = \sum_{\mu, \nu} a^\mu b^\nu g_{\mu \nu} \class{red}{\vb{e}_\mu} \cdot \class{red}{\vb{e}_\nu}
+\end{equation}
+$$
+
+In the case of the Euclidean metric, we have that $\class{red}{\vb{e}_\mu} \cdot \class{red}{\vb{e}_\nu}$ is $1$ if $\mu = \nu$ and $0$ otherwise.
+Since this behavior is so common, we use the Kronecker delta $\delta_{\mu \nu}$ to denote this:
+
+$$
+\begin{equation}
+g_{\mu \nu} = \delta_{\mu \nu}
+\end{equation}
+$$
+
+This means that the inner product of two vectors is simply the sum of the products of their components:
+
+$$
+\begin{equation}
+\vb{a} \cdot \vb{b} = \sum_{\mu} a^\mu b^\mu = a^0 b^0 + a^1 b^1 + a^2 b^2 + a^3 b^3
+\end{equation}
+$$
+
 ## Summary and Next Steps
 
 In this set of notes, we have introduced the theory of relativity, specifically Galilean relativity.

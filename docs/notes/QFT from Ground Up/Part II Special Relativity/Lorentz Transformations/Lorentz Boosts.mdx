@@ -1,0 +1,649 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+import { LorentzBoostVisualizerSimple } from "@site/src/components/visualizers/LorentzBoostVisualizerSimple";
+
+# Lorentz Boosts
+
+Previously, we discussed the flaws of Galilean relativity, which led to the need for a new theory of relativity—special relativity.
+In Galilean relativity, we had the following transformation between two inertial frames of reference, $S$ and $S'$:
+
+$$
+\begin{equation}
+\mqty[\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \mqty[1 & 0 \\ -v & 1] \mqty[\class{pink}{t} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+where $v$ is the relative velocity between the two frames of reference.
+In special relativity, this transformation must be replaced with a new one, known as the **Lorentz transformation**.
+Strictly speaking, there are six Lorentz transformations, corresponding to the six generators of the Lorentz group.
+They comprise of three rotations and three boosts.
+
+We will slowly build up a fundamental understanding of the Lorentz transformation.
+First, we will discuss a simple Lorentz boost in the $x$ direction.
+This is the simplest case, and we will later generalize it to arbitrary directions.
+Then, we will discuss the full Lorentz transformation, which is technically defined as a transformation that preserves the Minkowski metric.
+This is a more general transformation that includes both spatiotemporal boosts (hyperbolic rotations) and spatial rotations.
+This leads us to the full Lorentz group $\text{O}(1,3)$ and its orthochronous subgroup $\text{SO}^{+}(1,3)$.
+They are Lie groups with their corresponding Lie algebras $\mathfrak{o}(1,3)$ and $\mathfrak{so}^{+}(1,3)$.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+I will assume that the reader has already seen a derivation of the Lorentz boost.
+If not, see [this](https://www.youtube.com/watch?v=5bSy18w8Dh0&list=PLJHszsWbB6hqlw73QjgZcFh4DrkQLSCQa&index=10) video for a visual derivation.
+The derivation is based on the invariance of the speed of light, which is a postulate of special relativity.
+
+In relativity, we define a few values to make the math easier;
+
+1. The beta parameter $\beta$ is defined as
+
+    $$
+    \begin{equation}
+    \beta = \frac{v}{c}.
+    \end{equation}
+    $$
+
+    Its range is $(-1, 1)$.
+
+2. The gamma parameter $\gamma$ is defined as
+
+    $$
+    \begin{equation}
+    \gamma = \frac{1}{\sqrt{1 - \beta^2}}. \label{eq:gamma}
+    \end{equation}
+    $$
+
+    It is always greater than or equal to $1$.
+
+The boost is given by the following transformation:
+
+$$
+\begin{align}
+\mqty[\class{darkblue}{\tilde{\vb{e}_t}} \\ \class{darkblue}{\tilde{\vb{e}_x}}] &= \gamma \mqty[1 & \beta \\ \beta & 1] \mqty[\class{red}{\vb{e}_t} \\ \class{red}{\vb{e}_x}] \\
+\mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] &= \gamma \mqty[1 & -\beta \\ -\beta & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \label{eq:lorentz-boost}
+\end{align}
+$$
+
+where $\class{darkblue}{\tilde{\vb{e}_t}}$ and $\class{darkblue}{\tilde{\vb{e}_x}}$ are the transformed basis vectors, and $\class{red}{\vb{e}_t}$ and $\class{red}{\vb{e}_x}$ are the original basis vectors.
+The first equation is the transformation of the basis vectors, and the second equation is the transformation of the coordinates.
+As expected, the transformation matrices for the basis vectors and the coordinates are inverses of each other because basis vectors are covariant, while coordinates are contravariant.
+
+<LorentzBoostVisualizerSimple />
+
+## Time Dilation/Length Contraction
+
+The Lorentz boost can be used to derive the time dilation and length contraction formulas.
+These are important to understand the physical implications of the Lorentz boost.
+
+Time dilation is a difference in the time coordinate between two events as measured by two observers.
+Suppose we have two events, $A$ and $B$, that occur at the same location $x = 0$ in the $S$ frame, but a time difference $c\class{pink}{t}$.
+Now suppose $S'$ moves with velocity $\beta$ with respect to $S$.
+
+Since $A$ is $(0, 0)$ in both frames, we just need to find the coordinates of $B$ in the $S'$ frame.
+In $S$, the coordinates of $B$ are $(c\class{pink}{t}, \class{pink}{x}) = (c\class{pink}{t}, 0)$.
+Then, by applying the Lorentz boost, we have:
+
+$$
+\begin{equation}
+\mqty[\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \gamma \mqty[1 & -\beta \\ -\beta & 1] \mqty[c\class{pink}{t} \\ 0] = \mqty[\gamma c\class{pink}{t} \\ -\gamma \beta c\class{pink}{t}].
+\end{equation}
+$$
+
+In other words, the time changes as $c\class{pink}{t} \to \gamma c\class{pink}{t}$.
+This means that the time interval between two events is longer in the $S'$ frame than in the $S$ frame (since $\gamma > 1$).
+
+Note that it is not a contradiction that the time interval is longer in the $S'$ frame than in the $S$ frame.
+It might seem counterintuitive because both $c\class{blue}{\tilde{t}} = \gamma c\class{pink}{t}$ and $c\class{blue}{\tilde{x}} = \gamma c\class{pink}{t}$ are true.
+However, in the two cases we are measuring different things;
+
+1. In the first case, we are measuring the time interval between two events that occur at the same location in the $S$ frame.
+2. In the second case, we are measuring the time interval between two events that occur at the same location in the $S'$ frame.
+
+The value $c\class{pink}{t}$ is measured along a worldline which follows the events (i.e. both events occur on the worldline).
+The shortest time is always measured along the worldline of the observer.
+The mnemonic to remember is that "moving clocks run slow".
+
+Next, instead of two events at the same location, we can have two events at the same time (perhaps representing two points on a bar), leading to the concept of length contraction.
+Suppose we have two events, $A$ and $B$, that occur at the same time $t = 0$ in the $S$ frame, but a spatial difference $\class{pink}{L}$.
+Now suppose $S'$ moves with velocity $\beta$ with respect to $S$.
+
+Note that we cannot simply measure the time component of the events in the $S'$ frame.
+We need to trace the lines of simultaneity in both frames and find the coordinates of these events:
+
+<div className="card">
+    <div className="card__header">
+        <div className="row">
+            <div className="col">
+                <h3>
+
+                    Lines of Simultaneity in $S$ frame
+
+                </h3>
+            </div>
+            <div className="col">
+                <h3>
+
+                    Lines of Simultaneity in $S'$ frame
+
+                </h3>
+            </div>
+        </div>
+    </div>
+    <div className="card__body">
+        <div className="row">
+            <div className="col">
+                <Mafs viewBox={{ x: [0, 3], y: [0, 3]}}>
+                    <Coordinates.Cartesian />
+                    {/* Bar */}
+                    <Polygon
+                        points={[[0, 0], [2, 0], [2, 0.5], [0, 0.5]]}
+                    />
+                    {/* Lines of simultaneity */}
+                    {range(0, 10).map((i) => (
+                        <Line.Segment
+                            key={i}
+                            point1={[0, i]}
+                            point2={[2, i]}
+                            color={color("pink")}
+                        />
+                    ))}
+                    {/* Vector */}
+                    <Vector
+                        tail={[0, 0]}
+                        tip={[2, 0]}
+                        color={color("pink")}
+                        weight={5}
+                    />
+                    <MafsMathJax
+                        at={[0.8, 0.3]}
+                        tex="\vb{V}_1"
+                    />
+                    <Plot.OfY x={() => 2} style="dashed" />
+                </Mafs>
+            </div>
+            <div className="col">
+                <Mafs viewBox={{ x: [0, 3], y: [0, 3]}}>
+                    <Coordinates.Cartesian />
+                    {/* Bar */}
+                    <Polygon
+                        points={[[0, 0], [2, 0], [2, 0.5], [0, 0.5]]}
+                    />
+                    {/* Lines of simultaneity */}
+                    {range(0, 10).map((i) => (
+                        <Line.Segment
+                            key={i}
+                            point1={[0, i]}
+                            point2={[2, i + 0.5]}
+                            color={color("blue")}
+                        />
+                    ))}
+                    {/* Vector */}
+                    <Vector
+                        tail={[0, 0]}
+                        tip={[2, 0.5]}
+                        color={color("blue")}
+                        weight={5}
+                    />
+                    <MafsMathJax
+                        at={[1.8, 0.8]}
+                        tex="\vb{V}_2"
+                    />
+                    <Vector
+                        tail={[2, 0]}
+                        tip={[2, 0.5]}
+                        color={color("green")}
+                        weight={3}
+                    />
+                    <MafsMathJax
+                        at={[2.3, 0.25]}
+                        tex="\vb{D}"
+                    />
+                    <Plot.OfY x={() => 2} style="dashed" />
+                </Mafs>
+            </div>
+        </div>
+    </div>
+</div>
+
+In other words, we need to measure different vectors in the frames.
+For the $S$ frame, we measure the vector $\vb{V}_1$, which gives the length $\class{pink}{L}$ by definition.
+
+For the $S'$ frame, we measure the vector $\vb{V}_2$.
+We can make the following observations from the diagram:
+
+1.
+
+    $$
+    \begin{equation}
+    \vb{V}_2 = \vb{V}_1 + \vb{D}.
+    \end{equation}
+    $$
+
+2. $\vb{V}_1$ only has a time component in $S$, so we can write it as
+
+    $$
+    \begin{equation}
+    \vb{V}_1 = \class{pink}{L} \class{red}{\vb{e}_t}
+    \end{equation}
+    $$
+
+3. While $\vb{V}_2$ has both time and space components in $S$, it only has a time component in $S'$.
+    This is by definition (since it is a line of simultaneity).
+    We can thus write
+
+    $$
+    \begin{equation}
+    \vb{V}_2 = \class{blue}{\tilde{L}} \class{darkblue}{\vb{e}_t}
+    \end{equation}
+    $$
+
+Substituting these into the first equation, we have:
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}} \class{darkblue}{\vb{e}_t} = \class{pink}{L} \class{red}{\vb{e}_t} + \vb{D}.
+\end{equation}
+$$
+
+Using the transformation $\class{darkblue}{\vb{e}_t} = \gamma (\beta \class{red}{\vb{e}_t} + \class{red}{\vb{e}_x})$, we can write the equation as:
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}} \gamma (\beta \class{red}{\vb{e}_t} + \class{red}{\vb{e}_x}) = \class{pink}{L} \class{red}{\vb{e}_t} + \vb{D}
+\end{equation}
+$$
+
+The $x$-component of both sides must be equal.
+Since $\vb{D}$ has no $x$-component in $S$, we can write:
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}} \gamma = \class{pink}{L}
+\end{equation}
+$$
+
+Or equivalently,
+
+$$
+\begin{equation}
+\class{blue}{\tilde{L}} = \frac{\class{pink}{L}}{\gamma}.
+\end{equation}
+$$
+
+This means that the length of the object is **shorter** in the $S'$ frame than in the $S$ frame (since $\gamma > 1$).
+The mnemonic to remember is that "moving objects appear shorter".
+
+## Hyperbolic Rotations
+
+The Lorentz boost can be interpreted as a hyperbolic rotation in spacetime.
+
+Recall that a unit circle in the $xy$ plane can be represented as an implicit equation:
+
+$$
+\begin{equation}
+(ct)^2 + x^2 = s
+\end{equation}
+$$
+
+To traverse the circle, we use a circular angle $\theta$ and parametrize the circle with circular trigonometric functions:
+
+$$
+\begin{equation}
+\mqty[\class{blue}{ct} \\ \class{blue}{x}] = s \mqty[\cos(\theta) \\ \sin(\theta)].
+\end{equation}
+$$
+
+On the other hand, a unit hyperbola in the $xy$ plane can be represented as
+
+$$
+\begin{equation}
+(ct)^2 - x^2 = s.
+\end{equation}
+$$
+
+To traverse the hyperbola, we use a **hyperbolic angle** $\phi$ and parametrize the hyperbola with **hyperbolic trigonometric functions**:
+
+$$
+\begin{equation}
+\mqty[\class{blue}{ct} \\ \class{blue}{x}] = s \mqty[\cosh(\phi) \\ \sinh(\phi)].
+\end{equation}
+$$
+
+{(() => {
+    const [s, setS] = useState(1);
+
+    return (
+        <div className="card">
+            <div className="card__body">
+                <Mafs viewBox={{ x: [-2, 2], y: [-2, 2]}}>
+                    <Coordinates.Cartesian />
+                    <Plot.OfX y={x => Math.sqrt(s**2 + x**2)} />
+                    <Plot.OfX y={x => -Math.sqrt(s**2 + x**2)} />
+                </Mafs>
+            </div>
+            <div className="card__footer">
+                <ControlPanel>
+                    <SliderInput latex label="s" min={-2} max={2} step={0.1} value={s} onChange={setS} />
+                </ControlPanel>
+            </div>
+        </div>
+    )
+})()}
+
+The hyperbolic angle is not the same as the circular angle.
+It is defined as the angle between the $x$-axis and the line connecting the origin to the point on the hyperbola.
+
+Suppose a square is placed on top of the $xy$ plane, with sides placed on the hyperbola.
+As the sides moves along the hyperbola, one side of the square will shrink, while the other side will grow.
+This can be expressed as a hyperbolic rotation matrix:
+
+$$
+\begin{equation}
+\mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \mqty[\cosh(\phi) & \sinh(\phi) \\ \sinh(\phi) & \cosh(\phi)] \mqty[\class{pink}{ct} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+As one would expect from a rotation matrix, its inverse can be obtained by simply flipping the sign of the hyperbolic angle.
+Its determinant is $1$, which means that it preserves the area of the square.
+To combine two hyperbolic rotations, we can simply add the angles:
+
+$$
+\begin{equation}
+\mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \mqty[\cosh(\phi_1 + \phi_2) & \sinh(\phi_1 + \phi_2) \\ \sinh(\phi_1 + \phi_2) & \cosh(\phi_1 + \phi_2)] \mqty[\class{pink}{ct} \\ \class{pink}{x}] \label{eq:hyperbolic-rotation-addition}
+\end{equation}
+$$
+
+(This can be proven using the hyperbolic addition formulas, which are similar to the regular circular trigonometric identities.)
+
+<LinearTransformationVisualizer
+    to={{
+        ihat: [1.15, 1.15 * 0.5],
+        jhat: [1.15 * 0.5, 1.15],
+    }}
+    transformedItems={<>
+        <Polygon
+            points={[[-1, -1], [1, -1], [1, 1], [-1, 1]]}
+            color={color("pink")}
+        />
+    </>}
+>
+    <Plot.OfX y={x => Math.sqrt(1**2 + x**2)} />
+    <Plot.OfY x={y => Math.sqrt(1**2 + y**2)} />
+    <Plot.OfX y={x => -Math.sqrt(1**2 + x**2)} />
+    <Plot.OfY x={y => -Math.sqrt(1**2 + y**2)} />
+</LinearTransformationVisualizer>
+
+Notice that this hyperbolic rotation is exactly what a Lorentz boost looks like.
+In fact, we can make them equivalent with the following:
+
+<Boxed>
+
+If $\gamma =: \cosh(\phi)$ then
+
+$$
+\begin{equation}
+\mqty[\cosh(\phi) & \sinh(\phi) \\ \sinh(\phi) & \cosh(\phi)] = \gamma \mqty[1 & -\beta \\ -\beta & 1].
+\end{equation}
+$$
+
+</Boxed>
+
+---
+
+**Proof**. The proof is quite simple.
+The top-left and bottom-right elements are obviously equal (since $\gamma = \cosh(\phi)$).
+For the other elements, we can first write $\gamma$ in terms of $\beta$ and equate with the hyperbolic functions:
+
+$$
+\begin{equation}
+\frac{1}{\sqrt{1 - \beta^2}} = \cosh(\phi) \implies (1 - \beta^2)(\cosh(\phi))^2 = 1
+\end{equation}
+$$
+
+This means that
+
+$$
+\begin{equation}
+(\cosh(\phi))^2 - \beta^2 (\cosh(\phi))^2 = 1
+\end{equation}
+$$
+
+We can then use the identity $\cosh^2(\phi) - \sinh^2(\phi) = 1$ to equate the two:
+
+$$
+\begin{equation}
+\sinh^2(\phi) = \beta^2 (\cosh(\phi))^2 \implies \beta = \frac{\sinh(\phi)}{\cosh(\phi)}
+\end{equation}
+$$
+
+Lastly, multiplying this by $\gamma$ gives us the diagonal elements:
+
+$$
+\begin{equation}
+\gamma \beta = \frac{\sinh(\phi)}{\cosh(\phi)} \cdot \cosh(\phi) = \sinh(\phi).
+\end{equation}
+$$
+
+This means that the Lorentz boost is equivalent to a hyperbolic rotation in spacetime. $\blacksquare$
+
+---
+
+To see why we prefer hyperbolic rotations over regular Lorentz boosts, we will prove an important theorem.
+
+## Addition of Velocities
+
+The addition of velocities is a very important concept in special relativity.
+Suppose a rocket is moving with beta $\beta_v$ with respect to the $S$ (ground) frame.
+The rocket fires a projectile with beta $\beta_u$ with respect to the rocket frame.
+We want to find the beta of the projectile with respect to the $S$ frame.
+
+First, let's define the notation:
+
+- $c\class{pink}{t}, \class{pink}{x}$ are the coordinates in the ground frame.
+- $c\class{blue}{\tilde{t}}, \class{blue}{\tilde{x}}$ are the coordinates in the rocket's frame.
+- $c\class{green}{\breve{t}}, \class{green}{\breve{x}}$ are the coordinates in the projectile's frame.
+
+First, the transformation from the ground frame to the rocket's frame is given by:
+
+$$
+\begin{equation}
+\mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \gamma_v \mqty[1 & -\beta_v \\ -\beta_v & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \label{eq:ground-rocket}
+\end{equation}
+$$
+
+where $\gamma_v = \frac{1}{\sqrt{1 - \beta_v^2}}$.
+The transformation from the rocket's frame to the projectile's frame is given by:
+
+$$
+\begin{equation}
+\mqty[c\class{green}{\breve{t}} \\ \class{green}{\breve{x}}] = \gamma_u \mqty[1 & -\beta_u \\ -\beta_u & 1] \mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] \label{eq:rocket-projectile}
+\end{equation}
+$$
+
+where $\gamma_u = \frac{1}{\sqrt{1 - \beta_u^2}}$.
+Plugging Equation $\eqref{eq:rocket-projectile}$ into Equation $\eqref{eq:ground-rocket}$ gives us:
+
+$$
+\begin{equation}
+\begin{split}
+\mqty[c\class{green}{\breve{t}} \\ \class{green}{\breve{x}}] &= \gamma_u \mqty[1 & -\beta_u \\ -\beta_u & 1] \gamma_v \mqty[1 & -\beta_v \\ -\beta_v & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \\
+&= \gamma_u \gamma_v \mqty[1 - \beta_u \beta_v & -\beta_v \\ -\beta_u & 1 - \beta_u \beta_v] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \\
+&= \gamma_u \gamma_v (1 + \beta_u \beta_v) \mqty[1 & -\frac{\beta_v}{1 + \beta_u \beta_v} \\ -\frac{\beta_u}{1 + \beta_u \beta_v} & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \\
+\end{split}
+\end{equation}
+$$
+
+The factor $\gamma_u \gamma_v (1 + \beta_u \beta_v)$ can be expanded by using the definition of $\gamma$:
+
+$$
+\begin{equation}
+\begin{split}
+\gamma_u \gamma_v (1 + \beta_u \beta_v) &= \frac{1}{\sqrt{1 - \beta_u^2}} \frac{1}{\sqrt{1 - \beta_v^2}} (1 + \beta_u \beta_v) \\
+&= \sqrt{\frac{(1 + \beta_u \beta_v)^2}{(1 - \beta_u^2)(1 - \beta_v^2)}} \\
+&= \sqrt{\frac{(1 + \beta_u \beta_v)^2}{1 + \beta_u^2 \beta_v^2 - \beta_u^2 - \beta_v^2}} \\
+&= \sqrt{\frac{(1 + \beta_u \beta_v)^2}{1 + \beta_u^2 \beta_v^2 + 2 \beta_u \beta_v - 2 \beta_u \beta_v - \beta_u^2 - \beta_v^2}} \\
+&= \sqrt{\frac{(1 + \beta_u \beta_v)^2}{(1 + \beta_u \beta_v)^2 - (\beta_u + \beta_v)^2}} \\
+&= \sqrt{\frac{(1 + \beta_u \beta_v)^2}{(1 + \beta_u \beta_v)^2 - (\beta_u + \beta_v)^2} \cdot \frac{1/(1 + \beta_u \beta_v)^2}{1/(1 + \beta_u \beta_v)^2}} \\
+&= \sqrt{\frac{1}{1 - \qty(\frac{\beta_u + \beta_v}{1 + \beta_u \beta_v})^2}}
+\end{split}
+\end{equation}
+$$
+
+Combining this with the transformation matrix gives us:
+
+$$
+\begin{equation}
+\mqty[c\class{green}{\breve{t}} \\ \class{green}{\breve{x}}] = \sqrt{\frac{1}{1 - \qty(\frac{\beta_u + \beta_v}{1 + \beta_u \beta_v})^2}} \mqty[1 & -\frac{\beta_v}{1 + \beta_u \beta_v} \\ -\frac{\beta_u}{1 + \beta_u \beta_v} & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+If we define $\beta_{\text{total}} = \frac{\beta_u + \beta_v}{1 + \beta_u \beta_v}$, we can write the transformation as:
+
+$$
+\begin{equation}
+\mqty[c\class{green}{\breve{t}} \\ \class{green}{\breve{x}}] = \sqrt{\frac{1}{1 - \beta_{\text{total}}^2}} \mqty[1 & -\beta_{\text{total}} \\ -\beta_{\text{total}} & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}] = \gamma_{\text{total}} \mqty[1 & -\beta_{\text{total}} \\ -\beta_{\text{total}} & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+As such, we can see that the transformation is equivalent to a Lorentz boost with beta $\beta_{\text{total}}$.
+
+Now, let's try to prove this using hyperbolic rotations.
+We can rewrite the transformation from the ground frame to the rocket's frame as:
+
+$$
+\begin{equation}
+\mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \mqty[\cosh(\phi_v) & -\sinh(\phi_v) \\ -\sinh(\phi_v) & \cosh(\phi_v)] \mqty[c\class{pink}{t} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+where $\phi_v = \text{arcosh}(\gamma_v)$.
+We can then rewrite the transformation from the rocket's frame to the projectile's frame as:
+
+$$
+\begin{equation}
+\mqty[c\class{green}{\breve{t}} \\ \class{green}{\breve{x}}] = \mqty[\cosh(\phi_u) & -\sinh(\phi_u) \\ -\sinh(\phi_u) & \cosh(\phi_u)] \mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}]
+\end{equation}
+$$
+
+We can just plug in the first equation into the second equation and use Equation $\eqref{eq:hyperbolic-rotation-addition}$ to get:
+
+$$
+\begin{equation}
+\mqty[c\class{green}{\breve{t}} \\ \class{green}{\breve{x}}] = \mqty[\cosh(\phi_u + \phi_v) & -\sinh(\phi_u + \phi_v) \\ -\sinh(\phi_u + \phi_v) & \cosh(\phi_u + \phi_v)] \mqty[c\class{pink}{t} \\ \class{pink}{x}]
+\end{equation}
+$$
+
+That's it.
+
+Additionally, Recall that for hyperbolic rotations $\beta$ is $\frac{\sinh(\phi)}{\cosh(\phi)} = \tanh(\phi)$.
+Thus, the new beta is $\beta_{\text{total}} = \tanh(\phi_u + \phi_v)$.
+If we equate the two expressions for $\beta_{\text{total}}$, we have a neat identity for the hyperbolic tangent:
+
+$$
+\begin{equation}
+\beta_{\text{total}} = \frac{\tanh(\phi_u) + \tanh(\phi_v)}{1 + \tanh(\phi_u) \tanh(\phi_v)} = \tanh(\phi_u + \phi_v)
+\end{equation}
+$$
+
+### Corollary: The Speed Limit
+
+<Boxed>
+
+For any given $\beta_v$ and $\beta_u$ where $|\beta_v| < 1$ and $|\beta_u| < 1$, we have:
+
+$$
+\begin{equation}
+\beta_{\text{total}} = \frac{\beta_u + \beta_v}{1 + \beta_u \beta_v} < 1.
+\end{equation}
+$$
+
+</Boxed>
+
+---
+
+**Proof**. Since $\beta_u < 1$, we have $\beta_u - 1 < 0$.
+
+Multiplying both sides of $1 > \beta_v$ by $\beta_u - 1$ gives us:
+
+$$
+\begin{equation}
+\beta_u - 1 > \beta_u \beta_v - \beta_v.
+\end{equation}
+$$
+
+Next, adding $1 + \beta_v$ to both sides gives us:
+
+$$
+\begin{equation}
+\beta_u + \beta_v > 1 + \beta_u \beta_v.
+\end{equation}
+$$
+
+Finally, dividing both sides by $1 + \beta_u \beta_v$ gives us:
+
+$$
+\begin{equation}
+\frac{\beta_u + \beta_v}{1 + \beta_u \beta_v} < 1.
+\end{equation}
+$$
+
+---
+
+The proof is even easier if we use hyperbolic functions.
+Since $\beta = \tanh(\phi)$, and $\tanh$ is always within the range $(-1, 1)$, we automatically have $\beta_{\text{total}} < 1$.
+
+The physical implication of this is that no object can possess a speed greater than or equal to the speed of light.
+
+## Summary and Next Steps
+
+In this section, we discussed the Lorentz boost and its implications.
+
+Here are the key things to remember:
+
+- The Lorentz transformation is a transformation between two inertial frames of reference.
+    It consists of a boost and a rotation.
+- The Lorentz boost is a transformation between two inertial frames of reference that are moving with respect to each other.
+- The beta parameter $\beta$ is defined as the ratio of the velocity of the frame to the speed of light.
+- The gamma parameter $\gamma$ is defined as
+
+    $$
+    \begin{equation}
+    \gamma = \frac{1}{\sqrt{1 - \beta^2}}. \tag{\ref{eq:gamma}}
+    \end{equation}
+    $$
+- The Lorentz boost, for coordinates, can be written two ways:
+
+    $$
+    \begin{equation}
+    \mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \gamma \mqty[1 & -\beta \\ -\beta & 1] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \tag{\ref{eq:lorentz-boost}}
+    \end{equation}
+    $$
+
+    and
+
+    $$
+    \begin{equation}
+    \mqty[c\class{blue}{\tilde{t}} \\ \class{blue}{\tilde{x}}] = \mqty[\cosh(\phi) & -\sinh(\phi) \\ -\sinh(\phi) & \cosh(\phi)] \mqty[c\class{pink}{t} \\ \class{pink}{x}] \tag{\ref{eq:hyperbolic-rotation-addition}}
+    \end{equation}
+    $$
+
+    where $\phi = \text{arcosh}(\gamma)$.
+- No object can possess a speed greater than or equal to the speed of light.
+
+In the next section, we will introduce Minkowski geometry.

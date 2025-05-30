@@ -1,0 +1,78 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+import { LorentzBoostVisualizerSimple } from "@site/src/components/visualizers/LorentzBoostVisualizerSimple";
+
+# Minkowski Geometry
+
+Minkowski geometry is the geometry used to describe spacetime in special relativity.
+It is a four-dimensional geometry that combines three-dimensional Euclidean space with time into a single four-dimensional manifold.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Minkowski Metric
+
+As discussed previously, a metric is a bilinear form that defines an inner product on a vector space.
+The key is to find a bilinear form that is invariant under Lorentz boosts.[^1]
+
+[^1]: in actuality Lorentz transformations are defined using the Minkowski metric, not the other way around, but for our pedagogical purposes, as well as historical ones, we will define the metric using the Lorentz transformations.
+
+To do so, recall that Lorentz boosts are hyperbolic rotations in spacetime.
+If one draws a square and then hyperbolically rotates it, the square shrinks on one side and expands on the other.
+However, the edge of the square consistently touches the edge of the hyperbola.
+More concretely, if a point is on a hyperbola, then under a Lorentz boost, the point will remain on the hyperbola.
+
+Now, given that a hyperbola is defined by the equation
+
+$$
+\begin{equation}
+(ct)^2 - x^2 = s^2
+\end{equation}
+$$
+
+and that points on hyperbolas are invariant under Lorentz boosts, we can thus ascertain that this quantity is invariant under Lorentz boosts.
+This quantity is known as the **spacetime interval** between two events.
+If we use this as the metric, we can define the Minkowski metric as
+
+$$
+\begin{equation}
+\eta_{\mu\nu} = \mqty[1 & 0 & 0 & 0 \\ 0 & -1 & 0 & 0 \\ 0 & 0 & -1 & 0 \\ 0 & 0 & 0 & -1].
+\end{equation}
+$$
+
+Then, the norm of a spacetime vector is given by
+
+$$
+\begin{equation}
+\eta_{\mu\nu} x^\mu x^\nu = (ct)^2 - x^2 - y^2 - z^2
+\end{equation}
+$$
+
+which aligns with our previous definition of the spacetime interval.
+
+(Some sources purport the notion that in spacetime geometry, space and time are "put on equal footing".
+This is incorrect, because space and time are fundamentally different—their sign on the metric is different.)
+
+## The Light Cone
+
+Recall that different reference frames have different lines of simultaneity.
+In other words, two events that are simultaneous in one reference frame may not be simultaneous in another.
+
+However, there is an apparent contradiction here with regards to causation.
+
+
+
