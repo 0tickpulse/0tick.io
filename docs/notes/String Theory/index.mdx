@@ -1,0 +1,22 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# String Theory
+
+String theory is a theoretical framework in physics that attempts to reconcile the two pillars of modern theoretical physics—quantum mechanics and general relativity.
+It posite that instead of point-like particles or fields, the fundamental building blocks of the universe are one-dimensional objects called strings.
+
+In the set of notes on quantum field theory, we have seen how quantum field theory is the natural extension of quantum mechanics to fields.
+We have also discovered that applying the principle of locality to Newtonian gravity leads to a field theory of gravity, which is general relativity.
+However, there is a problem with this approach: quantum field theory is not compatible with general relativity.

@@ -34,19 +34,19 @@ One such object is the **Weyl spinor**.
 ## Review of Lorentz Transformations
 
 Recall that Lorentz transformations are transformations that preserve the Minkowski metric $\eta$.
-In Minkowski geometry, we define the square-magnitude of a vector as:
+In Minkowski geometry, we define the square-magnitude of a vector as
 
 $$
 \begin{equation}
-\norm{\vb{v}}^2 = \vb{v}^T \eta \vb{v}
+\norm{\vb{v}}^2 = \vb{v}^T \eta \vb{v}.
 \end{equation}
 $$
 
-If we apply a Lorentz transformation $\Lambda$ to a vector $\vb{v}$, and assert that the square-magnitude is invariant, we have:
+If we apply a Lorentz transformation $\Lambda$ to a vector $\vb{v}$, and assert that the square-magnitude is invariant, we have
 
 $$
 \begin{equation}
-(\Lambda \vb{v})^T \eta (\Lambda \vb{v}) = \vb{v}^T \eta \vb{v}
+(\Lambda \vb{v})^T \eta (\Lambda \vb{v}) = \vb{v}^T \eta \vb{v}.
 \end{equation}
 $$
 
@@ -77,7 +77,8 @@ We summarize the groups as follows:
     - $\det(\Lambda) = 1$
     - $\Lambda^0_0 > 0$
 
-There are six basic Lorentz transformations, defined by pairs of coordinate axes:
+There are six basic Lorentz transformations, defined by pairs of coordinate axes.
+These are shown in the table below.
 
 <table>
     <thead>
@@ -162,20 +163,21 @@ There are six basic Lorentz transformations, defined by pairs of coordinate axes
 
 Suppose we have a 4-vector $\vb{v} = ct \vb{e}_t + x \vb{e}_x + y \vb{e}_y + z \vb{e}_z$.
 Let the time basis vector be $\vb{e}_t = 1$ (to be interpreted as the identity matrix), and the rest be Pauli matrices.
-Then we can write the vector as:
+Then we can write the vector as
 
 $$
 \begin{equation}
 \begin{split}
 V &= ct (1) + x \sigma_x + y \sigma_y + z \sigma_z \\
 &= ct \mqty[1 & 0 \\ 0 & 1] + x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & 1] \\
-&= \mqty[ct + z & x - iy \\ x + iy & ct - z]
+&= \mqty[ct + z & x - iy \\ x + iy & ct - z].
 \end{split}
 \end{equation}
 $$
 
-This is the **Weyl vector**. It is Hermitian.
-The determinant of a Weyl vector is the spacetime interval of its corresponding 4-vector.
+This is the **Weyl vector**. There are a few interesting properties about Weyl vectors.
+First, the Weyl vector is Hermitian, meaning that $V^\dagger = V$.
+Second, the determinant of a Weyl vector is the spacetime interval of its corresponding 4-vector.
 This can be proven easily:
 
 $$
@@ -185,7 +187,7 @@ $$
 &= (ct + z)(ct - z) - (x - iy)(x + iy) \\
 &= c^2 t^2 - z^2 - (x^2 + y^2) \\
 &= (ct)^2 - x^2 - y^2 - z^2 \\
-&= s^2
+&= s^2.
 \end{split}
 \end{equation}
 $$
@@ -380,3 +382,4 @@ $$
 \mqty[\alpha \gamma & \alpha \delta \\ \beta \gamma & \beta \delta] = \mqty[ct + z & x - iy \\ x + iy & ct - z]
 \end{equation}
 $$
+

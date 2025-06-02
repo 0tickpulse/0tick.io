@@ -35,20 +35,20 @@ We will go through a few properties of these matrices and how they relate to the
 To rotate a vector $\vb{v}$, we can use the rotation matrix $R$.
 This means that the vector $\vb{v}$ is rotated by the matrix $R$ to give a new vector $\vb{v}'$.
 Because $R$ is just a rotation, it does not change the length of the vector ($\vb{v}^T \vb{v}$).
-We can hence write:
+We can hence write
 
 $$
 \begin{equation}
-(R \vb{v})^T (R \vb{v}) = \vb{v}^T \vb{v}
+(R \vb{v})^T (R \vb{v}) = \vb{v}^T \vb{v}.
 \end{equation}
 $$
 
 From linear algebra we know that the transpose of a product of matrices is the product of the transposes in reverse order.
-This hence yields:
+This hence yields
 
 $$
 \begin{equation}
-\vb{v}^T R^T R \vb{v} = \vb{v}^T \vb{v}
+\vb{v}^T R^T R \vb{v} = \vb{v}^T \vb{v}.
 \end{equation}
 $$
 
@@ -63,11 +63,11 @@ There are two important facts to note about these matrices:
 1. Rotations about the same axis commute with each other.
 2. Rotations about different axes do not commute with each other.
 
-To further understand this, consider $R$ as a rotation, applied to a vector $\vb{v}$:
+To further understand this, consider $R$ as a rotation, applied to a vector $\vb{v}$,
 
 $$
 \begin{equation}
-\mqty[v'_x \\ v'_y \\ v'_z] = R \mqty[v_x \\ v_y \\ v_z]
+\mqty[v'_x \\ v'_y \\ v'_z] = R \mqty[v_x \\ v_y \\ v_z].
 \end{equation}
 $$
 
@@ -77,11 +77,11 @@ Before writing an explicit form of $R$, note that different conventions exist fo
 - **Passive rotation**: where the coordinate system is rotated but the physical system is fixed.
 
 Switching between these two conventions flips the sign of the rotation angle.
-In the active rotation, we can write that for a rotation about the $z$-axis, we have:
+In the active rotation, we can write that for a rotation about the $z$-axis, we have
 
 $$
 \begin{equation}
-R_z(\phi) = \mqty[\cos \phi & -\sin \phi & 0 \\ \sin \phi & \cos \phi & 0 \\ 0 & 0 & 1]
+R_z(\phi) = \mqty[\cos \phi & -\sin \phi & 0 \\ \sin \phi & \cos \phi & 0 \\ 0 & 0 & 1].
 \end{equation}
 $$
 
@@ -90,39 +90,39 @@ Next, we can write the rotation about the $x$-axis and $y$-axis as:
 $$
 \begin{align}
 R_x(\phi) &= \mqty[1 & 0 & 0 \\ 0 & \cos \phi & -\sin \phi \\ 0 & \sin \phi & \cos \phi] \\
-R_y(\phi) &= \mqty[\cos \phi & 0 & \sin \phi \\ 0 & 1 & 0 \\ -\sin \phi & 0 & \cos \phi]
+R_y(\phi) &= \mqty[\cos \phi & 0 & \sin \phi \\ 0 & 1 & 0 \\ -\sin \phi & 0 & \cos \phi].
 \end{align}
 $$
 
 Finally, consider the Taylor expansion of the sine and cosine functions—$\sin \phi = \phi + \order{\phi^3}$ and $\cos \phi = 1 - \frac{\phi^2}{2} + \order{\phi^4}$.
-This means that for an infinitesimal rotation of an angle $\varepsilon$, we can write:
+This means that for an infinitesimal rotation of an angle $\varepsilon$, we can write
 
 $$
 \begin{align}
-R_z(\varepsilon) &= \mqty[1 -\frac{\varepsilon^2}{2} & -\varepsilon & 0 \\ \varepsilon & 1 - \frac{\varepsilon^2}{2} & 0 \\ 0 & 0 & 1] \\
-R_x(\varepsilon) &= \mqty[1 & 0 & 0 \\ 0 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ 0 & \varepsilon & 1 - \frac{\varepsilon^2}{2}] \\
-R_y(\varepsilon) &= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ 0 & 1 & 0 \\ -\varepsilon & 0 & 1 - \frac{\varepsilon^2}{2}]
+R_z(\varepsilon) &= \mqty[1 -\frac{\varepsilon^2}{2} & -\varepsilon & 0 \\ \varepsilon & 1 - \frac{\varepsilon^2}{2} & 0 \\ 0 & 0 & 1], \\
+R_x(\varepsilon) &= \mqty[1 & 0 & 0 \\ 0 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ 0 & \varepsilon & 1 - \frac{\varepsilon^2}{2}], \\
+R_y(\varepsilon) &= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ 0 & 1 & 0 \\ -\varepsilon & 0 & 1 - \frac{\varepsilon^2}{2}].
 \end{align}
 $$
 
-We can also combine these rotations by matrix multiplication. For example, we can write:
+We can also combine these rotations by matrix multiplication. For example, we can write
 
 $$
 \begin{equation}
 \begin{split}
 R_x(\varepsilon) R_y(\varepsilon) &= \mqty[1 & 0 & 0 \\ 0 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ 0 & \varepsilon & 1 - \frac{\varepsilon^2}{2}] \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ 0 & 1 & 0 \\ -\varepsilon & 0 & 1 - \frac{\varepsilon^2}{2}] \\
-&= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ \varepsilon^2 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ -\varepsilon & \varepsilon & 1 - \varepsilon^2]
+&= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ \varepsilon^2 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ -\varepsilon & \varepsilon & 1 - \varepsilon^2].
 \end{split}
 \end{equation}
 $$
 
-If we switch the order of the rotations, we get:
+If we switch the order of the rotations, we get
 
 $$
 \begin{equation}
 \begin{split}
 R_y(\varepsilon) R_x(\varepsilon) &= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ 0 & 1 & 0 \\ -\varepsilon & 0 & 1 - \frac{\varepsilon^2}{2}] \mqty[1 & 0 & 0 \\ 0 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ 0 & \varepsilon & 1 - \frac{\varepsilon^2}{2}] \\
-&= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ \varepsilon^2 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ -\varepsilon & \varepsilon & 1 - \varepsilon^2]
+&= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ \varepsilon^2 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ -\varepsilon & \varepsilon & 1 - \varepsilon^2].
 \end{split}
 \end{equation}
 $$
@@ -130,7 +130,7 @@ $$
 Notice that if we ignore the $\order{\varepsilon^2}$ terms, the two matrices are equal.
 In other words, **infinitesimal rotations of order $\varepsilon$ in different axes commute with each other**.
 If we do not ignore the $\order{\varepsilon^2}$ terms, we can see that the two matrices are not equal.
-We can write this as a commutation relation:
+We can write this as a commutation relation
 
 $$
 \begin{equation}
@@ -138,7 +138,7 @@ $$
 \comm{R_x(\varepsilon)}{R_y(\varepsilon)} &= R_x(\varepsilon) R_y(\varepsilon) - R_y(\varepsilon) R_x(\varepsilon) \\
 &= \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ \varepsilon^2 & 1 - \frac{\varepsilon^2}{2} & -\varepsilon \\ -\varepsilon & \varepsilon & 1 - \varepsilon^2] - \mqty[1 -\frac{\varepsilon^2}{2} & 0 & \varepsilon \\ 0 & 1 & 0 \\ -\varepsilon & 0 & 1 - \frac{\varepsilon^2}{2}] \\
 &= \mqty[0 & -\varepsilon^2 & 0 \\ \varepsilon^2 & 0 & 0 \\ 0 & 0 & 0] \\
-&= R_z(\varepsilon^2) - 1
+&= R_z(\varepsilon^2) - 1.
 \end{split}
 \end{equation}
 $$
@@ -150,11 +150,11 @@ As a complex vector, it rotates with unitary matrices.
 Similarly, a quantum state rotates with a unitary operator.
 
 Let $R$ be a classical rotation matrix. We can associate it with a quantum rotation operator $\mathcal{D}(R)$.
-We have seen previously that infinitesimal versions of these operators are given by:
+We have seen previously that infinitesimal versions of these operators are given by
 
 $$
 \begin{equation}
-U = 1 - iA \varepsilon
+U = 1 - iA \varepsilon,
 \end{equation}
 $$
 
@@ -164,44 +164,139 @@ For the translation operator, as $\varepsilon \to \dd{x}'$ we have $A \to \frac{
 For the time-evolution operator, as $\varepsilon \to \dd{t}$ we have $A \to \frac{H}{\hbar}$.
 The pattern is that the operator $A$ is the *generator* of the transformation.
 
-Because angular momentum is the generator of rotations, we can define the angular momentum operator $J_k$ such that:
+Because angular momentum is the generator of rotations, we can define the angular momentum operator $J_k$ such that
 
 $$
 \begin{equation}
-\varepsilon \to \dd{\phi} \implies A \to \frac{J_k}{\hbar}
+\varepsilon \to \dd{\phi} \implies A \to \frac{J_k}{\hbar}.
 \end{equation}
 $$
 
-Substituting these into the infinitesimal rotation operator, we have:
+Substituting these into the infinitesimal rotation operator, we have
 
 $$
 \begin{equation}
-\mathcal{D}(R) = 1 - i \frac{J_k}{\hbar} \dd{\phi}
+\mathcal{D}(R) = 1 - i \frac{J_k}{\hbar} \dd{\phi}.
 \end{equation}
 $$
 
 We can write $J_k$ as $\vb{J} \cdot \vu{n}$, where $\vu{n}$ is a unit vector in the direction of the axis of rotation.
-Then, we can write:
+This allows us to generalize the infinitesimal rotation operator to any axis of rotation $\vu{n}$:
 
 $$
 \begin{equation}
-\mathcal{D}(\vu{n}, \dd{\phi}) = 1 - i \frac{\vb{J} \cdot \vu{n}}{\hbar} \dd{\phi}
+\mathcal{D}(\vu{n}, \dd{\phi}) = 1 - i \frac{\vb{J} \cdot \vu{n}}{\hbar} \dd{\phi}.
 \end{equation}
 $$
 
-Finally, for a finite rotation, we can apply the infinitesimal rotation operator $N$ times where $N \to \infty$:
+Finally, for a finite rotation, we can apply the infinitesimal rotation operator $N$ times where $N \to \infty$,
 
 $$
 \begin{equation}
 \begin{split}
 \mathcal{D}(\vu{n}, \phi) &= \lim_{N \to \infty} \qty(1 - i \frac{J_z}{\hbar} \frac{\phi}{N})^N \\
-&= \exp(-i \frac{J_z}{\hbar} \phi)
+&= \exp(-i \frac{J_z}{\hbar} \phi).
 \end{split}
 \end{equation}
 $$
 
-To put these in context, recall that for both the Jones vector and the spin-1/2 particle, we have two separate spaces.
-One is the physical space, and the other is an abstract space (the Poincaré sphere for the Jones vector and the Bloch sphere for the spin-1/2 particle).
-The classical rotation operator is a $\text{SO}(3)$ operator that rotates the physical space, whereas the abstract rotation operator is a $\text{SU}(2)$ operator that rotates the abstract space.
+The commutation relations of the angular momentum operators are given by
 
+$$
+\begin{equation}
+\comm{J_i}{J_j} = i \hbar \epsilon_{ijk} J_k,
+\end{equation}
+$$
 
+where $\epsilon_{ijk}$ is the Levi-Civita symbol.
+This will be important when we introduce the concept of Lie groups and Lie algebras in the future.
+
+Finally, let's try to apply the z-rotation (without loss of generality) operator to a given state $\ket{\psi}$ by examining the value of $\expval{J_x}$.
+The rotated ket is simply $\mathcal{D}_z (\phi) \ket{\psi}$.
+Then the expectation value is
+
+$$
+\begin{equation}
+\mel{\psi}{\mathcal{D}^\dagger_z(\phi) J_x \mathcal{D}_z^\dagger(\phi)}{\psi} = \mel{\psi}{\exp(\frac{i J_z \phi}{\hbar}) J_x \exp(-\frac{i J_z \phi}{\hbar})}{\psi}.
+\end{equation}
+$$
+
+Recalling the Baker-Campbell-Hausdorff formula, we can write this as
+
+$$
+\begin{equation}
+\begin{split}
+\expval{J_x} &= \mel{\psi}{\exp(\frac{i J_z \phi}{\hbar}) J_x \exp(-\frac{i J_z \phi}{\hbar})}{\psi} \\
+&= \mel{\psi}{J_x + \frac{i}{\hbar} [J_z, J_x] \phi + \frac{1}{2!} \frac{i^2}{\hbar^2} [J_z, [J_z, J_x]] \phi^2 + \ldots}{\psi} \\
+&= J_x \qty(1 - \frac{\phi^2}{2!} + \ldots) - J_y \qty(\phi - \frac{\phi^3}{3!} + \ldots) \\
+&= J_x \cos(\phi) - J_y \sin(\phi).
+\end{split}
+\end{equation}
+$$
+
+This shows that the expectation value of the angular momentum operator $J_x$ is rotated by an angle $\phi$ about the $z$-axis.
+
+## Rotation Operators for Spin-1/2 Systems
+
+For the commutation relations of angular momentum to hold, the dimensionality of the representation must be at least 2.
+In this context, "spin" is just another name for the angular momentum in the special case of a spin-1/2 system.
+[Recall that the spin-1/2 operators are defined as](../Mathematical%20Foundations/Applying%20to%20Spin%2012%20Systems#observables-and-probabilities)
+
+$$
+\begin{align}
+S_x &= \frac{\hbar}{2} (\dyad{+z}{-z} + \dyad{-z}{+z}), \\
+S_y &= \frac{i\hbar}{2} (-\dyad{+z}{-z} + \dyad{-z}{+z}), \\
+S_z &= \frac{\hbar}{2} (\dyad{+z}{+z} - \dyad{-z}{-z}).
+\end{align}
+$$
+
+These operators satisfy the commutation relations of
+
+$$
+\begin{equation}
+\comm{S_i}{S_j} = i \hbar \epsilon_{ijk} S_k,
+\end{equation}
+$$
+
+similar to the angular momentum operators.
+Also, just like the angular momentum operators, the expectation values for spins are given by
+
+$$
+\begin{equation}
+\expval{S_x} = \expval{S_x} \cos(\phi) - \expval{S_y} \sin(\phi).
+\end{equation}
+$$
+
+As such, the behavior of $\expval{\vb{S}}$ under rotations is the same as that of a classical angular momentum vector.
+
+## Where Spinors Come From
+
+Now we can see how spinors arise from the rotation group.
+Suppose we have any spin-1/2 system represented by a state $\ket{\psi}$.
+In the spin-z basis, we can insert a completeness relation,
+
+$$
+\begin{equation}
+\ket{\psi} = \dyad{+z}{+z} \ket{\psi} + \dyad{-z}{-z} \ket{\psi}.
+\end{equation}
+$$
+
+If we apply a z-rotation operator $\mathcal{D}_z(\phi)$ to this state, we have
+
+$$
+\begin{equation}
+\exp(-i \frac{S_z \phi}{\hbar}) \ket{\psi} = \exp(-i\frac{\phi}{2}) \dyad{+z}{+z} \ket{\psi} + \exp(i\frac{\phi}{2}) \dyad{-z}{-z} \ket{\psi}.
+\end{equation}
+$$
+
+Notice that the angle is halved on the right-hand side.
+In other words, if we apply $\phi = 2\pi$ to the state, we get
+
+$$
+\begin{equation}
+\mathcal{D}_z(2\pi) \ket{\psi} = \exp(-i\pi) \dyad{+z}{+z} \ket{\psi} + \exp(i\pi) \dyad{-z}{-z} \ket{\psi} = -\ket{\psi}.
+\end{equation}
+$$
+
+This means that rotating by $2\pi$ radians results in a sign change of the state.
+We need to instead rotate by $4\pi$ radians to get back to the original state.

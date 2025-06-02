@@ -1,5 +1,5 @@
 ---
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
@@ -17,663 +17,313 @@ import TabItem from '@theme/TabItem';
 
 # Pauli Spinors
 
-Pauli spinors are a mathematical representation of spin-1/2 particles in quantum mechanics.
-We have previously introduced spinors in the context of physical systems (e.g., the Stern-Gerlach experiment, light polarization).
-Now we will take a purely mathematical approach to spinors, focusing on their algebraic properties and how they relate to the rotation group.
+Previously, we introduced the Pauli formalism, which involves using the Pauli sigma matrices as basis vectors.
+In this section, we will explore the Pauli spinors, which are two-component complex vectors that represent the state of a spin-1/2 particle.
+More specifically, we will focus on how Pauli vectors can be factored into two-component complex vectors, which are known as Pauli spinors.
 
 ## Table of Contents
 
 <TOCInline toc={toc} />
 
-## Pauli Vectors
+## Factoring Matrices
 
-[Recall that the spin operators are defined as](../Mathematical%20Foundations/Applying%20to%20Spin%2012%20Systems#observables-and-probabilities):
+Consider a matrix $A$ that can be factored into a column vector $\vb{a}$ and a row vector $\vb{b}^T$, i.e.,
+
+$$
+\begin{equation}
+A = \vb{a} \vb{b}^T.
+\end{equation}
+$$
+
+Suppose we are in a two-dimensional space, then we can write all of this as
+
+$$
+\begin{equation}
+\mqty[a & b \\ c & d] = \mqty[e \\ f] \mqty[g & h].
+\end{equation}
+$$
+
+This means that we can write the matrix $A$ as a product of two vectors, one column vector and one row vector.
+We have already seen that this operation, the outer product, is helpful in quantum mechanics.
+
+Only certain matrices can be factored in this way, and they are known as rank-1 matrices.
+These matrices have zero determinant.
+
+Now suppose we have successfully factored a matrix $A$ into a column vector $\vb{a}$ and a row vector $\vb{b}^T$,
+
+$$
+\begin{equation}
+A = \mqty[a \\ b] \mqty[c & d].
+\end{equation}
+$$
+
+There is ambiguity here, because we can insert $1$ into the middle and rewrite $1$ as any complex number $z$:
+
+$$
+\begin{equation}
+A = \mqty[a \\ b] \mqty[c & d] = \mqty[a \\ b] z z^{-1} \mqty[c & d] = \mqty[a z \\ b z] \mqty[z^{-1} c & z^{-1} d].
+\end{equation}
+$$
+
+Is there a unique, unambiguous way to factor a matrix into a column vector and a row vector?
+We can enforce this by requiring that the top of the column vector is $1$.
+This gives us a unique factorization of the matrix,
+
+$$
+\begin{equation}
+\mqty[a \\ b] \mqty[c & d] = \mqty[1 \\ b/a] \mqty[ac & ad].
+\end{equation}
+$$
+
+## Factoring Pauli Vectors
+
+Recall that a Pauli vector is a vector of the form
+
+$$
+\begin{equation}
+V = \mqty[z & x - iy \\ x + iy & -z].
+\end{equation}
+$$
+
+For us to be able to factor this into a column vector and a row vector, we need to ensure that the determinant of the Pauli vector is zero.
+Since the determinant is just the negative norm of the vector, we require that
+
+$$
+\begin{equation}
+x^2 + y^2 + z^2 = 0. \label{eq:pauli-norm-0}
+\end{equation}
+$$
+
+Such a vector is known as a **null vector** or **isotropic vector**.
+It requires that either all three components are zero, or some of them are complex.
+Anyways, let's factor the Pauli vector into a column vector and a row vector,
+
+$$
+\begin{equation}
+V = \mqty[z & x - iy \\ x + iy & -z] = \mqty[a \\ b] \mqty[c & d].
+\end{equation}
+$$
+
+We have, trivially, that
 
 $$
 \begin{align}
-S_x &= \frac{\hbar}{2} (\dyad{+z}{-z} + \dyad{-z}{+z}) \\
-S_y &= \frac{i\hbar}{2} (-\dyad{+z}{-z} + \dyad{-z}{+z}) \\
-S_z &= \frac{\hbar}{2} (\dyad{+z}{+z} - \dyad{-z}{-z})
+ac &= z, \\
+bc &= x + iy, \\
+ad &= x - iy, \\
+bd &= -z.
 \end{align}
 $$
 
-Also recall that the matrix element of an operator is given by $\mel{a'}{A}{a''}$.
-In this case, the general form of the matrix element is:
-
-$$
-\begin{equation}
-\mel{\pm z}{S_k}{+z} = \frac{\hbar}{2} (\sigma_k)_{\pm z, +z}
-\end{equation}
-$$
-
-The $\sigma_i$ matrices are known as the **Pauli matrices**.
-Their explicit forms are:
+First, let's write $z$ in terms of $x$ and $y$.
+This is a simple rearrangement of $\eqref{eq:pauli-norm-0}$,
 
 $$
 \begin{align}
-\sigma_1 = \sigma_x &:= \mqty[0 & 1 \\ 1 & 0] \\
-\sigma_2 = \sigma_y &:= \mqty[0 & -i \\ i & 0] \\
-\sigma_3 = \sigma_z &:= \mqty[1 & 0 \\ 0 & -1]
+(-z)^2 &= -x^2 - y^2, \\
+-z &= -\sqrt{-x^2 - y^2} = \sqrt{x - iy} \sqrt{-x - iy}.
 \end{align}
 $$
 
-These matrices are traceless ($\text{Tr}(\sigma_i) = 0$) and Hermitian ($\sigma_i^\dagger = \sigma_i$).
-Squaring any of the Pauli matrices gives the identity operator, and they anticommute with each other:
+From here we can choose $a = \sqrt{x - iy}$ and $c = -\sqrt{-x - iy}$.
+
+We can plug these values into $ad$:
 
 $$
 \begin{equation}
-\sigma_i \sigma_j = -\sigma_j \sigma_i
+x - iy = ad = \sqrt{x - iy} d.
 \end{equation}
 $$
 
-The last two properties can be combined into the following identity:
+This implies that $d = \sqrt{x - iy} = a$.
+Finally, we can plug $c = -\sqrt{-x - iy}$ into $bc = x + iy$:
 
 $$
 \begin{equation}
-\acomm{\sigma_i}{\sigma_j} = 2 \delta_{ij}
+x + iy = bc = \sqrt{-x - iy} b.
 \end{equation}
 $$
 
-Lastly, they satisfy the following commutation relations:
-
-$$
-\begin{equation}
-\comm{\sigma_i}{\sigma_j} = 2 i \epsilon_{ijk} \sigma_k
-\end{equation}
-$$
-
-with an implicit sum over $k$.
-
-:::info Review: Levi-Civita Symbol
-
-The term $\epsilon_{ijk}$ is known as the Levi-Civita symbol.
-It is defined as:
-
-$$
-\begin{equation}
-\epsilon_{ijk} = \begin{cases}
-1 & \text{if } (i, j, k) \text{ is an even permutation of } (1, 2, 3) \\
--1 & \text{if } (i, j, k) \text{ is an odd permutation of } (1, 2, 3) \\
-0 & \text{if } i = j \text{ or } j = k \text{ or } k = i
-\end{cases}
-\end{equation}
-$$
-
-:::
-
-Recall that in classical physics, we define a vector as a linear combination of basis vectors:
-
-$$
-\begin{equation}
-\vb{v} = x \vu{x} + y \vu{y} + z \vu{z}
-\end{equation}
-$$
-
-In the Pauli formalism, we replace the basis vectors with the Pauli matrices, $\sigma_x$, $\sigma_y$, and $\sigma_z$.
-This gives us the following expression for a vector:
-
-$$
-\begin{equation}
-\begin{split}
-V &= x \sigma_x + y \sigma_y + z \sigma_z \\
-&= x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & -1] \\
-&= \mqty[z & x - iy \\ x + iy & -z]
-\end{split}
-\end{equation}
-$$
-
-This form of the vector is known as the **Pauli vector**.
-The fundamental benefit of using matrices for basis vectors is that we can now directly multiply vectors with each other.
-
-### Reflecting the Pauli Vector
-
-First, consider reflecting the Pauli vector along $z$.
-In other words, we want to find the transformation :
-
-$$
-\begin{equation}
-x \vu{x} + y \vu{y} + z \vu{z} \to x \vu{x} + y \vu{y} - z \vu{z}
-\end{equation}
-$$
-
-In the Pauli formalism, we do this by **negative conjugating** the Pauli vector with the $\class{green}{\sigma_z}$ matrix.
-By conjugating we mean to multiply the Pauli vector by $\class{green}{-\sigma_z}$ on the left and $\class{green}{\sigma_z}$ on the right.
-We will see how this transformation applies to each basis Pauli matrix:
-
-$$
-\begin{equation}
-\begin{split}
-\sigma_x &\to -\class{green}{\sigma_z} \sigma_x \class{green}{\sigma_z} \\
-&= \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_x \\
-&= \sigma_x
-\end{split}
-\end{equation}
-$$
-
-For $\sigma_y$:
-
-$$
-\begin{equation}
-\begin{split}
-\sigma_y &\to -\class{green}{\sigma_z} \sigma_y \class{green}{\sigma_z} \\
-&= \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_y \\
-&= \sigma_y
-\end{split}
-\end{equation}
-$$
-
-And for $\sigma_z$:
-
-$$
-\begin{equation}
-\begin{split}
-\sigma_z &\to -\class{green}{\sigma_z} \sigma_z \class{green}{\sigma_z} \\
-&= \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_z
-\end{split}
-\end{equation}
-$$
-
-Hence, we can see that it takes $\sigma_z$ to $-\sigma_z$ and leaves the other two matrices unchanged, precisely what we wanted.
-To see this more concretely, consider a Pauli vector $V$ and apply the transformation:
-
-$$
-\begin{equation}
-\begin{split}
-V &\to -\class{green}{\sigma_z} V \class{green}{\sigma_z} \\
-&= \class{green}{\sigma_z} \qty(x \sigma_x + y \sigma_y + z \sigma_z) \class{green}{\sigma_z} \\
-&= -(x \class{green}{\sigma_z} \sigma_x \class{green}{\sigma_z} + y \class{green}{\sigma_z} \sigma_y \class{green}{\sigma_z} + z \class{green}{\sigma_z} \sigma_z \class{green}{\sigma_z}) \\
-&= -(-x \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_x - y \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_y + z \class{green}{\sigma_z} \class{green}{\sigma_z} \sigma_z) \\
-&= -(-x \sigma_x - y \sigma_y + z\sigma_z) \\
-&= x \sigma_x + y \sigma_y - z \sigma_z
-\end{split}
-\end{equation}
-$$
-
-This is the transformation we wanted to achieve.
-To reflect the Pauli vector along an arbitrary axis, we choose an arbitrary unit vector $U$ (where $UU = 1$) and apply the transformation:
-
-$$
-\begin{equation}
-V \to -\class{green}{U} V \class{green}{U}
-\end{equation}
-$$
-
-To see that this indeed transforms the Pauli vector, we can write $V$ as a sum of its perpendicular and parallel components to $U$:
-
-$$
-\begin{equation}
-V = V_\perp + V_\parallel
-\end{equation}
-$$
-
-Because $V_\parallel$ is parallel to $\class{green}{U}$, it can be written as a scalar multiple of $\class{green}{U}$:
-
-$$
-\begin{equation}
-V = V_\perp + k \class{green}{U}
-\end{equation}
-$$
-
-To multiply the perpendicular component by $\class{green}{U}$, we can use the identity:
-
-$$
-\begin{equation}
-V_\perp \class{green}{U} = -\class{green}{U} V_\perp
-\end{equation}
-$$
-
-This is proven in the appendix.
-
-Putting this all together, we have:
-
-$$
-\begin{equation}
-\begin{split}
-V &\to -\class{green}{U} V \class{green}{U} \\
-&= -\class{green}{U} \qty(V_\perp + V_\parallel) \class{green}{U} \\
-&= -\class{green}{U} \qty(V_\perp + k \class{green}{U}) \class{green}{U} \\
-&= -\class{green}{U} V_\perp \class{green}{U} + \class{green}{U} k \class{green}{U} \class{green}{U} \\
-&= \class{green}{U} \class{green}{U} V_\perp + \class{green}{U} k \\
-&= V_\perp - k \class{green}{U} \\
-&= V_\perp - V_\parallel
-\end{split}
-\end{equation}
-$$
-
-As such, it is clear that the transformation we have defined indeed transforms the Pauli vector as desired.
-It flips the parallel component of the vector while leaving the perpendicular component unchanged.
-
-### Rotation of the Pauli Vector
-
-To rotate the Pauli vector, we leverage the fact that a rotation is just two successive reflections.
-More specifically, to rotate a vector by an angle $\theta$, we reflect it twice, where the "mirrors" are at an angle of $\theta/2$ to the axis of rotation.
-
-For example, consider a vector $V$ reflected along the $x$-axis and then the $y$-axis.
-Because they are at a right angle to each other, the resulting vector is rotated by $180^\circ$.
-We can prove this by applying the transformation
-
-$$
-\begin{equation}
-\begin{split}
-V &\to -\sigma_y (-\sigma_x V \sigma_x) \sigma_y \\
-&= \sigma_y \sigma_x V \sigma_x \sigma_y \\
-&= \sigma_y \sigma_x V \sigma_x^\dagger \sigma_y^\dagger \\
-&= \sigma_y \sigma_x V (\sigma_y \sigma_x)^\dagger
-\end{split}
-\end{equation}
-$$
-
-to the vector $V = x \sigma_x + y \sigma_y + z \sigma_z$, yielding
-
-$$
-\begin{equation}
-\begin{split}
-\sigma_y \sigma_x V (\sigma_y \sigma_x)^\dagger &= \sigma_y \sigma_x (x \sigma_x + y \sigma_y + z \sigma_z) \sigma_x \sigma_y \\
-&= x \sigma_y \sigma_x \sigma_x \sigma_x \sigma_y + y \sigma_y \sigma_x \sigma_y \sigma_x \sigma_y + z \sigma_y \sigma_x \sigma_z \sigma_x \sigma_y \\
-&= -x \sigma_x - y \sigma_y + z \sigma_z,
-\end{split}
-\end{equation}
-$$
-
-which is indeed the vector rotated by $180^\circ$.
-
-To generalize, we can define a rotation by an angle $\theta$ as follows.
-We need to reflect around two mirrors at an angle $\theta/2$ to the axis of rotation.
-Choose the first mirror to just be the $y$-axis, and the second mirror to be at an angle $\theta/2$ to the $x$-axis.
-
-The normal vector to the first mirror is $\sigma_x$, and the normal vector to the second mirror is
-
-$$
-\begin{equation}
-\tau = \cos(\theta/2) \sigma_x + \sin(\theta/2) \sigma_y.
-\end{equation}
-$$
-
-<Mafs>
-    <Line.Segment point1={[0, -3]} point2={[0, 3]} color={color("blue")} />
-    <Vector tail={[0, 0]} tip={[1, 0]} color={color("blue")} />
-    <MafsMathJax tex="\sigma_x" at={[1.2, 0]} color={color("blue")} />
-    <Transform rotate={1}>
-        <Line.Segment point1={[0, -3]} point2={[0, 3]} color={color("pink")} />
-        <Vector tail={[0, 0]} tip={[1, 0]} color={color("pink")} />
-        <MafsMathJax tex="\tau" at={[1.2, 0]} color={color("pink")} />
-    </Transform>
-</Mafs>
-
-Algebraically, we can write the rotation as
-
-$$
-\begin{equation}
-\begin{split}
-V &\to -\class{pink}{\tau} (-\class{blue}{\sigma_x} V \class{blue}{\sigma_x}) \class{pink}{\tau} \\
-&= \class{pink}{\tau} \class{blue}{\sigma_x} V \class{blue}{\sigma_x} \class{pink}{\tau} \\
-&= \qty(\cos(\frac{\theta}{2}) \sigma_x + \sin(\frac{\theta}{2}) \sigma_y) \class{blue}{\sigma_x} V \class{blue}{\sigma_x} (\cos(\frac{\theta}{2}) \sigma_x + \sin(\frac{\theta}{2}) \sigma_y) \\
-&= \qty(\cos(\frac{\theta}{2}) \sigma_x \class{blue}{\sigma_x} + \sin(\frac{\theta}{2}) \sigma_y \class{blue}{\sigma_x}) V \qty(\cos(\frac{\theta}{2}) \class{blue}{\sigma_x} \sigma_x + \sin(\frac{\theta}{2}) \class{blue}{\sigma_x} \sigma_y) \\
-&= \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger .
-\end{split}
-\end{equation}
-$$
-
-To see that this indeed rotates the Pauli vector, consider a Pauli vector $V = x \sigma_x + y \sigma_y + z \sigma_z$.
-Applying the transformation gives us:
-
-$$
-\begin{equation}
-\begin{split}
- & \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
-=& \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (x \sigma_x + y \sigma_y + z \sigma_z) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
-=& \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (x \sigma_x) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
-& \quad {}+ \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (y \sigma_y) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
-& \quad {}+ \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) (z \sigma_z) \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
-=& \qty(x \cos(\frac{\theta}{2}) \sigma_x - x \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_x) \qty(\cos(\frac{\theta}{2}) + \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
-& \quad {}+ \qty(y \cos(\frac{\theta}{2}) \sigma_y - y \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_y) \qty(\cos(\frac{\theta}{2}) + \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
-& \quad {}+ \qty(z \cos(\frac{\theta}{2}) \sigma_z - z \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z) \qty(\cos(\frac{\theta}{2}) + \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
-=& \qty(x \cos(\frac{\theta}{2}) \sigma_x \cos(\frac{\theta}{2}) + x \cos(\frac{\theta}{2}) \sigma_x \sin(\frac{\theta}{2}) \sigma_x \sigma_y - x \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_x \cos(\frac{\theta}{2}) + x \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_x \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
-& \quad {}+ \qty(y \cos(\frac{\theta}{2}) \sigma_y \cos(\frac{\theta}{2}) + y \cos(\frac{\theta}{2}) \sigma_y \sin(\frac{\theta}{2}) \sigma_x \sigma_y - y \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_y \cos(\frac{\theta}{2}) + y \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_y \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
-& \quad {}+ \qty(z \cos(\frac{\theta}{2}) \sigma_z \cos(\frac{\theta}{2}) + z \cos(\frac{\theta}{2}) \sigma_z \sin(\frac{\theta}{2}) \sigma_x \sigma_y - z \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z \cos(\frac{\theta}{2}) + z \sin(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z \sin(\frac{\theta}{2}) \sigma_x \sigma_y) \\
-=& \qty(x \cos[2](\frac{\theta}{2}) \sigma_x + x \cos(\frac{\theta}{2}) \sin(\frac{\theta}{2}) \sigma_y + x \sin(\frac{\theta}{2}) \cos(\frac{\theta}{2}) \sigma_y + x \sin[2](\frac{\theta}{2}) \sigma_x) \\
-& \quad {}+ \qty(y \cos[2](\frac{\theta}{2}) \sigma_y - y \cos(\frac{\theta}{2}) \sin(\frac{\theta}{2}) \sigma_x - y \sin(\frac{\theta}{2}) \cos(\frac{\theta}{2}) \sigma_x + y \sin[2](\frac{\theta}{2}) \sigma_y) \\
-& \quad {}+ \qty(z \cos[2](\frac{\theta}{2}) \sigma_z + z \cos(\frac{\theta}{2}) \sin(\frac{\theta}{2}) \sigma_z \sigma_x \sigma_y - z \sin(\frac{\theta}{2}) \cos(\frac{\theta}{2}) \sigma_x \sigma_y \sigma_z + z \sin[2](\frac{\theta}{2}) \sigma_z) \\
-=& \qty(x \sigma_x + x \sin(\theta) \sigma_y) + \qty(y \sigma_y - y \sin(\theta) \sigma_x) + z \sigma_z \\
-&= \qty(x \cos(\theta) + y \sin(\theta)) \sigma_x + \qty(y \cos(\theta) - x \sin(\theta)) \sigma_y + z \sigma_z.
-\end{split} \label{eq:pauli-rotation-algebraic}
-\end{equation}
-$$
-
-This matches the expected result of a rotation by an angle $\theta$.
-There are mainly two approaches to derive this result.
-We can either use the algebraic approach as we just did, or we can use the matrix representations.
-Matrices typically make the derivation more straightforward, but they could be argued to be less pure.
-This will be important when we discuss Clifford algebras and Lie algebras in the future.
-Anyways, the matrix derivation is as follows.
-
-First, the half-rotation on each side can be expressed as
-
-$$
-\begin{equation}
-\begin{split}
-\qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) &= \cos(\frac{\theta}{2}) \mqty[1 & 0 \\ 0 & 1] - \sin(\frac{\theta}{2}) \mqty[0 & 1 \\ 1 & 0] \mqty[0 & -i \\ i & 0] \\
-&= \cos(\frac{\theta}{2}) \mqty[1 & 0 \\ 0 & 1] - \sin(\frac{\theta}{2}) \mqty[0 & -i \\ i & 0] \\
-&= \mqty[\cos(\frac{\theta}{2}) - i \sin(\frac{\theta}{2}) & 0 \\ 0 & \cos(\frac{\theta}{2}) + i \sin(\frac{\theta}{2})] \\
-&= \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})].
-\end{split}
-\end{equation}
-$$
-
-Then, we can write the rotated Pauli vector as
-
-$$
-\begin{equation}
-\begin{split}
-V &\to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger \\
-&= \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})] \mqty[z & x - iy \\ x + iy & -z] \mqty[\exp(i \frac{\theta}{2}) & 0 \\ 0 & \exp(-i \frac{\theta}{2})] \\
-&= \mqty[\exp(-i \frac{\theta}{2}) z & \exp(-i \frac{\theta}{2}) (x - iy) \\ \exp(i \frac{\theta}{2}) (x + iy) & -\exp(i \frac{\theta}{2}) z] \mqty[\exp(i \frac{\theta}{2}) & 0 \\ 0 & \exp(-i \frac{\theta}{2})] \\
-&= \mqty[\exp(-i \frac{\theta}{2}) z \exp(i \frac{\theta}{2}) & \exp(-i \frac{\theta}{2}) (x - iy) \exp(-i \frac{\theta}{2}) \\ \exp(i \frac{\theta}{2}) (x + iy) \exp(i \frac{\theta}{2}) & -\exp(i \frac{\theta}{2}) z \exp(-i \frac{\theta}{2})] \\
-&= \mqty[z & \exp(-i \frac{\theta}{2}) (x - iy) \\ \exp(i \frac{\theta}{2}) (x + iy) & -z].
-\end{split}
-\end{equation}
-$$
-
-In other words, the matrix elements of the rotated Pauli vector are equivalent to transforming $x + iy$ and $x - iy$ by a phase factor of $\exp(\pm i \frac{\theta}{2})$.
-We also see from Equation $\eqref{eq:pauli-rotation-algebraic}$ that the $x$ and $y$ components transform as
+This implies that $b = \sqrt{-x - iy} = -c$.
+Therefore we have
 
 $$
 \begin{align}
-x &\to x \cos(\theta) + y \sin(\theta) \\
-y &\to y \cos(\theta) - x \sin(\theta).
+a &= \sqrt{x - iy}, \\
+b &= \sqrt{-x - iy}, \\
+c &= -b, \\
+d &= a.
 \end{align}
 $$
 
-This matches the regular rotation of a vector in the $xy$-plane by an angle $\theta$
+We can summarize this as
 
 $$
 \begin{equation}
-\mqty[x \\ y] \to \mqty[\cos(\theta) & -\sin(\theta) \\ \sin(\theta) & \cos(\theta)] \mqty[x \\ y].
+\mqty[z & x - iy \\ x + iy & -z] = \mqty[\sqrt{x - iy} \\ \sqrt{-x - iy}] \mqty[-\sqrt{-x - iy} & \sqrt{x - iy}].
 \end{equation}
 $$
 
-### U(2) and SU(2) Groups
-
-We have seen how to reflect and rotate Pauli vectors using the Pauli matrices.
-A summary of the transformations is given in the table below.
-
-<table>
-    <thead>
-        <tr>
-            <th>Transformation</th>
-            <th>Form</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td rowspan={2}>
-                Reflection along $x$
-
-                $(x, y, z) \to (-x, y, z)$
-            </td>
-            <td>
-                $V \to -\sigma_x V \sigma_x$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                $V \to -\mqty[0 & 1 \\ 1 & 0] V \mqty[0 & 1 \\ 1 & 0]$
-            </td>
-        </tr>
-        <tr>
-            <td rowspan={2}>
-                Reflection along $y$
-
-                $(x, y, z) \to (x, -y, z)$
-            </td>
-            <td>
-                $V \to -\sigma_y V \sigma_y$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                $V \to -\mqty[0 & -i \\ i & 0] V \mqty[0 & -i \\ i & 0]$
-            </td>
-        </tr>
-        <tr>
-            <td rowspan={2}>
-                Reflection along $z$
-
-                $(x, y, z) \to (x, y, -z)$
-            </td>
-            <td>
-                $V \to -\sigma_z V \sigma_z$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                $V \to -\mqty[1 & 0 \\ 0 & -1] V \mqty[1 & 0 \\ 0 & -1]$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Reflection along an arbitrary axis $U$, where $UU = 1$
-                $(x, y, z) \to (x', y', z')$
-            </td>
-            <td>$V \to -U V U$</td>
-        </tr>
-        <tr>
-            <td rowspan={2}>
-                Rotation by an angle $\theta$ in the $xy$-plane
-
-                $(x, y, z) \to (x \cos(\theta) + y \sin(\theta), y \cos(\theta) - x \sin(\theta), z)$
-            </td>
-            <td>
-                $V \to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_x \sigma_y)^\dagger$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                $V \to \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})] V \mqty[\exp(-i \frac{\theta}{2}) & 0 \\ 0 & \exp(i \frac{\theta}{2})]^\dagger$
-            </td>
-        </tr>
-        <tr>
-            <td rowspan={2}>
-                Rotation by an angle $\theta$ in the $zx$-plane
-
-                $(x, y, z) \to (x \cos(\theta) + z \sin(\theta), y, z \cos(\theta) - x \sin(\theta))$
-            </td>
-            <td>
-                $V \to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_z \sigma_x) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_z \sigma_x)^\dagger$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                $V \to \mqty[\cos(\frac{\theta}{2}) & -\sin(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})] V \mqty[\cos(\frac{\theta}{2}) & -\sin(\frac{\theta}{2}) \\ \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})]^\dagger$
-            </td>
-        </tr>
-        <tr>
-            <td rowspan={2}>
-                Rotation by an angle $\theta$ in the $yz$-plane
-
-                $(x, y, z) \to (x, y \cos(\theta) + z \sin(\theta), z \cos(\theta) - y \sin(\theta))$
-            </td>
-            <td>
-                $V \to \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_y \sigma_z) V \qty(\cos(\frac{\theta}{2}) - \sin(\frac{\theta}{2}) \sigma_y \sigma_z)^\dagger$
-            </td>
-        </tr>
-        <tr>
-            <td>
-                $V \to \mqty[\cos(\frac{\theta}{2}) & -i \sin(\frac{\theta}{2}) \\ -i \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})] V \mqty[\cos(\frac{\theta}{2}) & -i \sin(\frac{\theta}{2}) \\ -i \sin(\frac{\theta}{2}) & \cos(\frac{\theta}{2})]^\dagger$
-            </td>
-        </tr>
-    </tbody>
-</table>
-
-All these transformations are performed by conjugating the Pauli vector with the appropriate Pauli matrix or combination of Pauli matrices.
-These matrices are unitary, and are therefore within the unitary group $\text{U}(2)$.
-Additionally, the rotations also have a positive determinant, and are therefore within the special unitary group $\text{SU}(2)$.
-
-Now, let's prove that rotations must be performed by conjugating the Pauli vector with a $\text{SU}(2)$ matrix.
-The key point is that the norm of the Pauli vector must remain invariant under rotations.
-We shall now prove a few important lemmas in order to show this.
-
----
-
-**Lemma**. In the matrix representation of a Pauli vector, the determinant is the negative of the norm squared of the corresponding vector.
-
-**Proof**. This is trivial.
+We shall make a definition to make this more readable.
+Let
 
 $$
 \begin{equation}
-\begin{split}
-\det(V) &= \det\mqty[z & x - iy \\ x + iy & -z] \\
-&= z(-z) - (x - iy)(x + iy) \\
-&= -z^2 - (x^2 + y^2) \\
-&= -(x^2 + y^2 + z^2) \\
-&= -\norm{\vb{v}}^2.
-\end{split}
+\xi^1 := \sqrt{x - iy}, \quad \xi^2 := \sqrt{-x - iy}.
 \end{equation}
 $$
 
-Thus, the determinant of the Pauli vector is indeed the negative of the norm squared of the corresponding vector. $\blacksquare$
-
----
-
-We also know that all Pauli vectors are Hermitian, and therefore the rotated Pauli vector must also be Hermitian.
-This means that
+Then we can rewrite the Pauli vector as
 
 $$
 \begin{equation}
-V \to (AVB) = (AVB)^\dagger = B^\dagger V A^\dagger
+V = \mqty[\xi^1 \\ \xi^2] \mqty[-\xi^2 & \xi^1].
 \end{equation}
 $$
 
-As such, we can guess that $A = B^\dagger$ and $B = A^\dagger$.
-Thus, the transformed Pauli vector takes the form $V \to A V A^\dagger$.
-We just need to show that $A \in \text{SU}(2)$ now.
-
----
-
-**Lemma**. Under the transformation $V \to A V A^\dagger$, the norm of the Pauli vector is invariant if and only if $\det(A) \in \mathbb{S}^1$.
-
-**Proof**. Since the norm is just the determinant of the Pauli vector, we need to show that
-
-$$
-\begin{equation}
-\det(V) = \det(AVA^\dagger) = \det(A) \det(V) \det(A^\dagger).
-\end{equation}
-$$
-
-The $\det(V)$ terms cancel out, and we are left with
-
-$$
-\begin{equation}
-1 = \det(A) \det((A^T)^*) = \det(A) \det(A)^* = \abs{\det(A)}^2.
-\end{equation}
-$$
-
-This means that $\det(A)$ must lie on the unit circle, i.e., $\det(A) \in \mathbb{S}^1$. $\blacksquare$
-
----
-
-We also show that $A$ is phase-ambiguous, meaning that we can multiply it by a phase factor without changing the transformation.
-
----
-
-**Lemma**. The matrix $A$ performs the same transformation as $A \exp(i \phi)$ for any $\phi \in \mathbb{R}$.
-
-**Proof**. This is quite straightforward.
-
-$$
-\begin{equation}
-\begin{split}
-(A \exp(i \phi)) V (A \exp(i \phi))^\dagger &= A \exp(i \phi) V A^\dagger \exp(-i \phi) \\
-&= A V A^\dagger.
-\end{split}
-\end{equation}
-$$
-
-Thus, the transformation is indeed invariant under multiplication by a phase factor. $\blacksquare$
-
----
-
-To resolve the phase ambiguity, we just multiply the transformation by a certain phase factor such that $\det(A) = 1$.
-It can be shown that given $\det(A) = e^{i \phi}$, then $\det(A \exp(-i \phi/2)) = 1$.
-Finally,
-
----
-
-**Theorem**. The transformation $V \to A V A^\dagger$ preserves the norm of the Pauli vector if and only if $A \in \text{U}(2)$.
-
-**Proof**. We know that $V$ is always traceless, so
-
-$$
-\begin{equation}
-\tr(V) = 0 = \tr(AVA^\dagger) = \tr(A^\dagger AV).
-\end{equation}
-$$
-
-The only way for $\tr(A^\dagger A)$ to be zero is if $A^\dagger A$ is a scaled identity operator; $A^\dagger A = k$ for some scalar $k$.
-This is because the trace of a matrix is the sum of its eigenvalues, and the only way for this sum to be zero is if all eigenvalues are zero.
-Next, we take the determinant of both sides,
-
-$$
-\begin{equation}
-\det(k) = \det(A^\dagger A) = k^2.
-\end{equation}
-$$
-
-This means that $k = \pm 1$.
-However, since we know that $A$ is positive along the diagonal (because it is a rotation), we have $k = 1$.
-Therefore we have $\det(A^\dagger A) = 1 \implies A^\dagger A = 1$.
-This is the definition of a unitary matrix, and therefore $A \in \text{U}(2)$. $\blacksquare$
-
----
-
-### SU(2) as the Double Cover of SO(3)
-
-
-
-
-
-## Appendix: Proof of Product of Orthogonal Vectors
-
-We want to prove the following theorem:
-
-$$
-\begin{equation}
-VW = -WV
-\end{equation}
-$$
-
-where $V$ and $W$ are orthogonal vectors. Recall that they are orthogonal if:
-
-$$
-\begin{equation}
-\vb{v} \cdot \vb{w} = V^x W^x + V^y W^y + V^z W^z = 0
-\end{equation}
-$$
-
-We can write both as linear combinations of the Pauli matrices:
+The components $x$, $y$, and $z$ can be expressed in terms of $\xi^1$ and $\xi^2$ as follows:
 
 $$
 \begin{align}
-V &= V^x \sigma_x + V^y \sigma_y + V^z \sigma_z = V^i \sigma_i \\
-W &= W^x \sigma_x + W^y \sigma_y + W^z \sigma_z = W^j \sigma_j
+x &= \frac{1}{2} \qty(\xi^1 \xi^1 - \xi^2 \xi^2), \\
+y &= \frac{i}{2} \qty(\xi^1 \xi^1 + \xi^2 \xi^2), \\
+z &= -\xi^1 \xi^2.
 \end{align}
 $$
 
-Multiplying these two vectors gives us:
+And finally, we can remove the ambiguity by requiring that the top component of the column vector is $1$.
+This gives us
+
+$$
+\begin{equation}
+V = \mqty[1 \\ \xi^2 / \xi^1] \xi^1 \mqty[-\xi^2 & \xi^1].
+\end{equation}
+$$
+
+The column vector $\mqty[1 \\ \xi^2 / \xi^1]$ is known as a **Pauli spinor**.
+Note that different Pauli spinors with the same ratio $\xi^2 / \xi^1$ are considered different Pauli spinors.
+However, they correspond to the same Pauli vector.
+
+## Transformation of Pauli Spinors
+
+Recall that under a rotation, Pauli vectors transform by a negative conjugation with a $\text{SU}(2)$ matrix,
+
+$$
+\begin{equation}
+V \to [\text{SU}(2)] V [\text{SU}(2)]^\dagger.
+\end{equation}
+$$
+
+If we factor $V$ like we did above, we can see how the Pauli spinors transform;
+
+$$
+\begin{equation}
+V \to [\text{SU}(2)] \mqty[\xi^1 \\ \xi^2] \mqty[-\xi^2 & \xi^1] [\text{SU}(2)]^\dagger.
+\end{equation}
+$$
+
+We can group them like this:
+
+$$
+\begin{equation}
+V \to \underbrace{[\text{SU}(2)] \mqty[\xi^1 \\ \xi^2]}_\text{Transformed spinor} \underbrace{\mqty[-\xi^2 & \xi^1] [\text{SU}(2)]^\dagger}_\text{Transformed spinor}.
+\end{equation}
+$$
+
+This shows that the Pauli spinors transform with one $\text{SU}(2)$ matrix, while the Pauli vector transforms with two $\text{SU}(2)$ matrices.
+This finally creates a solid mathematical explanation for the half-rotation property of spinors, like we have seen with Jones vectors and quantum spin states.
+
+## Spinor Spaces
+
+We will now discuss the abstract algebraic structure of Pauli spinors.
+This discussion requires some prior knowledge of tensor products, which I included a brief overview of [here](../../Part%200%20Math%20Boosters/Tensors).
+
+Spinors are elements of a vector space known as a **spinor space**.
+The spinor space is a two-dimensional complex vector space, which can be denoted as $\mathbb{C}^2$.
+We write that
+
+$$
+\begin{equation}
+\xi \in \mathcal{S} = \mathbb{C}^2.
+\end{equation}
+$$
+
+Dual spiniors are elements of the dual space of the spinor space, which is denoted as $\mathcal{S}^*$,
+
+$$
+\begin{equation}
+\zeta \in \mathcal{S}^* = (\mathbb{C}^2)^*.
+\end{equation}
+$$
+
+Just like a vector, we can write a spinor as a linear combination of basis vectors.
+Similarly, we can write a dual spinor as a linear combination of dual basis vectors.
+
+$$
+\begin{align}
+\xi &= \xi^1 s_1 + \xi^2 s_2, \\
+\zeta &= \zeta_1 s^1 + \zeta_2 s^2.
+\end{align}
+$$
+
+The spinor components $\xi^1$ and $\xi^2$ are covariant, while the dual spinor components $\zeta_1$ and $\zeta_2$ are contravariant.
+
+### Pauli Spinors as Tensor Products
+
+Now let's consider how we can write a Pauli vector using spinors.
+In abstract form, a Pauli vector's components are written as $V^a_b$, where $a$ and $b$ are indices that can take values $1$ or $2$.
+
+We can thus write
 
 $$
 \begin{equation}
 \begin{split}
-VW &= (V^i \sigma_i)(W^j \sigma_j) \\
-&= V^i W^j \sigma_i \sigma_j \\
-&= -V^i W^j \sigma_j \sigma_i \\
-&= -WV
+V &= \mqty[z & x - iy \\ x + iy & -z] \\
+&= z \mqty[1 & 0 \\ 0 & 0] + (x - iy) \mqty[0 & 1 \\ 0 & 0] + (x + iy) \mqty[0 & 0 \\ 1 & 0] - z \mqty[0 & 0 \\ 0 & 1] \\
+&= z \mqty[1 \\ 0] \otimes \mqty[1 & 0] + (x - iy) \mqty[0 \\ 1] \otimes \mqty[0 & 1] + (x + iy) \mqty[0 \\ 1] \otimes \mqty[1 & 0] - z \mqty[0 \\ 1] \otimes \mqty[0 & 1] \\
+&= V^1_1 s_1 \otimes s^1 + V^2_2 s_2 \otimes s^2 + V^1_2 s_1 \otimes s^2 + V^2_1 s_2 \otimes s^1.
 \end{split}
 \end{equation}
 $$
 
-where we have used implicit summation over $i$ and $j$.
+In Einstein notation, we can write this as
 
-Note that $\sigma_i \sigma_j = -\sigma_j \sigma_i$ only applies to $i \neq j$.
-However, because $V$ and $W$ are orthogonal, we have $V^i W^i = 0$.
-As such, the only terms that survive are those where $i \neq j$, which gives us the desired result.
+$$
+\begin{equation}
+V = V^a_b s_a \otimes s^b,
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+V = V^a_b \ket{s_a} \bra{s^b}.
+\end{equation}
+$$
+
+We can perform this procedure for the basis Pauli matrices as well, which yield
+
+$$
+\begin{align}
+\sigma_x &= \mqty[0 & 1 \\ 1 & 0] = 0 s_1 \otimes s^1 + 1 s_1 \otimes s^2 + 1 s_2 \otimes s^1 + 0 s_2 \otimes s^2, \\
+\sigma_y &= \mqty[0 & -i \\ i & 0] = 0 s_1 \otimes s^1 + (-i) s_1 \otimes s^2 + i s_2 \otimes s^1 + 0 s_2 \otimes s^2, \\
+\sigma_z &= \mqty[1 & 0 \\ 0 & -1] = 1 s_1 \otimes s^1 + 0 s_1 \otimes s^2 + 0 s_2 \otimes s^1 - 1 s_2 \otimes s^2.
+\end{align}
+$$
+
+### Sigma Matrices as Linear Maps
+
+We can also view the Pauli matrices as linear maps from the 3D vector space to the spinor space.
+We define the map $\sigma$ such that
+
+$$
+\begin{align}
+\sigma(\vb{e}_x) &= \sigma_x = \mqty[0 & 1 \\ 1 & 0], \\
+\sigma(\vb{e}_y) &= \sigma_y = \mqty[0 & -i \\ i & 0], \\
+\sigma(\vb{e}_z) &= \sigma_z = \mqty[1 & 0 \\ 0 & -1].
+\end{align}
+$$
+
+
+
