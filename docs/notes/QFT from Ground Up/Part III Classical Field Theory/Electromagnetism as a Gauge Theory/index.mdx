@@ -1,0 +1,33 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Electromagnetism as a Gauge Theory
+
+In this section, we will explore how electromagnetism can be formulated as a gauge theory.
+In introductory physics, we learn about electricity and magnetism—two fundamental forces of nature.
+We begin with electrostatics, which describes the behavior of electric charges at rest, and then see how moving charges create magnetic fields.
+This typically culminates in Maxwell's equations, which is usually given as a set of four equations.
+
+However, there is a deeper structure to electromagnetism. Specifically, it can be formulated as a gauge theory, which is a powerful framework that describes how fields interact with each other.
+In this section, we will explore the key concepts of gauge theory and how they apply to electromagnetism.
+But to do so, we will need to formulate Maxwell's equations in a more general way, using relativistic notation.
+
+At a fundamental level, electromagnetism exists because of the local $\text{U}(1)$ symmetry present in the Dirac field.
+From Noether's theorem, we know that this symmetry leads to a local conservation law, which is the conservation of electric charge.
+As such, electric charge obeys a continuity equation.

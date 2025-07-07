@@ -1,0 +1,237 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+# Dirac Spinors and Spin Groups
+
+Previously, we introduced Weyl spinors, which are two-component complex vectors that represent the state of a spin-1/2 particle.
+Crucially, Weyl spinors are chiral—there are left-handed Weyl spinors and right-handed Weyl spinors.
+In this section, we will explore Dirac spinors, which are four-component complex vectors that can represent both left-handed and right-handed Weyl spinors.
+Then, we will discuss various group theoretical aspects of spinors, including double covers and spin groups.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+When we deal with spin-1/2 particles, we need to consider both left-handed and right-handed Weyl spinors.
+Is there a way to keep the two Weyl spinors together in a single object?
+
+Recall that we have left-handed Weyl spinors $\mqty[\psi^1 \\ \psi^2]$ and right-handed Weyl spinors $\mqty[\chi_{\dot{1}} & \chi_{\dot{2}}]$.
+They transform by
+
+$$
+\begin{align}
+\mqty[\psi^1 \\ \psi^2] &\to L \mqty[\psi^1 \\ \psi^2], \\
+\mqty[\chi_{\dot{1}} & \chi_{\dot{2}}] &\to \mqty[\chi_{\dot{1}} & \chi_{\dot{2}}] (L^{-1})^*.
+\end{align}
+$$
+
+To combine them, we first need to make both Weyl spinors column vectors.
+We can do this by taking the transpose of the right-handed Weyl spinors to get
+
+$$
+\begin{equation}
+\mqty[\chi_{\dot{1}} & \chi_{\dot{2}}] (L^{-1})^* \overset{\text{Transpose}}{\longrightarrow} (L^{-1})^\dagger \mqty[\chi_{\dot{1}} \\ \chi_{\dot{2}}].
+\end{equation}
+$$
+
+Finally, we can combine the two Weyl spinors into a single four-component complex vector, known as a Dirac spinor:
+
+$$
+\begin{equation}
+\begin{array}{r}
+    L \mqty[\psi^1 \\ \psi^2] \\
+    (L^{-1})^\dagger \mqty[\chi_{\dot{1}} \\ \chi_{\dot{2}}]
+\end{array}
+\longrightarrow
+\mqty[
+    L & \displaystyle \mqty{0 & 0 \\ 0 & 0} \\
+    \displaystyle \mqty{0 & 0 \\ 0 & 0} & (L^{-1})^\dagger
+]
+\mqty[\psi^1 \\ \psi^2 \\ \chi_{\dot{1}} \\ \chi_{\dot{2}}].
+\end{equation}
+$$
+
+As shown above, the Dirac spinor is a four-component complex vector that combines both left-handed and right-handed Weyl spinors.
+The top two components represent the left-handed Weyl spinor and transform with $L$, while the bottom two components represent the right-handed Weyl spinor and transform with $(L^{-1})^\dagger$.
+
+The matrix
+
+$$
+\mqty[
+    L & \displaystyle \mqty{0 & 0 \\ 0 & 0} \\
+    \displaystyle \mqty{0 & 0 \\ 0 & 0} & (L^{-1})^\dagger
+]
+$$
+
+is a Dirac spinor transformation matrix in the Weyl basis.
+Evidently, it is a block diagonal matrix, where the top-left block corresponds to the left-handed Weyl spinor and the bottom-right block corresponds to the right-handed Weyl spinor.
+We say that it belongs to the direct sum of the two Weyl spinor representations;
+
+$$
+\begin{equation}
+\mqty[
+    L & \displaystyle \mqty{0 & 0 \\ 0 & 0} \\
+    \displaystyle \mqty{0 & 0 \\ 0 & 0} & (L^{-1})^\dagger
+] \in \text{SL}(2, \mathbb{C})_L \oplus \text{SL}(2, \mathbb{C})_{R}.
+\end{equation}
+$$
+
+The Dirac spinor is often denoted as a single letter $\psi$.
+It appears in the Dirac equation,
+
+$$
+\begin{equation}
+(i\hbar \gamma^\mu \partial_\mu - mc)\psi = 0,
+\end{equation}
+$$
+
+which describes the behavior of spin-1/2 particles in quantum field theory.
+
+## Double Covers
+
+We will now formalize our understanding of double covers.
+In the past, we have seen that for every $\text{SO}(3)$ rotation, there are two $\text{SU}(2)$ rotations that correspond to it.
+This is because Pauli vectors transform by $V \to [\text{SU}(2)] V [\text{SU}(2)]^\dagger$, and so adding a negative sign to the $\text{SU}(2)$ matrix does not change the Pauli vector.
+This means that the $\text{SU}(2)$ group is a double cover of the $\text{SO}(3)$ group.
+
+Similarly, we have seen that for every Lorentz transformation, there are two $\text{SL}(2, \mathbb{C})$ transformations that correspond to it.
+This is because Weyl vectors transform by $W \to [\text{SL}(2, \mathbb{C})] W [\text{SL}(2, \mathbb{C})]^\dagger$, and so adding a negative sign to the $\text{SL}(2, \mathbb{C})$ matrix does not change the Weyl vector.
+This means that the $\text{SL}(2, \mathbb{C})$ group is a double cover of the Lorentz group $\text{SO}(1, 3)$.
+
+The idea of double covers has a topological perspective.
+$\text{SU}(2)$ is roughly the same as the 3-sphere $S^3$, while $\text{SO}(3)$ is roughly the same as the real projective space $\mathbb{RP}^3$.
+We will begin in one dimension to build up to this idea.
+
+Recall that for $\mathbb{RP}^1$, the real projective space in one dimension, we can think of it as a semicircle with the endpoints identified.
+This is because for every point $P \in \mathbb{RP}^1$ on the line, there exists two points on a circle that correspond to it, in which they are antipodal to each other.
+
+<Mafs>
+    <Coordinates.Cartesian />
+    {/* RP1 line */}
+    <Plot.OfY x={() => 1} color={color("pink")} />
+    <MafsMathJax at={[1.4, 3.2]} tex="\mathbb{RP}^1" color={color("pink")} />
+    {/* Circle */}
+    <Circle center={[0, 0]} radius={3} fillOpacity={0} />
+    {/* Two points */}
+    <Point x={3 * Math.cos(1 / 3)} y={3 * Math.sin(1 / 3)} />
+    <MafsMathJax at={[3.5 * Math.cos(1 / 3), 3.5 * Math.sin(1 / 3)]} tex="p"/>
+    <Point x={-3 * Math.cos(1 / 3)} y={-3 * Math.sin(1 / 3)} />
+    <MafsMathJax at={[-3.5 * Math.cos(1 / 3), -3.5 * Math.sin(1 / 3)]} tex="-p" />
+
+    <Vector tail={[3 * Math.cos(1 / 3), 3 * Math.sin(1 / 3)]} tip={[1, Math.tan(1 / 3)]} style="dashed" />
+    <Vector tail={[-3 * Math.cos(1 / 3), -3 * Math.sin(1 / 3)]} tip={[1, Math.tan(1 / 3)]} style="dashed" />
+
+    <Point x={1} y={Math.tan(1 / 3)} color={color("blue")} />
+    <MafsMathJax at={[1.3, 0.6]} tex="P" color={color("blue")} />
+</Mafs>
+
+As such, we say that the 1-sphere $S^1$ is a double cover of the real projective space $\mathbb{RP}^1$.
+This means that we can remove half of the circle and instead consider only the top semicircle.
+As the point walks off one endpoint of the semicircle, it reappears on the other endpoint.
+
+The act of projection maps every point $(x, y)$ on the semicircle to the point $(1, y/x)$ on the line.
+
+Now let's generalize to two dimensions.
+For $\mathbb{RP}^2$, the real projective space in two dimensions, we can think of it as a hemisphere with the boundary circle identified.
+Just like in the one-dimensional case, for every point $P \in \mathbb{RP}^2$ on the plane, there exists two points on a sphere that correspond to it, in which they are antipodal to each other.
+What this means is that we can remove half of the sphere and instead consider only the top hemisphere.
+
+In two dimensions, projection maps every point $(x, y, z)$ on the hemisphere to the point $(1, y/x, z/x)$ on the plane.
+
+For three dimensions, we have $\mathbb{RP}^3$, the real projective space in three dimensions.
+There is no way to visualize this in three dimensions, but we can still analyze it algebraically.
+
+The 3-sphere $S^3$ is defined as
+
+$$
+\begin{equation}
+S^3 = \{(x, y, z, w) \in \mathbb{R}^4 : x^2 + y^2 + z^2 + w^2 = 1\}.
+\end{equation}
+$$
+
+The result of this is that we have three independent parameters, which we can think of as the angles of a rotation in three dimensions.
+Then, the last parameter is fixed by the constraint that the sum of the squares equals one.
+
+Following the same pattern, we expect projection to act on a vector as
+
+$$
+\begin{equation}
+\mqty[x \\ y \\ z \\ w] \to \mqty[1 \\ y/x \\ z/x \\ w/x].
+\end{equation}
+$$
+
+### Correspondence Between S³, RP³, SU(2), and SO(3)
+
+With this in mind, we now consider the correspondence between these spaces and the groups we have seen so far.
+$\mathbb{RP}^3$ is homeomorphic to the group $\text{SO}(3)$, which is the group of rotations in three dimensions.
+Likewise, $S^3$ is homeomorphic to the group $\text{SU}(2)$, which is the group of unitary transformations in two dimensions.
+This means that $\text{SU}(2)$ is a double cover of $\text{SO}(3)$, as we have seen before.
+
+We can now show that $\text{SU}(2)$ is homeomorphic to $S^3$.
+In other words, $\text{SU}(2)$ is equivalent to the set of all $(x, y, z, w) \in \mathbb{R}^4$ such that $x^2 + y^2 + z^2 + w^2 = 1$.
+
+One can easily verify that unitary matrices in $\text{SU}(2)$ have the form
+
+$$
+\begin{equation}
+U = \mqty[\alpha & -\beta^* \\ \beta & \alpha^*],
+\end{equation}
+$$
+
+where $\alpha, \beta \in \mathbb{C}$.
+Since all unitary matrices have a determinant of one, it follows that
+
+$$
+\begin{equation}
+\det(U) = \abs{\alpha}^2 + \abs{\beta}^2 = 1.
+\end{equation}
+$$
+
+We can replace $\alpha$ and $\beta$ with their real and imaginary parts, such that $\alpha = a + ib$ and $\beta = c + id$, where $a, b, c, d \in \mathbb{R}$.
+Then, we have
+
+$$
+\begin{equation}
+\det(U) = a^2 + b^2 + c^2 + d^2 = 1.
+\end{equation}
+$$
+
+As such, we can see that the set of all unitary matrices in $\text{SU}(2)$ is equivalent to the set of all $(a, b, c, d) \in \mathbb{R}^4$ such that $a^2 + b^2 + c^2 + d^2 = 1$.
+This is precisely the definition of $S^3$, which means that $\text{SU}(2)$ is homeomorphic to $S^3$.
+
+### Simply Connectedness
+
+Another property of the groups is that $\text{SU}(2)$ is simply connected, while $\text{SO}(3)$ is not.
+
+A simply connected space has the geometric interpretation that it has no holes.
+More formally, if, for any loop in the space, we can continuously shrink it to a point without leaving the space, then the space is simply connected.
+For example, the surface of a sphere is simply connected, while the surface of a torus is not.
+
+For $n \geq 2$, all spheres $S^n$ are simply connected.
+For $n = 1$, the circle $S^1$ is not simply connected, as it has a hole in the middle.
+On the other hand, the real projective space $\mathbb{RP}^n$ is not simply connected.
+This is because when we deform a loop in $\mathbb{RP}^n$, when we transform one part of the loop, the other end of the loop is also transformed.
+
+## SL(2, C) Double Cover of SO⁺(1, 3)
+
+In four-dimensional spacetime, we have the Lorentz group $\text{SO}^+(1, 3)$, which is the group of Lorentz transformations that preserve the spacetime interval.
+
+As we have seen, for any $\Lambda \in \text{SO}^+(1, 3)$, there are two $\text{SL}(2, \mathbb{C})$ transformations that correspond to it.
+This is because for any Weyl vector $W$, we have $W \to [\text{SL}(2, \mathbb{C})] W [\text{SL}(2, \mathbb{C})]^\dagger$, and so adding a negative sign to the $\text{SL}(2, \mathbb{C})$ matrix does not change the Weyl vector.
+This means that the $\text{SL}(2, \mathbb{C})$ group is a double cover of the Lorentz group $\text{SO}^+(1, 3)$.
+
+

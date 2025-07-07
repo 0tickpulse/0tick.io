@@ -1,0 +1,570 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+# Rotors and Spinors
+
+In this section, we will explore how transformations in Clifford algebra can be represented using mathematical objects called rotors.
+This leads us to the generalization of spin groups, which are the double cover of the special orthogonal group.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Rotations in 2D
+
+We shall first consider a simple case of a rotation in the Clifford algebra $\text{C}\ell(2, 0)$, which is the algebra of 2D vectors.
+Recall that this algebra consist of the scalar $1$, the basis vectors $\vb{e}_x$ and $\vb{e}_y$, and the bivector $\vb{e}_x \vb{e}_y$.
+We know that in 2D, specifically the complex numbers, a rotation by an angle $\theta$ can be represented as a complex number $e^{i\theta}$.
+
+The highest-grade element of the algebra is the bivector $\vb{e}_x \vb{e}_y$. We call these elements pseudoscalars because they only have 1 basis and thus act like scalars.
+We shall call this bivector $i := \vb{e}_x \vb{e}_y$ because it squares to $-1$:
+
+$$
+\begin{equation}
+i^2 = (\vb{e}_x \vb{e}_y)(\vb{e}_x \vb{e}_y) = -\vb{e}_x \vb{e}_x \vb{e}_y \vb{e}_y = -1.
+\end{equation}
+$$
+
+Just like complex numbers, we expect $i$ to rotate a vector by 90 degrees.
+This means that a vector $\vb{v} = v^x \vb{e}_x + v^y \vb{e}_y$ rotated by 90 degrees should be given by $-v^y \vb{e}_x + v^x \vb{e}_y$.
+We can explicitly check this by multiplying the vector $\vb{v}$ by $i$, which yields
+
+$$
+\begin{equation}
+\begin{split}
+\vb{v} i &= (v^x \vb{e}_x + v^y \vb{e}_y) \vb{e}_x \vb{e}_y \\
+&= v^x (\vb{e}_x \vb{e}_x \vb{e}_y) + v^y (\vb{e}_y \vb{e}_x \vb{e}_y) \\
+&= -v^y \vb{e}_x + v^x \vb{e}_y,
+\end{split}
+\end{equation}
+$$
+
+which is indeed the expected result.
+Multiplying in the other direction, we have
+
+$$
+\begin{equation}
+\begin{split}
+i \vb{v} &= \vb{e}_x \vb{e}_y (v^x \vb{e}_x + v^y \vb{e}_y) \\
+&= v^x (\vb{e}_x \vb{e}_y \vb{e}_x) + v^y (\vb{e}_x \vb{e}_y \vb{e}_y) \\
+&= -v^x (\vb{e}_x \vb{e}_x \vb{e}_y) + v^y (\vb{e}_x \vb{e}_y \vb{e}_y) \\
+&= -v^x \vb{e}_x + v^y \vb{e}_y,
+\end{split}
+\end{equation}
+$$
+
+which is a rotation by 90 degrees in the opposite direction.
+
+To generalize this to arbitrary rotations, we can use the exponential map.
+The exponential map allows us to represent a rotation by an angle $\theta$ as $e^{i\theta}$.
+Note that $i$ here is the bivector $\vb{e}_x \vb{e}_y$.
+To exponentiate a bivector, we can use the Taylor series expansion
+
+$$
+\begin{equation}
+e^{i\theta} = 1 + i\theta + \frac{(i\theta)^2}{2!} + \frac{(i\theta)^3}{3!} + \ldots,
+\end{equation}
+$$
+
+which leads to
+
+$$
+\begin{equation}
+e^{i\theta} = \cos(\theta) + i \sin(\theta) = \cos(\theta) + \vb{e}_x \vb{e}_y \sin(\theta).
+\end{equation}
+$$
+
+## Reflections and Rotations in 3D
+
+In 3D, we can represent a reflection across a plane using the Clifford algebra $\text{C}\ell(3, 0)$.
+Recall that this algebra consists of the scalar $1$, the basis vectors $\sigma_x$, $\sigma_y$, and $\sigma_z$, and the bivectors $\sigma_x \sigma_y$, $\sigma_y \sigma_z$, and $\sigma_z \sigma_x$.
+
+Recall from the previous sections that a reflection across the $z$-axis can be represented as a negative conjugation with $\sigma_z$, leading to the transformation
+
+$$
+\begin{equation}
+V \to -\sigma_z V \sigma_z.
+\end{equation}
+$$
+
+We also know that this works for any arbitrary unit vector $U$, so we can express the reflection across $U$ as
+
+$$
+\begin{equation}
+V \to -U V U^{-1}.
+\end{equation}
+$$
+
+So, for example, if we want to rotate $V$ by an angle $\theta$ in the $xy$-plane, we can choose any two vectors in the $xy$-plane that are $\theta/2$ apart, and reflect along these two vectors.
+We can just choose the first as $\sigma_x$, and the second as
+
+$$
+\begin{equation}
+\tau = \cos(\theta/2) \sigma_x + \sin(\theta/2) \sigma_y.
+\end{equation}
+$$
+
+<Mafs>
+    <Line.Segment point1={[0, -3]} point2={[0, 3]} color={color("blue")} />
+    <Vector tail={[0, 0]} tip={[1, 0]} color={color("blue")} />
+    <MafsMathJax tex="\sigma_x" at={[1.2, 0]} color={color("blue")} />
+    <Transform rotate={1}>
+        <Line.Segment point1={[0, -3]} point2={[0, 3]} color={color("pink")} />
+        <Vector tail={[0, 0]} tip={[1, 0]} color={color("pink")} />
+        <MafsMathJax tex="\tau" at={[1.2, 0]} color={color("pink")} />
+    </Transform>
+</Mafs>
+
+Then, the rotated vector is given by
+
+$$
+\begin{equation}
+\begin{split}
+V &\to -\tau (-\sigma_x V \sigma_x^{-1}) \tau^{-1} \\
+&= \tau \sigma_x V (\sigma_x \tau)^{-1}.
+\end{split}
+\end{equation}
+$$
+
+The product $\tau \sigma_x$ is a multivector whose explicit form is
+
+$$
+\begin{equation}
+\begin{split}
+\tau \sigma_x &= \qty[\cos(\theta/2) \sigma_x + \sin(\theta/2) \sigma_y] \sigma_x \\
+&= \cos(\theta/2) \sigma_x^2 + \sin(\theta/2) \sigma_y \sigma_x \\
+&= \cos(\theta/2) - \sigma_x \sigma_y \sin(\theta/2).
+\end{split}
+\end{equation}
+$$
+
+A multivector which can be expressed as a product of invertible vectors, such as this one, is known as a **versor**.
+
+As $\sigma_x \sigma_y$ squares to $-1$, it satisfies Euler's formula
+
+$$
+\begin{equation}
+\exp(\sigma_x \sigma_y \frac{\theta}{2}) = \cos(\frac{\theta}{2}) + \sigma_x \sigma_y \sin(\frac{\theta}{2}).
+\end{equation}
+$$
+
+If we use $-\frac{\theta}{2}$ instead of $\frac{\theta}{2}$, we get
+
+$$
+\begin{equation}
+\exp(-\sigma_x \sigma_y \frac{\theta}{2}) = \cos(\frac{\theta}{2}) - \sigma_x \sigma_y \sin(\frac{\theta}{2}).
+\end{equation}
+$$
+
+which matches the form of $\tau \sigma_x$.
+Thus, the rotation is
+
+$$
+\begin{equation}
+\begin{split}
+V &\to \exp(-\sigma_x \sigma_y \frac{\theta}{2}) V \qty[\exp(-\sigma_x \sigma_y \frac{\theta}{2})]^{-1} \\
+&= \exp(-\sigma_x \sigma_y \frac{\theta}{2}) V \exp(\sigma_x \sigma_y \frac{\theta}{2}).
+\end{split}
+\end{equation}
+$$
+
+More generally, to rotate any vector $V$ by an angle $\theta$ around any unit bivector $B$, we can use the formula
+
+$$
+\begin{equation}
+V \to \exp(-B \frac{\theta}{2}) V \exp(B \frac{\theta}{2}).
+\end{equation}
+$$
+
+The term $B \frac{\theta}{2}$ is known as a **rotor**.
+
+## Rotations and Boosts in 4D
+
+In 4D, we can represent a rotation or a boost using the Clifford algebra $\text{C}\ell(1, 3)$.
+This algebra consists of the scalar $1$, the basis vectors $\gamma_t$, $\gamma_x$, $\gamma_y$, and $\gamma_z$, the bivectors $\gamma_t \gamma_x$, $\gamma_t \gamma_y$, $\gamma_t \gamma_z$, $\gamma_x \gamma_y$, $\gamma_y \gamma_z$, and $\gamma_z \gamma_x$, the trivectors $\gamma_t \gamma_x \gamma_y$, $\gamma_t \gamma_y \gamma_z$, and $\gamma_t \gamma_z \gamma_x$, and the quadvector (pseudoscalar) $\gamma_t \gamma_x \gamma_y \gamma_z$.
+
+The form of transformation using rotors is independent of the dimension of the Clifford algebra.
+As such, we can use the same formula as in 3D.
+A rotation in two spatial dimensions $\gamma_i$ and $\gamma_j$ is given by
+
+$$
+\begin{equation}
+V \to \exp(-\gamma_i \gamma_j \frac{\theta}{2}) V \exp(\gamma_i \gamma_j \frac{\theta}{2}).
+\end{equation}
+$$
+
+Similarly, a boost in the time direction $\gamma_t$ and a spatial direction $\gamma_i$ is given by
+
+$$
+\begin{equation}
+V \to \exp(-\gamma_t \gamma_i \frac{\phi}{2}) V \exp(\gamma_t \gamma_i \frac{\phi}{2}),
+\end{equation}
+$$
+
+where $\phi$ is the rapidity of the boost.
+Note that boosts are slightly different in that $\gamma_t \gamma_i$ squares to $+1$ instead of $-1$.
+This means that they are elements of the split complex numbers.
+They satisfy a different version of Euler's formula,
+
+$$
+\begin{equation}
+\exp(\gamma_t \gamma_i \frac{\phi}{2}) = \cosh(\frac{\phi}{2}) + \gamma_t \gamma_i \sinh(\frac{\phi}{2}),
+\end{equation}
+$$
+
+We can leverage this fact to find out if any unit bivector $B$ is a rotation or a boost.
+If $B$ squares to $-1$, then it is a rotation, and if $B$ squares to $+1$, then it is a boost.
+
+## Rotors in Higher Dimensions
+
+In higher dimensions, we can generalize the concept of rotors to arbitrary dimensions.
+Specifically, we can define a rotor in the Clifford algebra $\text{C}\ell(p, q)$ as
+
+$$
+\begin{equation}
+R = \exp(-B \frac{\theta}{2}),
+\end{equation}
+$$
+
+where $B$ is a unit bivector in the algebra $\text{C}\ell(p, q)$ and $\theta$ is the angle of rotation or rapidity of the boost.
+These rotors are elements of the $\text{Spin}(p, q)$ group.
+
+If we only consider spatial dimensions, then the rotors are elements of the $\text{Spin}(n)$ group, which is the double cover of the special orthogonal group $\text{SO}(n)$.
+Another consideration is how to distinguish between rotations and reflections for a given rotor.
+
+A versor's "length" is defined as the number of vectors used to construct it.
+
+For a length-1 versor, we simply get a reflection:
+
+$$
+\begin{equation}
+V \to -U V U^{-1}.
+\end{equation}
+$$
+
+For a length-2 versor, we get a rotation, which is made of two reflections:
+
+$$
+\begin{equation}
+V \to -U_1 (-U_2 V U_2^{-1}) U_1^{-1} = (U_1 U_2) V (U_1 U_2)^{-1}.
+\end{equation}
+$$
+
+For a length-3 versor, we get a rotation followed by a reflection, which is made of three reflections:
+
+$$
+\begin{equation}
+V \to -U_1 (-U_2 (-U_3 V U_3^{-1}) U_2^{-1}) U_1^{-1} = -(U_1 U_2 U_3) V (U_1 U_2 U_3)^{-1}.
+\end{equation}
+$$
+
+For a length-4 versor, we get two rotations made of four reflections:
+
+$$
+\begin{equation}
+V \to -U_1 (-U_2 (-U_3 (-U_4 V U_4^{-1}) U_3^{-1}) U_2^{-1}) U_1^{-1} = (U_1 U_2 U_3 U_4) V (U_1 U_2 U_3 U_4)^{-1}.
+\end{equation}
+$$
+
+In general, if the length of the versor is odd, then it represents a reflection, and if it is even, then it represents a rotation.
+
+Note that for any versor, we can always scale it by an arbitrary scalar and the transformation will still hold.
+This is because the inverse of $\lambda U$ is $(\lambda U)^{-1} = \frac{1}{\lambda} U^{-1}$, so the scalar cancels out in the transformation.
+As such, by convention, we enforce that the versor is made up of unit vectors.
+This leaves us with only two versors for any transformation ($U$ and $-U$).
+
+The $\text{Spin}(n, 0)$ group is then defined as the following:
+
+<Boxed>
+
+The group $\text{Spin}(n, 0)$ is the group of all even-length versors in the Clifford algebra $\text{C}\ell(n, 0)$ that are made up of unit vectors.
+They are the double cover of $\text{SO}(n)$ and are used to represent rotations in $n$-dimensional space.
+
+</Boxed>
+
+If we allow spatial reflections, then we need the double cover of $\text{O}(n)$.
+As the group $\text{O}(n)$ is just $\text{SO}(n)$ without the "S", we denote the double cover as $\text{Pin}(n)$ (i.e. the spin group without the "S").
+
+If we allow boosts, then we need to consider the Clifford algebra $\text{C}\ell(p, q)$.
+The groups $\text{Spin}(p, q)$ and $\text{Pin}(p, q)$ are defined as follows:
+
+<Boxed>
+
+The group $\text{Spin}(p, q)$ is the group of all even-length versors in the Clifford algebra $\text{C}\ell(p, q)$ that are made up of unit vectors ($U_i^2 = \pm 1$),
+where timelike vectors square to $+1$ and spacelike vectors square to $-1$.
+
+---
+
+The group $\text{Spin}^+(p, q)$ is the group of all even-length versors in the Clifford algebra $\text{C}\ell(p, q)$ that are made up of unit vectors ($U_i^2 = \pm 1$),
+where timelike vectors square to $+1$ and spacelike vectors square to $-1$.
+Additionally, the inverse of such versors must be equal to the reverse of the versor;
+
+$$
+\begin{equation}
+(U_1 U_2 \ldots U_2k)(U_{2k} \ldots U_2 U_1) = 1.
+\end{equation}
+$$
+
+---
+
+The group $\text{Pin}(p, q)$ is the group of all versors in the Clifford algebra $\text{C}\ell(p, q)$ that are made up of unit vectors ($U_i^2 = \pm 1$),
+where timelike vectors square to $+1$ and spacelike vectors square to $-1$.
+
+</Boxed>
+
+### Grade-Involution
+
+We currently have two different transformations—rotations and reflections.
+These are expressed differently;
+
+$$
+\begin{align}
+\text{Rotation:} & \quad V \to R V R^{-1} \\
+\text{Reflection:} & \quad V \to -U V U^{-1}.
+\end{align}
+$$
+
+When combined with the fact that rotations are even-length versors and reflections are odd-length versors, we can define a new operation $\alpha$ that acts on a versor $U$ to provide the correct sign;
+
+$$
+\begin{align}
+\text{Rotation:} & \quad V \to \alpha(U) V U^{-1}, \quad \alpha(U) = +1 \\
+\text{Reflection:} & \quad V \to \alpha(U) V U^{-1}, \quad \alpha(U) = -1.
+\end{align}
+$$
+
+This operation is known as the **grade-involution operator**, denoted $\alpha(U)$ or $\hat{U}$.
+It is defined with the following two properties:
+
+1. For a single vector $U$, $\alpha(U) = +1$.
+2. For a product of versors $U_1$ and $U_2$, $\alpha(U_1 U_2) = \alpha(U_1) \alpha(U_2)$.
+
+This means that the grade-involution operator is multiplicative, and it is equal to $+1$ for even-length versors and $-1$ for odd-length versors.
+
+## Idempotents
+
+Now that we have explored the transformation properties of rotors (spin groups), we also need a way to represent spinors themselves in the Clifford algebra.
+There are two definitions of spinors that we will explore:
+
+1. A spinor is an element of an even-grade subalgebra of a Clifford algebra.
+2. A spinor is a minimal left ideal of a Clifford algebra.
+
+The first definition was pushed forward by David Hestenes, and the second by Fritz Sauter and Marcel Riesz.
+To understand these definitions, we need to explore the concept of idempotents or projectors.
+
+Intuitively, a projector is an operator that projects a vector onto a subspace.
+For example, we can project a vector in 2D and project it onto the $x$-axis;
+
+$$
+\begin{equation}
+P: \mqty[x \\ y] \mapsto \mqty[x \\ 0].
+\end{equation}
+$$
+
+Similarly, we can project a vector onto the $y$-axis;
+
+$$
+\begin{equation}
+P: \mqty[x \\ y] \mapsto \mqty[0 \\ y].
+\end{equation}
+$$
+
+In 3D, we can project a vector onto the $xy$-plane;
+
+$$
+\begin{equation}
+P: \mqty[x \\ y \\ z] \mapsto \mqty[x \\ y \\ 0].
+\end{equation}
+$$
+
+These projectors have matrix representations. For example, the projector onto the $xy$-plane is given by the matrix
+
+$$
+\begin{equation}
+P = \mqty[1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 & 0 & 0].
+\end{equation}
+$$
+
+There are two important properties of projectors that arise from this intuition:
+
+1. If we apply a projector twice, it is the same as applying it once.
+    This means that $P^2 = P$.
+2. If we project along two orthogonal axes, then the result is zero.
+    For example, if we project onto the $x$-axis and then onto the $y$-axis, we get zero.
+
+A projector, or **idempotent**, is a linear operator $P$ that satisfies the property $P^2 = P$.
+There are two important theorems that describe the properties of idempotents:
+
+1. If $P$ is an idempotent, then $1 - P$ is also an idempotent, and $P$ is orthogonal to $1 - P$.
+
+    This is because $(1 - P)^2 = 1 - 2P + P^2 = 1 - 2P + P = 1 - P$, satisfying the idempotent property.
+    They are orthogonal because $P(1 - P) = P - P^2 = P - P = 0$.
+
+2. If $P$ and $Q$ are orthogonal idempotents ($PQ = 0$), then $P + Q$ is also an idempotent.
+
+    This is because $(P + Q)^2 = P^2 + PQ + QP + Q^2 = P + 0 + 0 + Q = P + Q$, satisfying the idempotent property.
+
+A **minimal** idempotent is an idempotent that cannot be expressed as a sum of other idempotents.
+
+### Idempotents in Clifford Algebras
+
+Idempotents can also be applied not only to vectors, but also to multivectors in Clifford algebras, such as $\text{C}\ell(3, 0)$.
+In this case, for any unit vector $U$ (such that $U^2 = 1$), then
+
+$$
+\begin{equation}
+P_{U+} := \frac{1}{2} (1 + U)
+\end{equation}
+$$
+
+is an idempotent.
+This is because
+
+$$
+\begin{equation}
+\begin{split}
+P_{U+}^2 &= \frac{1}{4} (1 + U)(1 + U) \\
+&= \frac{1}{4} (1 + 2U + U^2) \\
+&= \frac{1}{4} (1 + 2U + 1) \\
+&= \frac{1}{4} (2 + 2U) \\
+&= \frac{1}{2} (1 + U) \\
+&= P_{U+}.
+\end{split}
+\end{equation}
+$$
+
+The idempotent
+
+$$
+\begin{equation}
+P_{U-} := \frac{1}{2} (1 - U) = 1 - P_{U+}
+\end{equation}
+$$
+
+is also an idempotent, and it is orthogonal to $P_{U+}$.
+
+One such example is where $U = \sigma_x$.
+This leads to the idempotents
+
+$$
+\begin{align}
+P_{\sigma_x+} &= \frac{1}{2} (1 + \sigma_x) = \frac{1}{2} \mqty[1 & 1 \\ 1 & 1], \\
+P_{\sigma_x-} &= \frac{1}{2} (1 - \sigma_x) = \frac{1}{2} \mqty[1 & -1 \\ -1 & 1].
+\end{align}
+$$
+
+We can see in the matrix representations that they add to unity as expected;
+
+$$
+\begin{equation}
+\begin{split}
+P_{\sigma_x+} + P_{\sigma_x-} &= \frac{1}{2} \mqty[1 & 1 \\ 1 & 1] + \frac{1}{2} \mqty[1 & -1 \\ -1 & 1] \\
+&= \frac{1}{2} \mqty[2 & 0 \\ 0 & 2] \\
+&= \mqty[1 & 0 \\ 0 & 1].
+\end{split}
+\end{equation}
+$$
+
+When we apply the projectors onto a multivector $M$, we can split $M$ into two parts, one transformed by $P_{U+}$ and the other by $P_{U-}$;
+
+$$
+\begin{align}
+M_{x+} &:= P_{\sigma_x+} M = \frac{1}{2} (1 + \sigma_x) M, \\
+M_{x-} &:= P_{\sigma_x-} M = \frac{1}{2} (1 - \sigma_x) M.
+\end{align}
+$$
+
+These two parts are orthogonal to each other and add up to the original multivector $M$.
+
+## Ideals
+
+We proceed to the second definition of spinors, which is that a spinor is a minimal left ideal of a Clifford algebra.
+First, we establish some preliminary definitions.
+
+- A **ring** is a set of elements where addition and multiplication are defined.
+    We do not need multiplicative inverses for all elements, so division is not required.
+- A **field** is a ring where every non-zero element has a multiplicative inverse.
+    In other words, division is required.
+
+An **ideal** is a subset of a ring that is closed under addition and multiplication by any element of the ring.
+An analogy is that an ideal is like a subspace in linear algebra, but it is not necessarily closed under scalar multiplication.
+Writing it formally, we have:
+
+<Boxed>
+
+An ideal of a ring $R$ is a subset $I \subseteq R$ such that
+
+1. $I$ is closed under addition: $\forall a, b \in I, a + b \in I$.
+2. $I$ is closed under multiplication by any element of the ring: $\forall a \in I, r \in R, ar \in I$.
+
+</Boxed>
+
+To take an example, the set of even integers $\{0, 2, -2, 4, -4, \ldots\}$ is an ideal of the ring of integers $\mathbb{Z}$.
+This is because it is closed under addition (the sum of two even integers is even) and multiplication by any integer (the product of an even integer and any integer is even).
+
+As multiplication is not necessarily commutative for matrices, we need to specify whether multiplication is cloesd from the left or from the right.
+For example, consider the set of matrices of the form
+
+$$
+\qty{\mqty[\class{pink}{a} & 0 \\ \class{pink}{b} & 0] \mid \class{pink}{a}, \class{pink}{b} \in \mathbb{R}}.
+$$
+
+This set is closed under addition;
+
+$$
+\begin{equation}
+\mqty[\class{pink}{a_1} & 0 \\ \class{pink}{b_1} & 0] + \mqty[\class{pink}{a_2} & 0 \\ \class{pink}{b_2} & 0] = \mqty[\class{pink}{a_1 + a_2} & 0 \\ \class{pink}{b_1 + b_2} & 0].
+\end{equation}
+$$
+
+It is closed when multiplying from the left by any matrix;
+
+$$
+\begin{equation}
+\mqty[p & q \\ r & s] \mqty[\class{pink}{a} & 0 \\ \class{pink}{b} & 0] = \mqty[\class{pink}{pa + qb} & 0 \\ \class{pink}{ra + sb} & 0].
+\end{equation}
+$$
+
+However, this closure does not hold when multiplying from the right;
+
+$$
+\begin{equation}
+\mqty[\class{pink}{a} & 0 \\ \class{pink}{b} & 0] \mqty[p & q \\ r & s] = \mqty[ap & aq + bq \\ br & bs].
+\end{equation}
+$$
+
+This means that this set is a **left ideal** of the ring of matrices, but not a right ideal.
+A **left ideal** is a subset of a ring that is closed under addition and multiplication from the left by any element of the ring.
+A **right ideal** is a subset of a ring that is closed under addition and multiplication from the right by any element of the ring.
+A **two-sided ideal** is a subset of a ring that is closed under addition and multiplication from both the left and the right by any element of the ring.
+
+Previously I stated that an ideal is similar to a subspace of a vector space.
+We can extend this analogy further.
+We can break a ring into ideals, just like we can break a vector space into subspaces.
+For example, in the ring of matrices, we can break it into the set of matrices $\mqty[a & 0 \\ b & 0]$ and the set of matrices $\mqty[0 & c \\ 0 & d]$.
+In a sense, if a ring is visualized as a space, then an ideal is like a line or a plane within that space.
+
+This analogy is further extended when we consider idempotents.
+Specifically, idempotents of rings create ideals of such rings.
+
+Consider a multivector $M$ and an idempotent $P$.
+We first demonstrate that $PM$ is a left ideal of the ring of multivectors.
+
+
+
+
+
+
+

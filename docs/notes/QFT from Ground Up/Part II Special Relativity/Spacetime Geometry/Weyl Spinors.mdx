@@ -168,7 +168,7 @@ Then we can write the vector as
 $$
 \begin{equation}
 \begin{split}
-V &= ct (1) + x \sigma_x + y \sigma_y + z \sigma_z \\
+W &= ct (1) + x \sigma_x + y \sigma_y + z \sigma_z \\
 &= ct \mqty[1 & 0 \\ 0 & 1] + x \mqty[0 & 1 \\ 1 & 0] + y \mqty[0 & -i \\ i & 0] + z \mqty[1 & 0 \\ 0 & 1] \\
 &= \mqty[ct + z & x - iy \\ x + iy & ct - z].
 \end{split}
@@ -176,14 +176,14 @@ V &= ct (1) + x \sigma_x + y \sigma_y + z \sigma_z \\
 $$
 
 This is the **Weyl vector**. There are a few interesting properties about Weyl vectors.
-First, the Weyl vector is Hermitian, meaning that $V^\dagger = V$.
+First, the Weyl vector is Hermitian, meaning that $W^\dagger = W$.
 Second, the determinant of a Weyl vector is the spacetime interval of its corresponding 4-vector.
 This can be proven easily:
 
 $$
 \begin{equation}
 \begin{split}
-\det(V) &= \det(\mqty[ct + z & x - iy \\ x + iy & ct - z]) \\
+\det(W) &= \det(\mqty[ct + z & x - iy \\ x + iy & ct - z]) \\
 &= (ct + z)(ct - z) - (x - iy)(x + iy) \\
 &= c^2 t^2 - z^2 - (x^2 + y^2) \\
 &= (ct)^2 - x^2 - y^2 - z^2 \\
@@ -197,22 +197,22 @@ $$
 Normally, we transform a 4-vector by multiplying it by a Lorentz transformation ($\text{SO}(1, 3)$).
 What are its corresponding transformation pairs?
 
-In other words, given a 4-vector $\vb{v}$ that transforms to $\Lambda \vb{v}$, we want to find a transformation pair $A, B$ such that $AVB$ corresponds to $\Lambda \vb{v}$.
-To find out, let's first leverage the fact that the Weyl vector is Hermitian; $(AVB)^\dagger = AVB$:
+In other words, given a 4-vector $\vb{v}$ that transforms to $\Lambda \vb{v}$, we want to find a transformation pair $A, B$ such that $AWB$ corresponds to $\Lambda \vb{v}$.
+To find out, let's first leverage the fact that the Weyl vector is Hermitian; $(AWB)^\dagger = AWB$:
 
 $$
 \begin{equation}
-B^\dagger V A^\dagger = AVB
+B^\dagger W A^\dagger = AWB
 \end{equation}
 $$
 
 We postulate that this implies $B^\dagger = A$ and $A^\dagger = B$.
 
-Next, we leverage the determinant property of the Weyl vector, $\det(AVB) = \det(V)$:
+Next, we leverage the determinant property of the Weyl vector, $\det(AWB) = \det(W)$:
 
 $$
 \begin{equation}
-\det(AVB) = \det(A) \det(V) \det(B) = \det(V)
+\det(AWB) = \det(A) \det(W) \det(B) = \det(W)
 \end{equation}
 $$
 
@@ -230,7 +230,7 @@ Plugging this back into the transformed Weyl vector, we have:
 
 $$
 \begin{equation}
-AVA^\dagger \to (A e^{i \phi} A^\dagger) V (A e^{-i \phi} A^\dagger) = A V A^\dagger
+AWA^\dagger \to (A e^{i \phi} A^\dagger) W (A e^{-i \phi} A^\dagger) = A W A^\dagger
 \end{equation}
 $$
 
@@ -367,19 +367,382 @@ With the fundamental properties of Weyl vectors and $\text{SL}(2, \mathbb{C})$ t
 Recall that Pauli spinors were obtained by factoring the Pauli vector as a tensor product of two 2-component vectors.
 We can do the same with Weyl vectors.
 
-First, we can write the Weyl vector as:
+First, we can write the Weyl vector as
 
 $$
 \begin{equation}
-V = \mqty[ct + z & x - iy \\ x + iy & ct - z] = \mqty[\alpha \\ \beta] \otimes \mqty[\gamma & \delta]
+W = \mqty[ct + z & x - iy \\ x + iy & ct - z] = \mqty[\alpha \\ \beta] \otimes \mqty[\gamma & \delta].
 \end{equation}
 $$
 
-In this case, the tensor product is just an outer product. We can write the resulting matrix as:
+In this case, the tensor product is just an outer product. The resulting matrix is
 
 $$
 \begin{equation}
-\mqty[\alpha \gamma & \alpha \delta \\ \beta \gamma & \beta \delta] = \mqty[ct + z & x - iy \\ x + iy & ct - z]
+\mqty[\alpha \gamma & \alpha \delta \\ \beta \gamma & \beta \delta] = \mqty[ct + z & x - iy \\ x + iy & ct - z],
 \end{equation}
 $$
 
+leading to
+
+$$
+\begin{align}
+\alpha \gamma &= ct + z, \\
+\beta \delta &= ct - z, \\
+\beta \gamma &= x + iy, \\
+\alpha \delta &= x - iy.
+\end{align}
+$$
+
+Given that we know all Weyl vector components are real, these products must also be real.
+As such, no matter what $\alpha$ is, for example, $\gamma$ must be a multiple of $\alpha^*$.
+We can thus write $\gamma = \alpha^* k$ for some real $k$.
+The same applies to $\beta$ and $\delta$; $\delta = \beta^* m$ for some real $m$.
+
+For the last two equations, since $x + iy$ and $x - iy$ are complex conjugates,
+
+$$
+\begin{equation}
+(\beta \gamma)^* = \alpha \delta.
+\end{equation}
+$$
+
+The left-hand side is $\beta^* \gamma^* = \beta^* \alpha k^*$, while the right-hand side is $\alpha \delta = \alpha \beta^* m$, so
+
+$$
+\begin{equation}
+\beta^* \alpha k^* = \alpha \beta^* m.
+\end{equation}
+$$
+
+This means that $k^* = m$, or $k = m^*$.
+But since both $k$ and $m$ are real, we have $k = m$.
+Summarizing, we have
+
+$$
+\begin{equation}
+\mqty[ct + z & x - iy \\ x + iy & ct - z] = \mqty[\alpha \\ \beta] \otimes \mqty[\alpha^* k & \beta^* k].
+\end{equation}
+$$
+
+Letting $k = 1$ for simplicity, we can write the Weyl vector as
+
+$$
+\begin{equation}
+W = \mqty[\alpha \\ \beta] \otimes \mqty[\alpha^* & \beta^*].
+\end{equation}
+$$
+
+The reverse conversions are given by
+
+$$
+\begin{align}
+ct + z &= \alpha \alpha^*, \\
+x - iy &= \alpha \beta^*, \\
+x + iy &= \beta \alpha^*, \\
+ct - z &= \beta \beta^*.
+\end{align}
+$$
+
+Then, the individual components of the Weyl vector can be expressed in terms of the Weyl spinors as
+
+$$
+\begin{align}
+ct &= \frac{1}{2} (\alpha \alpha^* + \beta \beta^*), \\
+x &= \frac{1}{2} (\beta \alpha^* + \alpha \beta^*), \\
+y &= \frac{1}{2i} (\beta \alpha^* - \alpha \beta^*), \\
+z &= \frac{1}{2} (\alpha \alpha^* - \beta \beta^*).
+\end{align}
+$$
+
+Finally, in order to actually find $\alpha$ and $\beta$, we first write them in Euler form:
+
+$$
+\begin{align}
+\alpha &= \abs{\alpha} e^{i \theta_\alpha}, \\
+\beta &= \abs{\beta} e^{i \theta_\beta}.
+\end{align}
+$$
+
+Skipping the algebra, we can find that
+
+$$
+\begin{align}
+\abs{\alpha} &= \sqrt{ct + z}, \\
+\abs{\beta} &= \sqrt{ct - z}, \\
+\theta_\alpha = \theta_\beta &= \arctan(\frac{y}{x}).
+\end{align}
+$$
+
+We will now use the symbols $\psi^1 = \alpha$ and $\psi^2 = \beta$ to denote the Weyl spinors.
+
+$$
+\begin{equation}
+W = \mqty[\psi^1 \\ \psi^2] \otimes \mqty[{\psi^1}^* & {\psi^2}^*].
+\end{equation}
+$$
+
+The term $\mqty[\psi^1 \\ \psi^2]$ is a Weyl spinor, and the term $\mqty[{\psi^1}^* & {\psi^2}^*]$ is the Hermitian conjugate of the Weyl spinor.
+It exists in the dual space of the Weyl spinor.
+Just like with Pauli spinors, each Weyl spinor takes half of the transformation;
+
+$$
+\begin{equation}
+W \to \underbrace{A \mqty[\psi^1 \\ \psi^2]}_\mathclap{\text{Transformed spinor}} \otimes \underbrace{\mqty[{\psi^1}^* & {\psi^2}^*] A^\dagger}_\mathclap{\text{Transformed spinor}}. \label{eq:weyl-spinor-transformation}
+\end{equation}
+$$
+
+## Inner Product of Weyl Spinors
+
+We have seen that for Pauli spinors, the inner product is defined as $\xi^\dagger \chi$.
+It is defined this way because it is invariant under $\text{SU}(2)$ transformations;
+
+$$
+\begin{equation}
+\begin{split}
+\xi^\dagger \chi &\to (U \xi)^\dagger (U \chi) \\
+&= \xi^\dagger U^\dagger U \chi \\
+&= \xi^\dagger \chi.
+\end{split}
+\end{equation}
+$$
+
+However, for Weyl spinors, we have a different transformation group, $\text{SL}(2, \mathbb{C})$.
+If we try to define the inner product as $\psi^\dagger \phi$, we have
+
+$$
+\begin{equation}
+\begin{split}
+\psi^\dagger \phi &\to (A \psi)^\dagger (A\phi) \\
+&= \psi^\dagger A^\dagger A \phi.
+\end{split}
+\end{equation}
+$$
+
+However, we cannot cancel $A^\dagger A$ because $A$ is not necessarily unitary.
+The solution is to introduce a new symbol $\epsilon$ between the two spinors,
+
+$$
+\begin{equation}
+\psi^\dagger \epsilon \phi \to \psi^\dagger A^\dagger \epsilon A \phi,
+\end{equation}
+$$
+
+such that $A^\dagger \epsilon A = \epsilon$.
+This is similar to how we add the Minkowski metric $\eta$ to the inner product of 4-vectors.
+However, it turns out that there is no $\epsilon$ that satisfies this condition.
+Instead, we need to replace the Hermitian conjugate with a simple transpose;
+
+$$
+\begin{equation}
+\psi^T \epsilon \phi \to \psi^T A^\dagger \epsilon A \phi.
+\end{equation}
+$$
+
+It can be shown that the simplest choice of $\epsilon$ that satisfies this condition is
+
+$$
+\begin{equation}
+\epsilon = \mqty[0 & 1 \\ -1 & 0].
+\end{equation}
+$$
+
+The inner product defined this way is antisymmetric, meaning that $\psi^T \epsilon \phi = -\phi^T \epsilon \psi$.
+The technical term for $\epsilon$ is a **symplectic form**.
+
+## Chirality of Weyl Spinors
+
+Weyl spinors also exhibit a unique property known as chirality.
+Chirality, or handedness, is a geometric property in which an object cannot be superimposed onto its mirror image.
+A common example of chirality is the human hand; the left hand cannot be superimposed onto the right hand.
+Similarly, many chiral molecules exist in nature, such as amino acids (except glycine) and sugars.
+
+In the context of Weyl spinors, chirality refers to the property of a Weyl spinor being either left-handed or right-handed.
+The $\text{SL}(2, \mathbb{C})$ transformations can be divided into two groups: the left representations and the right representations.
+They are the complex conjugates of each other.
+
+To realize why this is the case, we need to consider parity transformations.
+Suppose we have two rotation matrices $R_1$ and $R_2$.
+$R_1$ rotates a vector in the $xy$-plane, while $R_2$ rotates a vector in the $yz$-plane.
+While they are different rotations, one can instead think of them as the same rotation, but in different coordinate systems.
+In other words, the rotation in the $xy$-plane is equivalent to a rotation in the $yz$-plane, but with a different coordinate system.
+
+For a vector that transforms under $R_1$, if we want to transform it under $R_2$, we first apply a transformation $C$ that changes the coordinate system from $xy$ to $yz$.
+Then, we apply the rotation $R_2$, and finally, we apply the inverse transformation $C^{-1}$ to change the coordinate system back.
+This can be written as
+
+$$
+\begin{equation}
+W \to C^{-1} R_2 C W.
+\end{equation}
+$$
+
+Suppose $R_1$ and $R_2$ are complex conjugates of each other, and are both members of $\text{SL}(2, \mathbb{C})$.
+We will now label these as $L$ and $L^*$, respectively.
+Then, we can write the transformation as
+
+$$
+\begin{equation}
+W \to C^{-1} L^* C W.
+\end{equation}
+$$
+
+It turns out that if we transform the vector normally, with $W \to LW$, there is no way to write it as $C^{-1} L^* C W$.
+In other words, there is no $C$ such that $L^* = C^{-1} L C$.
+This is the source of chirality.
+As such, up to a complex conjugation, there are two different representations of Weyl spinors, which we call left-handed and right-handed Weyl spinors.
+
+This means that spinors can be classified into two types, which we denote as $\psi_L$ and $\psi_R$.
+Spinor indices are also classified as left-handed and right-handed.
+There are quite a lot of notations for left-handed and right-handed Weyl spinors, many of which are summarized in the table below (copied from [this video](https://www.youtube.com/watch?v=4NJBvkjpC3E&list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs&index=10)).
+
+<a id="weyl-spinor-notation" />
+| Notation | Left-handed | Left-handed dual | Right-handed | Right-handed dual |
+|----------|-------------|------------------|--------------|-------------------|
+| O'Donnell, Peter. Introduction to 2-Spinors for General Relativity | $\zeta^A$ | $\zeta_A$ | $\bar{\zeta}^{A'}$ | $\bar{\zeta}_{A'}$ |
+| Wald. General Relativity | $\psi^A$ | $\psi_A$ | $\bar{\psi}^{\dot{X}}$ | $\bar{\psi}_{\dot{X}}$ |
+| Wikipedia + Zee. Quantum Field Theory in a Nutshell + Müller-Kirsten, Wiedemann. Introduction to Supersymmetry | $\psi_a$ | $\psi^a$ | $\bar{\chi}^{\dot{a}}$ | $\bar{\chi}_{\dot{a}}$ |
+| Schwichtenberg, Jakob. No Nonsense Quantum Field Theory | $\chi_\alpha$ | $\xi^\alpha$ | $\chi^{\dot{\alpha}}$ | $\xi_{\dot{\alpha}}$ |
+| Penrose, Roger. The Road to Reality | $\alpha_A$ | ? | ? | $\beta_{A'}$ |
+| Eigenchris. Spinors for Beginners | $\psi^a$ | $\psi_a$ | $\psi^{\dot{a}}$ | $\psi_{\dot{a}}$ |
+
+If $\psi$ is a left-handed Weyl spinor, the dual spinor is equal to
+
+$$
+\begin{equation}
+\psi^\text{(dual)} := \psi^T \epsilon.
+\end{equation}
+$$
+
+Dual spinors transform with the inverse transformation, so if $\psi$ transforms as $\psi \to L \psi$, then the dual spinor transforms as $\psi^\text{(dual)} \to \psi^\text{(dual)} L^{-1}$.
+This is such that the inner product $\psi^\text{(dual)} \psi$ is invariant under the transformation;
+
+$$
+\begin{equation}
+\begin{split}
+(\psi^T \epsilon) \psi &\to (\psi^T \epsilon L^{-1}) (L \psi) \\
+&= \psi^T \epsilon L^{-1} L \psi \\
+&= \psi^T \epsilon \psi.
+\end{split}
+\end{equation}
+$$
+
+If we take the complex conjugate of $\psi$, we get a right-handed dual spinor $\psi^*$.
+It transforms as $\psi^* \to L^* \psi^*$.
+Taking the expression for the inner product of the left-handed dual spinor, we can take a complex conjugate to get the inner product of the right-handed dual spinor;
+
+$$
+\begin{equation}
+\begin{split}
+(\psi^T \epsilon L^{-1}) (L \psi) &= (\psi^T \epsilon L^{-1})^* (L \psi)^* \\
+&= ((\psi^T)^* \epsilon^* (L^{-1})^*) (L^* \psi^*) \\
+&= (\psi^\dagger \epsilon^T L^{-T}) (L^* \psi^*).
+\end{split}
+\end{equation}
+$$
+
+It is this expression that is why we define the inner product of right-handed Weyl spinors as $\psi^\dagger \epsilon^T \phi$.
+In other words, instead of just taking the transpose, we take the Hermitian conjugate of the spinor.
+
+A summary of all spinor types is given in the table below, once again copied from [this video](https://www.youtube.com/watch?v=4NJBvkjpC3E&list=PLJHszsWbB6hoOo_wMb0b6T44KM_ABZtBs&index=10).
+
+<a id="weyl-spinor-transformation" />
+| Spinor Type | Transformation |
+|-------------|----------------|
+| Left-handed Weyl spinor $\mqty[\psi^1 \\ \psi^2]$ | $\psi \to L \psi$ |
+| Left-handed dual Weyl spinor $\mqty[\psi_1 & \psi_2] = \mqty[-\psi^2 & \psi^1]$ | $\psi^T \epsilon \to \psi^T \epsilon L^{-1}$ |
+| Right-handed dual Weyl spinor $\mqty[\psi^{\dot{1}} \\ \psi^{\dot{2}}] = \mqty[(\psi^1)^* \\ (\psi^2)^*]$ | $\psi^* \to L^* \psi^*$ |
+| Right-handed Weyl spinor $\mqty[\psi_{\dot{1}} & \psi_{\dot{2}}] = \mqty[-(\psi^{\dot{2}})^* & (\psi^{\dot{1}})^*]$ | $\psi^\dagger \epsilon \to \psi^\dagger \epsilon (L^{-1})^*$ |
+
+## Weyl Vector Space as a Tensor Product Space
+
+Finally, we conclude that the Weyl vector space is a tensor product space of two Weyl spinor spaces.
+
+This is because we can decompose any Weyl vector into individual matrix components.
+A null Weyl vector can be expressed as the tensor product of two Weyl spinors.
+One of them is left chiral, and the other is right chiral.
+
+$$
+\begin{equation}
+W = \mqty[ct + z & x - iy \\ x + iy & ct - z] = \mqty[\psi^1 \\ \psi^2] \otimes \mqty[\psi^{\dot{1}} & \psi^{\dot{2}}].
+\end{equation}
+$$
+
+For a non-null Weyl vector, we can no longer express it as a tensor product of two Weyl spinors.
+Instead, we can express it as a sum of tensor products of Weyl spinors.
+
+$$
+\begin{equation}
+\begin{split}
+W &= \mqty[ct + z & x - iy \\ x + iy & ct - z] \\
+&= \mqty[W^{1\dot{1}} & W^{1\dot{2}} \\ W^{2\dot{1}} & W^{2\dot{2}}] \\
+&= W^{1\dot{1}} \mqty[1 & 0 \\ 0 & 0] + W^{1\dot{2}} \mqty[0 & 1 \\ 0 & 0] + W^{2\dot{1}} \mqty[0 & 0 \\ 1 & 0] + W^{2\dot{2}} \mqty[0 & 0 \\ 0 & 1] \\
+&= W^{1\dot{1}} \mqty[1 \\ 0] \otimes \mqty[1 & 0] + W^{1\dot{2}} \mqty[1 \\ 0] \otimes \mqty[0 & 1] + W^{2\dot{1}} \mqty[0 \\ 1] \otimes \mqty[1 & 0] + W^{2\dot{2}} \mqty[0 \\ 1] \otimes \mqty[0 & 1] \\
+&= W^{1\dot{1}} \ket{s_1} \otimes \bra{s^1} + W^{1\dot{2}} \ket{s_1} \otimes \bra{s_2} + W^{2\dot{1}} \ket{s_2} \otimes \bra{s_1} + W^{2\dot{2}} \ket{s_2} \otimes \bra{s_2} \\
+&= W^{\mu \dot{\nu}} \ket{s_\mu} \otimes \bra{s^\nu},
+\end{split}
+\end{equation}
+$$
+
+where we have used Einstein summation notation to sum over the indices $\mu$ and $\nu$.
+From this, we can clearly see that
+
+$$
+\begin{equation}
+W \in \mathcal{S}^\text{(Left)} \otimes \mathcal{S}^\text{(Right dual)}.
+\end{equation}
+$$
+
+### Infeld-Van der Waerden Notation
+
+Can we convert an ordinary four-vector into a Weyl vector conveniently?
+
+$$
+\begin{equation}
+\mqty[W^{1\dot{1}} \\ W^{1\dot{2}} \\ W^{2\dot{1}} \\ W^{2\dot{2}}] = \mqty[ & & \\ & ? & \\ & & ] \mqty[w^t \\ w^x \\ w^y \\ w^z].
+\end{equation}
+$$
+
+This matrix in the middle is a linear map whose components are known as the **Infeld-Van der Waerden symbols**.
+Generally we have
+
+$$
+\begin{equation}
+W^{a \dot{b}} = w^\mu \sigma_\mu^{a \dot{b}}. \label{eq:infeld-van-der-waerden}
+\end{equation}
+$$
+
+Notice that every one tensor component ($\mu$) corresponds to a pair of Weyl spinor components ($a, \dot{b}$).
+
+## Summary and Next Steps
+
+In this section, we went through a deep dive into Weyl vectors and Weyl spinors.
+
+Here are the key points to remember:
+
+- Lorentz transformations are represented by matrices in three groups: $\text{O}(1, 3)$, $\text{SO}(1, 3)$, and $\text{SO}^+(1, 3)$.
+- Weyl vectors are constructed from 4-vectors and have properties such as Hermiticity and determinant equal to the spacetime interval.
+- Weyl vectors transform as $W \to A W A^\dagger$, where $A$ is a member of $\text{SL}(2, \mathbb{C})$, the special linear group of $2 \times 2$ complex matrices.
+- Weyl vectors can be expressed as tensor products of Weyl spinors. They transform as
+
+    $$
+    \begin{equation}
+    W \to \underbrace{A \mqty[\psi^1 \\ \psi^2]}_\mathclap{\text{Transformed spinor}} \otimes \underbrace{\mqty[{\psi^1}^* & {\psi^2}^*] A^\dagger}_\mathclap{\text{Transformed spinor}}. \tag{\ref{eq:weyl-spinor-transformation}}
+    \end{equation}
+    $$
+
+- The inner product of Weyl spinors is defined as $\psi^T \epsilon \phi$, where $\epsilon$ is a symplectic form.
+- Weyl spinors exhibit chirality because there is no $C$ such that $L^* = C^{-1} L C$.
+- They can be classified into left-handed and right-handed Weyl spinors, whose notation are summarized in [this table](#weyl-spinor-notation).
+- Weyl spinors transform based on their chirality. This is summarized in [this table](#weyl-spinor-transformation).
+- The Weyl vector space can be expressed as a tensor product space of two Weyl spinor spaces, $\mathcal{S}^\text{(Left)} \otimes \mathcal{S}^\text{(Right dual)}$.
+- The Infeld-Van der Waerden symbols allow us to convert an ordinary 4-vector into a Weyl vector;
+
+    $$
+    \begin{equation}
+    W^{a \dot{b}} = w^\mu \sigma_\mu^{a \dot{b}}. \tag{\ref{eq:infeld-van-der-waerden}}
+    \end{equation}
+    $$
+
+In the next section, we will explore Dirac spinors, which are constructed from a pair of Weyl spinors.
+This leads us to discuss more advanced topics such as spin groups, Clifford algebras, and Lie groups.

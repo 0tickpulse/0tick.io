@@ -23,14 +23,6 @@ In the previous sections, we have seen how the Lagrangian formalism can be used 
 In this section, we will see how the Lagrangian can be used to derive conservation laws for a system.
 In particular, we will see how symmetries of the Lagrangian lead to conservation laws in the form of **Noether's theorem**.
 
-There are a few reasons why this is important and interesting:
-
-1. As Schneider puts it, it is "one of the most beautiful love stories in the universe".
-    (Therefore, it also makes for a good pick-up line.)
-2. It is also one example of a profound connection in physics that is just not apparent from Newton's laws.
-3. This concept is also exceedingly important in quantum field theory, where symmetries play a central role in the formulation of the theory.
-    The standard model is based around the $SU(3) \times SU(2) \times U(1)$ symmetry group, and the conservation laws that arise from this symmetry are the conservation of electric charge, weak isospin, and color charge.
-
 ## Table of Contents
 
 <TOCInline toc={toc} />
@@ -57,21 +49,6 @@ Here are some more advanced examples:
 | <span className="blue">Scale symmetry</span> | <span className="pink">Conservation of dilatation current $D^\mu$</span> |
 
 In the context of the Lagrangian formalism, we can derive these conservation laws using Noether's theorem.
-
-Formally, Noether's theorem mathematically states:
-
-<Boxed>
-**Noether's Theorem**: If a system is defined by a Lagrangian $L(q, \dot{q}, t)$, and under a continuous infinitesimal transformation $q \to q + \epsilon \delta q$, the Lagrangian changes as $L \to L + \epsilon \dv{F}{t}$, then there exists a quantity $Q$:
-
-$$
-\begin{equation}
-Q = \sum_i \pdv{F}{\dot{q}_i} \delta q_i + \qty(\pdv{L}{\dot{q}_i} \dot{q}_i - L) \delta t - F
-\end{equation}
-$$
-
-such that $\dv{Q}{t} = 0$.
-</Boxed>
-
 We will start from the basics and derive this theorem from scratch.
 
 ### Free Particle

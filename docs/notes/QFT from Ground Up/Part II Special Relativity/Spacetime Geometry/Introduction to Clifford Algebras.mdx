@@ -1,0 +1,794 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+# Introduction to Clifford Algebras
+
+Previously, we have seen how Pauli matrices can be used to represent spin-1/2 particles in non-relativistic quantum mechanics.
+In relativistic quantum mechanics, we have Weyl spinors and Dirac spinors.
+We have seen that Pauli matrices transform under $\text{SU}(2)$ matrices, which is the double cover of the rotation group $\text{SO}(3)$.
+Similarly, Weyl spinors transform under $\text{SL}(2, \mathbb{C})$, which is the double cover of the Lorentz group $\text{SO}^+(1, 3)$.
+The double cover of $\text{SO}(p, q)$ is known as the **spin group** $\text{Spin}(p, q)$.
+Is there a way we can systematically construct these spin groups?
+To fully understand spin groups, spinors, and spacetime geometry, we need to introduce a new mathematical structure known as **Clifford algebras**.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## What are Clifford Algebras?
+
+Clifford algebras are a type of algebra that generalizes the concept of vectors and their products.
+Before defining Clifford algebras, we need to understand what an "algebra" is.
+It is a bit confusing because "algebra" is a field of mathematics, but in this context, *an* "algebra" is a specific mathematical structure.
+Specifically, for a vector space, if we give it an operation that allows us to multiply vectors together, we call it an algebra.
+This product, as a multiplication operation, must be linear in both of its arguments, meaning it is **bilinear**.
+In summary,
+
+<Boxed>
+
+An algebra $(V, \cdot)$ is a vector space $V$ with a bilinear product $\cdot: V \times V \to V$.
+
+</Boxed>
+
+Clifford algebras are a specific type of algebra that is defined using a set of symbols that square to either $+1$ or $-1$.
+An algebraic definition of a Clifford algebra is as follows:
+
+<Boxed>
+
+A Clifford algebra $\text{C}\ell(p, q)$ is an algebra with $p$ symbols that square to $+1$ and $q$ symbols that square to $-1$.
+The product is anticommutative for these symbols.
+
+</Boxed>
+
+In a Clifford algebra, we can add and scale these symbols, and we can also multiply them together.
+Thus, they satisfy the axioms of a vector space, and we call them basis vectors.
+(More generally, an "algebra" is a vector space with a bilinear product, so all algebras are vector spaces.)
+
+Put simply, a Clifford algebra is a vector space plus a product, known as the **Clifford product**.
+This allows us to multiply vectors together, unlike in a vector space by itself.
+
+Clifford algebras allow us to unify many mathematical structures into a single framework.
+For example, the imaginary unit is a symbol that squares to $-1$, so it can be represented in a Clifford algebra $\text{C}\ell(0, 1)$.
+In other words, we have $i \in \text{C}\ell(0, 1)$, where $i^2 = -1$.
+
+The Pauli matrices are three symbols $\sigma_x$, $\sigma_y$, and $\sigma_z$ that square to $+1$.
+They can be represented in a Clifford algebra $\text{C}\ell(3, 0)$.
+
+In the Dirac equation
+
+$$
+\begin{equation}
+(i \hbar \gamma^\mu \partial_\mu - mc) \psi = 0,
+\end{equation}
+$$
+
+the $\gamma^\mu$ matrices are elements of the Clifford algebra $\text{C}\ell(1, 3)$.
+This algebra is fittingly known as the spacetime algebra (STA) for its role in describing spacetime geometry.
+
+Maxwell's equations can also be expressed in terms of Clifford algebras, in which they become much more elegant;
+
+$$
+\begin{equation}
+\nabla F = \mu_0 c J.
+\end{equation}
+$$
+
+Spinors can also be expressed in terms of Clifford algebras.
+They can be defined as members of even-grade subspaces of Clifford algebras.
+Alternatively, another definition is that spinors are members of minimal left ideals of Clifford algebras.
+
+All these examples showcase how Clifford algebras can encapsulate various mathematical structures and concepts, providing a unified framework for understanding them.
+It is extremely important to understand that Clifford algebras have a geometric interpretation, for which they are also known as **geometric algebras**.
+To understand the geometric interpretation, we need to study a related structure known as **Grassmann algebras** or exterior algebras.
+In a Grassmann algebra, we define the bilinear product as the **exterior product** or wedge product, denoted by $a \wedge b$.
+
+## Bivector Operations
+
+Geometrically, the exterior product allows us to combine vectors together to form higher-dimensional objects.
+The exterior product of two vectors $\vb{u}$ and $\vb{v}$ is a **bivector**, which represents an oriented area in the plane spanned by $\vb{u}$ and $\vb{v}$.
+Specifically,
+
+- The **magnitude** of the bivector $\vb{u} \wedge \vb{v}$ is the area of the parallelogram spanned by $\vb{u}$ and $\vb{v}$.
+- The **orientation** of the bivector $\vb{u} \wedge \vb{v}$ is along the direction of the first vector $\vb{u}$.
+
+<Mafs>
+    <Transform translate={[-4, -1]}>
+        {/* u */}
+        <Vector tip={[0.5, 2]} color={color("pink")} />
+        <MafsMathJax tex="\vb{u}" at={[0.6, 2.2]} color={color("pink")} />
+
+        {/* v */}
+        <Vector tip={[1.5, 0]} color={color("blue")} />
+        <MafsMathJax tex="\vb{v}" at={[1.7, 0]} color={color("blue")} />
+    </Transform>
+    <Vector tail={[-2, 0]} tip={[2, 0]} />
+    <Transform translate={[3, -1]}>
+        {/* u wedge v */}
+        <Polygon
+            points={[
+                [0, 0],
+                [0.5, 2],
+                [2, 2],
+                [1.5, 0],
+            ]}
+            color="#f0f0f0"
+        />
+        <MafsMathJax tex="\class{pink}{\vb{u}} \wedge \class{blue}{\vb{v}}" at={[0.75, -0.65]} />
+
+        <Vector tip={[0.5, 2]} color={color("pink")} />
+        <Vector tail={[0.5, 2]} tip={[2, 2]} color={color("blue")} />
+        <Vector tail={[2, 2]} tip={[1.5, 0]} color={color("pink")} />
+        <Vector tail={[1.5, 0]} tip={[0, 0]} color={color("blue")} />
+    </Transform>
+</Mafs>
+
+### Bivector Reversal
+
+So long as two bivectors have the same area and orientation, they are equal.
+This means that when visualizing bivectors as areas, we can rotate them around their centers, as well as change their shapes, so long as the area and orientation remain the same.
+
+We define the reverse of a bivector $\vb{u} \wedge \vb{v}$ as the bivector $-(\vb{u} \wedge \vb{v})$, which has the same area but opposite orientation.
+From the visualization, it is clear that $-(\vb{u} \wedge \vb{v}) = \vb{v} \wedge \vb{u}$:
+
+<Mafs>
+    <Transform translate={[-4, -1]}>
+        {/* u wedge v */}
+        <Polygon
+            points={[
+                [0, 0],
+                [0.5, 2],
+                [2, 2],
+                [1.5, 0],
+            ]}
+            color="#f0f0f0"
+        />
+        <MafsMathJax tex="\class{pink}{\vb{u}} \wedge \class{blue}{\vb{v}}" at={[0.75, -0.65]} />
+
+        <Vector tip={[0.5, 2]} color={color("pink")} />
+        <Vector tail={[0.5, 2]} tip={[2, 2]} color={color("blue")} />
+        <Vector tail={[2, 2]} tip={[1.5, 0]} color={color("pink")} />
+        <Vector tail={[1.5, 0]} tip={[0, 0]} color={color("blue")} />
+    </Transform>
+    <Transform translate={[3, -1]}>
+        {/* u wedge v */}
+        <Polygon
+            points={[
+                [0, 0],
+                [0.5, 2],
+                [2, 2],
+                [1.5, 0],
+            ]}
+            color="#f0f0f0"
+        />
+        <MafsMathJax tex="-(\class{pink}{\vb{u}} \wedge \class{blue}{\vb{v}}) = \class{blue}{\vb{v}} \wedge \class{pink}{\vb{u}}" at={[0.75, -0.65]} />
+
+        <Vector tip={[1.5, 0]} color={color("blue")} />
+        <Vector tail={[1.5, 0]} tip={[2, 2]} color={color("pink")} />
+        <Vector tail={[2, 2]} tip={[0.5, 2]} color={color("blue")} />
+        <Vector tail={[0.5, 2]} tip={[0, 0]} color={color("pink")} />
+    </Transform>
+</Mafs>
+
+As such, the wedge product is anticommutative.
+The use of the minus sign here implies that we are negating the bivector, or taking its additive inverse.
+This means that the reverse of a bivector is not the same as the negation of a bivector, or equivalently,
+
+$$
+\begin{equation}
+\vb{u} \wedge \vb{v} + \vb{v} \wedge \vb{u} = 0.
+\end{equation}
+$$
+
+### Bivector Magnitude
+
+The magnitude of a bivector $\vb{u} \wedge \vb{v}$ is given by the area of the parallelogram spanned by $\vb{u}$ and $\vb{v}$.
+We have two important properties of the magnitude of bivectors, and these should be very familiar if you have studied cross products in three-dimensional space.
+
+1. If $\vb{u}$ and $\vb{v}$ are parallel, then the area of the parallelogram is zero, so the magnitude of the bivector is zero.
+    This also means that for any vector, the bivector formed with itself is zero, i.e., $\vb{u} \wedge \vb{u} = 0$.
+2. If $\vb{u}$ and $\vb{v}$ are orthogonal, then the area of the parallelogram is maximized, so the magnitude of the bivector is maximized.
+
+### Distributivity
+
+We can distribute a wedge product over addition, as expected from a bilinear product.
+Visually, the wedge product
+
+$$
+\begin{equation}
+\vb{u} \wedge (\vb{v} + \vb{w}) = \vb{u} \wedge \vb{v} + \vb{u} \wedge \vb{w}
+\end{equation}
+$$
+
+can be visualized as taking the two bivectors $\vb{u} \wedge \vb{v}$ and $\vb{u} \wedge \vb{w}$ and placing them next to each other, as they are both in the same plane spanned by $\vb{u}$.
+Then, we can combine them to form a larger bivector that spans the same plane.
+
+As the wedge product is bilinear, both of the following are true:
+
+$$
+\begin{align}
+\vb{u} \wedge (\vb{v} + \vb{w}) &= \vb{u} \wedge \vb{v} + \vb{u} \wedge \vb{w}, \\
+(\vb{u} + \vb{v}) \wedge \vb{w} &= \vb{u} \wedge \vb{w} + \vb{v} \wedge \vb{w}.
+\end{align}
+$$
+
+Similarly, scaling a bivector by a scalar $c$ is equivalent to scaling any of the vectors involved by $c$;
+
+$$
+\begin{equation}
+c (\vb{u} \wedge \vb{v}) = (c \vb{u}) \wedge \vb{v} = \vb{u} \wedge (c \vb{v}).
+\end{equation}
+$$
+
+### Components of Bivectors
+
+We can express bivectors in terms of their components.
+We will begin in two dimensions, then three dimensions.
+
+In two dimensions, we first define the basis vectors $\vb{e}_x$ and $\vb{e}_y$.
+Then, we can express a bivector $\vb{u} \wedge \vb{v}$ as
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \wedge \vb{v} &= (u^x \vb{e}_x + u^y \vb{e}_y) \wedge (v^x \vb{e}_x + v^y \vb{e}_y) \\
+&= u^x v^x (\vb{e}_x \wedge \vb{e}_x) + u^x v^y (\vb{e}_x \wedge \vb{e}_y) \\
+&\quad {}+ u^y v^x (\vb{e}_y \wedge \vb{e}_x) + u^y v^y (\vb{e}_y \wedge \vb{e}_y).
+\end{split}
+\end{equation}
+$$
+
+We know that any vector wedged with itself is zero, so $\vb{e}_x \wedge \vb{e}_x = 0$ and $\vb{e}_y \wedge \vb{e}_y = 0$.
+Thus we have
+
+$$
+\begin{equation}
+\vb{u} \wedge \vb{v} = u^x v^y (\vb{e}_x \wedge \vb{e}_y) + u^y v^x (\vb{e}_y \wedge \vb{e}_x).
+\end{equation}
+$$
+
+Finally, we can swap the order of the second term (giving us a minus sign) to get
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \wedge \vb{v} &= u^x v^y (\vb{e}_x \wedge \vb{e}_y) - u^y v^x (\vb{e}_x \wedge \vb{e}_y) \\
+&= (u^x v^y - u^y v^x) (\vb{e}_x \wedge \vb{e}_y).
+\end{split}
+\end{equation}
+$$
+
+In three dimensions, we can define the basis vectors $\vb{e}_x$, $\vb{e}_y$, and $\vb{e}_z$.
+Then, we can express a bivector $\vb{u} \wedge \vb{v}$ as
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \wedge \vb{v} &= (u^x \vb{e}_x + u^y \vb{e}_y + u^z \vb{e}_z) \wedge (v^x \vb{e}_x + v^y \vb{e}_y + v^z \vb{e}_z) \\
+&= u^x v^x (\vb{e}_x \wedge \vb{e}_x) + u^x v^y (\vb{e}_x \wedge \vb{e}_y) + u^x v^z (\vb{e}_x \wedge \vb{e}_z) \\
+&\quad {}+ u^y v^x (\vb{e}_y \wedge \vb{e}_x) + u^y v^y (\vb{e}_y \wedge \vb{e}_y) + u^y v^z (\vb{e}_y \wedge \vb{e}_z) \\
+&\quad {}+ u^z v^x (\vb{e}_z \wedge \vb{e}_x) + u^z v^y (\vb{e}_z \wedge \vb{e}_y) + u^z v^z (\vb{e}_z \wedge \vb{e}_z).
+\end{split}
+\end{equation}
+$$
+
+This eventually simplifies to
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \wedge \vb{v} &= (u^x v^y - u^y v^x) (\vb{e}_x \wedge \vb{e}_y) \\
+&\quad {}+ (u^x v^z - u^z v^x) (\vb{e}_x \wedge \vb{e}_z) \\
+&\quad {}+ (u^y v^z - u^z v^y) (\vb{e}_y \wedge \vb{e}_z).
+\end{split}
+\end{equation}
+$$
+
+Notice that the coefficients of the bivectors are the same as the coefficients of the cross product in three dimensions.
+This is expected, as both operations are very similar to each other, with the difference being the basis of the bivector being wedge products rather than the basis vectors $\vb{e}_x$, $\vb{e}_y$, and $\vb{e}_z$.
+
+### Trivectors and Beyond
+
+We can extend the concept of bivectors to higher dimensions.
+A **trivector** is a three-dimensional object that represents an oriented volume in three-dimensional space.
+It is formed by the wedge product of three vectors, such as $\vb{u} \wedge \vb{v} \wedge \vb{w}$.
+
+The **grade** of these objects refers to the number of vectors involved in the wedge product.
+A scalar is a grade-0 object, a vector is a grade-1 object, a bivector is a grade-2 object, a trivector is a grade-3 object, and so on.
+This is similar to how we classify tensors by their rank.
+
+In three dimensions, a trivector $\vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z$ is the maximum grade object, as it is formed by the wedge product of three vectors.
+This is because if we try to wedge four vectors together, we will end up with a zero trivector, as the wedge product of any vector with itself is zero;
+
+$$
+\begin{equation}
+\begin{split}
+(\vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z) \wedge \vb{e}_z &= (\vb{e}_x \wedge \vb{e}_y) \wedge (\vb{e}_z \wedge \vb{e}_z) \\
+&= (\vb{e}_x \wedge \vb{e}_y) \wedge 0 \\
+&= 0.
+\end{split}
+\end{equation}
+$$
+
+Each grade of object has its own set of basis vectors.
+Vectors have basis vectors $\vb{e}_x$, $\vb{e}_y$, and $\vb{e}_z$.
+Similarly, bivectors have basis vectors $\vb{e}_x \wedge \vb{e}_y$, $\vb{e}_x \wedge \vb{e}_z$, and $\vb{e}_y \wedge \vb{e}_z$.
+
+Trivectors have a single basis vector $\vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z$.
+This is because any other arrangement of the basis vectors will yield the same trivector, as we can swap them around and pick up a negative sign.
+
+As the number of basis vectors is related to the number of unique combinations of the basis vectors, we can see that the number of basis vectors for each grade is given by the binomial coefficient $\binom{n}{k}$, where $n$ is the number of basis vectors and $k$ is the grade.
+
+We can always arrange these basis in a diamond-shaped pattern.
+
+<Mafs>
+    {/* Diamond */}
+    <Polygon
+        points={[
+            [-3.5, 0],
+            [0, 3.5],
+            [3.5, 0],
+            [0, -3.5],
+        ]}
+        color="#606060"
+        fillOpacity={0.1}
+    />
+
+    {/* Label */}
+    <Text children="3-dimensional" x={0} y={0} size={20} />
+
+    {/* Scalars */}
+    <MafsMathJax tex="1" at={[0, -3]} />
+
+    {/* Vectors */}
+    <MafsMathJax tex="\vb{e}_x" at={[-1.5, -1]} />
+    <MafsMathJax tex="\vb{e}_y" at={[0, -1]} />
+    <MafsMathJax tex="\vb{e}_z" at={[1.5, -1]} />
+
+    {/* Bivectors */}
+    <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y" at={[-1.5, 1]} />
+    <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_z" at={[0, 1]} />
+    <MafsMathJax tex="\vb{e}_y \wedge \vb{e}_z" at={[1.5, 1]} />
+
+    {/* Trivectors */}
+    <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z" at={[0, 3]} />
+</Mafs>
+
+Because the highest-grade object has only one basis vector, they act like scalars in many ways.
+Hence, we sometimes call them **pseudoscalars**.
+
+This diamond shape can represent any dimension, not just three dimensions;
+
+<Mafs viewBox={{ y: [-5, 5] }}>
+    {/* 1D */}
+    <Transform translate={[-7, 4]}>
+        {/* Diamond */}
+        <Polygon
+            points={[
+                [-1.5, 0],
+                [0, 1.5],
+                [1.5, 0],
+                [0, -1.5],
+            ]}
+            color="#606060"
+            fillOpacity={0.1}
+        />
+        {/* Label */}
+        <Text children="1-dimensional" x={0} y={0} size={20} />
+
+        {/* Scalars */}
+        <MafsMathJax tex="1" at={[0, -1]} />
+
+        {/* Vectors */}
+        <MafsMathJax tex="\vb{e}_x" at={[0, 1]} />
+    </Transform>
+
+    {/* 2D */}
+    <Transform translate={[-3, 3]}>
+        {/* Diamond */}
+        <Polygon
+            points={[
+                [-2.5, 0],
+                [0, 2.5],
+                [2.5, 0],
+                [0, -2.5],
+            ]}
+            color="#606060"
+            fillOpacity={0.1}
+        />
+        {/* Label */}
+        <Text children="2-dimensional" x={0} y={0} size={20} />
+
+        {/* Scalars */}
+        <MafsMathJax tex="1" at={[0, -2]} />
+
+        {/* Vectors */}
+        <MafsMathJax tex="\vb{e}_x" at={[-2, -0]} />
+        <MafsMathJax tex="\vb{e}_y" at={[2, -0]} />
+
+        {/* Bivectors */}
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y" at={[0, 2]} />
+    </Transform>
+
+    {/* 3D */}
+    <Transform translate={[-6, -2]}>
+        {/* Diamond */}
+        <Polygon
+            points={[
+                [-3.5, 0],
+                [0, 3.5],
+                [3.5, 0],
+                [0, -3.5],
+            ]}
+            color="#606060"
+            fillOpacity={0.1}
+        />
+        {/* Label */}
+        <Text children="3-dimensional" x={0} y={0} size={20} />
+
+        {/* Scalars */}
+        <MafsMathJax tex="1" at={[0, -3]} />
+
+        {/* Vectors */}
+        <MafsMathJax tex="\vb{e}_x" at={[-1.5, -1]} />
+        <MafsMathJax tex="\vb{e}_y" at={[0, -1]} />
+        <MafsMathJax tex="\vb{e}_z" at={[1.5, -1]} />
+
+        {/* Bivectors */}
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y" at={[-2, 1]} />
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_z" at={[0, 1]} />
+        <MafsMathJax tex="\vb{e}_y \wedge \vb{e}_z" at={[2, 1]} />
+
+        {/* Trivectors */}
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z" at={[0, 3]} />
+    </Transform>
+
+    {/* 4D */}
+    <Transform translate={[4, 0]}>
+        {/* Diamond */}
+        <Polygon
+            points={[
+                [-4.5, 0],
+                [0, 4.5],
+                [4.5, 0],
+                [0, -4.5],
+            ]}
+            color="#606060"
+            fillOpacity={0.1}
+        />
+        {/* Label */}
+        <Text children="4-dimensional" x={0} y={1} size={20} />
+
+        {/* Scalars */}
+        <MafsMathJax tex="1" at={[0, -4]} />
+
+        {/* Vectors */}
+        <MafsMathJax tex="\vb{e}_x" at={[-3, -2]} />
+        <MafsMathJax tex="\vb{e}_y" at={[-1, -2]} />
+        <MafsMathJax tex="\vb{e}_z" at={[1, -2]} />
+        <MafsMathJax tex="\vb{e}_w" at={[3, -2]} />
+
+        {/* Bivectors */}
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y" at={[-5, 0]} />
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_z" at={[-3, 0]} />
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_w" at={[-1, 0]} />
+        <MafsMathJax tex="\vb{e}_y \wedge \vb{e}_z" at={[1, 0]} />
+        <MafsMathJax tex="\vb{e}_y \wedge \vb{e}_w" at={[3, 0]} />
+        <MafsMathJax tex="\vb{e}_z \wedge \vb{e}_w" at={[5, 0]} />
+
+        {/* Trivectors */}
+        <MafsMathJax tex="\scriptstyle \vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z" at={[-3, 2]} />
+        <MafsMathJax tex="\scriptstyle \vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_w" at={[-1, 2]} />
+        <MafsMathJax tex="\scriptstyle \vb{e}_x \wedge \vb{e}_z \wedge \vb{e}_w" at={[1, 2]} />
+        <MafsMathJax tex="\scriptstyle \vb{e}_y \wedge \vb{e}_z \wedge \vb{e}_w" at={[3, 2]} />
+
+        {/* Pseudoscalar */}
+        <MafsMathJax tex="\vb{e}_x \wedge \vb{e}_y \wedge \vb{e}_z \wedge \vb{e}_w" at={[0, 4]} />
+    </Transform>
+</Mafs>
+
+## Clifford Algebras
+
+Now that we have a good understanding of Grassmann algebras and bivectors, we can define the Clifford product.
+
+To reiterate, a Grassmann algebra is an algebra with the product being the exterior product, or wedge product.
+The Clifford product is just an algebra with a different product, known as the Clifford product.
+In a Clifford algebra $\text{C}\ell(p, q)$, we have $p$ symbols that square to $+1$ and $q$ symbols that square to $-1$.
+
+We shall go through a few examples of Clifford algebras to see how the Clifford algebras work.
+
+### Cl(0, 1) (Complex Numbers)
+
+The Clifford algebra $\text{C}\ell(0, 1)$ has one symbol $i$ that squares to $-1$.
+This is the algebra of complex numbers, $\mathbb{C}$, with the basis vectors $\{1, i\}$.
+For any Clifford algebra, we can conveniently represent their basis vectors as matrices.
+The basis vectors of $\text{C}\ell(0, 1)$ can be represented as
+
+$$
+\begin{equation}
+1 = \mqty[1 & 0 \\ 0 & 1], \quad i = \mqty[0 & -1 \\ 1 & 0].
+\end{equation}
+$$
+
+One can verify that this set of matrices satisfy $1^2 = 1$ and $i^2 = -1$.
+Note that the dimensionality of these matrices are arbitrary; we can choose, for example, $4 \times 4$ matrices, and they will still satisfy the same properties.
+
+In Clifford algebras, we can combine different-grade objects together, with the scalar $1$ and the vector $i$ in this case.
+A linear combination of different-grade objects is known as a **multivector**.
+A multivector in this case is of the form $a + ib$, where $a$ and $b$ are scalars.
+We can mathematically say that a multivector is an element of a direct sum of the sets of the different-grade objects;
+
+$$
+\begin{equation}
+\mathbb{C} = \mathbb{R} \oplus i \mathbb{R},
+\end{equation}
+$$
+
+where $\mathbb{R}$ is the set of real numbers.
+
+The matrix representation works because matrix multiplication is also bilinear, so the algebraic properties of the Clifford algebra are preserved.
+We can show this explicitly by demonstrating that $(a + ib)(c + id)$ gives the correct result when using the matrix representation above;
+
+$$
+\begin{equation}
+\begin{split}
+(a + ib)(c + id) &= \qty(a \mqty[1 & 0 \\ 0 & 1] + b \mqty[0 & -1 \\ 1 & 0]) \qty(c \mqty[1 & 0 \\ 0 & 1] + d \mqty[0 & -1 \\ 1 & 0]) \\
+&= \qty(ac - bd) \mqty[1 & 0 \\ 0 & 1] + \qty(ad + bc) \mqty[0 & -1 \\ 1 & 0] \\
+&= (ac - bd) + i(ad + bc).
+\end{split}
+\end{equation}
+$$
+
+### Cl(3, 0) (Pauli Matrices/Algebra of Physical Space)
+
+The Clifford algebra $\text{C}\ell(3, 0)$ has three symbols $\sigma_x$, $\sigma_y$, and $\sigma_z$ that square to $+1$.
+Moreover, the product is anticommutative for these symbols.
+
+Notice that these properties perfectly match the properties of the Pauli matrices.
+We say that the Pauli matrices form a representation for the Clifford algebra $\text{C}\ell(3, 0)$.
+These Pauli matrices are given by
+
+$$
+\begin{align}
+\sigma_x &= \mqty[0 & 1 \\ 1 & 0], \\
+\sigma_y &= \mqty[0 & -i \\ i & 0], \\
+\sigma_z &= \mqty[1 & 0 \\ 0 & -1].
+\end{align}
+$$
+
+We can verify that these matrices satisfy the properties of the Clifford algebra $\text{C}\ell(3, 0)$.
+The diamond shape of the Pauli matrices is as follows:
+
+<Mafs>
+    {/* Diamond */}
+    <Polygon
+        points={[
+            [-3.5, 0],
+            [0, 3.5],
+            [3.5, 0],
+            [0, -3.5],
+        ]}
+        color="#606060"
+        fillOpacity={0.1}
+    />
+
+    {/* Label */}
+    <Text children="Pauli Matrices" x={0} y={0} size={20} />
+
+    {/* Scalars */}
+    <MafsMathJax tex="1" at={[0, -3]} />
+
+    {/* Vectors */}
+    <MafsMathJax tex="\sigma_x" at={[-1.5, -1]} />
+    <MafsMathJax tex="\sigma_y" at={[0, -1]} />
+    <MafsMathJax tex="\sigma_z" at={[1.5, -1]} />
+
+    {/* Bivectors */}
+    <MafsMathJax tex="\sigma_x\sigma_y" at={[-1.5, 1]} />
+    <MafsMathJax tex="\sigma_x\sigma_z" at={[0, 1]} />
+    <MafsMathJax tex="\sigma_y\sigma_z" at={[1.5, 1]} />
+
+    {/* Trivectors */}
+    <MafsMathJax tex="\sigma_x\sigma_y\sigma_z" at={[0, 3]} />
+</Mafs>
+
+Recall that the quaternions, $\mathbb{H}$, are isomorphic to the Pauli matrices, with the correspondence
+
+$$
+\begin{align}
+\sigma_y \sigma_z &\leftrightarrow i, \\
+\sigma_z \sigma_x &\leftrightarrow j, \\
+\sigma_x \sigma_y &\leftrightarrow k. \\
+\end{align}
+$$
+
+This means that the quaternions are composed of scalars ($1$), and bivectors ($\sigma_x \sigma_y$, $\sigma_y \sigma_z$, and $\sigma_z \sigma_x$).
+Since these are grade-0 and grade-2 objects, we say that the quaternions are the **even-grade subalgebra** of the Clifford algebra $\text{C}\ell(3, 0)$.
+
+### Cl(1, 3) (Spacetime Algebra)
+
+The Clifford algebra $\text{C}\ell(1, 3)$ is known as the **spacetime algebra** (STA).
+It has one symbol $\gamma_t$ that squares to $+1$ and three symbols $\gamma_x$, $\gamma_y$, and $\gamma_z$ that square to $-1$.
+The product is anticommutative for these symbols.
+
+The basis vectors of the spacetime algebra can be represented as matrices, similar to the Pauli matrices.
+One such matrix representation is known as the Weyl representation or the chiral representation, which are elements of the direct sum of the two $\text{SL}(2, \mathbb{C})$ representations;
+
+$$
+\begin{equation}
+\text{C}\ell(1, 3) = \text{SL}(2, \mathbb{C})_L \oplus \text{SL}(2, \mathbb{C})_R.
+\end{equation}
+$$
+
+The basis vectors of the spacetime algebra in the Weyl representation are given by
+
+$$
+\begin{align}
+\gamma_t &= \mqty[0 & 0 & 1 & 0 \\ 0 & 0 & 0 & 1 \\ 1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0], && \gamma_x = \mqty[0 & 0 & 0 & 1 \\ 0 & 0 & 1 & 0 \\ 0 & -1 & 0 & 0 \\ -1 & 0 & 0 & 0], \\
+\gamma_y &= \mqty[0 & 0 & 0 & -i \\ 0 & 0 & i & 0 \\ 0 & i & 0 & 0 \\ -i & 0 & 0 & 0], && \gamma_z = \mqty[0 & 0 & 1 & 0 \\ 0 & 0 & 0 & -1 \\ -1 & 0 & 0 & 0 \\ 0 & 1 & 0 & 0].
+\end{align}
+$$
+
+We can verify that these matrices satisfy the properties of the Clifford algebra $\text{C}\ell(1, 3)$.
+These matrices are also known as the **Dirac gamma matrices**.
+They show up in the Dirac equation
+
+$$
+\begin{equation}
+(i \hbar \gamma^\mu \partial_\mu - m) \psi = 0,
+\end{equation}
+$$
+
+where $\psi$ is a Dirac spinor.
+
+In the future, we will see how the STA is a very convenient framework for describing relativistic physics.
+
+## Clifford Product
+
+Up to this point, we have seen that Grassmann and Clifford algebras are algebras with different products.
+However, other than that, it appears that there is no obvious connection between the two.
+To connect these, we will explore further the properties of the Clifford/geometric product.
+
+Algebraically, we can see the difference between the Grassmann product and the Clifford product.
+For different symbols, they both anticommute.
+For the same symbol, the Grassmann product is zero, while the Clifford product is the square of the symbol, defined based on the algebra.
+
+Fundamentally, to perform a Clifford product of two multivectors,
+
+1. We distribute the multivectors over the product,
+2. We apply the product to the bases (anticommutative and squaring properties), and
+3. We combine the resulting terms together.
+
+We first consider the Clifford product of two vectors $\vb{u}$ and $\vb{v}$.
+Suppose we are in three dimensions ($\text{C}\ell(3, 0)$).
+We can express the Clifford product of two vectors as
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \vb{v} &= (u^x \vb{e}_x + u^y \vb{e}_y + u^z \vb{e}_z)(v^x \vb{e}_x + v^y \vb{e}_y + v^z \vb{e}_z) \\
+&= u^x v^x (\vb{e}_x \vb{e}_x) + u^x v^y (\vb{e}_x \vb{e}_y) + u^x v^z (\vb{e}_x \vb{e}_z) \\
+&\quad {}+ u^y v^x (\vb{e}_y \vb{e}_x) + u^y v^y (\vb{e}_y \vb{e}_y) + u^y v^z (\vb{e}_y \vb{e}_z) \\
+&\quad {}+ u^z v^x (\vb{e}_z \vb{e}_x) + u^z v^y (\vb{e}_z \vb{e}_y) + u^z v^z (\vb{e}_z \vb{e}_z).
+\end{split}
+\end{equation}
+$$
+
+As we are in $\text{C}\ell(3, 0)$, we know that $\vb{e}_x \vb{e}_x = \vb{e}_y \vb{e}_y = \vb{e}_z \vb{e}_z = 1$ by definition.
+Thus, we can simplify the above expression to
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \vb{v} &= u^x v^x + u^y v^y + u^z v^z \\
+&\quad {}+ (u^x v^y - u^y v^x) (\vb{e}_x \vb{e}_y) + (u^x v^z - u^z v^x) (\vb{e}_x \vb{e}_z) + (u^y v^z - u^z v^y) (\vb{e}_y \vb{e}_z).
+\end{split}
+\end{equation}
+$$
+
+Notice that the first three terms are the dot product of the vectors $\vb{u}$ and $\vb{v}$, while the remaining terms are the bivector formed by the wedge product of the vectors $\vb{u}$ and $\vb{v}$.
+Thus, the Clifford product of two vectors is simply
+
+$$
+\begin{equation}
+\vb{u} \vb{v} = \vb{u} \cdot \vb{v} + \vb{u} \wedge \vb{v}.
+\end{equation}
+$$
+
+When we take the Clifford product of the same vector with itself, we get
+
+$$
+\begin{equation}
+\vb{u} \vb{u} = \vb{u} \cdot \vb{u} + \vb{u} \wedge \vb{u} = \norm{\vb{u}}^2 + 0 = \norm{\vb{u}}^2,
+\end{equation}
+$$
+
+where $\norm{\vb{u}}$ is the magnitude of the vector $\vb{u}$.
+This is expected from the properties of Pauli matrices.
+
+For orthogonal vectors $\vb{u}$ and $\vb{v}$, we have
+
+$$
+\begin{equation}
+\vb{u} \vb{v} = 0 + \vb{u} \wedge \vb{v} = \vb{u} \wedge \vb{v},
+\end{equation}
+$$
+
+meaning that the Clifford product is anticommutative if and only if the vectors are orthogonal.
+
+In $\text{C}\ell(1, 3)$, we can perform the same multiplication, but this time, vectors are represented by the gamma matrices.
+The Clifford product of two vectors $\vb{u} = u^t \gamma_t + u^x \gamma_x + u^y \gamma_y + u^z \gamma_z$ and $\vb{v} = v^t \gamma_t + v^x \gamma_x + v^y \gamma_y + v^z \gamma_z$ is given by
+
+$$
+\begin{equation}
+\begin{split}
+\vb{u} \vb{v} &= (u^t \gamma_t + u^x \gamma_x + u^y \gamma_y + u^z \gamma_z)(v^t \gamma_t + v^x \gamma_x + v^y \gamma_y + v^z \gamma_z) \\
+&= u^t v^t (\gamma_t \gamma_t) + u^t v^x (\gamma_t \gamma_x) + u^t v^y (\gamma_t \gamma_y) + u^t v^z (\gamma_t \gamma_z) \\
+&\quad {}+ u^x v^t (\gamma_x \gamma_t) + u^x v^x (\gamma_x \gamma_x) + u^x v^y (\gamma_x \gamma_y) + u^x v^z (\gamma_x \gamma_z) \\
+&\quad {}+ u^y v^t (\gamma_y \gamma_t) + u^y v^x (\gamma_y \gamma_x) + u^y v^y (\gamma_y \gamma_y) + u^y v^z (\gamma_y \gamma_z) \\
+&\quad {}+ u^z v^t (\gamma_z \gamma_t) + u^z v^x (\gamma_z \gamma_x) + u^z v^y (\gamma_z \gamma_y) + u^z v^z (\gamma_z \gamma_z).
+\end{split}
+\end{equation}
+$$
+
+Once again, the products of non-identical gamma matrices form the bivector part of the Clifford product, while the products of identical gamma matrices form the scalar part.
+This time, the scalar part is just the Minkowski inner product of the vectors $\vb{u}$ and $\vb{v}$.
+Thus, the Clifford product of two vectors in $\text{C}\ell(1, 3)$ is given by
+
+$$
+\begin{equation}
+\vb{u} \vb{v} = \vb{u} \cdot \vb{v} + \vb{u} \wedge \vb{v} = \vb{u}^T \eta \vb{v} + \vb{u} \wedge \vb{v}.
+\end{equation}
+$$
+
+For any spacetime separation vector $\vb{v}$, taking the Clifford product with the time basis vector $\gamma_t$ gives
+
+$$
+\begin{equation}
+\gamma_t \vb{v} = \gamma_t \cdot \vb{v} + \gamma_t \wedge \vb{v} = v^t + v^i \gamma_t \gamma_i,
+\end{equation}
+$$
+
+where $i$ runs over the spatial indices $x$, $y$, and $z$.
+As $\gamma_t \gamma_i$ squares to $(\gamma_t \gamma_i)^2 = \gamma_t \gamma_i \gamma_t \gamma_i = -\gamma_t \gamma_t \gamma_i \gamma_i = 1$, they act as a spatial basis.
+In other words, we have split the spacetime separation vector $\vb{v}$ into its time component and its spatial component.
+This is known as a **spacetime split**.
+
+## Summary and Next Steps
+
+In this section, we have introdoced a new algebraic structure known as the Clifford algebra.
+We have seen the tremendous power of the Clifford algebra in unifying many different mathematical structures, such as complex numbers, Pauli matrices, quaternions, and more.
+
+Here are the key points to remember:
+
+- An algebra $(V, \cdot)$ is a vector space $V$ with a bilinear product $\cdot: V \times V \to V$.
+- A **Grassmann algebra** is an algebra with the product being the exterior product, or wedge product.
+- The wedge product of two vectors $\vb{u}$ and $\vb{v}$ is given by $\vb{u} \wedge \vb{v}$.
+    It is a bivector, a grade-2 object that represents an oriented area in two-dimensional space.
+- The wedge product is anticommutative.
+- A grade-$k$ object in an $n$-dimensional space has $\binom{n}{k}$ basis vectors.
+- A **Clifford algebra** is an algebra with a bilinear product known as the Clifford product.
+    The Clifford algebra $\text{C}\ell(p, q)$ has $p$ symbols that square to $+1$ and $q$ symbols that square to $-1$.
+    The product of two different symbols anticommutes.
+- The Clifford product of two vectors $\vb{u}$ and $\vb{v}$ is given by $\vb{u} \vb{v} = \vb{u} \cdot \vb{v} + \vb{u} \wedge \vb{v}$.
+- The complex numbers is isomorphic to the Clifford algebra $\text{C}\ell(0, 1)$, with the basis vectors $1$ and $i$.
+- The Pauli matrices form a representation of the Clifford algebra $\text{C}\ell(3, 0)$, with the basis vectors $\sigma_x$, $\sigma_y$, and $\sigma_z$.
+- The quaternions are the even-grade subalgebra of the Clifford algebra $\text{C}\ell(3, 0)$.
+- The spacetime algebra $\text{C}\ell(1, 3)$ has the basis vectors $\gamma_t$, $\gamma_x$, $\gamma_y$, and $\gamma_z$.
+    The Dirac gamma matrices form a representation of the spacetime algebra.
+- The Clifford product of two vectors in the spacetime algebra is given by $\vb{u} \vb{v} = \vb{u}^T \eta \vb{v} + \vb{u} \wedge \vb{v}$, where $\eta$ is the Minkowski metric.
+- The Clifford product of a spacetime separation vector $\vb{v}$ with the time basis vector $\gamma_t$ gives a spacetime split, separating the time component and the spatial component.
+
+In the next section, we will explore transformations in Clifford algebras, leading to the idea of **rotors**.
+
