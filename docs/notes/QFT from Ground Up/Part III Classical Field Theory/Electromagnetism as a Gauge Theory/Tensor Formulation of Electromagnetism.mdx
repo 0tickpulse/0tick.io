@@ -1,0 +1,545 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+import { LorentzBoostVisualizerSimple } from "@site/src/components/visualizers/LorentzBoostVisualizerSimple";
+
+# Tensor Formulation of Electromagnetism
+
+In the previous section, we briefly reviewed electromagnetic theory and Maxwell's equations.
+In this section and the subsequent sections, we will explore a few different formulations of electromagnetism, which will help us understand the underlying structure of electromagnetism.
+The first formulation we will explore is the tensor formulation, which is particularly useful in the context of special relativity, as it makes relativistic invariance extremely clear.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Fundamentally, in a formulation of electromagnetism, we demand that the formulation provides:
+
+1. A way to describe the electric and magnetic fields.
+2. A way to describe how these fields interact with charged particles.
+3. A way to describe how these fields evolve in time and space.
+
+In the vector calculus formulation, we answer these questions as follows:
+
+1. The electric field $\vb{E}$ and magnetic field $\vb{B}$ are described as vector fields.
+2. The interaction of these fields with charged particles is described by the Lorentz force law, $\vb{F} = q(\vb{E} + \vb{v} \times \vb{B})$.
+3. The evolution of these fields is described by Maxwell's equations, which are, here, a set of four partial differential equations.
+
+However, this formulation is not particularly elegant, and it does not make the underlying structure of electromagnetism clear.
+The Lorentz invariance of Maxwell's equations is not immediately apparent, and the relationship between the electric and magnetic fields is not as clear as it could be.
+To address these issues, we can reformulate Maxwell's equations in a more elegant way using tensors and 4-vectors.
+
+From the previous section we know that there are a few quantities that are useful in describing the electromagnetic field:
+
+- The electric field $\vb{E}$, which describes the force per unit charge on a charged particle.
+- The magnetic field $\vb{B}$, which describes the force per unit charge on a charged particle moving in a magnetic field.
+- The scalar potential $\phi$, which is related to the electric field.
+- The vector potential $\vb{a}$, which is related to the magnetic field.
+
+In relativistic physics, we often unify different quantities into a single mathematical object to simplify the equations and make the relationships between them clearer.
+For example, energy and momentum are unified into a single 4-momentum vector, which leads to a more elegant formulation of the laws of motion in special relativity.
+Likewise, we can unify the scalar and vector potentials into a single mathematical object known as the 4-potential $A^\mu$:
+
+$$
+\begin{equation}
+A^\mu := \mqty[\phi/c \\ \vb{a}] = \mqty[\frac{\phi}{c} \\ a^x \\ a^y \\ a^z]. \label{eq:4-potential-def}
+\end{equation}
+$$
+
+As a 4-vector, it obeys the transformation rule
+
+$$
+\begin{equation}
+\tilde{A}^\mu = \Lambda^\mu_{\ \nu} A^\nu,
+\end{equation}
+$$
+
+where $\Lambda^\mu_{\ \nu} \in \mathrm{SO}(1, 3)$ is a Lorentz transformation matrix.
+This means that the 4-potential transforms in the same way as any other 4-vector under Lorentz transformations.
+
+The dual of the 4-potential, denoted as $A_\mu$, is defined as
+
+$$
+\begin{equation}
+A_\mu := \eta_{\mu\nu} A^\nu = \mqty[\phi/c & -a^x & -a^y & -a^z],
+\end{equation}
+$$
+
+where $\eta_{\mu\nu}$ is the Minkowski metric tensor, which is used to lower indices of 4-vectors.
+
+### 4-Current
+
+Another important quantity in electromagnetism is the 4-current $J^\mu$, which describes the flow of electric charge and current in spacetime.
+The charge density $\rho$ is the amount of charge per unit volume, and the current density $\vb{j}$ is the flow of charge per unit area per unit time.
+In other words, we can consider $\rho$ as a spatial density of charge, and $\vb{j}$ as a temporal density of charge.
+This motivates a unified description of charge and current in spacetime, leading to the definition of the 4-current:
+
+$$
+\begin{equation}
+J^\mu := \mqty[c \rho \\ \vb{j}] = \mqty[c \rho \\ j^x \\ j^y \\ j^z]. \label{eq:4-current-def}
+\end{equation}
+$$
+
+## Faraday Tensor
+
+Next, consider the electric and magnetic fields in terms of the 4-potential.
+First, recall that the two fields are related to the potentials by
+
+$$
+\begin{align}
+\vb{E} &= -\nabla \phi - \pdv{\vb{a}}{t}, \\
+\vb{B} &= \nabla \times \vb{a}.
+\end{align}
+$$
+
+To write this more explicitly, we can consider the individual components of the electric and magnetic fields.
+First, we know that $\phi$ is just $cA_t$, and the vector potential $\vb{a}$ has components $-A_x$, $-A_y$, and $-A_z$.
+Then, electric field components can be expressed as
+
+$$
+\begin{align}
+E^x &= -\partial_x cA_t + \partial_t A_x, \\
+E^y &= -\partial_y cA_t + \partial_t A_y, \\
+E^z &= -\partial_z cA_t + \partial_t A_z.
+\end{align}
+$$
+
+Dividing by $c$, we can rewrite these as
+
+$$
+\begin{align}
+E^x/c &= \partial_{ct} A_x - \partial_x A_t, \\
+E^y/c &= \partial_{ct} A_y - \partial_y A_t, \\
+E^z/c &= \partial_{ct} A_z - \partial_z A_t.
+\end{align}
+$$
+
+Similarly, the magnetic field components are given by
+
+$$
+\begin{align}
+B^x &= \partial_y A_z - \partial_z A_y, \\
+B^y &= \partial_z A_x - \partial_x A_z, \\
+B^z &= \partial_x A_y - \partial_y A_x.
+\end{align}
+$$
+
+Notice that all six components of the electric and magnetic fields can be expressed in terms of the 4-potential $A^\mu$ and its derivatives.
+Notably, they all involve the format $\partial_\nu A^\mu - \partial_\mu A^\nu$.
+This suggests that we can define a single mathematical object that encapsulates both the electric and magnetic fields.
+We can define a quantity $F_{\mu\nu}$, as
+
+$$
+\begin{equation}
+F_{\mu\nu} := \partial_\mu A_\nu - \partial_\nu A_\mu, \label{eq:faraday-tensor-def}
+\end{equation}
+$$
+
+known as the **Faraday tensor** or **electromagnetic field tensor**.
+It is clear that this tensor is antisymmetric;
+
+$$
+\begin{equation}
+F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu = -(\partial_\nu A_\mu - \partial_\mu A_\nu) = -F_{\nu\mu}.
+\end{equation}
+$$
+
+The components of the Faraday tensor can be expressed in terms of the electric and magnetic fields as follows:
+
+$$
+\begin{equation}
+F_{\mu\nu} = \mqty[0 & E_x/c & E_y/c & E_z/c \\ -E_x/c & 0 & -B_z & B_y \\ -E_y/c & B_z & 0 & -B_x \\ -E_z/c & -B_y & B_x & 0].
+\end{equation}
+$$
+
+As a (0, 2) tensor, it transforms under Lorentz transformations as
+
+$$
+\begin{equation}
+\tilde{F}_{\mu\nu} = \Lambda^\alpha_{\ \mu} \Lambda^\beta_{\ \nu} F_{\alpha\beta},
+\end{equation}
+$$
+
+where $\Lambda^\alpha_{\ \mu}$ is the Lorentz transformation matrix.
+
+The contravariant form of the Faraday tensor, denoted as $F^{\mu\nu}$, is obtained by raising the indices using the Minkowski metric:
+
+$$
+\begin{equation}
+F^{\mu\nu} = \eta^{\mu\alpha} \eta^{\nu\beta} F_{\alpha\beta},
+\end{equation}
+$$
+
+which can be evaluated as
+
+$$
+\begin{equation}
+F^{\mu\nu} = \mqty[0 & -E_x/c & -E_y/c & -E_z/c \\ E_x/c & 0 & B_z & -B_y \\ E_y/c & -B_z & 0 & B_x \\ E_z/c & B_y & -B_x & 0].
+\end{equation}
+$$
+
+The components of the electric and magnetic fields can be extracted from the Faraday tensor as follows:
+
+$$
+\begin{align}
+E^i &= -cF^{0i}, \\
+B^i &= \frac{1}{2} \varepsilon^{ijk} F_{jk}, \\
+B_i &= -\frac{1}{2} \varepsilon_{ijk} F^{jk},
+\end{align}
+$$
+
+where $\varepsilon_{ijk}$ is the Levi-Civita symbol, which is used to express the cross product in a more compact form.
+
+The **dual tensor** $G^{\mu\nu}$ is defined as
+
+$$
+\begin{equation}
+G^{\mu\nu} = \frac{1}{2} \varepsilon^{\mu\nu\alpha\beta} F_{\alpha\beta}. \label{eq:dual-tensor-def}
+\end{equation}
+$$
+
+It is the Hodge dual of the Faraday tensor and is useful in expressing the homogeneous Maxwell's equations.
+(If you are not familiar with the Hodge dual, it is a mathematical operation that takes a differential form and produces another differential form of the same degree, but in a different orientation.
+No need to worry about this for now, as we will not use it in this section.)
+Its matrix form is given by
+
+$$
+\begin{equation}
+G^{\mu\nu} = \mqty[0 & -B_x & -B_y & -B_z \\ B_x & 0 & E_z/c & -E_y/c \\ B_y & -E_z/c & 0 & E_x/c \\ B_z & E_y/c & -E_x/c & 0].
+\end{equation}
+$$
+
+Then, the components of the electric and magnetic fields can be extracted from the dual tensor as follows:
+
+$$
+\begin{align}
+B^i &= -G^{0i}, \\
+E^i &= -\frac{1}{2} \varepsilon^{ijk} G_{jk}, \\
+E_i &= -\frac{1}{2} \varepsilon_{ijk} G^{jk}.
+\end{align}
+$$
+
+One can see that in the dual tensor, the roles of the electric and magnetic fields are "swapped" compared to the Faraday tensor.
+
+### Continuity Equation in Tensor Form
+
+In the context of electromagnetism, the conservation of charge is expressed through the continuity equation.
+In the vector calculus formulation, the continuity equation is given by
+
+$$
+\begin{equation}
+\pdv{\rho}{t} + \div{\vb{j}} = 0.
+\end{equation}
+$$
+
+As previously stated, $\rho$ and $\vb{j}$ are parts of the 4-current $J^\mu$.
+As such, $\partial_t \rho$ is just $\partial_{ct} J^t$, and $\div{\vb{j}}$ is just $\partial_i J^i$.
+Thus, we can rewrite the continuity equation as
+
+$$
+\begin{equation}
+\partial_{ct} J^t + \partial_i J^i = \partial_\mu J^\mu = 0. \label{eq:continuity-equation-tensor}
+\end{equation}
+$$
+
+Recall that this is just the 4-divergence of the 4-current $J^\mu$.
+As you can see, tensor notation allows us to express the continuity equation in a more compact and elegant form.
+
+## Maxwell's Equations in Tensor Form
+
+Finally, we can express Maxwell's equations in tensor form.
+
+We can classify Maxwell's equations into homogeneous and inhomogeneous equations.
+A homogeneous differential equation is one whose terms all involve the function being solved for, while an inhomogeneous differential equation has terms that do not involve the function being solved for.
+For example, the equation $f''(x) = 0$ is a homogeneous differential equation, while the equation $f''(x) = x$ is an inhomogeneous differential equation.
+
+Gauss's law, $\div{\vb{E}} = \rho/\epsilon_0$, and the Ampère-Maxwell law, $\curl{\vb{B}} = \mu_0 \vb{j} + \mu_0 \epsilon_0 \partial_t \vb{E}$, are inhomogeneous equations.
+The other two equations, Faraday's law of induction, $\curl{\vb{E}} = -\partial_t \vb{B}$, and Gauss's law for magnetism, $\div{\vb{B}} = 0$, are homogeneous equations.
+We can express both homogeneous equations as one tensor equation, and likewise for the inhomogeneous equations.
+
+First, notice that the divergence of the electric field can be expressed as
+
+$$
+\begin{equation}
+\div{\vb{E}} = \pdv{E^x}{x} + \pdv{E^y}{y} + \pdv{E^z}{z} = \partial_i E^i.
+\end{equation}
+$$
+
+Since the electric field is related to the Faraday tensor by $E^i = cF^{it}$ (we can see this by looking at the components of the Faraday tensor), we can rewrite this as
+
+$$
+\begin{equation}
+\div{\vb{E}} = \partial_i E^i = c\partial_\mu F^{\mu t}.
+\end{equation}
+$$
+
+We can switch from the spatial index $i$ to the temporal index $\mu$ because the $0$th component of the Faraday tensor is zero, so it does not contribute to the divergence.
+
+The curl of the magnetic field can be expressed as
+
+$$
+\begin{equation}
+(\curl{\vb{B}})_i = -\varepsilon^{ijk} \partial_j B_k,
+\end{equation}
+$$
+
+where we have just used the formula for a cross product but plugged in $\nabla$ for one of the vectors.
+Next, plugging in $B_k = -\frac{1}{2} \varepsilon_{kmn} F^{mn}$, we can rewrite this as
+
+$$
+\begin{equation}
+(\curl{\vb{B}})_i = -\varepsilon^{ijk} \partial_j \qty(-\frac{1}{2} \varepsilon_{kmn} F^{mn}) = -\frac{1}{2} \varepsilon^{ijk} \varepsilon_{kmn} \partial_j F^{mn}.
+\end{equation}
+$$
+
+Next, we can use the identity
+
+$$
+\begin{equation}
+\varepsilon^{ijk} \varepsilon_{kmn} = \delta^i_m \delta^j_n - \delta^i_n \delta^j_m
+\end{equation}
+$$
+
+to rewrite this as
+
+$$
+\begin{equation}
+\begin{split}
+(\curl{\vb{B}})_i &= -\frac{1}{2} (\delta^i_m \delta^j_n - \delta^i_n \delta^j_m) \partial_j F^{mn} = -\frac{1}{2} (\partial_j F^{ij} - \partial_j F^{ji}) \\
+&= -\frac{1}{2} (\partial_j F^{ij} + \partial_i F^{ij}) = -\partial_j F^{ij} = \partial_i F^{ji}.
+\end{split}
+\end{equation}
+$$
+
+The time derivative of the electric field can be expressed as
+
+$$
+\begin{equation}
+\partial_t E^k = \partial_{ct} c E^k = \partial_{ct} c(-cF^{tk}) = -c^2 \partial_{ct} F^{tk}.
+\end{equation}
+$$
+
+To put these together, we summarize the substitutions that we have made so far:
+
+- $\div{\vb{E}} = c\partial_\mu F^{\mu t}$
+- $(\curl{\vb{B}})_i = \partial_i F^{ji}$
+- $\partial_t E^k = -c^2 \partial_{ct} F^{tk}$
+- $\rho = \frac{J^t}{c}$ (from the definition of the 4-current)
+- $\vb{j} = J^i$ (the spatial components of the 4-current)
+
+Gauss's law becomes
+
+$$
+\begin{align}
+\div{\vb{E}} &= \frac{\rho}{\epsilon_0} \\
+\implies c\partial_\mu F^{\mu t} &= \frac{1}{c\epsilon_0} J^t.
+\end{align}
+$$
+
+We can divide both sides by $c$ to get
+
+$$
+\begin{equation}
+\partial_\mu F^{\mu t} = \frac{1}{c^2 \epsilon_0} J^t.
+\end{equation}
+$$
+
+And since $c^2 = \frac{1}{\mu_0 \epsilon_0}$, we can rewrite this as
+
+$$
+\begin{equation}
+\partial_\mu F^{\mu t} = \mu_0 J^t. \label{eq:gauss-law-tensor}
+\end{equation}
+$$
+
+Similarly, the Ampère-Maxwell law becomes
+
+$$
+\begin{align}
+\curl{\vb{B}} &= \mu_0 \vb{j} + \frac{1}{c^2} \partial_t \vb{E} \\
+\implies \partial_i F^{ji} &= \mu_0 J^j + \frac{1}{c^2} (-c^2 \partial_{ct} F^{tj}) \nonumber \\
+&= \mu_0 J^j - \partial_{ct} F^{tj}.
+\end{align}
+$$
+
+Placing $\partial_{ct} F^{tj}$ on the left-hand side, we get
+
+$$
+\begin{equation}
+\partial_i F^{ji} + \partial_{ct} F^{tj} = \mu_0 J^j.
+\end{equation}
+$$
+
+Then, relabeling $j$ to $i$ in the $\partial_{ct} F^{tj}$ term, we get
+
+$$
+\begin{equation}
+\partial_i F^{ji} + \partial_{ct} F^{ti} = \mu_0 J^i.
+\end{equation}
+$$
+
+We can merge the two terms on the left into a single term, as $i$ and $ct$ are spatial and temporal indices, respectively.
+They combine to a single $\mu$ index;
+
+$$
+\begin{equation}
+\partial_\mu F^{\mu i} = \mu_0 J^i. \label{eq:ampere-maxwell-law-tensor}
+\end{equation}
+$$
+
+Finally, we can combine Equations $\eqref{eq:gauss-law-tensor}$ and $\eqref{eq:ampere-maxwell-law-tensor}$.
+The former describes the derivatives of $F^{\mu t}$, while the latter describes the derivatives of $F^{\mu i}$.
+The $t$ and $i$ indices are once again spatial and temporal indices, respectively, so we can combine them into a single $\nu$ index.
+Thus, we can write the two equations as
+
+$$
+\begin{equation}
+\partial_\mu F^{\mu \nu} = \mu_0 J^\nu. \label{eq:maxwell-equations-inhomogeneous-tensor}
+\end{equation}
+$$
+
+---
+
+Next, consider the homogeneous equations—Gauss's law for magnetism and Faraday's law of induction.
+By homogeneous, we mean that the equations do not have any source terms, or terms that do not involve the electromagnetic field.
+
+Just like before, we will replace all the terms in the equations with their tensor equivalents.
+This time, however, we will be leveraging the dual tensor $G^{\mu\nu}$.
+This is because the roles of the electric and magnetic fields are "swapped" in this derivation as compared to the previous one.
+As such, using the dual tensor allows the derivation to stay consistent with the structure of the equations.
+
+The divergence of the magnetic field can be expressed as
+
+$$
+\begin{equation}
+\div{\vb{B}} = \pdv{B^x}{x} + \pdv{B^y}{y} + \pdv{B^z}{z} = \partial_i B^i.
+\end{equation}
+$$
+
+Then, using $B^i = -G^{0i}$, we can rewrite this as
+
+$$
+\begin{equation}
+\div{\vb{B}} = \partial_i B^i = -\partial_\mu G^{\mu t}.
+\end{equation}
+$$
+
+Given that the divergence of the magnetic field is zero (from Gauss's law for magnetism), we can write this as
+
+$$
+\begin{equation}
+\partial_\mu G^{\mu t} = 0. \label{eq:gauss-law-magnetism-tensor}
+\end{equation}
+$$
+
+Next, we will express Faraday's law in terms of the dual tensor.
+The curl of the electric field can be expressed as
+
+$$
+\begin{equation}
+\begin{split}
+(\curl{\vb{E}})_i &= -\varepsilon^{ijk} \partial_j E_k = -\varepsilon^{ijk} \partial_j \qty(-cG^{tk}) = c\varepsilon^{ijk} \partial_j G^{tk} \\
+&= c\varepsilon^{ijk} \partial_j \qty(\frac{1}{2} \varepsilon_{kmn} G^{mn}) = \frac{c}{2} \varepsilon^{ijk} \varepsilon_{kmn} \partial_j G^{mn} \\
+&= \frac{c}{2} (\delta^i_m \delta^j_n - \delta^i_n \delta^j_m) \partial_j G^{mn} = \frac{c}{2} (\partial_j G^{ij} - \partial_j G^{ji}) \\
+&= \frac{c}{2} (\partial_j G^{ij} + \partial_i G^{ij}) = \frac{c}{2} \partial_j G^{ij} = c\partial_j G^{ji}.
+\end{split}
+\end{equation}
+$$
+
+The time derivative of the magnetic field can be expressed as
+
+$$
+\begin{equation}
+\partial_t B^k = \partial_{ct} c B^k = \partial_{ct} c(-G^{tk}) = -c^2 \partial_{ct} G^{tk}.
+\end{equation}
+$$
+
+Therefore, Faraday's law becomes
+
+$$
+\begin{equation}
+\partial_t \vb{B} = -c \curl{\vb{E}} \implies -c^2 \partial_{ct} G^{tk} = -c \partial_j G^{jk}
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+\partial_{ct} G^{tk} + \partial_j G^{jk} = 0.
+\end{equation}
+$$
+
+As $ct$ and $j$ are spatial and temporal indices, respectively, we can combine them into a single $\mu$ index;
+
+$$
+\begin{equation}
+\partial_\mu G^{\mu k} = 0. \label{eq:faraday-law-tensor}
+\end{equation}
+$$
+
+Once again, we can combine Equations $\eqref{eq:gauss-law-magnetism-tensor}$ and $\eqref{eq:faraday-law-tensor}$.
+The former describes the derivatives of $G^{\mu t}$, while the latter describes the derivatives of $G^{\mu i}$.
+The $t$ and $i$ indices are once again spatial and temporal indices, respectively, so we can combine them into a single $\nu$ index.
+Thus, we can write the two equations as
+
+$$
+\begin{equation}
+\partial_\mu G^{\mu \nu} = 0. \label{eq:maxwell-equations-homogeneous-tensor}
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+Thus we have fully expressed electromagnetism in terms of tensors.
+
+<Boxed>
+
+**Maxwell's Equations in Tensor Formulation**: The inhomogeneous and homogeneous Maxwell's equations can be expressed in tensor notation as follows:
+
+$$
+\begin{align}
+\partial_\mu F^{\mu \nu} &= \mu_0 J^\nu, \tag{\ref{eq:maxwell-equations-inhomogeneous-tensor}} \\
+\partial_\mu G^{\mu \nu} &= 0, \tag{\ref{eq:maxwell-equations-homogeneous-tensor}}
+\end{align}
+$$
+
+where:
+
+$$
+\begin{align}
+F^{\mu \nu} &:= \partial^\mu A^\nu - \partial^\nu A^\mu, \tag{\ref{eq:faraday-tensor-def}} \\
+G^{\mu \nu} &:= \frac{1}{2} \varepsilon^{\mu \nu \alpha \beta} F_{\alpha \beta}, \tag{\ref{eq:dual-tensor-def}} \\
+J^\mu &:= \mqty[c \rho \\ \vb{j}] = \mqty[c \rho \\ j^x \\ j^y \\ j^z], \tag{\ref{eq:4-current-def}} \\
+A^\mu &:= \mqty[\phi/c \\ \vb{a}] = \mqty[\frac{\phi}{c} \\ a^x \\ a^y \\ a^z], \tag{\ref{eq:4-potential-def}} \\
+\eta_{\mu \nu} &:= \mqty[1 & 0 & 0 & 0 \\ 0 & -1 & 0 & 0 \\ 0 & 0 & -1 & 0 \\ 0 & 0 & 0 & -1].
+\end{align}
+$$
+
+The conservation of charge is expressed through the continuity equation
+
+$$
+\begin{equation}
+\partial_\mu J^\mu = 0. \tag{\ref{eq:continuity-equation-tensor}}
+\end{equation}
+$$
+
+</Boxed>
+
+In this section, we have reformulated Maxwell's equations in a more elegant way using tensors and 4-vectors.
+This formulation makes the underlying structure of electromagnetism clearer and highlights the Lorentz invariance of the equations.
+In the next section, we will explore the Clifford algebra formulation of Maxwell's equations, which provides an alternative perspective on electromagnetism.

@@ -1,0 +1,308 @@
+---
+sidebar_position: 0.1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Newtonian Mechanics
+
+
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Very Basics
+
+### Newton's Second Law
+
+The starting quantity we define is the position vector $\vb{r}$, a vector in $\mathbb{R}^3$ that represents the position of a particle.
+The velocity of the particle is defined as
+
+$$
+\begin{equation}
+\vb{v} := \dv{\vb{r}}{t},
+\end{equation}
+$$
+
+and the acceleration as
+
+$$
+\begin{equation}
+\vb{a} := \dv{\vb{v}}{t} = \dv[2]{\vb{r}}{t}.
+\end{equation}
+$$
+
+The inertial mass $m_i$ of the particle is defined in Newtonian mechanics as its resistance to an applied force.
+However, all experiments have shown that the inertial mass is equivalent to the gravitational mass $m_g$; thus, we will treat both masses as identical and denote them as $m$.
+The momentum is thus
+
+$$
+\begin{equation}
+\vb{p} := m\vb{v} = m \dv{\vb{r}}{t}.
+\end{equation}
+$$
+
+Newton's second law of motion is essentially a definition for the **force**;
+
+$$
+\begin{equation}
+\vb{F} := \dv{\vb{p}}{t} = \dv{(m\vb{v})}{t},
+\end{equation}
+$$
+
+and if $m$ is constant,
+
+$$
+\begin{equation}
+\vb{F} = m\vb{a}.
+\end{equation}
+$$
+
+This equation applies in an inertial reference frame (one that is not accelerating).
+Had the frame be non-inertial, fictitious forces would exist and need to be accounted for in the law.
+
+### Rotational Quantities
+
+It is often useful to define analogous quantities that describe rotations rather than linear translations.
+Around a point $O$ (the origin of rotation), the **angular momentum** is
+
+$$
+\begin{equation}
+\vb{L} := \vb{r} \times \vb{p},
+\end{equation}
+$$
+
+and the **torque** as
+
+$$
+\begin{equation}
+\vb{\tau} := \vb{r} \times \vb{F}.
+\end{equation}
+$$
+
+For rotations, Newton's second law has a close analogue that can be derived as follows:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{\tau} &= \vb{r} \times \vb{F} \\
+&= \vb{r} \times \dv{t} (m\vb{v}) \\
+&= \dv{t} [\vb{r} \times m\vb{v}] - \vb{v} \times m\vb{v} \\
+&= \dv{t} (\vb{r} \times \vb{p}) \\
+&= \dv{\vb{L}}{t}.
+\end{split}
+\end{equation}
+$$
+
+### Energy
+
+The **work** done by a force $\vb{F}$ on a particle along a path $C$ is defined as
+
+$$
+\begin{equation}
+W := \int_C \vb{F} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+If the particle has a constant mass, this can be evaluated as
+
+$$
+\begin{equation}
+\begin{split}
+W &= \int m\vb{a} \cdot \dd{\vb{r}} \\
+&= m \int \dv{\vb{v}}{t} \cdot \vb{v} \dd{t} \\
+&= m \int \dv{t} (v^2) \dd{t} \\
+&= \frac{1}{2} mv_f^2 - \frac{1}{2} mv_i^2 \\
+&= T_f - T_i,
+\end{split}
+\end{equation}
+$$
+
+where $K$ is the **kinetic energy** defined as
+
+$$
+\begin{equation}
+T := \frac{1}{2} mv^2.
+\end{equation}
+$$
+
+### Conservative Forces
+
+A force is **conservative** if any of the following equivalent conditions apply:
+
+- The force does not change a particle's total energy $T + V$.
+- The force field can be expressed as the negative gradient of a scalar field (the **potential**), $\vb{F} = -\nabla V(\vb{r})$.
+- The work done by the force is path-independent.
+- The work done by the force along a closed loop is zero.
+
+It is easy to prove that conservative forces conserve energy; the work done by the force is
+
+$$
+\begin{equation}
+W_a^b = \int_a^b \vb{F} \cdot \dd{\vb{r}} = V_a - V_b.
+\end{equation}
+$$
+
+Considering that $W_a^b = T_b - T_a$,
+
+$$
+\begin{equation}
+T_b - T_a = V_a - V_b,
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+T_b + V_b = T_a + V_a.
+\end{equation}
+$$
+
+The other conditions come from vector calculus, which I have thoroughly delineated [here](/notes/maths/Calculus%203/Extending%20the%20Integral/Conservative%20Vector%20Fields).
+
+### Systems of Particles
+
+When we consider a system of particles, we need to distinguish internal forces and external forces.
+**Internal forces** are forces acting on a particle by another particle in the system.
+**External forces** are forces acting on a particle by a source outside the system.
+
+We can denote the internal force from particle $j$ to particle $i$ as $\vb{F}_{ji}$.
+Then, the total internal force acting on the $i$-th particle is
+
+$$
+\begin{equation}
+\vb{F}^{(\text{int})} = \sum_j \vb{F}_{ji}.
+\end{equation}
+$$
+
+Combining this with the external force $\vb{F}^{(\text{ext})}_i$, the second law, when applied to the $i$-th particle, is
+
+$$
+\begin{equation}
+\sum_j \vb{F}_{ji} + \vb{F}^{(\text{ext})}_i = \dv{\vb{p}_i}{t}. \label{eq:system-2nd-law-i}
+\end{equation}
+$$
+
+Newton's third law states that the forces exerted on two particles by each other have equal magnitude but opposite directions.
+In other words, $\vb{F}_{ji} = -\vb{F}_{ij}$.
+If we sum Equation $\eqref{eq:system-2nd-law-i}$ for all $i$, we get
+
+$$
+\begin{equation}
+\sum_i \qty[\sum_j \vb{F}_{ji} + \vb{F}^{(\text{ext})}_i] = \dv{t} \sum_i m\vb{v}_i.
+\end{equation}
+$$
+
+By the third law, the $\vb{F}_{ji}$ terms cancel out for each pair of $\vb{F}_{ji} + \vb{F}_{ij} = 0$ cancels out.
+Therefore we are left with
+
+$$
+\begin{equation}
+\sum_i \vb{F}^{(\text{ext})}_i = \dv{t} \sum_i m\vb{v}_i.
+\end{equation}
+$$
+
+We shall just denote the total external force (on the left-hand side) as $\vb{F}^{(\text{ext})}$.
+On the right-hand side, we will introduce a new quantity called the **center of mass** $\vb{R}$, defined as the weighted average of the position vectors based on their masses;
+
+$$
+\begin{equation}
+\vb{R} := \frac{1}{M} \sum_i m\vb{r}_i.
+\end{equation}
+$$
+
+Then the equation becomes
+
+$$
+\begin{equation}
+\vb{F}^{(\text{ext})} = M \dv[2]{\vb{R}}{t}.
+\end{equation}
+$$
+
+Similarly, the sum of the linear momentums gives
+
+$$
+\begin{equation}
+\vb{P} = \sum_i m\vb{r}_i = M\dv{\vb{R}}{t}.
+\end{equation}
+$$
+
+Therefore,
+
+$$
+\begin{equation}
+\vb{F}^{(\text{ext})} = \dv{\vb{P}}{t}.
+\end{equation}
+$$
+
+We can make a similar deduction for the rotational case; the total torque is
+
+$$
+\begin{equation}
+\begin{split}
+\vb{\tau} &= \sum_i \qty(\vb{r}_i \times \dv{\vb{p}_i}{t}) \\
+&= \sum_i \qty[\dv{t} (\vb{r}_i \times \vb{p}_i) - \vb{v}_i \times m\vb{v}_i] \\
+&= \sum_i \dv{\vb{L}_i}{t} = \dv{\vb{L}}{t}.
+\end{split}
+\end{equation}
+$$
+
+We can also distinguish between external torques and internal torques the same way;
+
+$$
+\begin{equation}
+\vb{\tau} = \sum_i \qty(\vb{r}_i \times \vb{F}^{(\text{ext})}_i) + \sum_{ij} \qty(\vb{r}_i \times \vb{F}_{ji}). \label{eq:system-torque-before-cancellation}
+\end{equation}
+$$
+
+The key part is that we can consider a pair of summed elements on the rightmost term;
+
+$$
+\begin{equation}
+\vb{r}_i \times \vb{F}_{ji} + \vb{r}_j \times \vb{F}_{ij} = (\vb{r}_i - \vb{r}_j) \times \vb{F}_{ji} = \vb{r}_{ji} \times \vb{F}_{ji}.
+\end{equation}
+$$
+
+If we assume that the separation vector has the same direction as the force, then the term simply vanishes.
+Then Equation $\eqref{eq:system-torque-before-cancellation}$ simplifies to
+
+$$
+\begin{equation}
+\vb{\tau} = \sum_i \qty(\vb{r}_i \times \vb{F}^{(\text{ext})}_i) = \vb{\tau}^{(\text{ext})}.
+\end{equation}
+$$
+
+And since $\vb{\tau} = \dv{\vb{L}}{t}$,
+
+$$
+\begin{equation}
+\vb{\tau}^{\text{(ext)}} = \dv{\vb{L}}{t}.
+\end{equation}
+$$
+
+Note that in our two derivations we have assumed that the third law applies in two ways.
+First, that the forces are equal and opposite is the *weak law of action and reaction*.
+Second, that the forces' directions are parallel to their separation vector is the *strong law of action and reaction*.
+While they hold for most forces, some forces, such as electromagnetic ones, violate these assumptions.
+
+We can construct a table to summarize the analogy between translations and rotations, listed below.
+
+| Translations | Rotations |
+| ------------ | --------- |
+| $\vb{p} := m\vb{v}$ | $\vb{L} := \vb{r} \times \vb{p}$ |
+| $\vb{F} := \dv{\vb{p}}{t} $ | $\vb{\tau} := \dv{\vb{L}}{t} $ |

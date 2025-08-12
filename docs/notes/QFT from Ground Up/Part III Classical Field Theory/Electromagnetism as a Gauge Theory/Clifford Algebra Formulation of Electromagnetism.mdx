@@ -1,0 +1,286 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+import { LorentzBoostVisualizerSimple } from "@site/src/components/visualizers/LorentzBoostVisualizerSimple";
+
+# Clifford Algebra Formulation of Electromagnetism
+
+Previously, we discussed both the vector calculus and tensor calculus formulations of electromagnetism.
+In this section, we will explore the [Clifford algebra](../../Part%20II%20Special%20Relativity/Spacetime%20Geometry/Introduction%20to%20Clifford%20Algebras) formulation of electromagnetism, which provides a more geometric approach to the subject.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Electromagnetic Field in Cl(3, 0)
+
+In the vector calculus formulation, we represent the electromagnetic field using two vector fields: the electric field $\vb{E}$ and the magnetic field $\vb{B}$.
+In the tensor calculus formulation, we represent the electromagnetic field using the electromagnetic field tensor $F_{\mu\nu}$, which is an antisymmetric rank-2 tensor.
+In the Clifford algebra formulation, we can represent the electromagnetic field as a multivector.
+
+We shall first use the algebra of physical space (APS) $\text{C}\ell(3, 0)$, which is the Clifford algebra of three-dimensional Euclidean space.
+
+First, let $F$ denote the electromagnetic field as a multivector in the spacetime algebra.
+We obviously cannot define $F$ as
+
+$$
+\begin{equation}
+F = \vb{E} + \vb{B},
+\end{equation}
+$$
+
+because $\vb{E}$ and $\vb{B}$ are both vectors, and thus they will mix and be unable to be separated.
+One way to resolve this is to place the pseudoscalar $i = \sigma_x \sigma_y \sigma_z$ in front of the magnetic field $\vb{B}$, so that we have
+
+$$
+\begin{equation}
+F = \vb{E} + i \vb{B}.
+\end{equation}
+$$
+
+Then, we just need to multiply $\vb{B}$ by $c$ to get the correct units, so we have
+
+$$
+\begin{equation}
+F = \vb{E} + i c \vb{B}.
+\end{equation}
+$$
+
+That's it; we have defined the electromagnetic field as a multivector in the spacetime algebra.
+This was much simpler than the tensor calculus formulation, where we had to define the electromagnetic field tensor $F_{\mu\nu}$ as $F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu$, where $A_\mu$ is the four-potential.
+
+### Current and Charge Density
+
+Next, we need to define the current and charge density.
+
+Much like in the tensor formulation, we can combine the current density $\vb{J}$ and the charge density $\rho$ into a single object.
+This is because they are just spatiotemporal densities, and thus make sense to combine them into a single multivector.
+We can define the current and charge density as
+
+$$
+\begin{equation}
+J = c\rho - \vb{J}.
+\end{equation}
+$$
+
+It is a combination of a scalar $c\rho$ and a vector $-\vb{J}$, where the scalar is the charge density and the vector is the current density.l
+
+### Maxwell's Equations in Cl(3, 0)
+
+We can now write Maxwell's equations in the Clifford algebra formulation (specifically in the algebra of physical space $\text{C}\ell(3, 0)$).
+We shall denote the nabla operator as $\vec{\nabla}$ for the ordinary gradient operator in vector calculus.
+
+The equations are as follows:
+
+$$
+\begin{align}
+\vec{\nabla} \cdot \vb{E} &= \frac{\rho}{\epsilon_0}, \\
+\vec{\nabla} \cdot \vb{B} &= 0, \\
+\vec{\nabla} \times \vb{E} &= -\pdv{\vb{B}}{t}, \\
+\vec{\nabla} \times \vb{B} &= \mu_0 \vb{J} + \frac{1}{c^2} \pdv{\vb{E}}{t},
+\end{align}
+$$
+
+It is really surprising how simple these equations are in the Clifford algebra formulation.
+If you do not want to be spoiled, don't click the dropdown below.
+
+<details>
+<summary>Maxwell's Equations in Cl(3, 0)</summary>
+
+$$
+\begin{equation}
+\vec{\nabla} F = \mu_0 cJ.
+\end{equation}
+$$
+
+*That's it.*
+
+</details>
+
+To derive the equation, we shall convert the equations to the language of multivectors.
+Beginning with the Ampère-Maxwell law, we rearrange it to get
+
+$$
+\begin{equation}
+\vec{\nabla} \times \vb{B} - \frac{1}{c^2} \pdv{\vb{E}}{t} = \mu_0 \vb{J}.
+\end{equation}
+$$
+
+We know that in the APS, the cross product can be expressed as a wedge product along with a pseudoscalar;
+
+$$
+\begin{equation}
+\vb{v} \times \vb{w} = -i (\vb{v} \wedge \vb{w}).
+\end{equation}
+$$
+
+Hence the law becomes
+
+$$
+\begin{equation}
+-i\vec{\nabla} \wedge \vb{B} - \frac{1}{c^2} \pdv{\vb{E}}{t} = \mu_0 \vb{J}.
+\end{equation}
+$$
+
+Next, we want to remove the coefficients from the electric field term, so we multiply everything by $c$;
+
+$$
+\begin{equation}
+-ic \vec{\nabla} \wedge \vb{B} - \partial_{ct} \vb{E} = \mu_0 c \vb{J}
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+ic \vec{\nabla} \wedge \vb{B} + \partial_{ct} \vb{E} = -\frac{1}{c \epsilon_0} \vb{J}.
+\end{equation}
+$$
+
+This equation is still a vector equation, in that both sides are vectors.
+The trick we will employ is to convert the other equations to other types of equations, such as scalar or bivector equations.
+This way, they are all independent of each other and can be combined into a single equation.
+
+Gauss's law is already a scalar equation, so we can leave it as
+
+$$
+\begin{equation}
+\vec{\nabla} \cdot \vb{E} = \frac{\rho}{\epsilon_0}.
+\end{equation}
+$$
+
+We shall now convert Faraday's law to a bivector equation.
+Multiplying everything in Faraday's law by $i$, we get
+
+$$
+\begin{equation}
+i \vec{\nabla} \times \vb{E} + i \pdv{\vb{B}}{t} = 0.
+\end{equation}
+$$
+
+As $i \vec{\nabla} \times \vb{E} = \vec{\nabla} \wedge \vb{E}$, we can rewrite this as
+
+$$
+\begin{equation}
+\vec{\nabla} \wedge \vb{E} + i \partial_{ct} c \vb{B} = 0.
+\end{equation}
+$$
+
+Finally, we can convert Gauss's law for magnetism to a trivector equation by simply multiplying by $ic$;
+
+$$
+\begin{equation}
+ic \vec{\nabla} \cdot \vb{B} = 0.
+\end{equation}
+$$
+
+Now we will just add all of these equations together.
+We have
+
+$$
+\begin{equation}
+\begin{split}
+&\quad \vec{\nabla} \cdot \vb{E} \\
+&{}+ \partial_{ct} \vb{E} + ic \vec{\nabla} \wedge \vb{B} \\
+&{}+ \vec{\nabla} \wedge \vb{E} + i \partial_{ct} c \vb{B} \\
+&{}+ ic \vec{\nabla} \cdot \vb{B} = \frac{\rho}{\epsilon_0} - \frac{1}{c \epsilon_0} \vb{J}.
+\end{split}
+\end{equation}
+$$
+
+Here's where the magic happens.
+Notice that we have a $\vec{\nabla} \cdot \vb{E}$ term and a $\vec{\nabla} \wedge \vb{E}$ term.
+The sum of those two is just the definition of a Clifford product
+
+$$
+\begin{equation}
+\vec{\nabla} \vb{E} = \vec{\nabla} \cdot \vb{E} + \vec{\nabla} \wedge \vb{E}.
+\end{equation}
+$$
+
+This leads to the equation
+
+$$
+\begin{equation}
+\vec{\nabla} \vb{E} + \partial_{ct} \vb{E} + ic \vec{\nabla} \wedge \vb{B} + i \partial_{ct} c \vb{B} + ic \vec{\nabla} \cdot \vb{B} = \frac{\rho}{\epsilon_0} - \frac{1}{c \epsilon_0} \vb{J}.
+\end{equation}
+$$
+
+Likewise, we have
+
+$$
+\begin{equation}
+\vec{\nabla} \vb{B} = \vec{\nabla} \cdot \vb{B} + \vec{\nabla} \wedge \vb{B},
+\end{equation}
+$$
+
+so we can rewrite the equation as
+
+$$
+\begin{equation}
+\vec{\nabla} \vb{E} + \partial_{ct} \vb{E} + ic \vec{\nabla} {B} + ic \partial_{ct} c \vb{B} = \frac{\rho}{\epsilon_0} - \frac{1}{c \epsilon_0} \vb{J}.
+\end{equation}
+$$
+
+Finally, we can define the vector gradient in APS as
+
+$$
+\begin{equation}
+\nabla := \partial_{ct} + \vec{\nabla} = \partial_{ct} + \partial_x \sigma_x + \partial_y \sigma_y + \partial_z \sigma_z,
+\end{equation}
+$$
+
+and thus we can simplify some terms like this:
+
+$$
+\begin{equation}
+\vec{\nabla} \vb{E} + \partial_{ct} \vb{E} = \nabla \vb{E}.
+\end{equation}
+$$
+
+Thus we can rewrite the equation as
+
+$$
+\begin{equation}
+\nabla \vb{E} + ic \nabla \vb{B} = \frac{\rho}{\epsilon_0} - \frac{1}{c \epsilon_0} \vb{J}.
+\end{equation}
+$$
+
+Now we will invoke the definition of the electromagnetic field $F$ as
+
+$$
+\begin{equation}
+F = \vb{E} + i c \vb{B},
+\end{equation}
+$$
+
+and the definition of the current and charge density $J$ as
+
+$$
+\begin{equation}
+J = c \rho - \vb{J},
+\end{equation}
+$$
+
+to finally get
+
+$$
+\begin{equation}
+\nabla F = \mu_0 c J.
+\end{equation}
+$$
+
+

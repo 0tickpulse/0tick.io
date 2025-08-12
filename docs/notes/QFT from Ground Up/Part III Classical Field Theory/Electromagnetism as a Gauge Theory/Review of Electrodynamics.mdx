@@ -1,0 +1,496 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import TOCInline from "@theme/TOCInline";
+import * as MB from "mathbox-react";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { range } from "lodash";
+
+import { LorentzBoostVisualizerSimple } from "@site/src/components/visualizers/LorentzBoostVisualizerSimple";
+
+# Review of Electrodynamics
+
+We begin with a review of electrodynamics, which is the classical field theory that describes the behavior of electric and magnetic fields.
+This review will cover the basic concepts of electromagnetism in the vector calculus formalism, which is one of the first ways in which electromagnetism was formulated.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Electrostatics
+
+In electrostatics, we consider situations where charged particles are not in motion.
+The electric field $\vb{E}$ is defined as the force per unit charge experienced by a positive test charge placed in the field,
+
+$$
+\begin{equation}
+\vb{E} = \frac{\vb{F}}{q}.
+\end{equation}
+$$
+
+It has the units of force per unit charge, which is equivalent to newtons per coulomb (N/C) or volts per meter (V/m) in SI units.
+In Gaussian units, the electric field has the units of statvolts per centimeter (statV/cm) or esu per centimeter (esu/cm).
+Notably, this test charge itself does not affect the electric field.
+This is not problematic for the test charge is merely a hypothetical construct, and even if that were not to be the case, we can always choose a test charge small enough to be completely negligible.
+
+The force is given by Coulomb's law;
+for two point charges $q_1$ and $q_2$ separated by a distance $r$, the force $\vb{F}$ on charge $q_2$ due to charge $q_1$ is given by
+
+$$
+\begin{equation}
+\vb{F} = \frac{1}{4\pi\epsilon_0} \frac{q_1 q_2}{r^2} \vu{r}.
+\end{equation}
+$$
+
+Hence, the electric field due to a point charge $q$ at a distance $r$ is given by
+
+$$
+\begin{equation}
+\vb{E} = \frac{1}{4\pi\epsilon_0} \frac{q}{r^2} \vu{r}.
+\end{equation}
+$$
+
+Now we list the key properties of the electric field:
+
+1. The electric field obeys a superposition principle, meaning that the total electric field due to multiple point charges is the vector sum of the electric fields due to each individual charge.
+2. The electric field (in electrostatics) is irrotational, meaning that the curl of the electric field is zero.
+    This means that the electric field can be expressed as the gradient of a scalar potential $\phi$.
+3. (This is a consequence of the previous point) The electric field is conservative, meaning that the work done by the electric field on a charged particle moving from one point to another is independent of the path taken.
+
+Two accompanying quantities are the electric potential $\phi$ and the charge density $\rho$.
+The electric potential, which is a scalar field, is defined as the work done per unit charge in bringing a test charge from infinity to a point in the electric field,
+
+$$
+\begin{equation}
+\phi(\vb{r}) := -\int_{\infty}^{\vb{r}} \vb{E} \cdot \dd{\vb{r}'} \iff \vb{E} = -\grad{\phi}.
+\end{equation}
+$$
+
+The charge density $\rho$ is defined as the amount of charge per unit volume at a point in space.
+
+The energy "stored" in the electric field is given by the energy density $u$, which is defined as
+
+$$
+\begin{equation}
+u = \frac{1}{2} \epsilon_0 |\vb{E}|^2.
+\end{equation}
+$$
+
+As the electric field is simply a mathematical construct, the notion of it "storing" energy might seem odd.
+However, we already do this a lot in physics.
+We say that an electromagnetic wave carries energy, even though the wave is just a mathematical description of the oscillation of electric and magnetic fields.
+It is just a convenient way to describe the energy associated with the electric field.
+
+The energy stored in the electric field can be calculated by integrating the energy density over a volume $V$,
+
+$$
+\begin{equation}
+U = \int_{V} u \, \dd{V} = \frac{1}{2} \epsilon_0 \int_{V} |\vb{E}|^2 \, \dd{V}.
+\end{equation}
+$$
+
+### Gauss's Law
+
+The relationship between the electric field and the charge density is given by Gauss's law, which has two equivalent forms:
+
+$$
+\begin{align}
+\int_{\partial V} \vb{E} \cdot \dd{\vb{a}} &= \frac{1}{\epsilon_0} \int_{V} \rho \, \dd{V}, \\
+\div{\vb{E}} &= \frac{\rho}{\epsilon_0}.
+\end{align}
+$$
+
+The first form is the integral form, whereas the second form is the differential form.
+One can convert between the two forms using the divergence theorem.
+
+A direct result from Gauss's law is that the electric potential is related to the charge density by Poisson's equation,
+
+$$
+\begin{equation}
+\laplacian{\phi} = -\frac{\rho}{\epsilon_0}.
+\end{equation}
+$$
+
+This reduces to Laplace's equation in regions where there is no charge density, i.e., $\rho = 0$,
+
+$$
+\begin{equation}
+\laplacian{\phi} = 0.
+\end{equation}
+$$
+
+Along with the boundary conditions, this allows us to solve for the electric potential in regions with no charge density.
+Laplace's equation obeys the uniqueness theorem, which states that if a solution exists, it is unique given the boundary conditions.
+
+There are three elementary methods that aid in solving Laplace's equation.
+
+The first is separation of variables, which is a method that involves assuming a solution of the form $\phi(x, y, z) = X(x) Y(y) Z(z)$ and then solving the resulting ordinary differential equations.
+This often leads to solutions in terms of spherical harmonics or other orthogonal functions, from which one can construct the general solution as a linear combination of these functions.
+
+The second is the method of images, which is a technique that involves replacing the boundary conditions with fictitious charges (images) to simplify the problem.
+The method of images is particularly useful for problems with symmetry, such as a point charge near a conducting plane.
+
+The third is the Green's function, which involves constructing a Green's function that satisfies the boundary conditions and then using it to solve for the potential.
+Recall that the Green's function is a solution to the equation
+
+$$
+\begin{equation}
+\laplacian{G(\vb{r}, \vb{r'})} = -\delta(\vb{r} - \vb{r'}),
+\end{equation}
+$$
+
+where $\delta$ is the Dirac delta function.
+If the Green's function is known, the potential can be expressed as
+
+$$
+\begin{equation}
+\phi(\vb{r}) = \int G(\vb{r}, \vb{r'}) \rho(\vb{r'}) \, \dd{V'},
+\end{equation}
+$$
+
+where $\rho(\vb{r'})$ is the charge density at the point $\vb{r'}$.
+
+Another useful method is the multipole expansion, which is a technique that involves expanding the potential in terms of spherical harmonics.
+The multipole expansion is particularly useful for calculating the potential due to a distribution of charges that is far away from the point where the potential is being calculated.
+It is given by
+
+$$
+\begin{equation}
+\phi(\vb{r}) = \frac{1}{4\pi\epsilon_0} \sum_{n=0}^{\infty} \frac{1}{r^{n+1}} \int r'^n Y_n^m(\theta', \phi') Q_n^m(\vb{r'}) \, \dd{\Omega'},
+\end{equation}
+$$
+
+where $Y_n^m(\theta', \phi')$ are the [spherical harmonics](https://en.wikipedia.org/wiki/Spherical_harmonics#Laplace's_spherical_harmonics), $Q_n^m(\vb{r'})$ are the multipole moments, and $\dd{\Omega'}$ is the solid angle element.
+The expansion contains terms for the monopole, dipole, quadrupole, and higher-order moments.
+
+### Conductors
+
+In electrostatics, conductors are materials that allow electric charges to move freely.
+From intuition, we can derive a few key characteristics of conductors in electrostatics:
+
+1. The electric field inside a conductor in electrostatic equilibrium is zero, i.e., $\vb{E} = 0$.
+    This is because if there were an electric field inside the conductor, the free charges would move until they reached a state of equilibrium.
+2. The electric potential is constant throughout the conductor, i.e., $\phi = \text{constant}$.
+    This is because if there were a potential difference, charges would move until the potential difference is zero.
+    Equivalently, the electric field inside the conductor is zero, which implies that the gradient of the potential is zero.
+3. On the surface of a conductor, the electric field is perpendicular to the surface.
+    This is because if the electric field had a component parallel to the surface, charges would move along the surface until the electric field is perpendicular to the surface.
+4. On the surface of a conductor, the electric potential is constant.
+    This is because if there were a potential difference, charges would move until the potential difference is zero.
+    Equivalently, the electric field on the surface is perpendicular to the surface, which implies that the gradient of the potential is zero.
+5. The surface charge density $\sigma$ on the surface of a conductor is related to the electric field just outside the surface by
+
+    $$
+    \begin{equation}
+    \sigma = \epsilon_0 E_n,
+    \end{equation}
+    $$
+
+    where $E_n$ is the electric field just outside the surface, and $\epsilon_0$ is the permittivity of free space.
+    This is a consequence of Gauss's law, as the electric field just outside the surface is related to the charge density on the surface.
+
+### Electrostatics in Matter
+
+In the presence of matter, the electric field is modified by the polarization of the material.
+The dipole moment is defined as the product of the charge and the distance between the charges in a dipole.
+The polarization $\vb{P}$ is defined as the dipole moment per unit volume, and it is a vector field that describes the density of electric dipole moments in a material.
+
+The electric displacement field $\vb{D}$ is defined as
+
+$$
+\begin{equation}
+\vb{D} = \epsilon_0 \vb{E} + \vb{P},
+\end{equation}
+$$
+
+where $\vb{E}$ is the electric field, $\epsilon_0$ is the permittivity of free space, and $\vb{P}$ is the polarization.
+The relationship between the electric displacement field and the electric field is given by Gauss's law in matter,
+
+$$
+\begin{equation}
+\int_{\partial V} \vb{D} \cdot \dd{\vb{a}} = \int_{V} \rho_f \, \dd{V},
+\end{equation}
+$$
+
+where $\rho_f$ is the free charge density, which is the charge density that is not bound to atoms or molecules in the material.
+The differential form of Gauss's law in matter is given by
+
+$$
+\begin{equation}
+\div{\vb{D}} = \rho_f.
+\end{equation}
+$$
+
+The electric field $\vb{E}$ can be expressed in terms of the electric displacement field $\vb{D}$ and the polarization $\vb{P}$ as
+
+$$
+\begin{equation}
+\vb{E} = \frac{\vb{D} - \vb{P}}{\epsilon_0}.
+\end{equation}
+$$
+
+The polarization $\vb{P}$ is related to the bound charge density $\rho_b$ by
+
+$$
+\begin{equation}
+\rho_b = -\div{\vb{P}}.
+\end{equation}
+$$
+
+The bound charge density is the charge density that is bound to atoms or molecules in the material, and it arises from the polarization of the material.
+The total charge density $\rho$ is the sum of the free charge density $\rho_f$ and the bound charge density $\rho_b$,
+
+$$
+\begin{equation}
+\rho = \rho_f + \rho_b.
+\end{equation}
+$$
+
+To reiterate, the free charge density $\rho_f$ is the charge density that is not bound to atoms or molecules in the material, while the bound charge density $\rho_b$ is the charge density that is bound to atoms or molecules in the material.
+
+## Magnetostatics
+
+In magnetostatics, we consider situations where electric charges are in motion, but the magnetic fields do not change with time.
+Recall from a previous discussion that the magnetic force is a necessity such that the electric force is invariant under Lorentz transformations.
+
+Given a magnetic field $\vb{B}$, the magnetic force $\vb{F}$ on a charged particle with charge $q$ moving with velocity $\vb{v}$ is given by
+
+$$
+\begin{equation}
+\vb{F} = q(\vb{E} + \vb{v} \times \vb{B}).
+\end{equation}
+$$
+
+The magnetic field has the units of tesla (T) in SI units, which is equivalent to newtons per ampere-meter (N/(A·m)) or webers per square meter (Wb/m²).
+The $\times$ denotes the cross product, meaning that the magnetic force obeys a right-hand rule.
+
+There are two key properties of the magnetic field:
+
+1. The magnetic field is solenoidal, meaning that the divergence of the magnetic field is zero, i.e., $\div{\vb{B}} = 0$.
+    This implies that there are no magnetic monopoles, and the magnetic field lines are continuous loops.
+    This is also known as Gauss's law for magnetism.
+2. Magnetic forces alone cannot do work on charged particles.
+    This is because the magnetic force is always perpendicular to the velocity of the charged particle, meaning that it does not change the kinetic energy of the particle.
+    This is a consequence of the fact that the magnetic force is a cross product, which is always perpendicular to both vectors involved in the cross product.
+
+The magnetic field can be expressed in terms of the vector potential $\vb{a}$, which is a vector field that satisfies
+
+$$
+\begin{equation}
+\vb{B} = \curl{\vb{a}}.
+\end{equation}
+$$
+
+### Ampère's Law
+
+In a circuit, the current density $\vb{J}$ is defined as the amount of charge per unit time per unit area flowing through a surface.
+In other words, it describes how much current is flowing through a given area at a given time.
+Its direction is the direction of the flow of positive charge, which is opposite to the flow of negative charge (i.e., electrons).
+The relationship between the magnetic field and the current density is given by Ampère's law, which has two equivalent forms:
+
+$$
+\begin{equation}
+\int_{\partial V} \vb{B} \cdot \dd{\vb{a}} = \mu_0 \int_{V} \vb{J} \, \dd{V},
+\end{equation}
+$$
+
+and
+
+$$
+\begin{equation}
+\curl{\vb{B}} = \mu_0 \vb{J},
+\end{equation}
+$$
+
+where $\mu_0$ is the permeability of free space.
+The first form is the integral form, whereas the second form is the differential form.
+
+In the presence of a time-varying electric field, Ampère's law is modified to include the displacement current, which is given by
+
+$$
+\begin{equation}
+\curl{\vb{B}} = \mu_0 \vb{J} + \mu_0 \epsilon_0 \pdv{\vb{E}}{t},
+\end{equation}
+$$
+
+also known as the modified Ampère's law or the Ampère-Maxwell law.
+The displacement current term $\mu_0 \epsilon_0 \pdv{\vb{E}}{t}$ accounts for the changing electric field, which can produce a magnetic field even in the absence of a current density $\vb{J}$.
+
+For a point current $I$ flowing through a wire (described by a curve $C$), the magnetic field $\vb{B}$ at a distance $\vb{r}$ from the wire is given by the Biot-Savart law,
+
+$$
+\begin{equation}
+\vb{B} = \frac{\mu_0}{4\pi} \int_C \frac{I \dd{\vb{l}} \times \vu{r}}{|\vb{r}|^3},
+\end{equation}
+$$
+
+where $\dd{\vb{l}}$ is the differential length element of the wire, and $\vu{r}$ is the unit vector pointing from the wire to the point where the magnetic field is being calculated.
+The Biot-Savart law can be derived from Ampère's law and is used to calculate the magnetic field produced by a current-carrying wire.
+
+### Magnetostatics in Matter
+
+In the presence of matter, the magnetic field is modified by the magnetization of the material.
+
+A magnetic dipole is a magnetic moment that arises from the motion of electric charges, such as electrons in atoms.
+This moment is defined as the product of the current and the area of the loop through which the current flows,
+
+$$
+\begin{equation}
+\vb{m} = I \vb{a},
+\end{equation}
+$$
+
+where $I$ is the current and $\vb{a}$ is the area vector of the loop.
+The magnetization $\vb{M}$ is defined as the magnetic moment per unit volume, and it is a vector field that describes the density of magnetic dipole moments in a material.
+
+The auxiliary magnetic field $\vb{H}$ is defined as
+
+$$
+\begin{equation}
+\vb{H} = \frac{1}{\mu_0} \vb{B} - \vb{M}.
+\end{equation}
+$$
+
+In the absence of matter, the magnetic field $\vb{B}$ is identical to the auxiliary magnetic field $\vb{H}$ because the magnetization $\vb{M}$ is zero.
+
+To classify the magnetic properties of materials, we define the magnetic susceptibility $\chi_m$, which is a dimensionless quantity that describes how easily a material can be magnetized in response to an applied magnetic field.
+The relationship between the magnetization $\vb{M}$ and the magnetic field $\vb{H}$ is given by
+
+$$
+\begin{equation}
+\vb{M} = \chi_m \vb{H}.
+\end{equation}
+$$
+
+This is related to the properties of the material:
+
+1. **Diamagnetic materials** have a negative magnetic susceptibility ($\chi_m < 0$) and are weakly repelled by a magnetic field.
+    Diamagnetic materials have paired electrons in orbitals, which means that their net magnetic moment is zero.
+    When an external magnetic field is applied, the induced magnetic moment opposes the applied field, resulting in a weak repulsion.
+2. **Paramagnetic materials** have a positive magnetic susceptibility ($\chi_m > 0$) and are weakly attracted by a magnetic field.
+    Paramagnetic materials have unpaired electrons typically in $d$ or $f$ orbitals, which have a net magnetic moment.
+    When an external magnetic field is applied, the induced magnetic moment aligns with the applied field, resulting in a weak attraction.
+    As this occurs for all atoms, the net effect is a weak attraction to the magnetic field.
+3. **Ferromagnetic materials** have a large positive magnetic susceptibility ($\chi_m \gg 1$) and can be strongly attracted by a magnetic field.
+    Ferromagnetism occurs in materials such as iron, cobalt, and nickel, where the magnetic moments of atoms tend to align in the same direction even in the absence of an external magnetic field.
+    This alignment leads to a net magnetic moment, which can be retained even after the external magnetic field is removed, resulting in permanent magnets.
+
+## Electrodynamics
+
+Problems arise when we consider the interaction between electric and magnetic fields.
+
+Coulomb's law appears to imply that the electric field is instantaneous, which contradicts the finite speed of light.
+To resolve this, we need to consider how the electric potential propagates through space.
+The electric potential $\phi$ at a point in space is influenced by the charge distribution in the past, not just the present.
+As such, we consider the retarded potential, which is the potential at a point in space due to a charge distribution at an earlier time.
+The retarded potential is given by
+
+$$
+\begin{equation}
+\phi(\vb{r}, t) = \frac{1}{4\pi \epsilon_0} \int \frac{\rho(\vb{r}', t - |\vb{r} - \vb{r}'|/c)}{|\vb{r} - \vb{r}'|} \, \dd[3]{r'},
+\end{equation}
+$$
+
+where $\rho(\vb{r}', t - |\vb{r} - \vb{r}'|/c)$ is the charge density at the retarded time, and $c$ is the speed of light.
+The magnetic vector potential $\vb{a}$ is similarly defined as
+
+$$
+\begin{equation}
+\vb{a}(\vb{r}, t) = \frac{1}{4\pi} \int \frac{\vb{J}(\vb{r}', t - |\vb{r} - \vb{r}'|/c)}{|\vb{r} - \vb{r}'|} \, \dd[3]{r'},
+\end{equation}
+$$
+
+where $\vb{J}(\vb{r}', t - |\vb{r} - \vb{r}'|/c)$ is the current density at the retarded time.
+
+In electrodynamics, the electric field $\vb{E}$ and the magnetic field $\vb{B}$ are related to the electric potential $\phi$ and the magnetic vector potential $\vb{a}$ by
+
+$$
+\begin{align}
+\vb{E} &= -\grad{\phi} - \pdv{\vb{a}}{t}, \\
+\vb{B} &= \curl{\vb{a}}.
+\end{align}
+$$
+
+The energy density of the electromagnetic field is given by
+
+$$
+\begin{equation}
+u = \frac{1}{2} \epsilon_0 |\vb{E}|^2 + \frac{1}{2\mu_0} |\vb{B}|^2,
+\end{equation}
+$$
+
+and the time-evolution of the electromagnetic field is governed by Maxwell's equations, which are a set of four equations that describe how electric and magnetic fields interact with each other and with charges.
+The four Maxwell's equations in vacuum are:
+
+$$
+\begin{align}
+\div{\vb{E}} &= \frac{\rho}{\epsilon_0}, \\
+\div{\vb{B}} &= 0, \\
+\curl{\vb{E}} &= -\pdv{\vb{B}}{t}, \\
+\curl{\vb{B}} &= \mu_0 \vb{J} + \mu_0 \epsilon_0 \pdv{\vb{E}}{t}.
+\end{align}
+$$
+
+In the presence of matter, the equations are modified to include the electric displacement field $\vb{D}$ and the auxiliary magnetic field $\vb{H}$:
+
+$$
+\begin{align}
+\div{\vb{D}} &= \rho_f, \\
+\div{\vb{H}} &= 0, \\
+\curl{\vb{D}} &= \pdv{\vb{B}}{t}, \\
+\curl{\vb{H}} &= \vb{J} + \epsilon_0 \pdv{\vb{E}}{t}.
+\end{align}
+$$
+
+This allows us to describe the behavior of electric and magnetic fields in materials, taking into account the polarization and magnetization of the material.
+
+### Electromagnetic Waves
+
+Electromagnetic waves are solutions to Maxwell's equations that describe the propagation of electric and magnetic fields through space.
+In vacuum, the wave equations for the electric field $\vb{E}$ and the magnetic field $\vb{B}$ are given by
+
+$$
+\begin{equation}
+\laplacian{\vb{E}} - \frac{1}{c^2} \pdv[2]{\vb{E}}{t} = 0,
+\end{equation}
+$$
+
+and
+
+$$
+\begin{equation}
+\laplacian{\vb{B}} - \frac{1}{c^2} \pdv[2]{\vb{B}}{t} = 0,
+\end{equation}
+$$
+
+where $c$ is the speed of light in vacuum.
+The solutions to these wave equations are plane waves of the form
+
+$$
+\begin{equation}
+\vb{E}(\vb{r}, t) = \vb{E}_0 e^{i(\vb{k} \cdot \vb{r} - \omega t)},
+\end{equation}
+$$
+
+and
+
+$$
+\begin{equation}
+\vb{B}(\vb{r}, t) = \vb{B}_0 e^{i(\vb{k} \cdot \vb{r} - \omega t)},
+\end{equation}
+$$
+
+where $\vb{E}_0$ and $\vb{B}_0$ are the amplitudes of the electric and magnetic fields, respectively, $\vb{k}$ is the wave vector, $\omega$ is the angular frequency, and $t$ is time.
+
+Electromagnetic waves are transverse waves, meaning that the electric and magnetic fields are perpendicular to the direction of propagation.
+They are responsible for the transmission of energy through space, and they can propagate through vacuum as well as through various media.
+As thoroughly discussed previously, by considering how electromagnetic waves behave, the theory of special relativity was developed.
+(Although, it is worth noting again that special relativity is technically not a consequence of electromagnetism. It can be fully derived by simply stating that all spatial directions are equivalent, which leads to the correct velocity addition rule.)
+
