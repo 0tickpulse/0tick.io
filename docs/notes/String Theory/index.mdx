@@ -20,3 +20,63 @@ It posite that instead of point-like particles or fields, the fundamental buildi
 In the set of notes on quantum field theory, we have seen how quantum field theory is the natural extension of quantum mechanics to fields.
 We have also discovered that applying the principle of locality to Newtonian gravity leads to a field theory of gravity, which is general relativity.
 However, there is a problem with this approach: quantum field theory is not compatible with general relativity.
+The unification of the two theories is a major open problem in theoretical physics, and string theory is one of the leading candidates for a solution.
+
+Below, I will delineate the key ideas of string theory, and how it differs from quantum field theory and general relativity.
+
+**What are particles?** Recall that in classical mechanics, particles are point-like objects with no internal structure, but contain properties such as mass and charge.
+In quantum mechanics, particles are described by state vectors in a Hilbert space, and their properties are described by operators acting on these state vectors.
+In QFT, particles are excitations of quantum fields, which are irreducible representations of the Poincaré group.
+In string theory, however, we introduce a new idea: particles are one-dimensional objects called strings, which can vibrate in different modes.
+
+**What is the action?** In classical mechanics, the action is related to the length of the particle's path through spacetime.
+It is given by
+
+$$
+\begin{equation}
+S = \int \dd{\lambda} L(x^\mu, \partial_\lambda x^\mu, \lambda),
+\end{equation}
+$$
+
+where $L$ is the Lagrangian, and $\lambda$ is an affine parameter along the particle's worldline.
+In quantum mechanics, the action is related to the path integral, which is given by
+
+$$
+\begin{equation}
+S = \int \mathcal{D}[x(t)] e^{i S[x(t)]},
+\end{equation}
+$$
+
+where $\mathcal{D}[x(t)]$ is the measure over all paths $x(t)$, and $S[x(t)]$ is the classical action for the path $x(t)$.
+
+In QFT, the action is given by a functional integral over all fields, which is given by
+
+$$
+\begin{equation}
+S = \int \dd[4]{x} \mathcal{L}(\phi(x), \partial_\mu \phi(x)),
+\end{equation}
+$$
+
+where $\mathcal{L}$ is the Lagrangian density given by the fields $\phi(x)$ and their derivatives $\partial_\mu \phi(x)$.
+
+String theory introduces a new action, which is given by the Nambu-Goto action, named after its inventors Yoichiro Nambu and Tetsuo Goto.
+Considering that a classical particle traces a worldline, a string traces a worldsheet in spacetime.
+Then, considering that the classical action is related to the length of the worldline, the string action is related to the area of the world*sheet*.
+This is given by
+
+$$
+\begin{equation}
+S = -\frac{T}{2} \int \dd[2]{\sigma} \sqrt{-\det(g_{\alpha\beta})}.
+\end{equation}
+$$
+
+Similar to classical mechanics, there are other versions of the string action, such as the Polyakov action
+
+$$
+\begin{equation}
+S = -\frac{T}{2} \int \dd[2]{\sigma} \sqrt{-h} h^{\alpha\beta} g_{\alpha\beta} \partial_\alpha X^\mu \partial_\beta X_\mu,
+\end{equation}
+$$
+
+which leads to the correct quantization of the string.
+

@@ -1,0 +1,191 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Introduction to the Schwarzschild Metric
+
+Previously, we derived Einstein's field equations, which describe how matter and energy influence the curvature of spacetime.
+These equations are fundamental to our understanding of general relativity and the behavior of gravitational fields.
+However, they are immensely difficult to solve, with most applications requiring numerical methods or approximations.
+The first exact solution to these equations was found by Karl Schwarzschild in 1916, and it describes the spacetime geometry around a spherically symmetric, non-rotating mass.
+
+Typically, the method in which a new solution is derived is to assume a specific form of the energy-momentum tensor $T^{\mu\nu}$.
+This can then be plugged into the Einstein field equations to find the metric tensor $g_{\mu\nu}$.
+From this, we can then derive various geometric properties, such as the connection coefficients, curvature tensors, and geodesics.
+We will derive the Schwarzschild metric from Einstein's field equations, and then explore its implications for the behavior of objects in a gravitational field.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Derivation
+
+We can assume that the universe is comprised of a single, spherically symmetric mass, with no other matter present.
+This is a simplification, but it allows us to focus on the essential features of the Schwarzschild metric without getting bogged down in unnecessary complications.
+We will also assume that the mass is non-rotating, which means that we can ignore the effects of angular momentum.
+
+Recall that the energy-momentum tensor represents a flux of energy and momentum through spacetime.
+Specifically, $T^{\mu\nu}$ represents the $\mu$-momentum flowing through a unit volume of constant $x^\nu$.
+In the exterior of the mass, there is no matter, so the energy-momentum tensor is zero;
+
+$$
+\begin{equation}
+T^{\mu\nu} = 0 = T_{\mu\nu}.
+\end{equation}
+$$
+
+We also assume that the spacetime is asymptotically flat, meaning that at large distances from the mass, the spacetime approaches Minkowski spacetime.
+This means that the metric tensor $g_{\mu\nu}$ approaches the Minkowski metric $\eta_{\mu\nu}$ at large distances.
+
+Finally, we assume that spacetime is static, meaning that the metric tensor does not change with time.
+Formally, this means that spacetime has a timelike Killing vector field $\partial_t$ and is irrotational.
+The former means that, by the definition of a Killing vector field, the Lie derivative of the metric tensor with respect to the Killing vector field is zero, so $\mathcal{L}_t g_{\mu\nu} = 0$.
+The latter means that the spacetime has no rotation, so the vorticity tensor $\omega_{\mu\nu} = 0$.
+Without going into the details, the result of these assumptions is that first, the metric tensor obeys $\partial_t g_{\mu\nu} = 0$, and second, the metric tensor obeys a time-reversal symmetry; $g(t, \vb{x}) = g(-t, \vb{x})$.
+
+With the assumptions established, now we can plug the energy-momentum tensor into the Einstein field equations:
+
+$$
+\begin{equation}
+R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} + \Lambda g_{\mu\nu} = \frac{8\pi G}{c^4} T_{\mu\nu} = 0.
+\end{equation}
+$$
+
+At non-cosmological scales, we can ignore the cosmological constant $\Lambda$, so we have
+
+$$
+\begin{equation}
+R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} = 0.
+\end{equation}
+$$
+
+Next, we can contract this equation with $g^{\mu\nu}$,
+
+$$
+\begin{equation}
+R_{\mu\nu} g^{\mu\nu} - \frac{1}{2} R g_{\mu\nu} g^{\mu\nu} = 0.
+\end{equation}
+$$
+
+As $g_{\mu\nu} g^{\mu\nu} = 4$, this simply yields
+
+$$
+\begin{equation}
+R_\mu^\mu - 2R = 0 \implies R = 0.
+\end{equation}
+$$
+
+Now we can plug this back into the original equation, yielding
+
+$$
+\begin{equation}
+R_{\mu\nu} = 0.
+\end{equation}
+$$
+
+A space in which the Ricci curvature tensor is zero is known as a Ricci-flat space.
+Note that this does not mean that the Riemann curvature tensor is zero, as it is possible to have a non-zero Riemann curvature tensor while having a zero Ricci curvature tensor.
+The Ricci tensor only measures the change in volume due to spacetime curvature, which can be nonexistent even in a curved spacetime.
+
+Now we can enforce the asymptotic flatness condition.
+In spherical coordinates, the Minkowski tensor is
+
+$$
+\begin{equation}
+\eta_{\mu\nu} = \mqty[1 & 0 & 0 & 0 \\ 0 & -1 & 0 & 0 \\ 0 & 0 & -r^2 & 0 \\ 0 & 0 & 0 & -r^2 {\sin[2](\theta)}].
+\end{equation}
+$$
+
+Considering that the system has spherical symmetry, the metric tensor should resemble the Minkowski metric, with a scaling factor $C(r)$ that depends on the radial coordinate $r$.
+
+As we know that $t \to -t$ should not change the metric (this was one of our assumptions), we can consider how the basis vectors change under this time reversal.
+The $\partial_t$ basis vector transforms as
+
+$$
+\begin{equation}
+\partial_t = \pdv{ct} \to \pdv{(-ct)} = -\pdv{ct} = -\partial_t.
+\end{equation}
+$$
+
+The $g_{tt}$ component is by definition the inner product of the $\partial_t$ basis vector with itself, which becomes
+
+$$
+\begin{equation}
+g_{tt} = \partial_t \cdot \partial_t \to (-\partial_t) \cdot (-\partial_t) = \partial_t \cdot \partial_t = g_{tt}.
+\end{equation}
+$$
+
+Hence, the $tt$-component of the metric is indeed invariant under time reversal.
+The $ti$-components, however, transform with one negative sign, since the spatial basis vectors do not flip:
+
+$$
+\begin{equation}
+g_{ti} = \partial_t \cdot \partial_i \to (-\partial_t) \cdot \partial_i = -\partial_t \cdot \partial_i = -g_{ti}.
+\end{equation}
+$$
+
+This means that the $ti$-components of the metric tensor must be zero, as they cannot change sign under time reversal.
+Now we know that the metric tensor roughly takes the form
+
+$$
+\begin{equation}
+g_{\mu\nu} \overset{.}{=} \mqty[
+    g_{tt} & 0 & 0 & 0 \\
+    0 & g_{rr} & 0 & 0 \\
+    0 & 0 & -C(r) r^2 & 0 \\
+    0 & 0 & 0 & -C(r) r^2 {\sin[2](\theta)}
+],
+\end{equation}
+$$
+
+and to maintain spherical symmetry, the $g_{rr}$ and $g_{tt}$ components must be functions of $r$ only.
+We can denote these as $g_{tt} = A(r)$ and $g_{rr} = B(r)$, so we have
+
+$$
+\begin{equation}
+g_{\mu\nu} \overset{.}{=} \mqty[
+    A(r) & 0 & 0 & 0 \\
+    0 & B(r) & 0 & 0 \\
+    0 & 0 & -C(r) r^2 & 0 \\
+    0 & 0 & 0 & -C(r) r^2 {\sin[2](\theta)}
+].
+\end{equation}
+$$
+
+### Connection Coefficients
+
+To proceed, we need to find the functions $A(r)$, $B(r)$, and $C(r)$.
+This can be done by using the Ricci-flat condition, $R_{\mu\nu} = 0$.
+Therefore, we need to find the connection coefficients, then the Riemann curvature tensor, and finally the Ricci curvature tensor.
+Recall that in the Levi-Civita connection, the connection coefficients are given by
+
+$$
+\begin{equation}
+\Gamma^\sigma_{\mu\nu} = \frac{1}{2} g^{\sigma\rho} \qty(\partial_\mu g_{\nu\rho} + \partial_\nu g_{\mu\rho} - \partial_\rho g_{\mu\nu}).
+\end{equation}
+$$
+
+Notice the leading factor $g^{\sigma\rho}$, which is the inverse metric tensor.
+As the metric tensor is diagonal, the term is zero unless $\sigma = \rho$, so we can substitute $\rho$ for $\sigma$ in the equation;
+
+$$
+\begin{equation}
+\Gamma^\sigma_{\mu\nu} = \frac{1}{2} g^{\sigma\sigma} \qty(\partial_\mu g_{\nu\sigma} + \partial_\nu g_{\mu\sigma} - \partial_\sigma g_{\mu\nu}).
+\end{equation}
+$$
+
+
+
