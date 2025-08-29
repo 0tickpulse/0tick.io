@@ -1,0 +1,449 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three";
+import { Line2 } from 'three/addons/lines/Line2';
+import { LineMaterial } from 'three/addons/lines/LineMaterial';
+import { LineGeometry } from 'three/addons/lines/LineGeometry';
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Klein-Gordon Field Introduction
+
+Previously, we introduced the ideas of field theory and the need for it.
+In this section, we will focus on the Klein-Gordon field, which is a fundamental example of a scalar field in both classical and quantum field theory.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+The Klein-Gordon field, as previously shown, is a scalar field that is derived from a set of infinite coupled harmonic oscillators.
+It is a relativistic field that obeys locality, and has wavelike solutions.
+In quantum mechanics, it originates from the canonical quantization of the energy-momentum relation
+
+$$
+\begin{equation}
+p^\mu p_\mu = m^2 c^2.
+\end{equation}
+$$
+
+To begin, consider the Lagrangian density of the field, which is the difference between the kinetic and potential energy densities.
+These are
+
+$$
+\begin{align}
+\mathcal{T} &= \frac{1}{2} (\partial_{ct} \phi)^2, \\
+\mathcal{V} &= \frac{1}{2} \kappa \phi^2 + \frac{1}{2} (\partial_x \phi)^2
+\end{align}
+$$
+
+where $k$ is the spring constant associated with the harmonic oscillator.
+In quantum field theory, it is often defined as $\kappa = \frac{m^2 c^2}{\hbar^2}$.
+Although we are not analyzing the quantized version of the field in this section, we will nevertheless use this definition for $k$.
+In this respect, as $k$ is affected by $m$, the "mass" describes the stiffness of the oscillators in the field.
+
+Thus, the Lagrangian density is
+
+$$
+\begin{equation}
+\mathcal{L} = \mathcal{T} - \mathcal{V} = \frac{1}{2} (\partial_{ct} \phi)^2 - \frac{1}{2} \qty(\frac{mc}{\hbar})^2 \phi^2 - \frac{1}{2} (\partial_x \phi)^2.
+\end{equation}
+$$
+
+To promote this to all four spacetime dimensions, we just need to add the other spatial derivatives;
+
+$$
+\begin{equation}
+\mathcal{L} = \frac{1}{2} (\partial_{ct} \phi)^2 - \frac{1}{2} (\partial_x \phi)^2 - \frac{1}{2} (\partial_y \phi)^2 - \frac{1}{2} (\partial_z \phi)^2 - \frac{1}{2} \qty(\frac{mc}{\hbar})^2 \phi^2.
+\end{equation}
+$$
+
+Finally, we can rewrite this in a more compact form with relativistic notation:
+
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L} &= \frac{1}{2} \qty[(\partial_{ct} \phi)^2 - (\partial_x \phi)^2 - (\partial_y \phi)^2 - (\partial_z \phi)^2] - \frac{1}{2} \qty(\frac{mc}{\hbar})^2 \phi^2 \\
+&= \frac{1}{2} \eta^{\mu\nu} \partial_\mu \phi \partial_\nu \phi - \frac{1}{2} \qty(\frac{mc}{\hbar})^2 \phi^2 \\
+&= \frac{1}{2} (\partial^\mu \phi) (\partial_\mu \phi) - \frac{1}{2} \qty(\frac{mc}{\hbar})^2 \phi^2,
+\end{split}
+\end{equation}
+$$
+
+where
+
+$$
+\begin{equation}
+\eta^{\mu\nu} = \mqty[
+1 & 0 & 0 & 0 \\
+0 & -1 & 0 & 0 \\
+0 & 0 & -1 & 0 \\
+0 & 0 & 0 & -1]
+\end{equation}
+$$
+
+is the Minkowski metric.
+
+Anyways, with a Lagrangian density, we can now apply the Euler-Lagrange equation to derive the equations of motion for the Klein-Gordon field.
+For fields, the Euler-Lagrange equation is
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} - \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi)}) = 0.
+\end{equation}
+$$
+
+In two spacetime dimensions, we need to sum over $\mu = 0, 1$ (i.e. $ct$ and $x$).
+Let's calculate the individual derivatives.
+First,
+
+$$
+\begin{equation}
+\pdv{\mathcal{L}}{\phi} = -\frac{1}{2} \qty(\frac{mc}{\hbar})^2 \cdot 2\phi = -\qty(\frac{mc}{\hbar})^2 \phi.
+\end{equation}
+$$
+
+Second (with $\mu = ct$),
+
+$$
+\begin{equation}
+\partial_{ct} \qty(\pdv{\mathcal{L}}{(\partial_{ct} \phi)}) = \partial_{ct} (\partial_{ct} \phi) = \partial_{ct}^2 \phi.
+\end{equation}
+$$
+
+Lastly (with $\mu = x$),
+
+$$
+\begin{equation}
+\partial_x \qty(\pdv{\mathcal{L}}{(\partial_x \phi)}) = \partial_x (-\partial_x \phi) = -\partial_x^2 \phi.
+\end{equation}
+$$
+
+Adding all of these together gives
+
+$$
+\begin{equation}
+\begin{split}
+0 &= \pdv{\mathcal{L}}{\phi} - \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi)}) \\
+&= \partial_{ct}^2 \phi - \partial_x^2 \phi - \qty(\frac{mc}{\hbar})^2 \phi.
+\end{split}
+\end{equation}
+$$
+
+Just like last time, we can upgrade to all dimensions by simply adding the other spatial derivatives:
+
+$$
+\begin{equation}
+\partial_{ct}^2 \phi - \partial_x^2 \phi - \partial_y^2 \phi - \partial_z^2 \phi - \qty(\frac{mc}{\hbar})^2 \phi = 0.
+\end{equation}
+$$
+
+And in relativistic notation this is
+
+$$
+\begin{equation}
+\begin{split}
+0 &= \partial_{ct}^2 \phi - \partial_x^2 \phi - \partial_y^2 \phi - \partial_z^2 \phi - \qty(\frac{mc}{\hbar})^2 \phi \\
+&= \eta^{\mu\nu} \partial_\mu \partial_\nu \phi - \qty(\frac{mc}{\hbar})^2 \phi \\
+&= \partial^\mu \partial_\mu \phi - \qty(\frac{mc}{\hbar})^2 \phi.
+\end{split}
+\end{equation}
+$$
+
+The operator $\partial^\mu \partial_\mu$ is known as the d'Alembertian operator (or box operator) in Minkowski spacetime.
+It is often denoted as $\Box$.
+
+## Plane Wave Solutions
+
+The simplest solution to this equation is a plane wave of the form
+
+$$
+\begin{equation}
+\phi(ct, x) = \cos(\frac{\omega}{c} ct - kx).
+\end{equation}
+$$
+
+We can see this solution satisfies the Klein-Gordon equation by substituting it back into the equation and verifying that both sides are equal.
+Its second derivatives are
+
+$$
+\begin{align}
+\partial_{ct}^2 \phi &= -\frac{\omega^2}{c^2} \cos(\frac{\omega}{c} ct - kx), \\
+\partial_x^2 \phi &= -k^2 \cos(\frac{\omega}{c} ct - kx).
+\end{align}
+$$
+
+So
+
+$$
+\begin{equation}
+\begin{split}
+\partial_{ct}^2 \phi - \partial_x^2 \phi - \qty(\frac{mc}{\hbar})^2 \phi &= -\frac{\omega^2}{c^2} \cos(\frac{\omega}{c} ct - kx) + k^2 \cos(\frac{\omega}{c} ct - kx) - \qty(\frac{mc}{\hbar})^2 \phi \\
+&= \qty(-\frac{\omega^2}{c^2} + k^2 - \qty(\frac{mc}{\hbar})^2) \cos(\frac{\omega}{c} ct - kx) = 0.
+\end{split}
+\end{equation}
+$$
+
+From this we can see that the left-hand side must be zero. In other words,
+
+$$
+\begin{equation}
+\qty(\frac{mc}{\hbar})^2 = \frac{\omega^2}{c^2} - k^2.
+\end{equation}
+$$
+
+This equation is known as the dispersion relation, the reason for which will become clear soon.
+We can also add a scaling factor and a phase factor to our plane wave solution:
+
+$$
+\begin{equation}
+\phi(ct, x) = A \cos(\frac{\omega}{c} ct - kx + \theta),
+\end{equation}
+$$
+
+where $A$ is the amplitude and $\theta$ is the phase shift.
+Using the cosine addition rule
+
+$$
+\begin{equation}
+\cos(a + b) = \cos(a)\cos(b) - \sin(a)\sin(b),
+\end{equation}
+$$
+
+we can also equivalently state this as
+
+$$
+\begin{equation}
+\phi(ct, x) = A \cos(\theta) \cos\qty(\frac{\omega}{c} ct - kx) - A \sin(\theta) \sin\qty(\frac{\omega}{c} ct - kx),
+\end{equation}
+$$
+
+and if we introduce the constants
+
+$$
+\begin{align}
+A_c &= A \cos(\theta), \\
+A_s &= -A \sin(\theta),
+\end{align}
+$$
+
+then
+
+$$
+\begin{equation}
+\phi(ct, x) = A_c \cos\qty(\frac{\omega}{c} ct - kx) + A_s \sin\qty(\frac{\omega}{c} ct - kx).
+\end{equation}
+$$
+
+Another way to write this is to use complex exponentials through Euler's formula.
+This gives
+
+$$
+\begin{equation}
+\begin{split}
+\phi(ct, x) &= \Re\qty[A \exp(i\qty(\frac{\omega}{c} ct - kx + \theta))] \\
+&= \Re\qty[A e^{i\theta} \exp(i\qty(\frac{\omega}{c} ct - kx))] \\
+&= \Re\qty[\mathcal{A} \exp(i\qty(\frac{\omega}{c} ct - kx))].
+\end{split}
+\end{equation}
+$$
+
+where $\mathcal{A} = A e^{i\theta}$ is a complex amplitude. If we are using a complexified Klein-Gordon field, we can forego the real part and write
+
+$$
+\begin{equation}
+\phi(ct, x) = \mathcal{A} \exp(i\qty(\frac{\omega}{c} ct - kx)).
+\end{equation}
+$$
+
+### Superpositions of Solutions
+
+In field theory, we are often interested in superpositions of solutions to the Klein-Gordon equation.
+If we have two solutions $\phi_1(ct, x)$ and $\phi_2(ct, x)$, then any linear combination of these solutions is also a solution:
+
+$$
+\begin{equation}
+\phi(ct, x) = c_1 \phi_1(ct, x) + c_2 \phi_2(ct, x),
+\end{equation}
+$$
+
+where $c_1$ and $c_2$ are constants.
+This property is a consequence of the linearity of the Klein-Gordon equation.
+We can prove this to be the case.
+
+Begin with two fields $\phi_1(ct, x)$ and $\phi_2(ct, x)$ that satisfy the Klein-Gordon equation:
+
+$$
+\begin{align}
+\partial^\mu \partial_\mu \phi_1 - \qty(\frac{mc}{\hbar})^2 \phi_1 &= 0, \\
+\partial^\mu \partial_\mu \phi_2 - \qty(\frac{mc}{\hbar})^2 \phi_2 &= 0.
+\end{align}
+$$
+
+Then, plug in the linear combination
+
+$$
+\begin{equation}
+\phi(ct, x) = c_1 \phi_1(ct, x) + c_2 \phi_2(ct, x)
+\end{equation}
+$$
+
+to yield
+
+$$
+\begin{equation}
+\begin{split}
+\partial^\mu \partial_\mu \phi - \qty(\frac{mc}{\hbar})^2 \phi &= \partial^\mu \partial_\mu (c_1 \phi_1 + c_2 \phi_2) - \qty(\frac{mc}{\hbar})^2 (c_1 \phi_1 + c_2 \phi_2) \\
+&= c_1 \qty[\partial^\mu \partial_\mu \phi_1 - \qty(\frac{mc}{\hbar})^2 \phi_1] + c_2 \qty[\partial^\mu \partial_\mu \phi_2 - \qty(\frac{mc}{\hbar})^2 \phi_2] \\
+&= 0 + 0 = 0.
+\end{split}
+\end{equation}
+$$
+
+This means that we can have a linear combinations of waves with different frequencies and momenta, and still obtain a valid solution to the Klein-Gordon equation.
+We can even construct an integral over a continuous spectrum of frequencies:
+
+$$
+\begin{equation}
+\phi(ct, x) = \int_{-\infty}^{\infty} \dd{k} \mathcal{A}(k) \exp(i\qty(\frac{\omega(k)}{c} ct - kx)).
+\end{equation}
+$$
+
+Let's, once again, promote to four spacetime dimensions.
+Given a plane wave, the exponential now has all three spatial coordinates, each with a different wavenumber;
+
+$$
+\begin{equation}
+\phi(x^\mu) = \exp(i\qty(\frac{\omega}{c} ct - k^x x - k^y y - k^z z)).
+\end{equation}
+$$
+
+If we let $k^t = \frac{\omega}{c}$, then we can write
+
+$$
+\begin{equation}
+\phi(x^\mu) = \exp(i k_\mu x^\mu),
+\end{equation}
+$$
+
+where
+
+$$
+\begin{equation}
+k^\mu = \mqty[\omega/c \\ k^x \\ k^y \\ k^z]
+\end{equation}
+$$
+
+is the wavenumber 4-vector.
+
+The dispersion relation in four dimensions is
+
+$$
+\begin{equation}
+\qty(\frac{mc}{\hbar})^2 = \frac{\omega^2}{c^2} - \vb{k}^2 = k^\mu k_\mu.
+\end{equation}
+$$
+
+## U(1) Symmetries and Conservation of Charge
+
+When we complexify the Klein-Gordon field, we can introduce a new symmetry to the field.
+To begin, we note that the complexified Lagrangian is
+
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L} &= \frac{1}{2} (\partial^\mu \phi)^* (\partial_\mu \phi) - \frac{1}{2} m^2 \phi^* \phi \\
+&= \frac{1}{2} (\partial^\mu \phi^*) (\partial_\mu \phi) - \frac{1}{2} m^2 \phi^* \phi.
+\end{split}
+\end{equation}
+$$
+
+For a complex field, we can either work with its real and imaginary part separately, or work with the field and its complex conjugate.
+Often, the latter is more insightful as it handles the entire field as a single entity.
+We have two separate Euler-Lagrange equations for each component of the field;
+
+$$
+\begin{align}
+\pdv{\mathcal{L}}{\phi} &= \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi)}), \\
+\pdv{\mathcal{L}}{\phi^*} &= \partial_\mu \qty(\pdv{\mathcal{L}}{(\partial_\mu \phi^*)}).
+\end{align}
+$$
+
+We can introduce a transformation $\phi \to \phi' = e^{i\alpha} \phi$, where $\alpha$ is a real constant.
+The term $e^{i\alpha}$ is a global phase factor and a member of the Lie group $\text{U}(1)$.
+The complex conjugate transforms the opposite way to $\phi^* \to \phi'^* = e^{-i\alpha} \phi^*$.
+
+When we apply this transformation, the Lagrangian modifies to
+
+$$
+\begin{equation}
+\begin{split}
+\mathcal{L} \to \frac{1}{2} (\partial^\mu \phi^* e^{-i\alpha}) (\partial_\mu \phi e^{i\alpha}) - \frac{1}{2} m^2 \phi^* e^{-i\alpha} \phi e^{i\alpha} = \mathcal{L}.
+\end{split}
+\end{equation}
+$$
+
+In other words, the Lagrangian is invariant under the global $U(1)$ phase transformation.
+When a continuous group preserves the Lagrangian, it is called a symmetry (or automorphism) of the theory.
+Under Noether's theorem, this must correspond to a conserved current.
+
+To see what this quantity is, apply the Klein-Gordon equations to $\phi$ and $\phi^*$, and multiply each by the other:
+
+$$
+\begin{align}
+\phi^* \qty[\partial^\mu \partial_\mu - \qty(\frac{mc}{\hbar})^2] \phi &= 0, \\
+\phi \qty[\partial^\mu \partial_\mu - \qty(\frac{mc}{\hbar})^2] \phi^* &= 0.
+\end{align}
+$$
+
+Subtracting these gives
+
+$$
+\begin{equation}
+\phi^* \partial^\mu \partial_\mu \phi - \phi^* \qty(\frac{mc}{\hbar})^2 \phi = 0.
+\end{equation}
+$$
+
+We can add and subtract $(\partial_\mu \phi^*)(\partial^\mu \phi)$ and use the reverse of the product rule and get
+
+$$
+\begin{align}
+(\partial_\mu \phi^*)(\partial^\mu \phi) \phi^* + \partial^\mu \partial_\mu \phi - (\partial_\mu \phi^*)(\partial^\mu \phi) - \phi^* \partial^\mu \partial_\mu \phi &= 0, \\
+\partial_\mu(\phi^* \partial^\mu \phi) - \partial_\mu(\phi \partial^\mu \phi^*) &= 0, \\
+\partial_\mu(\phi^* \partial^\mu \phi - \phi \partial^\mu \phi^*) &= 0.
+\end{align}
+$$
+
+We can interpret the quantity
+
+$$
+\begin{equation}
+j^\mu = i (\phi^* \partial^\mu \phi - \phi \partial^\mu \phi^*)
+\end{equation}
+$$
+
+as a conserved current 4-vector associated with this theory.
+Note the inclusion of $i$ to ensure that the current is real, as it must be for a physical observable.
+Per the equation, $j^\mu$ obeys a continuity equation
+
+$$
+\begin{equation}
+\partial_\mu j^\mu = \partial_t j^t + \nabla \cdot \mathbf{j} = 0.
+\end{equation}
+$$
+
+The same symmetry is also present in the Dirac field, so it also has a conserved current, which incidentally is the electric current density.
+As such, we say that $\text{U}(1)$ symmetry leads to the conservation of electric charge.
+
+

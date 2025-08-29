@@ -1,0 +1,96 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Amino Acids and Proteins
+
+Amino acids are the building blocks of proteins, which are essential macromolecules in all living organisms.
+Proteins perform a wide range of functions, including catalyzing biochemical reactions, providing structural support, and regulating cellular processes.
+In this section, we will explore the structure and function of amino acids and proteins, as well as their roles in biological systems.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Amino Acids
+
+Proteins are the most diverse class of biomolecules, and they serve many biological functions.
+Amylase, lipase, and pepsin are all digestive enzymes that catalyze the breakdown of carbohydrates, lipids, and proteins, respectively.
+Hemoglobin is a protein that transports oxygen in the blood, while collagen provides structural support to tissues and organs.
+Insulin and glucagon are hormones that regulate blood sugar levels, and antibodies are proteins that help the immune system fight infections.
+Proteins are **polymers** made of monomeric units called **amino acids**.
+
+An amino acid has the general structure
+$$
+\begin{equation}
+\text{H}_2\text{N}-\text{C}(\text{R})-\text{COOH},
+\end{equation}
+$$
+where $\text{R}$ is the side chain that distinguishes one amino acid from another.
+As the name suggests, amino acids contain an amino group ($\text{H}_2\text{N}$) and a carboxyl group ($\text{COOH}$).
+The amino group is basic, while the carboxyl group is acidic.
+The central carbon atom (the one bonded to the amino group, carboxyl group, and side chain) is called the $\alpha$-carbon.
+
+<div style={{ background: "white", padding: "1em", borderRadius: "8px" }}>
+    <img
+        src={require("./Amino-acid-structure.png").default}
+        alt="Amino Acid Structure"
+        style={{ display: "block", margin: "0 auto", maxWidth: "350px", width: "100%" }}
+    />
+</div>
+
+There are a few important properties of amino acids that we should note.
+
+First, with the exception of glycine (where $\text{R} = \text{H}$), all amino acids have a chiral center at the $\text{C}$ atom, as all four substituents are different.
+This means that amino acids can exist in two enantiomeric forms, which are designated as L- and D-. We can draw Fischer projections of amino acids to visualize their chirality.
+Additionally, it also means that amino acids have optical activity, which means that they can rotate plane-polarized light.
+In nature, amino acids are almost exclusively found in the L-form.
+
+<div style={{ background: "white", padding: "1em", borderRadius: "8px" }}>
+    <img
+        src={require("./Amino-acid-chirality.png").default}
+        alt="Amino Acid Chirality"
+        style={{ display: "block", margin: "0 auto", maxWidth: "350px", width: "100%" }}
+    />
+</div>
+
+Second, if you use the standard steric number system, you would guess that the nitrogen is tetrahedral (as it has four substituents), but it is actually trigonal planar.
+This is because the planar structure allows for conjugation between the lone pair of electrons on the nitrogen and the carbonyl oxygen, which stabilizes the molecule.
+
+Third, amino acids can exist in different ionization states depending on the pH of the solution.
+At low pH, the amino group is protonated ($\text{H}_3\text{N}^+$) and the carboxyl group is protonated ($\text{COOH}$), resulting in a positively charged amino acid.
+At high pH, the amino group is deprotonated ($\text{H}_2\text{N}$) and the carboxyl group is deprotonated ($\text{COO}^-$), resulting in a negatively charged amino acid.
+At physiological pH (around 7.4), amino acids exist in a zwitterionic form, where the amino group is protonated ($\text{H}_2\text{N}$) and the carboxyl group is deprotonated ($\text{COO}^-$), resulting in a net charge of zero.
+The pH at which the amino acid exists in this zwitterionic form is called the **isoelectric point** ($\text{pI}$).
+
+### Peptides
+
+Amino acids can be linked together to form peptides, which are short chains of amino acids.
+A peptide bond is formed between the carboxyl group of one amino acid and the amino group of another amino acid, resulting in the release of a water molecule (a condensation reaction).
+The reaction is a dehydration synthesis (or condensation) reaction, and it is classified as a nucleophilic addition-elimination reaction.
+The resulting peptide bond is a covalent bond that links the two amino acids together.
+
+<div style={{ background: "white", padding: "1em", borderRadius: "8px" }}>
+    <img
+        src={require("./Peptide-bond-formation.png").default}
+        alt="Peptide Bond Formation"
+        style={{ display: "block", margin: "0 auto", maxWidth: "450px", width: "100%" }}
+    />
+</div>
+
+Peptide bonds are rigid and planar due to the partial double bond character of the bond, which is a result of resonance between the carbonyl oxygen and the nitrogen.
+This rigidity restricts the rotation around the peptide bond, resulting in a fixed conformation of the peptide. This will be important when we discuss protein structure later.
+
+We can also cleave peptide bonds in two ways.
+First, we can use hydrolysis, which is the reverse of the condensation reaction. It requires heat and a strong acid or base to break the peptide bond.
+Hydrolysis is non-specific; it will cleave any peptide bond in the protein without regard to the amino acid sequence.

@@ -58,9 +58,6 @@ F = \vb{E} + i c \vb{B}.
 \end{equation}
 $$
 
-That's it; we have defined the electromagnetic field as a multivector in the spacetime algebra.
-This was much simpler than the tensor calculus formulation, where we had to define the electromagnetic field tensor $F_{\mu\nu}$ as $F_{\mu\nu} = \partial_\mu A_\nu - \partial_\nu A_\mu$, where $A_\mu$ is the four-potential.
-
 ### Current and Charge Density
 
 Next, we need to define the current and charge density.
@@ -75,7 +72,7 @@ J = c\rho - \vb{J}.
 \end{equation}
 $$
 
-It is a combination of a scalar $c\rho$ and a vector $-\vb{J}$, where the scalar is the charge density and the vector is the current density.l
+It is a combination of a scalar $c\rho$ and a vector $-\vb{J}$, where the scalar is the charge density and the vector is the current density.
 
 ### Maxwell's Equations in Cl(3, 0)
 
@@ -92,6 +89,22 @@ $$
 \vec{\nabla} \times \vb{B} &= \mu_0 \vb{J} + \frac{1}{c^2} \pdv{\vb{E}}{t},
 \end{align}
 $$
+
+It is really surprising how simple these equations are in the Clifford algebra formulation.
+If you do not want to be spoiled, don't click the dropdown below.
+
+<details>
+<summary>Maxwell's Equations in Cl(3, 0)</summary>
+
+$$
+\begin{equation}
+\nabla F = \mu_0 cJ.
+\end{equation}
+$$
+
+*That's it.*
+
+</details>
 
 To derive the equation, we shall convert the equations to the language of multivectors.
 Beginning with the Ampère-Maxwell law, we rearrange it to get
