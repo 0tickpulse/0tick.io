@@ -1,0 +1,528 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# History of Astrophysics: Part 1
+
+Astronomy and astrophysics have a rich history that spans thousands of years.
+In particular, astronomy has been practiced since ancient times, so ancient that it could have been the first scientific discipline.
+Ancient civilizations were keen observers of the night sky, and they developed various methods to track celestial objects.
+Geological evidence suggests that the first astronomical observations were made by prehistoric humans, who used simple tools to observe the stars and planets.
+Such evidence includes cave paintings and carvings that depict celestial objects, such as the Moon and stars.
+The ancient Egyptians, for example, built the pyramids in alignment with the stars, and they used the heliacal rising of Sirius to mark the start of their new year.
+
+The motion of celestial objects was observed and recorded by ancient civilizations, leading to the development of calendars and timekeeping systems.
+Clocks leveraged the regular motion of celestial objects, such as the Sun and Moon, to measure time.
+Sundials, for example, used the position of the Sun in the sky to indicate the time of day.
+
+In this section, we will explore the history of astronomy and astrophysics, from its ancient origins to modern times.
+This first part will focus on the ancient and classical periods, while the second part will cover the modern era.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Greek Astronomy
+
+The modern, scientific study of astronomy began with the ancient Greeks who treated astronomy as a branch of mathematics.
+Due to the limited technology available at the time, the Greeks lacked sophisticated telescopes and other instruments.
+However, they made significant contributions to the field of astronomy through careful observations and logical reasoning.
+
+The term planet comes from the Greek word πλανήτης (planētēs), which means "wanderer."
+The initial model was one in which the Earth was at the center, and all celestial objects moved in perfect circles around it.
+This model, known as a **geocentric** (geo meaning "Earth") model, was proposed by philosophers such as Eudoxus of Cnidus (c. 408-355 BCE) and later refined by Plato (c. 428-348 BCE) and Aristotle (384-322 BCE).
+It was the dominant model because it seemed obviously true by observation: the Sun, Moon, and stars all appeared to move in circular paths around the Earth.
+
+As the stars moved in a circular path, their motion could be easily observed and predicted.
+Each star had a position $\vb{r}(t)$ that obeyed a simple equation of motion.
+Defining the origin of the coordinate system at the center of the Earth, the position vector evolves over time according to
+
+$$
+\begin{equation}
+\vb{r}(t + \Delta t) = R_\text{(axis)}(\Delta t) \vb{r}(t),
+\end{equation}
+$$
+
+where $R_\text{(axis)}(\Delta t)$ is a rotation matrix that rotates the position vector $\vb{r}(t)$ by an angle proportional to the time interval $\Delta t$.
+(Obviously, this mathematical notation is anachronistic — not from the time of Plato — but it is a modern representation of the idea.)
+
+With this model, we are able to easily predict not only the positions, but also the velocities, accelerations, energies, and other physical quantities that describe the motion of celestial objects.
+This allows for a complete description of the motion of celestial objects in the sky.
+However, the geocentric model was not without its problems.
+
+### Retrograde Motion
+
+One of the major problems with the geocentric model was the phenomenon of retrograde motion.
+As a planet moves in its orbit, it appears to move in the opposite direction for a period of time.
+This is known as **apparent retrograde motion**.
+The most famous example of retrograde motion is that of Mars, which appears to move in the opposite direction for a few months every two years, as shown in the image below.
+
+<figure style={{ textAlign: "center" }}>
+![Retrograde motion of Mars](https://upload.wikimedia.org/wikipedia/commons/7/70/Apparent_retrograde_motion_of_Mars_in_2003.gif)
+<figcaption>Apparent retrograde motion of Mars in 2003 as seen from Earth. By Eugene Alvin Villar (<a href="//commons.wikimedia.org/wiki/User:Seav" title="User:Seav">seav</a>) - <span class="int-own-work" lang="en">Own work</span>, <a href="https://creativecommons.org/licenses/by-sa/4.0" title="Creative Commons Attribution-Share Alike 4.0">CC BY-SA 4.0</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=4662202">Link</a></figcaption>
+</figure>
+
+Hipparchus (c. 190-120 BCE) proposed a solution where the planets moved in a circular path (an **epicycle**) around a point that itself moved in a circular path around the Earth (the **deferent**).
+In other words, the planets moved in a circular path around a point that itself moved in a circular path around the Earth.
+Mathematically, this looks like adding another circular motion to the original circular motion.
+If the original circular motion is given by $\vb{r}_\text{(deferent)}(t)$, then the position vector of the planet is given by
+
+$$
+\begin{equation}
+\vb{r}_\text{(planet)}(t + \Delta t) = \vb{r}_\text{(deferent)}(t + \Delta t) + R_\text{(epicycle)}(\Delta t) \vb{r}_\text{(epicycle)}(t),
+\end{equation}
+$$
+
+where $R_\text{(epicycle)}(\Delta t)$ is a rotation matrix that rotates the position vector $\vb{r}_\text{(epicycle)}(t)$ by an angle proportional to the time interval $\Delta t$.
+These two circular motions together create a more complex motion that can explain the retrograde motion of planets.
+
+:::info Remark
+
+Technically, adding on more circles allows for any motion to be described ([Fourier series](../../Part%200%20Math%20Boosters/Fourier%20Series.mdx)), but not only was this not known at the time, it also made the model more complicated than it needed to be.
+
+:::
+
+Claudius Ptolemy (c. 100-170 CE) later refined this model by introducing the concept of **equants** (or punctum aequans).
+An equant is a point that is not the center of the deferent, but is used to define the motion of the planet.
+Specifically, the center of the epicycle (or the **eccentric**) moves with a constant angular velocity around the equant, instead of the center of the deferent.
+
+This model, known as the **Ptolemaic system**, was able to make better predictions of the positions of planets, but it was still not perfect.
+For one, the model was needlessly complicated; it forsook the simplicity of uniform, circular motion for a more complex model that was not as elegant.
+Furthermore, in order to make the model align with new observations, new epicycles and equants had to be added, which made the model even more complicated.
+This led to the model becoming increasingly complex and unwieldy, with many epicycles and equants being added to explain the motion of planets.
+
+### Copernicus and the Heliocentric Model
+
+Nicolaus Copernicus (1473-1543), a Polish mathematician and astronomer, proposed a new model of the solar system in which the Sun was at the center, and the planets moved in circular orbits around it.
+This model, known as the **heliocentric** (helio meaning "Sun") model, was a radical departure from the geocentric model.
+Immediately, it gave a much simpler description of the motion of planets, as it eliminated the need for epicycles and equants.
+This was the first heliocentric model that was supported by evidence, and it was a major breakthrough in the history of astronomy.
+
+The problem, however, was that during his time, the Catholic Church held the geocentric model as a theological doctrine.
+The idea of the Earth moving around the Sun was seen as heretical, and Copernicus feared persecution for his ideas.
+Therefore, he published his work, "De revolutionibus orbium coelestium" ("On the Revolutions of the Celestial Spheres"), only shortly before his death in 1543.
+One approach at the time was to claim that the heliocentric model was just a mathematical tool, but does not reflect reality.
+
+Mathematically, we can formulate the heliocentric model as follows.
+Let the origin of the coordinate system be at the center of the Sun.
+Then, the position vector of a planet is given by
+
+$$
+\begin{equation}
+\vb{r}_\text{(planet)}(t + \Delta t) = R_\text{(axis)}(\Delta t) \vb{r}_\text{(planet)}(t),
+\end{equation}
+$$
+
+where $R_\text{(axis)}(\Delta t)$ is a rotation matrix that rotates the position vector $\vb{r}_\text{(planet)}(t)$ by an angle proportional to the time interval $\Delta t$.
+The rotation of each planet can be characterized by parameters such as the orbital radius and the angular velocity.
+
+Notably, consider that there exist planets that are closer to the Sun than the Earth, such as Venus and Mercury.
+Likewise, there exist planets that are farther from the Sun than the Earth, such as Mars, Jupiter, and Saturn.
+These are known as **inferior** and **superior** planets, respectively. This distinction leads to different observational phenomena, including the apparent retrograde motion as previously discussed.
+
+Perhaps an animation will help illustrate how apparent retrograde motion arises naturally in the heliocentric model.
+
+{(() => {
+    const { time, start, stop, reset } = useStopwatch();
+    useEffect(() => {
+        start();
+        return () => stop();
+    }, []);
+    const orbitalRadiusEarth = 4;
+    const orbitalRadiusMars = 6;
+    const radiusEarth = 0.2;
+    const radiusMars = 0.15;
+    const phaseMars = Math.PI / 4; // Initial phase difference
+    const angularVelocityEarth = 1;
+    const angularVelocityMars = angularVelocityEarth * Math.sqrt(orbitalRadiusEarth ** 3 / orbitalRadiusMars ** 3); // Kepler's third law
+    const earth = [orbitalRadiusEarth * Math.cos(time * angularVelocityEarth), orbitalRadiusEarth * Math.sin(time * angularVelocityEarth)];
+    const mars = [orbitalRadiusMars * Math.cos(time * angularVelocityMars + phaseMars), orbitalRadiusMars * Math.sin(time * angularVelocityMars + phaseMars)];
+
+    // The equation of the line between Earth and Mars is given by
+    // (y - y1) = m (x - x1) --> y = (y2 - y1)/(x2 - x1) * (x - x1) + y1 so
+    const lineFn = (x) => (mars[1] - earth[1]) / (mars[0] - earth[0]) * (x - earth[0]) + earth[1];
+    const projection = lineFn(9); // Project to x = 9
+
+    return (
+        <div className="card">
+            <div className="card__header">
+                <div className="row">
+                    <div className="col">
+                        <h3>Sun reference frame</h3>
+                    </div>
+                    <div className="col">
+                        <h3>Earth reference frame</h3>
+                    </div>
+                </div>
+            </div>
+            <div className="card__body">
+                <div className="row">
+                    <div className="col">
+                        <Mafs viewBox={{ x: [-6, 9], y: [-6, 6] }}>
+                            {/* Earth and mars */}
+                            <Circle center={earth} radius={radiusEarth} color={color("blue")} />
+                            <Circle center={mars} radius={radiusMars} color={color("red")} />
+                            {/* Sun */}
+                            <Circle center={[0, 0]} radius={0.5} color={color("yellow")} />
+                            {/* Orbital circles */}
+                            <Circle center={[0, 0]} radius={orbitalRadiusEarth} fillOpacity={0} strokeStyle="dashed" strokeOpacity={0.35} />
+                            <Circle center={[0, 0]} radius={orbitalRadiusMars} fillOpacity={0} strokeStyle="dashed" strokeOpacity={0.35} />
+                            <Line.ThroughPoints point1={earth} point2={mars} style="dashed" />
+                            <Plot.OfY x={() => 9} />
+                            <Point x={9} y={projection} />
+                        </Mafs>
+                    </div>
+                    <div className="col">
+                        <Mafs viewBox={{ y: [-9, 9] }}>
+                            <Transform translate={[-earth[0], -earth[1]]}>
+                                {/* Earth and mars */}
+                                <Circle center={earth} radius={radiusEarth} color={color("blue")} />
+                                <Circle center={mars} radius={radiusMars} color={color("red")} />
+                                {/* Sun */}
+                                <Circle center={[0, 0]} radius={0.5} color={color("yellow")} />
+                                <Line.ThroughPoints point1={earth} point2={mars} style="dashed" />
+                            </Transform>
+                        </Mafs>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+})()}
+
+See how the line sometimes backtracks and moves backwards, indicating apparent retrograde motion.
+This is because as the Earth moves faster in its orbit, it overtakes Mars, causing Mars to appear to move backwards against the backdrop of distant stars.
+To quantify this phenomenon, we need to introduce some new definitions.
+
+A **conjunction** occurs when two celestial objects have the same right ascension or ecliptic longitude, as observed from Earth.
+An **opposition** occurs when two celestial objects are on opposite sides of the sky, as observed from Earth.
+In other words, Mars and Earth are in conjunction when they are aligned with the Sun, and they are in opposition when they are on opposite sides of the sky.
+When Mars is in opposition, it is closest to Earth, and it appears brightest in the sky.
+
+The time interval between two successive oppositions of Mars is known as the **synodic period** $S$, experimentally measured to be approximately 780 days.
+The time interval between two successive conjunctions of Mars is known as the **sidereal period** $P$.
+The sidereal period of Earth, $P_\oplus$, is known to be 365.256 days.
+Another way to interpret this is that the synodic period is the period of a planet as observed from Earth, while the sidereal period is the period of a planet as observed from the Sun.
+
+We can relate these periods to their respective angular velocities.
+The angular velocity of Earth is given by $\omega_\oplus = \frac{2\pi}{P_\oplus}$, while the angular velocity of Mars is given by $\omega = \frac{2\pi}{P_\text{(Mars)}}$.
+The angular velocity of Mars as observed from Earth is $\omega - \omega_\oplus$. And since this angular velocity corresponds to the synodic period, we have $\omega - \omega_\oplus = \frac{2\pi}{S}$.
+
+Thus, we have
+
+$$
+\begin{equation}
+\frac{1}{S} = \left| \frac{1}{P} - \frac{1}{P_\oplus} \right|.
+\end{equation}
+$$
+
+This equation allows us to calculate the sidereal period of Mars, given the synodic period and the sidereal period of Earth.
+Plugging in the values, we have
+
+$$
+\begin{equation}
+\frac{1}{780 \text{ days}} = \left| \frac{1}{P_\text{(Mars)}} - \frac{1}{365.256 \text{ days}} \right|,
+\end{equation}
+$$
+
+which gives us $P_\text{(Mars)} \approx 687$ days.
+
+Although the heliocentric model was a major breakthrough in the history of astronomy, it was not without its problems, and did not introduce any significant new predictive power.
+This is because Copernicus was still unable to forego the idea of uniform, circular motion.
+As such, he still had to introduce epicycles and equants to explain the motion of planets.
+This led to the model being only slightly simpler than the Ptolemaic system, and it was not able to make significantly better predictions of the positions of planets.
+
+## Towards Newtonian Astronomy
+
+In order to improve the models of planetary motion, we need to abandon the idea of uniform, circular motion.
+One important step is to introduce a coordinate system that is able to describe the motion of planets in a reliable and consistent manner.
+
+### Altitude-Azimuth and Equatorial Coordinate Systems
+
+The altitude-azimuth coordinate system is a spherical coordinate system that is used to describe the position of celestial objects in the sky.
+It is defined by two angles and centered on the observer's location on Earth.
+The **horizon** (the plane tangent to the Earth's surface at the observer's location) is the reference plane for this coordinate system.
+The **zenith** is the point directly above the observer, and the nadir is the point directly below the observer.
+The **meridian** is the great circle that passes through the zenith and the north and south points on the horizon.
+
+The **altitude angle** (or elevation angle), $h$, is the angle between the horizon and the line of sight to the celestial object.
+It is measured from 0° at the horizon to 90° at the zenith.
+Equivalently, the **zenith angle**, $z$, is the angle between the zenith and the line of sight to the celestial object, measured from 0° at the zenith to 90° at the horizon.
+These are related by $h = 90^\circ - z$.
+
+The **azimuth angle**, $A$, is the angle between the north direction and the projection of the line of sight to the celestial object onto the horizon plane.
+It is measured clockwise from 0° at the north to 360°.
+
+{(() => {
+    const [aaPoint, setAAPoint] = useState([Math.PI / 4, Math.PI / 4, 1]); // [azimuth, altitude, radius]
+    const [azimuth, altitude, radius] = aaPoint;
+    const toCartesian = (azimuth, altitude, r = 1) => {
+        const x = r * Math.cos(altitude) * Math.cos(-azimuth);
+        const y = r * Math.cos(altitude) * Math.sin(-azimuth);
+        const z = r * Math.sin(altitude);
+        return [x, y, z];
+    };
+    const fromCartesian = (x, y, z) => {
+        const r = Math.sqrt(x * x + y * y + z * z);
+        const altitude = Math.asin(z / r);
+        const azimuth = Math.atan2(-y, x);
+        return [azimuth, altitude, r];
+    };
+
+    const cartesianPoint = toCartesian(aaPoint[0], aaPoint[1], aaPoint[2]);
+
+    return (
+        <CustomMathbox
+            onInitialized={(mathbox) => {
+                const vObj = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.05, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+                );
+                vObj.position.set(...cartesianPoint);
+
+                const vControls = new TransformControls(mathbox.three.camera, mathbox.three.renderer.domElement);
+                vControls.attach(vObj);
+                vControls.addEventListener("dragging-changed", (event) => {
+                    // Disable orbit contrls when dragging v
+                    mathbox.three.controls.enabled = !event.value;
+                });
+                // Update point when vObj is moved
+                vControls.addEventListener("objectChange", () => {
+                    const newPoint = fromCartesian(...vObj.position.toArray());
+                    setAAPoint(newPoint);
+                });
+                mathbox.three.scene.add(vObj);
+                mathbox.three.scene.add(vControls);
+            }}
+        >
+            <MB.Cartesian>
+                {/* Zenith */}
+                <MB.Axis axis="z" range={[-1, 1]} />
+                <MB.Array id="zenith-point" items={1} channels={3} data={[0, 0, 1]} />
+                <MB.Text id="zenith-label" expr={(emit) => emit("Zenith")} />
+                <MB.Label points="#zenith-point" text="#zenith-label" />
+                {/* Nadir */}
+                <MB.Array id="nadir-point" items={1} channels={3} data={[0, 0, -1]} />
+                <MB.Text id="nadir-label" expr={(emit) => emit("Nadir")} />
+                <MB.Label points="#nadir-point" text="#nadir-label" />
+                {/* North */}
+                <MB.Axis axis="x" range={[-1, 1]} />
+                <MB.Array id="north-point" items={1} channels={3} data={[1, 0, 0]} />
+                <MB.Text id="north-label" expr={(emit) => emit("North")} />
+                <MB.Label points="#north-point" text="#north-label" />
+                {/* East */}
+                <MB.Axis axis="y" range={[-1, 1]} />
+                <MB.Array id="east-point" items={1} channels={3} data={[0, -1, 0]} />
+                <MB.Text id="east-label" expr={(emit) => emit("East")} />
+                <MB.Label points="#east-point" text="#east-label" />
+                {/* Horizon plane */}
+                <MB.Area
+                    id="horizon-plane"
+                    width={64}
+                    height={64}
+                    channels={3}
+                    axes="xy"
+                    expr={(emit, x, y, i, t) => {
+                        const z = 0;
+                        emit(x, y, z);
+                    }}
+                    rangeX={[-1, 1]}
+                    rangeY={[-1, 1]}
+                />
+                <MB.Surface
+                    points="#horizon-plane"
+                    opacity={0.75}
+                    color={"#b0b0b0"}
+                    lineX={true}
+                    lineY={true}
+                    zBias={-3}
+                    zOrder={50}
+                    zIndex={-3}
+                    shaded={true}
+                />
+                <MB.Array id="point-vec" items={2} channels={3} data={[0, 0, 0, ...cartesianPoint]} />
+                <MB.Array id="point-projected-vec" items={2} channels={3} data={[0, 0, 0, cartesianPoint[0], cartesianPoint[1], 0]} />
+                <MB.Vector points="#point-vec" width={15} end={true} />
+                <MB.Vector points="#point-projected-vec" width={5} />
+
+                {/* Azimuth angle arc */}
+                <MB.Interval
+                    id="azimuth-arc"
+                    width={20}
+                    range={[0, azimuth]}
+                    expr={(emit, t, i, time) => {
+                        const radius = 0.3;
+                        const x = radius * Math.cos(-t);
+                        const y = radius * Math.sin(-t);
+                        const z = 0;
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#azimuth-arc" width={5} />
+                <MB.Array id="azimuth-label-point" items={1} channels={3} data={[Math.cos(-azimuth / 2) * 0.5, Math.sin(-azimuth / 2) * 0.5, 0]} />
+                <MB.Text id="azimuth-label" expr={(emit) => emit(`A = ${(azimuth * 180 / Math.PI).toFixed(1)}º`)} />
+                <MB.Label points="#azimuth-label-point" text="#azimuth-label" />
+
+                {/* Altitude great circle */}
+                <MB.Interval
+                    id="altitude-great-circle"
+                    width={160}
+                    range={[0, 2 * Math.PI]}
+                    expr={(emit, t, i, time) => {
+                        const x = radius * Math.cos(-azimuth) * Math.cos(t);
+                        const y = radius * Math.sin(-azimuth) * Math.cos(t);
+                        const z = radius * Math.sin(t);
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#altitude-great-circle" width={5} />
+                {/* Altitude angle arc */}
+                <MB.Interval
+                    id="altitude-arc"
+                    width={20}
+                    range={[0, altitude]}
+                    expr={(emit, t, i, time) => {
+                        const radius = 0.3;
+                        const x = radius * Math.cos(-azimuth) * Math.cos(t);
+                        const y = radius * Math.sin(-azimuth) * Math.cos(t);
+                        const z = radius * Math.sin(t);
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#altitude-arc" width={5} />
+                <MB.Array id="altitude-label-point" items={1} channels={3} data={[Math.cos(-azimuth) * Math.cos(altitude / 2) * 0.5, Math.sin(-azimuth) * Math.cos(altitude / 2) * 0.5, Math.sin(altitude / 2) * 0.5]} />
+                <MB.Text id="altitude-label" expr={(emit) => emit(`h = ${(altitude * 180 / Math.PI).toFixed(1)}º`)} />
+                <MB.Label points="#altitude-label-point" text="#altitude-label" />
+
+                {/* Meridian circle */}
+                <MB.Interval
+                    id="meridian-circle"
+                    width={160}
+                    range={[0, 2 * Math.PI]}
+                    expr={(emit, t, i, time) => {
+                        const y = 0;
+                        const x = radius * Math.cos(t);
+                        const z = radius * Math.sin(t);
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#meridian-circle" width={5} />
+            </MB.Cartesian>
+        </CustomMathbox>
+    );
+})()}
+
+This system is useful for locating celestial objects in the sky, as it allows us to specify their position in terms of angles that are easy to measure.
+There are limitations to this system; for example, the coordinates of a celestial object will change over time as the Earth rotates and orbits the Sun.
+Moreover, the coordinates depend on the observer's location on Earth, and are difficult to use for comparing observations from different locations.
+
+The Earth rotates around its axis once every day, and orbits the Sun once every year (the sidereal period).
+Note that the sidereal period is 365.26 days, which means that in 24 hours, the Earth orbits the Sun by about 1 degree.
+As such, to make the Sun cross the same meridian every day, Earth must spin about 361 degrees in 24 hours.
+
+On the other hand, for stars further away, the effect of Earth's orbit is negligible, and they appear to cross the same meridian every 23 hours and 56 minutes (the sidereal day).
+This means that the stars appear to move about 1 degree every 4 minutes, or about 15 degrees every hour.
+This is why the stars appear to move in the sky over the course of a night.
+
+To address the limitations of the altitude-azimuth coordinate system, astronomers developed the equatorial coordinate system.
+If we trace the path of the Sun in the sky (the **ecliptic**), we find that the **declination** of the Sun changes over the course of a year.
+(See figures 1.11 and 1.12 in Caroll and Ostlie.)
+The declination, $\delta$, is the angle between the celestial equator and the line of sight to the celestial object.
+The **right ascension**, $\alpha$, is the angle between the vernal equinox and the projection of the line of sight to the celestial object onto the celestial equator.
+Essentially, the equatorial coordinate system is a celestial version of the latitude-longitude system used on Earth.
+No longer is the coordinate system centered on the observer, but rather on the celestial sphere.
+
+This is, of course, still not perfect.
+As the Earth is not a perfect sphere, and it interacts gravitationally with the Moon and the Sun, the Earth's axis of rotation wobbles, or **precesses**, over time.
+This causes the coordinates of celestial objects to change over time, and the equatorial coordinate system must be updated periodically to account for this.
+However, this is a much smaller effect than the rotation and orbit of the Earth, and it is much easier to account for.
+
+When we specify the coordinates of a celestial object, we must also specify the epoch, or the date at which the coordinates are valid.
+Today, we use the epoch J2000.0, which corresponds to January 1, 2000, at 12:00 TT (Terrestrial Time).
+The J stands for Julian, for the calendar introduced by Julius Caesar in 46 BCE.
+The coordinates of celestial objects are given in terms of right ascension and declination:
+
+$$
+\begin{align}
+\Delta \alpha &= M + N \sin(\alpha) \tan(\delta) \\
+\Delta \delta &= N \cos(\alpha),
+\end{align}
+$$
+
+where $M$ and $N$ are constants that depend on the epoch, and $\Delta \alpha$ and $\Delta \delta$ are the changes in right ascension and declination, respectively.
+In J2000.0, we have
+
+$$
+\begin{align}
+M &= 1^\circ.2812323 T + 0^\circ.0003879 T^2 + 0^\circ.0000101 T^3 \\
+N &= 0^\circ.5567530 T - 0^\circ.0001184 T^2 - 0^\circ.0000116 T^3,
+\end{align}
+$$
+
+where $T = \frac{(t - 2451545.0)}{36525}$ is the time in Julian centuries since J2000.0.
+
+Another effect that must be accounted for originates from the velocities of celestial objects.
+We can decompose an object's velocity $\vb{v}$ into two components: the radial velocity $v_r$ (the component along the line of sight) and the tangential velocity $v_\theta$ (the component perpendicular to the line of sight).
+The radial velocity can be measured using the Doppler effect, as we have previously discussed in both nonrelativistic and relativistic contexts.
+The tangential velocity manifests itself as a change in the equatorial coordinates of the object over time, known as **proper motion**.
+By definition,
+
+$$
+\begin{equation}
+\Delta d = \int v_\theta \dd{t}.
+\end{equation}
+$$
+
+If the radius $r$ to the object is known, then we can relate the change in distance to the change in angle.
+Therefore,
+
+$$
+\begin{equation}
+\Delta \theta = \frac{\Delta d}{r} = \frac{1}{r} \int v_\theta \dd{t}.
+\end{equation}
+$$
+
+Finally, the proper motion is the rate of change of $\theta$ with respect to time:
+
+$$
+\begin{equation}
+\mu = \lim_{\Delta t \to 0} \frac{\Delta \theta}{\Delta t} = \frac{1}{r} v_\theta.
+\end{equation}
+$$
+
+It can be shown (see Caroll and Ostlie, section 1.3) that the proper motion leads to changes in the equatorial coordinates given by
+
+$$
+\begin{equation}
+(\Delta \theta)^2 = (\Delta \alpha \cos(\delta))^2 + (\Delta \delta)^2.
+\end{equation}
+$$
+
+### Elliptical Orbits and Kepler's Laws
+
+The next step in improving our models of planetary motion is to abandon the idea of circular orbits.
+Following the death of Copernicus (1543), Danish astronomer Tycho Brahe (1546-1601) made the most accurate observations of planetary positions up to that time.
+He used large, precise instruments to measure the positions of planets and stars, and he recorded his observations over a period of 20 years.
+
+This is a tangent, but Brahe had a very interesting life.
+He had a pet elk, which he famously brought to social gatherings and even allowed to roam freely in his home.
+The elk reportedly died after drinking too much beer at a party and falling down a flight of stairs.
+Brahe also lost part of his nose in a duel, and he wore a prosthetic nose made of brass.
+He was known for his flamboyant personality and his eccentric behavior, which made him a well-known figure in his time.
+
+
+
