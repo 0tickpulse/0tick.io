@@ -16,7 +16,7 @@ import { TransformControls } from "three/addons/controls/TransformControls";
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# History of Astrophysics: Part 1
+# History of Astronomy: Part 1
 
 Astronomy and astrophysics have a rich history that spans thousands of years.
 In particular, astronomy has been practiced since ancient times, so ancient that it could have been the first scientific discipline.
@@ -29,8 +29,13 @@ The motion of celestial objects was observed and recorded by ancient civilizatio
 Clocks leveraged the regular motion of celestial objects, such as the Sun and Moon, to measure time.
 Sundials, for example, used the position of the Sun in the sky to indicate the time of day.
 
+There are many reasons to study the history of astronomy.
+The history of astronomy is intertwined with the history of physics as a whole, as the study of celestial objects has often driven advancements in our understanding of the physical world.
+Advances in theoretical physics, such as Kepler's laws, Newton's law of gravitation, quantum mechanics, and general relativity, have all been fully or partially motivated by the need to explain astronomical observations.
+As such, when we learn about the history of astronomy, we are concurrently learning about the development of Newtonian mechanics and electromagnetism; the different models of atoms; the development of quantum mechanics; and the theory of general relativity.
+
 In this section, we will explore the history of astronomy and astrophysics, from its ancient origins to modern times.
-This first part will focus on the ancient and classical periods, while the second part will cover the modern era.
+This first part will focus on the ancient and classical periods prior to Newtonian mechanics.
 
 ## Table of Contents
 
@@ -136,7 +141,7 @@ These are known as **inferior** and **superior** planets, respectively. This dis
 
 Perhaps an animation will help illustrate how apparent retrograde motion arises naturally in the heliocentric model.
 
-{(() => {
+export function HeliocentricRetrogradeMotionVisualizer() {
     const { time, start, stop, reset } = useStopwatch();
     useEffect(() => {
         start();
@@ -202,7 +207,9 @@ Perhaps an animation will help illustrate how apparent retrograde motion arises 
             </div>
         </div>
     )
-})()}
+}
+
+<HeliocentricRetrogradeMotionVisualizer />
 
 See how the line sometimes backtracks and moves backwards, indicating apparent retrograde motion.
 This is because as the Earth moves faster in its orbit, it overtakes Mars, causing Mars to appear to move backwards against the backdrop of distant stars.
@@ -267,7 +274,7 @@ These are related by $h = 90^\circ - z$.
 The **azimuth angle**, $A$, is the angle between the north direction and the projection of the line of sight to the celestial object onto the horizon plane.
 It is measured clockwise from 0° at the north to 360°.
 
-{(() => {
+export function AltitudeAzimuthVisualizer() {
     const [aaPoint, setAAPoint] = useState([Math.PI / 4, Math.PI / 4, 1]); // [azimuth, altitude, radius]
     const [azimuth, altitude, radius] = aaPoint;
     const toCartesian = (azimuth, altitude, r = 1) => {
@@ -424,7 +431,9 @@ It is measured clockwise from 0° at the north to 360°.
             </MB.Cartesian>
         </CustomMathbox>
     );
-})()}
+}
+
+<AltitudeAzimuthVisualizer />
 
 This system is useful for locating celestial objects in the sky, as it allows us to specify their position in terms of angles that are easy to measure.
 There are limitations to this system; for example, the coordinates of a celestial object will change over time as the Earth rotates and orbits the Sun.
@@ -524,5 +533,155 @@ The elk reportedly died after drinking too much beer at a party and falling down
 Brahe also lost part of his nose in a duel, and he wore a prosthetic nose made of brass.
 He was known for his flamboyant personality and his eccentric behavior, which made him a well-known figure in his time.
 
+Johannes Kepler, a former assistant of Brahe, later formulated the laws that describe the motion of planets based on those observations.
+Using Mars as a test case, Kepler found that the orbit of Mars could not be described by a circle, but rather by an ellipse.
+In 1609, Kepler published his first two laws of planetary motion in "Astronomia Nova" ("New Astronomy").
+These laws are as follows:
 
+1. The orbit of a planet is an ellipse with the Sun at one of the two foci.
+2. A line segment joining a planet and the Sun sweeps out equal areas during equal time intervals.
 
+<figure>
+    <div style={{ background: "white", padding: "1em", borderRadius: "8px" }}>
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/9/98/Kepler_laws_diagram.svg"
+            alt="Illustration of Kepler's second law"
+            style={{ display: "block", margin: "0 auto", maxWidth: "450px", width: "100%" }}
+        />
+    </div>
+    <figcaption>
+
+    Illustration of Kepler's second law. Planet 1 travels through both areas $A_1$ and $A_2$ in the same time. By <a href="//commons.wikimedia.org/wiki/User:Hankwang" title="User:Hankwang">Hankwang</a> - <span class="int-own-work" lang="en">Own work</span>, <a href="https://creativecommons.org/licenses/by/2.5" title="Creative Commons Attribution 2.5">CC BY 2.5</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=2102578">Link</a>
+
+    </figcaption>
+</figure>
+
+The third law was published in 1619 in "Harmonices Mundi" ("The Harmony of the World"):
+
+3. (The harmonic law) The orbital period of a planet, $P$, is related to the average distance from the Sun, $a$, by the relation $P^2 \propto a^3$.
+    Equality occurs when $P$ is measured in years and $a$ is measured in astronomical units (AU).
+
+An astronomical unit is defined as the average distance from the Earth to the Sun, which is approximately $1.496 \times 10^{11}$ meters.
+
+To describe an elliptical orbit mathematically, we need to establish some definitions.
+An ellipse is defined by its **semimajor axis** and its two focal points.
+The semimajor axis, $a$, is half the length of the longest diameter of the ellipse.
+The two focal points, $F_1$ and $F_2$, are located along the major axis, equidistant from the center of the ellipse.
+The focus in which the sun resides is denoted $F_1$, and is known as the **principal focus**.
+We can then define an ellipse as the set of points that satisfy the equation
+
+$$
+\begin{equation}
+r_1 + r_2 = 2a,
+\end{equation}
+$$
+
+where $r_1$ and $r_2$ are the distances from a point on the ellipse to the two focal points, respectively.
+We can see a diagram of an ellipse below.
+
+import { EllipseVisualizer } from '@site/src/components/visualizers/EllipseVisualizer';
+
+<EllipseVisualizer />
+
+The **eccentricity** of an ellipse, $e$, is a measure of how "stretched out" the ellipse is.
+It is defined as the ratio of the distance between the two focal points to the length of the major axis:
+
+$$
+\begin{equation}
+e := \frac{c}{2a},
+\end{equation}
+$$
+
+where $c$ is the distance between the two focal points.
+The point along the ellipse that is closest to the principal focus is known as the **perihelion**, and the point that is farthest from the principal focus is known as the **aphelion**.
+The precession of Mars's perihelion was one of the first tests of Einstein's general relativity, as we previously discussed in the general relativity chapter.
+
+At the ends of the semiminor axis, we have $r_1 = r_2 = a$, and at the ends of the semimajor axis, we have $r_1 = 2a$ and $r_2 = 0$ (or vice versa).
+Pythagoras's theorem tells us that $r^2 = (ae)^2 + b^2$, so
+
+$$
+\begin{equation}
+a^2 = (ae)^2 + b^2 \implies b^2 = a^2(1 - e^2).
+\end{equation}
+$$
+
+Also, from Pythagoras's theorem on the triangle formed by $F_2$ and the point on the ellipse, we have
+
+$$
+\begin{equation}
+r_2^2 = (r_1 \sin(\theta))^2 + (2ae + r_1 \cos(\theta))^2 = r_1^2 + 4ae(ae + r_1 \cos(\theta)).
+\end{equation}
+$$
+
+Substituting $r_2 = 2a - r_1$ (from the definition of an ellipse) and rearranging, we have
+
+$$
+\begin{equation}
+r_1 = \frac{a(1 - e^2)}{1 + e \cos(\theta)}.
+\end{equation}
+$$
+
+This allows for a description of the orbit of a planet in polar coordinates, with the principal focus at the origin.
+Note that the exact motion of this idealized planet must be approximated using numerical methods.
+This is because the equation
+
+$$
+\begin{equation}
+M = E - e \sin(E),
+\end{equation}
+$$
+
+where $M$ is the mean anomaly, $E$ is the eccentric anomaly, and $e$ is the eccentricity, cannot be solved for $E$ in terms of elementary functions.
+The mean anomaly is defined as
+
+$$
+\begin{equation}
+M = \frac{2\pi}{P} (t - \tau),
+\end{equation}
+$$
+
+where $P$ is the orbital period, $t$ is the time, and $\tau$ is the time at which the planet is at perihelion.
+With a value for $E$, the orbit can be described using the parametric equations
+
+$$
+\begin{align}
+x(t) &= a(\cos(E) - e), \\
+y(t) &= b \sin(E).
+\end{align}
+$$
+
+The area swept out by the line segment joining the planet and the Sun can be calculated using the formula for the area of an ellipse, $A = \pi ab$.
+The area swept out in a time interval $\Delta t$ is given by
+
+$$
+\begin{equation}
+\Delta A = \frac{A}{P} \Delta t = \frac{\pi ab}{P} \Delta t.
+\end{equation}
+$$
+
+Lastly, different ranges of eccentricity correspond to different conic sections:
+
+- $0 \leq e < 1$: Ellipse (closed orbit)
+- $e = 1$: Parabola (open orbit)
+- $e > 1$: Hyperbola (open orbit)
+
+These shapes all have one focus, which is where the central body (e.g., the Sun) is located.
+We have used all of these conic sections before.
+Parabolas occur in projectile motion when air resistance is negligible, and hyperbolas occur in the trajectories of some comets.
+In addition, as the Minkowski metric has a hyperbolic geometry, hyperbolas are fundamental to special relativity.
+
+## Summary and Next Steps
+
+In this chapter, we have discussed the history of astronomy and the development of models to describe the motion of celestial objects.
+We have seen how the geocentric model was replaced by the heliocentric model, and how the idea of uniform, circular motion was abandoned in favor of elliptical orbits.
+
+Here are the key takeaways from this section, labeled based on who discovered them:
+
+- **Eudoxus of Cnidus, Aristotle et al.**: Proposed the geocentric model of the universe, with Earth at the center and celestial objects moving in circular orbits around it.
+- **Claudius Ptolemy**: Refined the geocentric model by introducing epicycles and equants to explain the motion of planets.
+- **Nicolaus Copernicus**: Proposed the heliocentric model, with the Sun at the center and planets moving in circular orbits around it.
+- **Tycho Brahe**: Made the most accurate observations of planetary positions up to that time.
+- **Johannes Kepler**: Formulated the three laws of planetary motion, describing the motion of planets in elliptical orbits around the Sun.
+
+All of these discoveries were prior to the development of Newtonian mechanics, and notably lacked a physical explanation for the motion of celestial objects.
+In the next chapter, we will discuss how Newton's laws of motion and his law of universal gravitation provided a physical explanation for the motion of celestial objects, and how they were able to explain the observations made by Brahe and the laws formulated by Kepler.

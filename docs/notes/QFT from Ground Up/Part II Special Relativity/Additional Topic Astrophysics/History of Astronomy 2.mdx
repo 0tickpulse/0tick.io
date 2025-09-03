@@ -1,0 +1,198 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# History of Astronomy: Part 2
+
+Previously, we discussed the history of astronomy, focusing on developments prior to Newtonian mechanics.
+In this section, we will continue our exploration of the history of astronomy, focusing on developments from the time of Newton to the present day.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Galileo and Newton
+
+The invention of the telescope in the early 17th century revolutionized astronomy.
+Galileo Galilei (1564–1642) was one of the first to use a telescope to observe the heavens.
+He was the first to propose a version of Newton's first law, as well as the kinematic principles of acceleration.
+Using his telescope, Galileo made several important discoveries, including:
+
+- The Milky Way is actually composed of a vast number of individual stars, instead of being a nebulous cloud as previously thought.
+- The four largest moons of Jupiter (now known as the Galilean moons: Io, Europa, Ganymede, and Callisto) orbit the planet, providing strong evidence against the geocentric model of the universe.
+- The phases of Venus, which could only be explained by a heliocentric model (as the sun's light illuminates different portions of Venus as it orbits the sun).
+- The rough and uneven surface of the Moon, which contradicted the Aristotelian idea of perfect celestial spheres.
+- Sunspots on the surface of the Sun, indicating that the Sun is not a perfect, unchanging body.
+
+Galileo's observations provided strong evidence in favor of the heliocentric model proposed by Copernicus, and they challenged the prevailing Aristotelian view of the cosmos.
+The Catholic Church, which held significant influence over intellectual life in Europe at the time, challenged Galileo's findings.
+In 1616, The Holy Office declared heliocentrism to be "foolish and absurd in philosophy, and formally heretical."
+Galileo was also warned by Cardinal Roberto Bellarmine not to "hold, teach, or defend" the heliocentric view.
+
+In 1623, however, his friend and admirer Cardinal Maffeo Barberini became Pope Urban VIII, and Galileo was given permission to write about heliocentrism as a hypothesis.
+He published his findings in "Dialogue Concerning the Two Chief World Systems" in 1632, which presented arguments for both the geocentric and heliocentric models.
+While it was technically neutral, the book was clearly biased in favor of heliocentrism.
+The character representing the heliocentric view was named "Salviati," after Galileo's friend and supporter, while the character representing the geocentric view was named "Simplicio," which was interpreted as a derogatory term meaning "simpleton."
+As a result, Galileo was tried by the Roman Catholic Inquisition in 1633 and found "vehemently suspect of heresy."
+He was forced to recant his views and spent the rest of his life under house arrest.
+
+Despite the controversy surrounding Galileo's work, his observations laid the groundwork for future developments in astronomy and physics.
+Eventually, in 1992, Pope John Paul II formally acknowledged the errors made by the Church in its handling of the Galileo affair.
+
+Isaac Newton (1643–1727) built upon the work of Galileo and others to develop a comprehensive theory of motion and gravitation.
+While the Plague ravaged Europe in 1665, Newton retreated to his family estate in Woolsthorpe, where he made several groundbreaking discoveries.
+His Philosophiae Naturalis Principia Mathematica (Mathematical Principles of Natural Philosophy), published in 1687, laid the foundation for classical mechanics.
+In the Principia, Newton formulated his three laws of motion, the law of universal gravitation, as well as differential and integral calculus (independently developed by Leibniz).
+He also published his work on optics in Optiks in 1704, where he described the nature of light and color.
+
+Newton was one of the most intelligent and influential scientists in history.
+When faced with the Brachistochrone problem, he solved it in a single night, inventing the calculus of variations in the process.
+By Newton's request, his solution was published anonymously in the 1696 edition of the Journal des Sçavans.
+Bernoulli, who had posed the problem, recognized Newton's solution and famously remarked, "I recognize the lion by his claw."
+
+We should be vehemently familiar with Newton's laws of motion and gravitation, as they form the basis of classical mechanics.
+Nevertheless, it is worth briefly reviewing them here. We will do so by deriving Kepler's laws of planetary motion from Newton's law of gravitation.
+We must first establish the necessary mathematical tools.
+
+### Center-of-Mass Reference Frame
+
+In a system of particles, the center of mass (COM) is the weighted average position of all the particles, where the weights are given by their masses.
+For a system of $N$ particles with masses $m_i$ and positions $\vb{r}_i$, the position of the center of mass $\vb{R}$ is given by
+
+$$
+\begin{equation}
+\vb{R} = \frac{1}{M} \sum_{i=1}^{N} m_i \vb{r}_i,
+\end{equation}
+$$
+
+where $M = \sum_{i=1}^{N} m_i$ is the total mass of the system.
+
+If we rearrange and differentiate this equation, we have
+
+$$
+\begin{equation}
+M \dv{\vb{R}}{t} = \sum_{i=1}^{N} m_i \dv{\vb{r}_i}{t} = \sum_{i=1}^{N} m_i \vb{v}_i = \vb{P},
+\end{equation}
+$$
+
+where $\vb{P}$ is the total momentum of the system.
+Differentiating again, we have
+
+$$
+\begin{equation}
+\dv{\vb{P}}{t} = \sum_{i=1}^{N} m_i \dv{\vb{v}_i}{t} = \sum_{i=1}^{N} \dv{\vb{p}_i}{t}.
+\end{equation}
+$$
+
+Anyways, suppose we have a binary system of two particles with masses $m_1$ and $m_2$, and positions $\vb{r}_1$ and $\vb{r}_2$.
+Let their center of mass be the origin, i.e., $\vb{R} = 0$.
+Let $\vb{r}$ be the relative position vector from particle 1 to particle 2, i.e., $\vb{r} = \vb{r}_2 - \vb{r}_1$.
+Each particle can then be expressed in terms of the center of mass and the relative position vector as follows:
+
+$$
+\begin{align}
+\vb{r}_1 &= -\frac{m_2}{M} \vb{r}, \\
+\vb{r}_2 &= \frac{m_1}{M} \vb{r}.
+\end{align}
+$$
+
+If we define the **reduced mass** $\mu$ as
+
+$$
+\begin{equation}
+\mu := \frac{m_1 m_2}{M} = \frac{m_1 m_2}{m_1 + m_2},
+\end{equation}
+$$
+
+then each particle's position is
+
+$$
+\begin{align}
+\vb{r}_1 &= -\frac{\mu}{m_1} \vb{r}, \\
+\vb{r}_2 &= \frac{\mu}{m_2} \vb{r}.
+\end{align}
+$$
+
+There are a few useful identities that we can derive from this.
+First, Newton's third law gives $m_1 \vb{a}_1 = -m_2 \vb{a}_2$, so if we define the relative acceleration $\vb{a} := \vb{a}_2 - \vb{a}_1$, then
+
+$$
+\begin{equation}
+\vb{a} := \vb{a}_2 - \vb{a}_1 = \qty(1 + \frac{m_2}{m_1}) \vb{a}_2 = \frac{M}{m_1 m_2} m_1 \vb{a}_1 = \frac{1}{\mu} \vb{F}_{12},
+\end{equation}
+$$
+
+where $\vb{F}_{12}$ is the force on particle 1 due to particle 2. This means
+
+$$
+\begin{equation}
+\mu \vb{a} = \vb{F}_{12}.
+\end{equation}
+$$
+
+This means that we can treat the two-body problem as a one-body problem with mass $\mu$ moving under the influence of the force $\vb{F}_{12}$.
+Second, the total kinetic energy of the system is
+
+$$
+\begin{equation}
+K = \frac{1}{2} m_1 v_1^2 + \frac{1}{2} m_2 v_2^2 = \frac{1}{2} \mu v^2,
+\end{equation}
+$$
+
+where $\vb{v} = \vb{v}_2 - \vb{v}_1$ is the relative velocity.
+Third, the total angular momentum of the system about the center of mass is
+
+$$
+\begin{equation}
+\vb{L} = \vb{r}_1 \times m_1 \vb{v}_1 + \vb{r}_2 \times m_2 \vb{v}_2 = \mu \vb{r} \times \vb{v}.
+\end{equation}
+$$
+
+The gravitational potential energy of the system is
+
+$$
+\begin{equation}
+U = -\frac{G m_1 m_2}{r} = -\frac{G \mu M}{r}.
+\end{equation}
+$$
+
+### Kepler's First Law
+
+{/* Todo */}
+
+### Virial Theorem
+
+One important result that we will need is the virial theorem.
+For a stable, bound system of particles interacting through a potential $U(\vb{r})$, the virial theorem states that
+
+$$
+\begin{equation}
+\expval{E} = \frac{1}{2} \expval{U},
+\end{equation}
+$$
+
+where $E$ is the total kinetic energy of the system, and the angle brackets denote a time average.
+(Of course, this is only true for potentials that are homogeneous functions of degree $n = -1$, such as the gravitational potential.)
+The angle brackets can be formally defined as a functional of the form
+
+$$
+\begin{equation}
+\expval{\phi} := \frac{1}{\tau} \int_0^\tau \phi(t) \dd{t},
+\end{equation}
+$$
+
+where $\tau$ is the time period over which the average is taken.
