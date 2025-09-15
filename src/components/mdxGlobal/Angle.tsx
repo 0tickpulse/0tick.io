@@ -23,6 +23,8 @@ export type AngleProps = {
      * Normalize the angle to be between 0 and 2π
      */
     normalize?: boolean;
+
+    direction?: "cw" | "ccw" | "shortest" | "none" ; // clockwise, counterclockwise, shortest, or none (as given)
 };
 
 export function Angle({
@@ -37,6 +39,7 @@ export function Angle({
     labelColor = color,
     labelOffsetMultiplier = 1.4,
     normalize = false,
+    direction = "none",
 }: AngleProps) {
     const { userTransform } = useTransformContext();
     if ((straightRightAngle && Math.abs(toRad - fromRad) === Math.PI / 2) || forceStraightAngle) {
@@ -69,13 +72,41 @@ export function Angle({
         toRad = fromRad + sign * newDiff;
     }
 
-    const texPosition = parametric((fromRad + toRad) / 2);
+    let range: [number, number] = [toRad, fromRad];
+    if (direction === "cw") {
+        if (fromRad < toRad) {
+            range = [toRad - 2 * Math.PI, fromRad];
+        } else {
+            range = [toRad, fromRad];
+        }
+    } else if (direction === "ccw") {
+        if (toRad < fromRad) {
+            range = [toRad + 2 * Math.PI, fromRad];
+        } else {
+            range = [toRad, fromRad];
+        }
+    } else if (direction === "shortest") {
+        const diff = toRad - fromRad;
+        if (Math.abs(diff) > Math.PI) {
+            // Go the other way
+            if (diff > 0) {
+                range = [toRad - 2 * Math.PI, fromRad];
+            }
+            else {
+                range = [toRad + 2 * Math.PI, fromRad];
+            }
+        } else {
+            range = [toRad, fromRad];
+        }
+    }
+
+    const texPosition = parametric((range[0] + range[1]) / 2);
     texPosition[0] = (texPosition[0] - at[0]) * labelOffsetMultiplier + at[0];
     texPosition[1] = (texPosition[1] - at[1]) * labelOffsetMultiplier + at[1];
 
     return (
         <>
-            <Plot.Parametric xy={(t) => vec.transform(parametric(t), userTransform)} t={[fromRad, toRad]} color={color} />
+            <Plot.Parametric xy={(t) => vec.transform(parametric(t), userTransform)} t={range} color={color} />
             {label && <LaTeX tex={label} at={texPosition} color={labelColor} />}
         </>
     );

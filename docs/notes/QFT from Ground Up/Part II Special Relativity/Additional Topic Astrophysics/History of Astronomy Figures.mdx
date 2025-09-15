@@ -6,11 +6,332 @@ sidebar_position: 4
 
 This is just a collection of figures that were used in the history of astronomy notes.
 
-import { HeliocentricRetrogradeMotionVisualizer, AltitudeAzimuthVisualizer } from "./History of Astronomy 1.mdx";
+import { lineLabel } from "@site/src/utilities/lines";
 import { EllipseVisualizer } from '@site/src/components/visualizers/EllipseVisualizer';
+import { useEffect, useState } from 'react';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { color } from "@site/src/utilities/colors";
+import { TransformControls } from "three/addons/controls/TransformControls";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { useMovablePoint, useStopwatch } from "mafs";
+
+export function HeliocentricRetrogradeMotionVisualizer() {
+    const { time, start, stop, reset } = useStopwatch();
+    useEffect(() => {
+        start();
+        return () => stop();
+    }, []);
+    const orbitalRadiusEarth = 4;
+    const orbitalRadiusMars = 6;
+    const radiusEarth = 0.2;
+    const radiusMars = 0.15;
+    const phaseMars = Math.PI / 4; // Initial phase difference
+    const angularVelocityEarth = 1;
+    const angularVelocityMars = angularVelocityEarth * Math.sqrt(orbitalRadiusEarth ** 3 / orbitalRadiusMars ** 3); // Kepler's third law
+    const earth = [orbitalRadiusEarth * Math.cos(time * angularVelocityEarth), orbitalRadiusEarth * Math.sin(time * angularVelocityEarth)];
+    const mars = [orbitalRadiusMars * Math.cos(time * angularVelocityMars + phaseMars), orbitalRadiusMars * Math.sin(time * angularVelocityMars + phaseMars)];
+
+    // The equation of the line between Earth and Mars is given by
+    // (y - y1) = m (x - x1) --> y = (y2 - y1)/(x2 - x1) * (x - x1) + y1 so
+    const lineFn = (x) => (mars[1] - earth[1]) / (mars[0] - earth[0]) * (x - earth[0]) + earth[1];
+    const projection = lineFn(9); // Project to x = 9
+
+    return (
+        <div className="card">
+            <div className="card__header">
+                <div className="row">
+                    <div className="col">
+                        <h3>Sun reference frame</h3>
+                    </div>
+                    <div className="col">
+                        <h3>Earth reference frame</h3>
+                    </div>
+                </div>
+            </div>
+            <div className="card__body">
+                <div className="row">
+                    <div className="col">
+                        <Mafs viewBox={{ x: [-6, 9], y: [-6, 6] }}>
+                            {/* Earth and mars */}
+                            <Circle center={earth} radius={radiusEarth} color={color("blue")} />
+                            <Circle center={mars} radius={radiusMars} color={color("red")} />
+                            {/* Sun */}
+                            <Circle center={[0, 0]} radius={0.5} color={color("yellow")} />
+                            {/* Orbital circles */}
+                            <Circle center={[0, 0]} radius={orbitalRadiusEarth} fillOpacity={0} strokeStyle="dashed" strokeOpacity={0.35} />
+                            <Circle center={[0, 0]} radius={orbitalRadiusMars} fillOpacity={0} strokeStyle="dashed" strokeOpacity={0.35} />
+                            <Line.ThroughPoints point1={earth} point2={mars} style="dashed" />
+                            <Plot.OfY x={() => 9} />
+                            <Point x={9} y={projection} />
+                        </Mafs>
+                    </div>
+                    <div className="col">
+                        <Mafs viewBox={{ y: [-9, 9] }}>
+                            <Transform translate={[-earth[0], -earth[1]]}>
+                                {/* Earth and mars */}
+                                <Circle center={earth} radius={radiusEarth} color={color("blue")} />
+                                <Circle center={mars} radius={radiusMars} color={color("red")} />
+                                {/* Sun */}
+                                <Circle center={[0, 0]} radius={0.5} color={color("yellow")} />
+                                <Line.ThroughPoints point1={earth} point2={mars} style="dashed" />
+                            </Transform>
+                        </Mafs>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export function AltitudeAzimuthVisualizer() {
+    const [aaPoint, setAAPoint] = useState([Math.PI / 4, Math.PI / 4, 1]); // [azimuth, altitude, radius]
+    const [azimuth, altitude, radius] = aaPoint;
+    const toCartesian = (azimuth, altitude, r = 1) => {
+        const x = r * Math.cos(altitude) * Math.cos(-azimuth);
+        const y = r * Math.cos(altitude) * Math.sin(-azimuth);
+        const z = r * Math.sin(altitude);
+        return [x, y, z];
+    };
+    const fromCartesian = (x, y, z) => {
+        const r = Math.sqrt(x * x + y * y + z * z);
+        const altitude = Math.asin(z / r);
+        const azimuth = Math.atan2(-y, x);
+        return [azimuth, altitude, r];
+    };
+
+    const cartesianPoint = toCartesian(aaPoint[0], aaPoint[1], aaPoint[2]);
+
+    return (
+        <CustomMathbox
+            onInitialized={(mathbox) => {
+                const vObj = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.05, 32, 32),
+                    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+                );
+                vObj.position.set(...cartesianPoint);
+
+                const vControls = new TransformControls(mathbox.three.camera, mathbox.three.renderer.domElement);
+                vControls.attach(vObj);
+                vControls.addEventListener("dragging-changed", (event) => {
+                    // Disable orbit contrls when dragging v
+                    mathbox.three.controls.enabled = !event.value;
+                });
+                // Update point when vObj is moved
+                vControls.addEventListener("objectChange", () => {
+                    const newPoint = fromCartesian(...vObj.position.toArray());
+                    setAAPoint(newPoint);
+                });
+                mathbox.three.scene.add(vObj);
+                mathbox.three.scene.add(vControls);
+            }}
+        >
+            <MB.Cartesian>
+                {/* Zenith */}
+                <MB.Axis axis="z" range={[-1, 1]} />
+                <MB.Array id="zenith-point" items={1} channels={3} data={[0, 0, 1]} />
+                <MB.Text id="zenith-label" expr={(emit) => emit("Zenith")} />
+                <MB.Label points="#zenith-point" text="#zenith-label" />
+                {/* Nadir */}
+                <MB.Array id="nadir-point" items={1} channels={3} data={[0, 0, -1]} />
+                <MB.Text id="nadir-label" expr={(emit) => emit("Nadir")} />
+                <MB.Label points="#nadir-point" text="#nadir-label" />
+                {/* North */}
+                <MB.Axis axis="x" range={[-1, 1]} />
+                <MB.Array id="north-point" items={1} channels={3} data={[1, 0, 0]} />
+                <MB.Text id="north-label" expr={(emit) => emit("North")} />
+                <MB.Label points="#north-point" text="#north-label" />
+                {/* East */}
+                <MB.Axis axis="y" range={[-1, 1]} />
+                <MB.Array id="east-point" items={1} channels={3} data={[0, -1, 0]} />
+                <MB.Text id="east-label" expr={(emit) => emit("East")} />
+                <MB.Label points="#east-point" text="#east-label" />
+                {/* Horizon plane */}
+                <MB.Area
+                    id="horizon-plane"
+                    width={64}
+                    height={64}
+                    channels={3}
+                    axes="xy"
+                    expr={(emit, x, y, i, t) => {
+                        const z = 0;
+                        emit(x, y, z);
+                    }}
+                    rangeX={[-1, 1]}
+                    rangeY={[-1, 1]}
+                />
+                <MB.Surface
+                    points="#horizon-plane"
+                    opacity={0.75}
+                    color={"#b0b0b0"}
+                    lineX={true}
+                    lineY={true}
+                    zBias={-3}
+                    zOrder={50}
+                    zIndex={-3}
+                    shaded={true}
+                />
+                <MB.Array id="point-vec" items={2} channels={3} data={[0, 0, 0, ...cartesianPoint]} />
+                <MB.Array id="point-projected-vec" items={2} channels={3} data={[0, 0, 0, cartesianPoint[0], cartesianPoint[1], 0]} />
+                <MB.Vector points="#point-vec" width={15} end={true} />
+                <MB.Vector points="#point-projected-vec" width={5} />
+
+                {/* Azimuth angle arc */}
+                <MB.Interval
+                    id="azimuth-arc"
+                    width={20}
+                    range={[0, azimuth]}
+                    expr={(emit, t, i, time) => {
+                        const radius = 0.3;
+                        const x = radius * Math.cos(-t);
+                        const y = radius * Math.sin(-t);
+                        const z = 0;
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#azimuth-arc" width={5} />
+                <MB.Array id="azimuth-label-point" items={1} channels={3} data={[Math.cos(-azimuth / 2) * 0.5, Math.sin(-azimuth / 2) * 0.5, 0]} />
+                <MB.Text id="azimuth-label" expr={(emit) => emit(`A = ${(azimuth * 180 / Math.PI).toFixed(1)}º`)} />
+                <MB.Label points="#azimuth-label-point" text="#azimuth-label" />
+
+                {/* Altitude great circle */}
+                <MB.Interval
+                    id="altitude-great-circle"
+                    width={160}
+                    range={[0, 2 * Math.PI]}
+                    expr={(emit, t, i, time) => {
+                        const x = radius * Math.cos(-azimuth) * Math.cos(t);
+                        const y = radius * Math.sin(-azimuth) * Math.cos(t);
+                        const z = radius * Math.sin(t);
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#altitude-great-circle" width={5} />
+                {/* Altitude angle arc */}
+                <MB.Interval
+                    id="altitude-arc"
+                    width={20}
+                    range={[0, altitude]}
+                    expr={(emit, t, i, time) => {
+                        const radius = 0.3;
+                        const x = radius * Math.cos(-azimuth) * Math.cos(t);
+                        const y = radius * Math.sin(-azimuth) * Math.cos(t);
+                        const z = radius * Math.sin(t);
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#altitude-arc" width={5} />
+                <MB.Array id="altitude-label-point" items={1} channels={3} data={[Math.cos(-azimuth) * Math.cos(altitude / 2) * 0.5, Math.sin(-azimuth) * Math.cos(altitude / 2) * 0.5, Math.sin(altitude / 2) * 0.5]} />
+                <MB.Text id="altitude-label" expr={(emit) => emit(`h = ${(altitude * 180 / Math.PI).toFixed(1)}º`)} />
+                <MB.Label points="#altitude-label-point" text="#altitude-label" />
+
+                {/* Meridian circle */}
+                <MB.Interval
+                    id="meridian-circle"
+                    width={160}
+                    range={[0, 2 * Math.PI]}
+                    expr={(emit, t, i, time) => {
+                        const y = 0;
+                        const x = radius * Math.cos(t);
+                        const z = radius * Math.sin(t);
+                        emit(x, y, z);
+                    }}
+                />
+                <MB.Line points="#meridian-circle" width={5} />
+            </MB.Cartesian>
+        </CustomMathbox>
+    );
+}
+
+export function StellarParallaxVisualizer() {
+    const R = 4; // Orbital radius of Earth
+    const earth1 = useMovablePoint([0, R], {
+        constrain: ([x, y]) => {
+            const r = Math.sqrt(x * x + y * y);
+            const scale = R / r;
+            return [x * scale, y * scale];
+        },
+        color: color("blue")
+    });
+    const earth2 = useMovablePoint([0, -R], {
+        constrain: ([x, y]) => {
+            const r = Math.sqrt(x * x + y * y);
+            const scale = R / r;
+            return [x * scale, y * scale];
+        },
+        color: color("blue")
+    });
+    const star = useMovablePoint([6, 1], {
+        constrain: ([x, y]) => {
+            const r = Math.sqrt(x * x + y * y);
+            const rLimit = R * 1.5; // Set a limit for the star's position
+            if (r < rLimit) {
+                const scale = rLimit / r;
+                return [x * scale, y * scale];
+            }
+            return [x, y];
+        }
+    });
+    return (
+        <Mafs
+            viewBox={{ x: [-7, 7], y: [-7, 7] }}
+        >
+            {/* Sun */}
+            <Circle center={[0, 0]} radius={0.5} color={color("yellow")} />
+            {/* Earth orbit */}
+            <Circle center={[0, 0]} radius={R} fillOpacity={0} />
+
+            {/* Lines from earth and sun positions to star */}
+            <Line.ThroughPoints point1={earth1.point} point2={star.point} style="dashed" />
+            <Line.ThroughPoints point1={earth2.point} point2={star.point} style="dashed" />
+            <Line.ThroughPoints point1={[0, 0]} point2={star.point} style="dashed" />
+
+            {/* Distance from sun to star */}
+            <Line.Segment point1={[0, 0]} point2={star.point} color={color("yellow")} />
+            <MafsMathJax at={lineLabel([0, 0], star.point)} tex="d" />
+
+            {/* Astronomical unit */}
+            <Line.Segment point1={[0, 0]} point2={earth1.point} color={color("blue")} />
+            <MafsMathJax at={lineLabel([0, 0], earth1.point)} tex="1 \text{ AU}" />
+
+            {/* Parallax angle */}
+            <Angle
+                at={star.point}
+                fromRad={Math.atan2(earth1.point[1] - star.point[1], earth1.point[0] - star.point[0])}
+                toRad={Math.atan2(0 - star.point[1], 0 - star.point[0])}
+                radius={0.75}
+                label="p"
+                direction="shortest"
+            />
+
+
+            {earth1.element}
+            {earth2.element}
+            {star.element}
+        </Mafs>
+    )
+}
+
+---
+
+Explanation of apparent retreated motion in the heliocentric model.
 
 <HeliocentricRetrogradeMotionVisualizer />
 
+---
+
+Visualization of the altitude-azimuth coordinate system sometimes used in observational astronomy.
+
 <AltitudeAzimuthVisualizer />
 
+---
+
+Visualization of an ellipse, showing the semi-major axis, semi-minor axis, foci, and eccentricity.
+
 <EllipseVisualizer />
+
+---
+
+A visualization of stellar parallax, the apparent shift in position of nearby stars against the background of distant stars as Earth orbits the Sun.
+
+<StellarParallaxVisualizer />

@@ -1,0 +1,680 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ComplexFourierSeriesVisualizer } from "@site/src/components/visualizers/ComplexFourierSeriesVisualizer";
+
+# Introduction to Differential Equations
+
+This set of notes serves as a brief refresher on differential equations and their applications in physics.
+Differential equations are equations that involve derivatives of a function, and they are used to describe how physical quantities change over time or space.
+They are ubiquitous in physics, especially in our study of quantum field theory, where they arise literally everywhere.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Classification of Differential Equations
+
+A differential equation is an equation that relates a function to its derivatives.
+The solution to a differential equation is a function that satisfies the equation.
+
+A **general solution** to a differential equation is a family of functions that contains all possible solutions to the equation.
+A **particular solution** is a specific function that satisfies the differential equation, often determined by initial or boundary conditions.
+
+Differential equations can be classified in several ways, including by their order, linearity, and whether they are ordinary or partial differential equations.
+
+- **Ordinary Differential Equations** (ODEs) involve derivatives with respect to a single independent variable, typically time.
+    They are used to model systems that evolve over time, such as the motion of a particle or the growth of a population.
+
+    Here's an example of an ODE, perhaps modeling a damped harmonic oscillator:
+
+    $$
+    \begin{equation}
+    m \dv[2]{x}{t} + c \dv{x}{t} + k x = 0.
+    \end{equation}
+    $$
+
+- **Partial Differential Equations** (PDEs) involve derivatives with respect to multiple independent variables, such as time and space.
+    They are used to model systems that vary in both time and space, such as the propagation of waves or the diffusion of heat.
+
+    An example of a PDE is the wave equation
+
+    $$
+    \begin{equation}
+    \frac{1}{c^2} \pdv[2]{u}{t} - \nabla^2 u = \partial^\mu \partial_\mu u = 0,
+    \end{equation}
+    $$
+
+    which describes the propagation of waves in a medium.
+
+- **Order** refers to the highest derivative present in the equation.
+    For example, the equation $m \dv[2]{x}{t} + c \dv{x}{t} + k x = 0$ is a second-order ODE because it involves the second derivative of $x$ with respect to $t$.
+- **Degree** refers to the power of the highest derivative present in the equation.
+    For example, the equation $\qty(\dv{y}{x})^3 + y = 0$ is a third-degree ODE because the highest derivative $\dv{y}{x}$ is raised to the third power.
+- **Linearity** refers to whether the equation is linear or nonlinear.
+    A linear differential equation is one in which the dependent variable and its derivatives appear only to the first power and are not multiplied together.
+    For example,
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + p(x) y = q(x)
+    \end{equation}
+    $$
+
+    is a linear first-order ODE, while
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + y^2 = 0
+    \end{equation}
+    $$
+
+    is a nonlinear first-order ODE because of the $y^2$ term.
+
+- A **homogeneous** differential equation is one in which all terms involve the dependent variable or its derivatives.
+    For example,
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + 2y = 0
+    \end{equation}
+    $$
+
+    is a homogeneous first-order ODE, while
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + 2y = \sin(x)
+    \end{equation}
+    $$
+
+    is a non-homogeneous first-order ODE because of the $\sin(x)$ term.
+
+- An **autonomous** differential equation is one in which the independent variable does not explicitly appear in the equation.
+    For example,
+
+    $$
+    \begin{equation}
+    \dv{y}{x} = y^2 - 4
+    \end{equation}
+    $$
+
+    is an autonomous first-order ODE, while
+
+    $$
+    \begin{equation}
+    \dv{y}{x} = xy^2 - 4
+    \end{equation}
+    $$
+
+    is a non-autonomous first-order ODE because of the $x$ term.
+
+Below is a table of some examples of differential equations, classified by their type, order, linearity, and whether they are homogeneous or autonomous.
+
+| Equation                                       | Type | Order | Degree | Linearity | Homogeneous | Autonomous |
+|------------------------------------------------|------|-------|--------|-----------|-------------|------------|
+| $m \dv[2]{x}{t} + c \dv{x}{t} + k x = 0$       | ODE  | 2     | 1      | Linear    | Yes         | Yes        |
+| $\frac{1}{c^2} \pdv[2]{u}{t} - \nabla^2 u = 0$ | PDE  | 2     | 1      | Linear    | Yes         | Yes        |
+| $\dv{y}{x} + p(x) y = q(x)$                    | ODE  | 1     | 1      | Linear    | No          | No         |
+| $\dv{y}{x} + y^2 = 0$                          | ODE  | 1     | 1      | Nonlinear | Yes         | Yes        |
+| $\dv{y}{x} + 2y = 0$                           | ODE  | 1     | 1      | Linear    | Yes         | Yes        |
+| $\qty(\dv{y}{x})^3 + 2y = \sin(x)$             | ODE  | 1     | 3      | Linear    | No          | No         |
+| $\dv{y}{x} = y^2 - 4$                          | ODE  | 1     | 1      | Nonlinear | Yes         | Yes        |
+| $\dv{u}{t} = \alpha \nabla^2 u$                | PDE  | 1     | 1      | Linear    | Yes         | No         |
+| $i\hbar \pdv{\psi}{t} = E \psi$                | PDE  | 1     | 1      | Linear    | Yes         | Yes        |
+
+## First-Order Differential Equations
+
+Let's start with first-order differential equations, which involve the first derivative of a function.
+A general first-order ODE can be written in the form
+
+$$
+\begin{equation}
+\dv{\phi}{t} = f(t, \phi),
+\end{equation}
+$$
+
+where $\phi(t)$ is the unknown function, and $f(t, \phi)$ is a given function that describes how $\phi$ changes with respect to $t$.
+We will look at five different cases of first-order ODEs: separable equations, linear equations, exact equations, homogeneous equations, and Bernoulli equations.
+The hardest part of solving a first-order ODE is usually recognizing which type of equation it is.
+
+### Separable Equations
+
+If we can write $f(t, \phi)$ as a product of two functions, one depending only on $t$ and the other only on $\phi$, i.e.,
+
+$$
+\begin{equation}
+f(t, \phi) = g(t) h(\phi),
+\end{equation}
+$$
+
+then we can separate the variables and write the equation as
+
+$$
+\begin{equation}
+\frac{1}{h(\phi)} \dd{\phi} = g(t) \dd{t}.
+\end{equation}
+$$
+
+(Is this step rigorously justified? Well, there are a few ways to go about this. One way is to use differential forms as we'll see when we study manifolds.)
+We can then integrate both sides to find the solution:
+
+$$
+\begin{equation}
+\int \frac{1}{h(\phi)} \dd{\phi} = \int g(t) \dd{t} + C,
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant of integration.
+
+<details>
+<summary>
+
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{\phi}{t} = \frac{t[\phi^2 + 9]}{t^2 + 3}.
+\end{equation}
+$$
+
+</summary>
+
+We can separate the variables as follows:
+
+$$
+\begin{equation}
+\frac{1}{\phi^2 + 9} \dd{\phi} = \frac{t}{t^2 + 3} \dd{t}.
+\end{equation}
+$$
+
+Now, we can integrate both sides:
+
+$$
+\begin{equation}
+\int \frac{1}{\phi^2 + 9} \dd{\phi} = \int \frac{t}{t^2 + 3} \dd{t} + C.
+\end{equation}
+$$
+
+This is just
+
+$$
+\begin{equation}
+\frac{1}{3} \arctan(\frac{\phi}{3}) = \frac{1}{2} \ln(t^2 + 3) + C,
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\phi = 3 \tan(3C + \frac{3}{2} \ln(t^2 + 3) + C).
+\end{equation}
+$$
+
+This is a **general solution** to the differential equation, where $C$ is an arbitrary constant.
+
+</details>
+
+### Linear First-Order Equations (Integrating Factor Method)
+
+Recall that a linear ODE is one in which the dependent variable and its derivatives appear only to the first power and are not multiplied together.
+A general linear first-order ODE can be written in the form
+
+$$
+\begin{equation}
+\dv{\phi}{t} + p(t) \phi = q(t),
+\end{equation}
+$$
+
+where $p(t)$ and $q(t)$ are given functions.
+One convenient method to solve such equations is to multiply both sides by an **integrating factor** $I(t)$, which is defined as
+
+$$
+\begin{equation}
+I(t) := \exp(\int p(t) \dd{t}).
+\end{equation}
+$$
+
+Its derivative is
+
+$$
+\begin{equation}
+\dv{\mu}{t} = p(t) I(t).
+\end{equation}
+$$
+
+This is because $I(t)$ allows us to rewrite the left-hand side of the equation as the derivative of a product, which simplifies the integration process.
+Multiplying both sides of the equation by $I(t)$, we get
+
+$$
+\begin{equation}
+I(t) \dv{\phi}{t} + I(t) p(t) \phi = I(t) q(t).
+\end{equation}
+$$
+
+As $I(t) p(t) = \dv{\mu}{t}$, we can rewrite the left-hand side as
+
+$$
+\begin{equation}
+\dv{t} [I(t) \phi] = I(t) q(t).
+\end{equation}
+$$
+
+We can then integrate both sides to yield
+
+$$
+\begin{equation}
+\phi = \frac{1}{I(t)} \qty(\int I(t) q(t) \dd{t} + C).
+\end{equation}
+$$
+
+<details>
+<summary>
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{\phi}{t} + 2t \phi = t.
+\end{equation}
+$$
+</summary>
+
+This is a non-separable equation, but it is linear.
+We can identify $p(t) = 2t$ and $q(t) = t$.
+The integrating factor is
+
+$$
+\begin{equation}
+I(t) = \exp(\int 2t \dd{t}) = \exp(t^2).
+\end{equation}
+$$
+
+Multiplying both sides of the equation by $I(t)$, we get
+
+$$
+\begin{equation}
+\exp(t^2) \dv{\phi}{t} + 2t \exp(t^2) \phi = t \exp(t^2).
+\end{equation}
+$$
+
+The left-hand side can be rewritten to give
+
+$$
+\begin{equation}
+\dv{t} [\exp(t^2) \phi] = t \exp(t^2),
+\end{equation}
+$$
+
+which means
+
+$$
+\begin{equation}
+\phi = \exp(-t^2) \qty(\int t \exp(t^2) \dd{t} + C) = \frac{1}{2} + C \exp(-t^2).
+\end{equation}
+$$
+
+</details>
+
+### Exact First-Order Equations
+
+Consider a first-order ODE of the form
+
+$$
+\begin{equation}
+M(t, \phi) \dd{t} + N(t, \phi) \dd{\phi} = 0.
+\end{equation}
+$$
+
+To derive the solution to such an equation, consider an equation of the form
+
+$$
+\begin{equation}
+f(t, \phi) = c_0,
+\end{equation}
+$$
+
+where $c_0$ is a constant.
+The solution to this equation is a contour line of $f(t, \phi)$ at $f = c_0$.
+
+Taking the total differential of both sides, we have
+
+$$
+\begin{equation}
+\pdv{f}{t} \dd{t} + \pdv{f}{\phi} \dd{\phi} = 0,
+\end{equation}
+$$
+
+which is in the form of an exact first-order ODE with $M(t, \phi) = \pdv{f}{t}$ and $N(t, \phi) = \pdv{f}{\phi}$.
+
+The equation can be rearranged to give
+
+$$
+\begin{equation}
+\dv{\phi}{t} = -\frac{M(t, \phi)}{N(t, \phi)},
+\end{equation}
+$$
+
+where $M(t, \phi) = \pdv{f}{t}$ and $N(t, \phi) = \pdv{f}{\phi}$.
+Under Schwarz's theorem, the mixed partial derivatives of $f(t, \phi)$ are equal, so
+
+$$
+\begin{equation}
+\pdv{M}{\phi} = \pdv{N}{t}.
+\end{equation}
+$$
+
+This is the condition for the equation to be **exact**, meaning that there exists a function $f(t, \phi)$ such that $M(t, \phi) = \pdv{f}{t}$ and $N(t, \phi) = \pdv{f}{\phi}$.
+To solve an exact first-order ODE, we can integrate $M(t, \phi)$ with respect to $t$ to find $f(t, \phi)$, and then set $f(t, \phi) = c_0$ to find the solution.
+
+<details>
+<summary>
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{\phi}{t} = -\frac{2t \phi^2 + 1}{2t^2 \phi}.
+\end{equation}
+$$
+
+</summary>
+
+We can identify $M(t, \phi) = 2t \phi^2 + 1$ and $N(t, \phi) = 2t^2 \phi$, so
+
+$$
+\begin{equation}
+(2t \phi^2 + 1) \dd{t} + (2t^2 \phi) \dd{\phi} = 0.
+\end{equation}
+$$
+
+We can check that the equation is exact by verifying that $\pdv{M}{\phi} = \pdv{N}{t}$.
+The partial derivatives are
+
+$$
+\begin{align}
+\pdv{M}{\phi} &= 4t \phi, \\
+\pdv{N}{t} &= 4t \phi,
+\end{align}
+$$
+
+so the equation is indeed exact.
+To find $f(t, \phi)$, we just integrate $M(t, \phi)$ with respect to $t$:
+
+$$
+\begin{equation}
+f(t, \phi) = \int (2t \phi^2 + 1) \dd{t} = t^2 \phi^2 + t + g(\phi),
+\end{equation}
+$$
+
+where $g(\phi)$ is an arbitrary function of $\phi$.
+To determine $g(\phi)$, we can differentiate $f(t, \phi)$ with respect to $\phi$ and set it equal to $N(t, \phi)$:
+
+$$
+\begin{equation}
+\pdv{f}{\phi} = 2t^2 \phi + g'(\phi) = 2t^2 \phi,
+\end{equation}
+$$
+
+which implies that $g'(\phi) = 0$, so $g(\phi)$ is a constant.
+Thus, we have
+
+$$
+\begin{equation}
+f(t, \phi) = t^2 \phi^2 + t + C,
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant.
+The solution to the differential equation is then given by the contour lines of $f(t, \phi)$:
+
+$$
+\begin{equation}
+t^2 \phi^2 + t = c_0,
+\end{equation}
+$$
+
+where $c_0$ is a constant.
+
+</details>
+
+### Homogeneous Differential Equations
+
+Previously, we defined a homogeneous differential equation as one in which all terms involve the dependent variable or its derivatives.
+However, there is another definition of homogeneity that is more general as it also applies to nonlinear differential equations.
+
+A **homogeneous function** of degree $n$ is a function $f(x, y)$ that satisfies the property
+
+$$
+\begin{equation}
+f(\lambda t, \lambda \phi) = \lambda^n f(t, \phi).
+\end{equation}
+$$
+
+For example, the function $f(t, \phi) = t^2 + \phi^2$ is a homogeneous function of degree 2, since
+
+$$
+\begin{equation}
+f(\lambda t, \lambda \phi) = (t\lambda)^2 + (\phi\lambda)^2 = \lambda^2 (t^2 + \phi^2) = \lambda^2 f(t, \phi).
+\end{equation}
+$$
+
+Now, a **homogeneous differential equation** is a first-order ODE of the form
+
+$$
+\begin{equation}
+f(t, \phi) \dd{t} = g(t, \phi) \dd{\phi} \iff \dv{\phi}{t} = \frac{f(t, \phi)}{g(t, \phi)},
+\end{equation}
+$$
+
+where $f(t, \phi)$ and $g(t, \phi)$ are homogeneous functions of the same degree.
+This is important because the quotient of two homogeneous functions of the same degree is a homogeneous function of degree 0.
+To show this, suppose $f(t, \phi)$ and $g(t, \phi)$ are homogeneous functions of degree $n$. Then, by definition, we have
+
+$$
+\begin{align}
+f(\lambda t, \lambda \phi) &= \lambda^n f(t, \phi) \\
+g(\lambda t, \lambda \phi) &= \lambda^n g(t, \phi).
+\end{align}
+$$
+
+So
+
+$$
+\begin{equation}
+\frac{f(\lambda t, \lambda \phi)}{g(\lambda t, \lambda \phi)} = \frac{\lambda^n f(t, \phi)}{\lambda^n g(t, \phi)} = \frac{f(t, \phi)}{g(t, \phi)},
+\end{equation}
+$$
+
+which shows that the quotient is a homogeneous function of degree 0.
+Let's label this function $h(t, \phi) := \frac{f(t, \phi)}{g(t, \phi)}$.
+Then, by the property of homogeneous functions of degree 0, we have
+
+$$
+\begin{equation}
+h(\lambda t, \lambda \phi) = h(t, \phi).
+\end{equation}
+$$
+
+We can choose any scaling factor $\lambda$ we want, so let's cleverly choose $\lambda = \frac{1}{t}$ (assuming $t \neq 0$).
+This gives
+
+$$
+\begin{equation}
+h\qty(1, \frac{\phi}{t}) = h(t, \phi).
+\end{equation}
+$$
+
+Plugging this back into our differential equation, we have
+
+$$
+\begin{equation}
+\dv{\phi}{t} = h\qty(1, \frac{\phi}{t}).
+\end{equation}
+$$
+
+The term $h(1, \frac{\phi}{t})$ now only depends on the ratio $\frac{\phi}{t}$.
+To solve this equation, we can define $h(1, \frac{\phi}{t}) = k(v)$, where $v = \frac{\phi}{t}$.
+The derivative of $\phi$ with respect to $t$ can be expressed in terms of $v$ as follows:
+
+$$
+\begin{equation}
+\dv{\phi}{t} = \dv{(tv)}{t} = v + t \dv{v}{t}
+\end{equation}
+$$
+
+Thus, we can rewrite the equation as
+
+$$
+\begin{equation}
+v + t \dv{v}{t} = k(v).
+\end{equation}
+$$
+
+This is a separable equation with the general solution
+
+$$
+\begin{equation}
+\int \frac{1}{k(v) - v} \dd{v} = \int \frac{1}{t} \dd{t} + C,
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant of integration.
+To proceed, we would need to know the specific form of $k(v)$.
+
+<details>
+<summary>
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{\phi}{t} = \frac{\phi}{t} + \frac{t}{\phi}.
+\end{equation}
+$$
+
+</summary>
+
+We need to first check if the equation is homogeneous.
+We can identify $f(t, \phi) = \phi^2 + t^2$ and $g(t, \phi) = t \phi$, which are both homogeneous functions of degree 2.
+Thus, the equation is indeed homogeneous.
+
+We can then define $h(t, \phi) = \frac{f(t, \phi)}{g(t, \phi)} = \frac{\phi^2 + t^2}{t \phi}$.
+This is, as expected, a homogeneous function of degree 0.
+Making the substitution $v = \frac{\phi}{t}$, we have
+
+$$
+\begin{equation}
+h(1, v) = k(v) = v + \frac{1}{v}.
+\end{equation}
+$$
+
+The differential equation can then be rewritten as
+
+$$
+\begin{equation}
+v + t \dv{v}{t} = v + \frac{1}{v},
+\end{equation}
+$$
+
+which simplifies to
+
+$$
+\begin{equation}
+t \dv{v}{t} = \frac{1}{v}.
+\end{equation}
+$$
+
+This is a separable equation with the general solution
+
+$$
+\begin{equation}
+\frac{v^2}{2} = \ln\abs{t} + C,
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\phi = t \sqrt{2\ln\abs{t} + C}.
+\end{equation}
+$$
+
+</details>
+
+### Bernoulli Equations
+
+To reiterate what we have so far, a first-order ODE can be
+
+- Separable: $\dv{\phi}{t} = g(t) h(\phi)$
+- Linear: $\dv{\phi}{t} + p(t) \phi = q(t)$
+- Exact: $M(t, \phi) \dd{t} + N(t, \phi) \dd{\phi} = 0$ with $\pdv{M}{\phi} = \pdv{N}{t}$
+
+When a first-order ODE is homogeneous, we can make the substitution $v = \frac{\phi}{t}$ to convert it into a separable equation.
+When a first-order ODE is a **Bernoulli equation**, we can make the substitution $u = \phi^{1 - n}$ to convert it into a linear equation.
+
+A Bernoulli equation is a first-order ODE of the form
+
+$$
+\begin{equation}
+\dv{\phi}{t} + p(t) \phi = q(t) \phi^n,
+\end{equation}
+$$
+
+where $p(t)$ and $q(t)$ are given functions, and $n$ is a real number.
+To tackle such an equation, we need to tackle the problematic nonlinear term $\phi^n$.
+First, we can divide both sides by $\phi^n$ (assuming $\phi \neq 0$) to get
+
+$$
+\begin{equation}
+\phi^{-n} \dv{\phi}{t} + p(t) \phi^{1 - n} = q(t). \label{eq:bern1}
+\end{equation}
+$$
+
+Now if we define $u = \phi^{1 - n}$, the second term just becomes $p(t) u$, which looks perfectly linear.
+Differentiating $u$ with respect to $t$, we have
+
+$$
+\begin{equation}
+\dv{u}{t} = (1 - n) \phi^{-n} \dv{\phi}{t},
+\end{equation}
+$$
+
+Notice that this is just the first term of Equation $\eqref{eq:bern1}$ multiplied by $(1 - n)$.
+Therefore, we can rewrite Equation $\eqref{eq:bern1}$ as
+
+$$
+\begin{equation}
+\frac{1}{1 - n} \dv{u}{t} + p(t) u = q(t),
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\dv{u}{t} + (1 - n) p(t) u = (1 - n) q(t).
+\end{equation}
+$$
+
+This is a linear first-order ODE in $u$ whose coefficients are $p_u(t) = (1 - n) p(t)$ and $q_u(t) = (1 - n) q(t)$.
+We can then solve this equation using the integrating factor method described earlier, in which the integrating factor is
+
+$$
+\begin{equation}
+I(t) = \exp(\int (1 - n) p(t) \dd{t}) = \exp((1 - n) \int p(t) \dd{t}).
+\end{equation}
+$$
+
+##
+
+

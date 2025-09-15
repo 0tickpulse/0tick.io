@@ -1,0 +1,327 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ComplexFourierSeriesVisualizer } from "@site/src/components/visualizers/ComplexFourierSeriesVisualizer";
+
+# Introduction to Abstract Algebra
+
+When we study mathematics, we study various structures, such as numbers, vectors, and functions.
+In elementary mathematics, we learn about functions of real numbers, such as polynomials, trigonometric functions, exponentials, logarithms, and so on.
+In linear algebra, we learn about vector spaces, which are sets of vectors that can be added together and multiplied by scalars.
+In calculus, we learn about limits, derivatives, and integrals of functions.
+In differential equations, we learn about equations that involve derivatives of functions.
+In probability theory, we learn about random variables and their distributions.
+
+Is there a way to study these structures in a more general way?
+This is where abstract algebra comes in.
+Abstract algebra is the study of algebraic structures, such as groups, rings, and fields.
+These structures are defined by a set of axioms, which are rules that the elements of the structure must satisfy.
+By studying these structures in a more general way, we can gain a deeper understanding of the underlying principles that govern them.
+
+Studying abstract algebra is an absolute must for quantum field theory, as it provides the mathematical framework for understanding symmetries, conservation laws, and the behavior of particles and fields at a fundamental level.
+In this section, we will introduce the basic concepts of abstract algebra, including groups, rings, and fields.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Fundamental Ideas
+
+At its core, abstract algebra is the study of mathematical structures and the relationships between them.
+The most fundamental concepts relate to set theory.
+A **set** is a collection of distinct objects, which can be anything: numbers, letters, shapes, or even other sets.
+It must be well-defined, meaning that it is clear whether an object belongs to the set or not.
+We can perform various operations on sets, such as union, intersection, and difference.
+
+Given two sets $A$ and $B$, their Cartesian product $A \times B$ is the set of all ordered pairs $(a, b)$ where $a \in A$ and $b \in B$.
+We often use Cartesian products in defining more complex structures.
+For example, you have probably seen functions denoted as $f(x, y): A \times B \to C$, which means that the function $f$ takes in two inputs, one from set $A$ and one from set $B$, and produces an output in set $C$.
+In this notation, the domain of the function is the set of all possible ordered pairs $(a, b)$ where $a \in A$ and $b \in B$.
+
+A subset of $A \times B$ is known as a **relation** from $A$ to $B$.
+For example, the "less than" relation $<$ on the set of real numbers $\mathbb{R}$ is a subset of $\mathbb{R} \times \mathbb{R}$, consisting of all ordered pairs $(x, y)$ such that $x < y$.
+A **function** is a special type of relation where each element in the domain is associated with exactly one element in the codomain.
+For instance, the function $f(x) = x^2$ is a relation, a subset of $\mathbb{R} \times \mathbb{R}$, where each real number $x$ is paired with its square $x^2$.
+Instead of denoting a function as a subset of $A \times B$, we often use the notation $f: A \to B$ to indicate that $f$ is a function from set $A$ to set $B$.
+
+### Equivalence Relations
+
+In mathematics, we often want to group objects that are "similar" in some way.
+In elementary algebra, we have the equality sign $=$, which indicates that two objects are exactly the same.
+Is there a way to generalize this idea of equality to a broader concept of similarity?
+The answer to this question lies in the concept of an **equivalence relation**.
+
+An equivalence relation is a relation that satisfies three properties (these should make sense intuitively):
+
+1. **Reflexivity**: For any element $a$ in the set, $a$ is related to itself. i.e., $a \sim a$.
+2. **Symmetry**: If $a$ is related to $b$, then $b$ is related to $a$. i.e., if $a \sim b$, then $b \sim a$.
+3. **Transitivity**: If $a$ is related to $b$ and $b$ is related to $c$, then $a$ is related to $c$. i.e., if $a \sim b$ and $b \sim c$, then $a \sim c$.
+
+Written in the language of set theory, an equivalence relation on a set $A$ is a relation $R \subseteq A \times A$ such that for all $a, b, c \in A$,
+
+1. **Reflexivity**: $(a, a) \in R$.
+2. **Symmetry**: If $(a, b) \in R$, then $(b, a) \in R$.
+3. **Transitivity**: If $(a, b) \in R$ and $(b, c) \in R$, then $(a, c) \in R$.
+
+Another important concept related to equivalence relations is that of an **equivalence class**.
+Given an element $a$ in the set $A$, the equivalence class of $a$ is the set of all elements in $A$ that are related to $a$.
+It is denoted by $[a]$ and is defined as
+
+$$
+\begin{equation}
+[a] = \{ b \in A \mid a \sim b \}.
+\end{equation}
+$$
+
+### Partitions
+
+Suppose we have a set $A$ and an equivalence relation $\sim$ on $A$.
+Then, let's split the set $A$ into subsets that don't overlap (i.e., they are disjoint) and cover the entire set $A$.
+This collection of subsets is called a **partition** $\mathcal{P}$ of the set $A$.
+
+Formally speaking, a partition $\mathcal{P}$ of a set $A$ is a collection of non-empty subsets of $A$ such that
+
+$$
+\begin{equation}
+\bigcup_{B \in \mathcal{P}} B = A, \quad \text{and} \quad B_1 \cap B_2 = \emptyset \text{ for all } B_1, B_2 \in \mathcal{P} \text{ with } B_1 \neq B_2.
+\end{equation}
+$$
+
+One common application of a partition is in defining the Riemann integral.
+Recall from calculus that we can approximate the area under a curve by dividing the interval into smaller subintervals and summing up the areas of rectangles.
+These intervals are precisely a partition of the interval.
+
+There is a deep connection between equivalence relations and partitions.
+Given an equivalence relation $\sim$ on a set $A$, we can form a partition $\mathcal{P}$ of $A$ by taking the equivalence classes of each element in $A$.
+Conversely, given a partition $\mathcal{P}$ of a set $A$, we can define an equivalence relation $\sim$ on $A$ by saying that two elements $a$ and $b$ are related if they belong to the same subset in the partition.
+This means that there is a one-to-one correspondence between equivalence relations and partitions.
+
+## Groups
+
+A group is a set of elements that can be combined using a binary operation, such as addition or multiplication.
+
+Consider an equilateral triangle in the plane.
+There are a few ways to transform the triangle, such as rotating it or reflecting it.
+Group theory is the study of such transformations.
+
+In particular, we will study the set of all transformations that can be applied to the triangle, and how these transformations can be combined.
+Groups fundamentally represent different ways to transform an object.
+As such, we naturally expect certain properties to hold;
+
+1. There is always one transformation that does nothing to the object. For the rotation group for the triangle, for example, it is akin to rotating the triangle by $0$ degrees.
+    This is called the **identity** transformation.
+2. The transformations can be combined to form new transformations. For example, if we rotate the triangle by $60$ degrees and then by another $60$ degrees, we can combine these two transformations to form a new transformation that rotates the triangle by $120$ degrees.
+    This is called the **closure** property.
+3. The way we combine the transformations is associative. For example, if we rotate the triangle by $60$ degrees and then reflect it, we can combine these two transformations in any way to get the same result.
+    This is called the **associative** property.
+4. Each transformation has an inverse transformation that undoes it. For example, if we rotate the triangle by $60$ degrees, we can undo this transformation by rotating it by $-60$ degrees.
+    This is called the **inverse** property.
+
+Given that we expect these properties to hold, we can define a group as follows:
+
+<Boxed>
+**Group**: A group $(G, \circ)$ is a set $G$ together with a binary operation $\circ$ that combines two elements to form a third element, such that the following properties hold:
+
+1. **Closure**: For all $a, b \in G$, $a \circ b \in G$.
+2. **Associativity**: For all $a, b, c \in G$, $(a \circ b) \circ c = a \circ (b \circ c)$.
+3. **Identity**: There exists an element $e \in G$ such that for all $a \in G$, $e \circ a = a \circ e = a$.
+4. **Inverse**: For each $a \in G$, there exists an element $b \in G$ such that $a \circ b = b \circ a = e$.
+
+</Boxed>
+
+In this definition, $G$ is the set of elements, and $\circ$ is the binary operation that combines the elements.
+$a$ and $b$ are elements of the group, which in our example are the rotations of the triangle.
+$e$ is the identity element, which in our example is the rotation by $0$ degrees.
+
+There are some properties of groups that are worth noting, many of which should be easy to verify from the definition:
+
+- The identity element is unique.
+
+    Proof: Suppose there are two identity elements $e$ and $e'$ in the group.
+    Then, for any element $a \in G$, we have $e \circ a = a$ and $e' \circ a = a$.
+    Therefore, $e \circ a = e' \circ a$ for all $a \in G$. (By transitivity of equality)
+    In particular, if we take $a = e'$, we have $e \circ e' = e'$.
+    But since $e'$ is an identity element, we also have $e \circ e' = e$.
+    Therefore, $e = e'$, which means that the identity element is unique. (By transitivity of equality)
+
+- The inverse element of each element is unique.
+
+    Proof: Suppose there are two inverse elements $b$ and $b'$ for an element $a \in G$.
+    Then, we have $a \circ b = e$ and $a \circ b' = e$.
+    Therefore, $a \circ b = a \circ b'$.
+    By the cancellation property of groups, we can cancel $a$ from both sides to get $b = b'$, which means that the inverse element is unique.
+
+- The inverse of the identity element is the identity element itself.
+
+    Proof: Let $e$ be the identity element of the group.
+    Then, we have $e \circ e = e$.
+    Therefore, $e$ is its own inverse.
+
+### Example: Number Line
+
+Consider the set of all integers $\mathbb{Z}$.
+When two numbers are added, this can be visualized as moving the number line twice.
+For example, if we are at $0$ and we add $1$, we shift the number line to the left by $1$;
+
+$$
+\begin{aligned}
+\longleftarrow -3 && -2 && -1 && 0 && 1 && 2 && 3 \\
+\hline
+&& && && \class{red}{0} && && && \\
+\\
+&& && && \downarrow \\
+\\
+-2 && -1 && 0 && 1 && 2 && 3 && 4 \\
+\hline
+&& && && \class{red}{1} && && && \\
+\end{aligned}
+$$
+
+When we add multiple numbers, this is just a matter of moving the number line multiple times, which can be combined into a single movement.
+For example, if we add $1$ and then $2$, we can combine these two movements into a single movement of $3$.
+
+When we visualize addition like this, this gives us a clue that addition is an operation that satisfies the properties of a group.
+While it can be a good exercise to algebraically verify that addition satisfies the properties of a group, it is more insightful to notice the link between addition and its geometric representation.
+In particular, we can see that the number line is a one-dimensional space, and the operation of addition is a way to move along this space.
+This allows us to extend this group to higher dimensions, eventually leading to the concept of a vector space.
+
+In addition to the properties of a group, addition is also commutative.
+In other words, the order in which we add the numbers does not matter.
+Groups that are commutative are called **abelian groups**.
+
+### Example: Rotation of a Square
+
+Consider the set of all rotations of a square.
+We can rotate the square by $0$, $90$, $180$, and $270$ degrees.
+
+We can see that the set of all rotations of a square satisfies the properties of a group.
+
+1. **Closure**: If we rotate the square by $90$ degrees and then by $180$ degrees, we can combine these two transformations to form a new transformation that rotates the square by $270$ degrees.
+2. **Associativity**: The way we combine the transformations is associative. For example, if we rotate the square by $90$ degrees and then reflect it, we can combine these two transformations in any way to get the same result.
+3. **Identity**: The identity transformation is the rotation by $0$ degrees.
+4. **Inverse**: The inverse transformation of a rotation by $90$ degrees is a rotation by $270$ degrees.
+
+Additionally, the set of all rotations of a square is also abelian, since the order in which we apply the transformations does not matter.
+
+### Group Homomorphisms
+
+Suppose we have two groups $G$ and $H$.
+Is there a way to relate these two groups?
+If we can find a way to relate the two groups, we can use the properties of one group to study the other group.
+We introduce something known as a **homomorphism**:
+
+$$
+\phi: G \to H
+$$
+
+This is a mapping between the two groups that preserves the group structure:
+
+$$
+\begin{equation}
+\phi(g_1 \circ g_2) = \phi(g_1) \circ \phi(g_2)
+\end{equation}
+$$
+
+where $g_1, g_2 \in G$ and $\circ$ is the group operation (for the group $G$ on the left and for the group $H$ on the right).
+This means that if we take two elements $g_1$ and $g_2$ from group $G$, and we apply the group operation to them, we can map the result to an element in group $H$.
+
+More specifically, we can look for a one-to-one mapping between the two groups, known as a **bijection**.
+This means that we can map each element of $G$ to a unique element of $H$, and vice versa.
+These bijective homomorphisms are called **isomorphisms**.
+
+### Group Actions
+
+A **group action** is a way for a group to "act" on a set.
+Think of a group as a set of transformations, and the set as a set of objects that can be transformed.
+For example, consider the group of rotations of a square.
+This group can *act* on the set of vertices of the square.
+
+To formalize this, we define a group action as follows:
+
+<Boxed>
+
+**Group Action**: A left group action of a group $G$ on a set $X$ is a function $\cdot: G \times X \to X$ such that for all $g, h \in G$ and all $x \in X$:
+
+1. **Identity**: $e \cdot x = x$, where $e$ is the identity element of $G$.
+2. **Compatibility**: $(gh) \cdot x = g \cdot (h \cdot x)$.
+3. **Inverses**: $g^{-1} \cdot (g \cdot x) = x$ for all $g \in G$ and $x \in X$.
+4. **Identity**: $e \cdot x = x$, where $e$ is the identity element of $G$.
+
+Likewise, a right group action of a group $G$ on a set $X$ is a function $\cdot: X \times G \to X$ such that for all $g, h \in G$ and all $x \in X$:
+
+1. **Identity**: $x \cdot e = x$, where $e$ is the identity element of $G$.
+2. **Compatibility**: $x \cdot (gh) = (x \cdot g) \cdot h$.
+3. **Inverses**: $(x \cdot g) \cdot g^{-1} = x$ for all $g \in G$ and $x \in X$.
+4. **Identity**: $x \cdot e = x$, where $e$ is the identity element of $G$.
+
+</Boxed>
+
+In this definition, $G$ is the group, $X$ is the set, and $\cdot$ is the group action.
+Let's consider an example.
+
+The group of rotations in two dimensions, $\{ e^{i\theta} \mid \theta \in [0, 2\pi) \}$, can act on the set of points in the plane $\mathbb{R}^2$.
+The action is given by rotating the point around the origin by the angle $\theta$.
+
+$$
+\begin{equation}
+e^{i\theta} \cdot (x, y) = (x \cos \theta - y \sin \theta, x \sin \theta + y \cos \theta)
+\end{equation}
+$$
+
+This is a *left* group action, since the group element is on the left side of the point.
+
+### Subgroups and Quotient Groups
+
+A **subgroup** is a subset of a group that is itself a group.
+For example, consider the group of all integers $\mathbb{Z}$ under addition.
+The set of even integers $2\mathbb{Z}$ is a subgroup of $\mathbb{Z}$, since it satisfies the group properties.
+
+A **coset** is a subset of a group that is formed by multiplying all elements of a subgroup by a fixed element of the group.
+For example, consider the group of all integers $\mathbb{Z}$ under addition, and the subgroup of even integers $2\mathbb{Z}$.
+The coset of $2\mathbb{Z}$ with respect to the element $1$ is the set of all odd integers $1 + 2\mathbb{Z}$.
+
+A subgroup $H$ of a group $G$ is called a **normal subgroup** if it is invariant under conjugation by elements of $G$.
+In other words, for all $h \in H$ and $g \in G$,
+
+$$
+\begin{equation}
+g h g^{-1} \in H.
+\end{equation}
+$$
+
+## Rings and Fields
+
+A ring is a set of elements equipped with two binary operations, typically called addition and multiplication, that satisfy certain properties.
+Rings generalize the concept of familiar number systems, such as integers and polynomials, by allowing for more abstract structures.
+A field is a special type of ring in which every non-zero element has a multiplicative inverse. In other words, a field is a ring in which division is always possible (except by zero).
+
+<Boxed>
+**Ring**: A ring $(R, +, \cdot)$ is a set $R$ equipped with two binary operations, addition ($+$) and multiplication ($\cdot$), such that the following properties hold:
+
+1. **Addition**: $(R, +)$ is an abelian group.
+2. **Multiplication**: Multiplication is associative; for all $a, b, c \in R$, $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
+3. **Distributive Laws**: For all $a, b, c \in R$, $a \cdot (b + c) = a \cdot b + a \cdot c$ and $(a + b) \cdot c = a \cdot c + b \cdot c$.
+</Boxed>
+
+<Boxed>
+**Field**: A field $(F, +, \cdot)$ is a set $F$ equipped with two binary operations, addition ($+$) and multiplication ($\cdot$), such that the following properties hold:
+
+1. **Addition**: $(F, +)$ is an abelian group.
+2. **Multiplication**: $(F \setminus \{0\}, \cdot)$ is an abelian group, where $0$ is the additive identity.
+3. **Distributive Laws**: For all $a, b, c \in F$, $a \cdot (b + c) = a \cdot b + a \cdot c$ and $(a + b) \cdot c = a \cdot c + b \cdot c$.
+</Boxed>
+
+Rings and fields are fundamental structures in abstract algebra, and they have numerous applications in various branches of mathematics, including number theory, algebraic geometry, and cryptography.
+
+
+

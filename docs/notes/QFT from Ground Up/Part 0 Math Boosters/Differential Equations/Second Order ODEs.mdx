@@ -1,0 +1,155 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import { ComplexFourierSeriesVisualizer } from "@site/src/components/visualizers/ComplexFourierSeriesVisualizer";
+
+# Second Order ODEs
+
+Previously, we discussed first-order ordinary differential equations (ODEs), which involve the first derivative of an unknown function.
+In this section, we will explore second-order ODEs, which involve the second derivative of an unknown function.
+They are ubiquitous in physics, as Newton's second law is by definition a second-order ODE.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Linear Second Order ODEs
+
+A second-order ODE is an equation that relates a function $\phi(t)$, its first derivative $\dv{\phi}{t}$, and its second derivative $\dv[2]{\phi}{t}$.
+A perfect example of a linear second-order ODE is the equation of motion for a damped, driven harmonic oscillator:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} + b \dv{x}{t} + kx = F(t).
+\end{equation}
+$$
+
+### Constant Coefficients
+
+We shall first consider the simplest case of a linear, homogeneous second-order ODE with constant coefficients:
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} + b \dv{x}{t} + kx = 0.
+\end{equation}
+$$
+
+In such an equation, $m$, $b$, and $k$ are constants, and $F(t) = 0$.
+If we make the ansatz $x(t) = e^{\lambda t}$, we can plug this into the ODE to get
+
+$$
+\begin{equation}
+m \lambda^2 e^{\lambda t} + b \lambda e^{\lambda t} + k e^{\lambda t} = 0.
+\end{equation}
+$$
+
+Dividing both sides by $e^{\lambda t}$, we get the characteristic equation
+
+$$
+\begin{equation}
+m \lambda^2 + b \lambda + k = 0.
+\end{equation}
+$$
+
+This yields two solutions labeled $\lambda_1$ and $\lambda_2$.
+
+The ODE obeys the principle of superposition, meaning that if $x_1(t)$ and $x_2(t)$ are solutions to the ODE, then any linear combination of them is also a solution.
+The general solution depends on the nature of the roots $\lambda_1$ and $\lambda_2$ of the characteristic equation.
+
+1. **Distinct Real Roots**: If the roots are real and distinct, i.e., $\lambda_1 \neq \lambda_2$, then the general solution is given by
+
+    $$
+    \begin{equation}
+    x(t) = C_1 e^{\lambda_1 t} + C_2 e^{\lambda_2 t},
+    \end{equation}
+    $$
+
+    where $C_1$ and $C_2$ are constants determined by initial conditions.
+    In a physical context, this corresponds to an overdamped harmonic oscillator, where the system returns to equilibrium without oscillating.
+
+2. **Repeated Real Roots**: If the roots are real and repeated, i.e., $\lambda_1 = \lambda_2 = \lambda$, then the general solution is given by
+
+    $$
+    \begin{equation}
+    x(t) = (C_1 + C_2 t) e^{\lambda t},
+    \end{equation}
+    $$
+
+    where $C_1$ and $C_2$ are constants determined by initial conditions.
+    In a physical context, this corresponds to a critically damped harmonic oscillator, where the system returns to equilibrium as quickly as possible without oscillating.
+
+3. **Complex Conjugate Roots**: If the roots are complex conjugates, i.e., $\lambda_{1,2} = \alpha \pm i \beta$ with $\alpha, \beta \in \mathbb{R}$ and $\beta \neq 0$, then the general solution is given by
+
+    $$
+    \begin{equation}
+    x(t) = e^{\alpha t} \qty[C_1 \cos(\beta t) + C_2 \sin(\beta t)],
+    \end{equation}
+    $$
+
+    where $C_1$ and $C_2$ are constants determined by initial conditions.
+    In a physical context, this corresponds to an underdamped harmonic oscillator, where the system oscillates with a gradually decreasing amplitude.
+
+As expected, there are two independent constants for the second-order ODE, meaning that two boundary conditions are required to determine a unique solution.
+There are two types of these problems;
+
+1. An **initial value problem** specifies the value of the function and its first derivative (i.e. velocity) at a specific point, usually $t = 0$.
+    For example, we might specify $x(0) = x_0$ and $\dv{x}{t}(0) = v_0$.
+
+2. A **boundary value problem** specifies the value of the function at two different points, such as $x(t_1) = x_1$ and $x(t_2) = x_2$.
+
+### Nonhomogeneous Equations
+
+Now suppose we have a nonhomogeneous equation, i.e., $F(t) \neq 0$.
+In this case, the general solution is given by the sum of the general solution to the corresponding homogeneous equation and a particular solution to the nonhomogeneous equation.
+
+More concretely, given the nonhomogeneous equation
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} + b \dv{x}{t} + kx = F(t),
+\end{equation}
+$$
+
+we first find the general solution $x_h(t)$ to the corresponding homogeneous equation
+
+$$
+\begin{equation}
+m \dv[2]{x}{t} + b \dv{x}{t} + kx = 0,
+\end{equation}
+$$
+
+given by the methods described above. The solutions to the homogeneous equation form the **complementary function**.
+To find a particular solution $x_p(t)$ to the nonhomogeneous equation, we can use methods such as undetermined coefficients or variation of parameters.
+In the method of undetermined coefficients, we make an ansatz for $x_p(t)$ based on the form of $F(t)$ (typically using a table of common forms), and then determine the coefficients by substituting $x_p(t)$ into the nonhomogeneous equation.
+The ansatz must be linearly independent of the homogeneous solution $x_h(t)$.
+
+In the method of variation of parameters, we use the homogeneous solution $x_h(t)$ to construct a particular solution $x_p(t)$.
+Suppose the complementary functions are given by $x_1(t)$ and $x_2(t)$, so that the general solution to the homogeneous equation is $x_h(t) = C_1 x_1(t) + C_2 x_2(t)$.
+Then, we define the **Wronskian** $W(t)$ as
+
+$$
+\begin{equation}
+W(t) = \det \mqty[
+    x_1(t) & x_2(t) \\
+    \dv{x_1}{t} & \dv{x_2}{t}
+] = x_1(t) \dv{x_2}{t} - x_2(t) \dv{x_1}{t}.
+\end{equation}
+$$
+
+Then, we can find a particular solution $x_p(t)$ using the formula
+
+$$
+\begin{equation}
+x_p(t) = -x_1(t) \int \frac{x_2(t) F(t)}{m W(t)} \dd{t} + x_2(t) \int \frac{x_1(t) F(t)}{m W(t)} \dd{t}.
+\end{equation}
+$$

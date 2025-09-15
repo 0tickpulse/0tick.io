@@ -64,6 +64,10 @@ When faced with the Brachistochrone problem, he solved it in a single night, inv
 By Newton's request, his solution was published anonymously in the 1696 edition of the Journal des Sçavans.
 Bernoulli, who had posed the problem, recognized Newton's solution and famously remarked, "I recognize the lion by his claw."
 
+Newton's law of gravitation applies to planets (spheres) with spherical symmetry.
+This can be proven by either integrating over the volume of the sphere or by using Gauss's law for gravity.
+The latter provides a very elegant proof, but did not exist until the developments of Carl Friedrich Gauss in the 19th century.
+
 We should be vehemently familiar with Newton's laws of motion and gravitation, as they form the basis of classical mechanics.
 Nevertheless, it is worth briefly reviewing them here. We will do so by deriving Kepler's laws of planetary motion from Newton's law of gravitation.
 We must first establish the necessary mathematical tools.
@@ -196,3 +200,207 @@ $$
 $$
 
 where $\tau$ is the time period over which the average is taken.
+
+## Light and Optics
+
+Another field that Newton made significant contributions to was optics.
+In his book Optiks, published in 1704, Newton described his experiments with light and color.
+He demonstrated that white light is composed of a spectrum of colors, which can be separated using a prism.
+He also proposed the particle theory of light, suggesting that light is made up of tiny particles called "corpuscles."
+This theory was later challenged by the wave theory of light, which was supported by experiments such as Thomas Young's double-slit experiment in 1801.
+
+### Stellar Parallax and the Magnitude System
+
+In their original forms, Kepler's laws of planetary motion were based on the relative sizes of the orbits, for their absolute sizes were not known.
+In 1761, however, the first successful measurement of the distance to Venus was made during a transit of Venus across the Sun.
+By observing the transit from different locations on Earth, astronomers were able to use parallax to calculate the distance to Venus and, consequently, the distance from Earth to the Sun (the astronomical unit, or AU).
+This parallax effect is extremely useful; our eyes use it to perceive depth, and astronomers use it to measure distances to nearby stars.
+
+import { StellarParallaxVisualizer } from "./History of Astronomy Figures.mdx"
+
+<StellarParallaxVisualizer />
+
+If the distance from the Sun to a planet is $d$ then, and the lines (blue and yellow in the figure above) are perpendicular, the parallax angle $p$ is given by
+
+$$
+\begin{equation}
+\tan(p) = \frac{1 \text{ AU}}{d} \implies d = \frac{1 \text{ AU}}{\tan(p)} \approx \frac{1 \text{ AU}}{p} \quad (p \ll 1),
+\end{equation}
+$$
+
+from simple trigonometry, where $p$ is the parallax angle.
+
+As one radian is $57.2957795^\circ = 206264.806''$, we have
+
+$$
+\begin{equation}
+d \approx \frac{206264.806 \text{ AU}}{p''},
+\end{equation}
+$$
+
+and we define the **parsec** (pc, parallax-second) as the numerator $206264.806$ AU, so that
+
+$$
+\begin{equation}
+d \approx \frac{1 \text{ pc}}{p''}.
+\end{equation}
+$$
+
+As the distances to stars are so vast, the parallax angles are extremely small.
+This was why it took so long to notice the effect.
+Modern instruments are being developed to measure parallax angles.
+For instance, NASA's planned Space Interferometry Mission (SIM) aims to measure parallax angles with a precision of 1 microarcsecond, allowing for distance measurements to stars up to 10,000 light-years away.
+
+### Magnitude Scale
+
+Other than distance, another important property of stars is their brightness.
+Hipparchus, who we met earlier, developed the first known magnitude scale for classifying the brightness of stars.
+It was quite primitive, using the naked eye to classify stars into six categories, with $m = 1$ being the brightest and $m = 6$ being the faintest visible to the naked eye.
+This quantity $m$ is known as the **apparent magnitude** of a star.
+Primitive it was, it was nevertheless used as the basis for more recent magnitude scales.
+
+For instance, in 1856, Norman Pogson proposed a logarithmic scale for magnitudes, where a difference of 5 magnitudes corresponds to a brightness ratio of 100.
+In other words, a $m = 1$ star is 100 times brighter than a $m = 6$ star, and $100^{1/5} \approx 2.512$ times brighter than a $m = 2$ star.
+This value $2.512$ is known as Pogson's ratio.
+Additionally, the scale was extended to include negative magnitudes for very bright objects, such as the Sun ($m \approx -26.74$) and the full Moon ($m \approx -12.74$).
+
+To further understand the magnitude scale, we need to understand how we measure brightness.
+Suppose we have a detector with an effective area $A$ that is a distance $d$ away from a star emitting a total power (luminosity) $L$.
+The **radiant flux** (or **irradiance**) $F$ is defined as the power received per unit area, i.e.,
+
+$$
+\begin{equation}
+F := \frac{L}{A}.
+\end{equation}
+$$
+
+To get a more useful quantity, pretend that we have completely surrounded the star with a sphere of radius $d$.
+It then emits a total power $L$ through the surface area of the sphere, which is $4 \pi d^2$.
+The radiant flux at the surface of the sphere is then
+
+$$
+\begin{equation}
+F := \frac{L}{4 \pi d^2}.
+\end{equation}
+$$
+
+Notice that since the flux is a function of distance, it does not matter what the shape of the detector is or its area; the flux is the same everywhere on the sphere.
+This function is known as the inverse-square law, and it applies to any point source of radiation in three-dimensional space.
+
+Now we can define the *absolute* magnitude $M$ of a star as the apparent magnitude it would have if it were located at a standard distance of 10 parsecs (pc) from Earth.
+Mathematically, we have from Pogson's scale that
+
+$$
+\begin{equation}
+m_1 - m_2 = -2.5 \log_{10} \qty(\frac{F_1}{F_2}),
+\end{equation}
+$$
+
+where $F_1$ and $F_2$ are the fluxes (brightnesses) of the two stars.
+Equivalently,
+
+$$
+\begin{equation}
+\frac{F_1}{F_2} = 100^{(m_2 - m_1)/5}.
+\end{equation}
+$$
+
+There are two important cases to consider.
+First, consider two stars of the same luminosity but at variable distances.
+If we let $m_1 = m$ be the apparent magnitude of that star at distance $d$, and $m_2 = M$ be its absolute magnitude at distance $10$ pc, then we have
+
+$$
+\begin{equation}
+\frac{F}{F_{10}} = 100^{(M - m)/5},
+\end{equation}
+$$
+
+where $F$ is the flux at distance $d$, and $F_{10}$ is the flux at distance $10$ pc.
+This allows us to relate the apparent and absolute magnitudes of a star.
+We have, from the inverse-square law, that
+
+$$
+\begin{equation}
+\frac{F}{F_{10}} = \frac{L/(4 \pi d^2)}{L/(4 \pi (10 \text{ pc})^2)} = \frac{(10 \text{ pc})^2}{d^2}.
+\end{equation}
+$$
+
+Combining these two equations, we have
+
+$$
+\begin{equation}
+M - m = -2.5 \log_{10} \qty(\frac{(10 \text{ pc})^2}{d^2}) = 5 \log_{10} \qty(\frac{d}{10 \text{ pc}}). \label{eq:distance_modulus}
+\end{equation}
+$$
+
+The quantity $m - M$ is known as the **distance modulus**, and it provides a way to estimate the distance to a star based on its apparent and absolute magnitudes.
+
+The second case is when we have two stars at the same distance but with different luminosities.
+If we let one of the stars be the Sun with absolute magnitude $M_\odot$ and luminosity $L_\odot$, and the other be a star with absolute magnitude $M$ and luminosity $L$, then we have
+
+$$
+\begin{equation}
+M - M_\odot = -2.5 \log_{10} \qty(\frac{L}{L_\odot}).
+\end{equation}
+$$
+
+We can express the luminosities in terms of their radiant fluxes at a standard distance of 10 pc.
+Using the first half of Equation $\eqref{eq:distance_modulus}$, and noting $d^2 = L_\odot/(4 \pi F)$, we have
+
+$$
+\begin{equation}
+M - M_\odot = -2.5 \log_{10} \qty(\frac{(10 \text{ pc})^2}{L_\odot/(4 \pi F)}).
+\end{equation}
+$$
+
+Similarly, we have $(10 \text{pc})^2 = L_\odot/(4 \pi F_{10,\odot})$, so we have
+
+$$
+\begin{equation}
+M - M_\odot = -2.5 \log_{10} \qty(\frac{L_\odot/(4 \pi F_{10,\odot})}{L_\odot/(4 \pi F)}) = -2.5 \log_{10} \qty(\frac{F}{F_{10,\odot}}).
+\end{equation}
+$$
+
+### Light and Wave Phenomena
+
+Newton, as he stated in Optiks, believed that light was made up of tiny particles called "corpuscles."
+One justification he gave was that shadows had sharp edges, which would be difficult to explain if light were a wave.
+This theory was later challenged by the wave theory of light, which was supported by experiments such as Thomas Young's double-slit experiment in 1801.
+We now know that light is an excitation of a quantized electromagnetic field, and it exhibits both wave-like and particle-like properties.
+The wave-like properties come from oscillatory terms in field operators, while the particle-like properties originate from creation and annihilation operators.
+Anyways, we will briefly review how humans came to understand the wave nature of light.
+
+Initially, light was thought to travel instantaneously, as no delay could be detected by the naked eye.
+In 1676, Ole Rømer made the first quantitative estimate of the speed of light by observing the eclipses of Jupiter's moons.
+He noticed that the observed times of the eclipses varied depending on the distance between Earth and Jupiter.
+By analyzing these variations, he estimated the speed of light to be approximately $2.26 \times 10^8 \text{ m/s}$, which is about 25% lower than the actual value.
+
+In modern times, the speed of light in a vacuum is a defining constant in the International System of Units (SI).
+It is exactly $299,792,458 \text{ m/s}$, and it is denoted by the symbol $c$.
+The meter is now derived using the speed of light, defined as the distance light travels in a vacuum in $1/299,792,458$ of a second.
+
+Advancing further, Christian Huygens (1629–1695) proposed the wave theory of light in the late 17th century.
+He suggested that light propagates as a wave, similar to sound or water waves.
+As such, they had the same mathematical description with quantites like wavelength $\lambda$, frequency $\nu$, and speed $c$ related by the equation
+
+$$
+\begin{equation}
+c = \lambda \nu.
+\end{equation}
+$$
+
+Huygens' principle states that every point on a wavefront can be considered a source of secondary wavelets, which spread out in all directions at the same speed as the wave itself.
+The new wavefront is then the envelope of these secondary wavelets.
+
+### Spectroscopy
+
+Another important development in astronomy was the invention of spectroscopy, which allowed astronomers to analyze the light emitted or absorbed by celestial objects.
+
+Jumping to modern times, spectroscopy has become a fundamental tool in astronomy.
+One particular application is the ascertainment of the chemical composition of stars and galaxies.
+By analyzing the absorption and emission lines in the spectra of stars, astronomers can determine the elements present in their atmospheres.
+
+When atoms bond to form molecules, atomic orbitals combine to form linear combinations called molecular orbitals.
+These molecular orbitals can be classified as bonding or antibonding, depending on whether they lower or raise the energy of the system.
+The energy difference between the highest occupied molecular orbital (HOMO) and the lowest unoccupied molecular orbital (LUMO) is known as the band gap.
+This band gap is a crucial factor in determining the electronic properties of materials, including their conductivity and optical behavior.
