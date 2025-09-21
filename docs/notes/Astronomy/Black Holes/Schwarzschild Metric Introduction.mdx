@@ -1,0 +1,219 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Schwarzschild Metric: Introduction
+
+As previously mentioned, Einstein's general relativity is our current best theory of gravity.
+In his theory, gravity is not a force but rather a manifestation of the curvature of spacetime caused by the presence of energy-momentum.
+The Einstein field equations relate the geometry of spacetime, described by the metric tensor $g_{\mu\nu}$, to the energy-momentum content, described by the stress-energy tensor $T_{\mu\nu}$.
+
+Few exact solutions to the Einstein field equations are known, as they are a set of ten coupled, nonlinear partial differential equations.
+One such solution is the Schwarzschild metric, which is given in spherical coordinates $(ct, r, \theta, \phi)$ by
+
+$$
+\begin{equation}
+g_{\mu\nu} \overset{.}{=} \mqty[
+    \qty(1 - \frac{r_s}{r}) & 0 & 0 & 0 \\
+    0 & -\qty(1 - \frac{r_s}{r})^{-1} & 0 & 0 \\
+    0 & 0 & -r^2 & 0 \\
+    0 & 0 & 0 & -r^2 \sin^2 \theta
+].
+\end{equation}
+$$
+
+This metric describes the spacetime outside a spherically symmetric, non-rotating, and static mass.
+As such, it can be applied to various astrophysical objects, such as (slowly rotating) stars, planets, and black holes.
+When applied to the field equations, it makes many predictions, such as gravitational time dilation, the gravitational Doppler effect, the bending of light by gravity, and the precession of planetary orbits.
+Moreover, it predicts the existence of black holes whose event horizons are located at the Schwarzschild radius
+
+$$
+\begin{equation}
+r_s = \frac{2GM}{c^2}.
+\end{equation}
+$$
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Derivation of the Schwarzschild Metric
+
+Karl Schwarzschild derived this metric in 1916, shortly after Einstein published his field equations in 1915.
+His results were published in two papers: ["On the Gravitational Field of a Point-Mass according to Einstein's Theory"](https://arxiv.org/pdf/physics/9905030) and ["On the Gravitational Field of a Sphere of Incompressible Fluid according to Einstein's Theory."](https://arxiv.org/pdf/physics/9912033)
+Unfortunately, Schwarzschild passed away in 1916 due to complications from a disease he contracted during his service in World War I.
+
+The derivation of the Schwarzschild metric involves several steps, including making assumptions about the symmetry of the spacetime, choosing an appropriate coordinate system, and solving the Einstein field equations under these assumptions.
+
+The first assumption is that outside the mass, the spacetime is vacuum, meaning that the stress-energy tensor $T_{\mu\nu} = 0$.
+It leads to the **Ricci flat condition**, as described in the following infobox.
+
+:::info Ricci Flat Condition
+
+Assuming $\Lambda = 0$ (in non-cosmological scales) and $T_{\mu\nu} = 0$, the Einstein field equations reduce to
+
+$$
+\begin{equation}
+R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} = 0.
+\end{equation}
+$$
+
+Taking the trace of this equation by contracting both sides with $g^{\mu\nu}$ gives
+
+$$
+\begin{equation}
+R_{\mu\nu} g^{\mu\nu} - \frac{1}{2} R g_{\mu\nu} g^{\mu\nu} = 0.
+\end{equation}
+$$
+
+Since $g_{\mu\nu} g^{\mu\nu} = \delta_\mu^\mu = 4$ in four-dimensional spacetime, we have
+
+$$
+\begin{equation}
+R - 2R = 0 \implies R = 0.
+\end{equation}
+$$
+
+Finally, substituting $R = 0$ back into the original equation yields
+
+$$
+\begin{equation}
+R_{\mu\nu} = 0.
+\end{equation}
+$$
+
+Note that a Ricci flat spacetime does not imply a flat spacetime, as the Riemann curvature tensor $R^\rho_{\sigma\mu\nu}$ may still be non-zero.
+Recall that the Ricci tensor describes the degree to which the volume of a small geodesic ball in a curved space deviates from that in flat space, while the Riemann curvature tensor provides a more comprehensive description of the curvature of spacetime, including things like holonomy and tidal forces.
+
+:::
+
+The second assumption is that the spacetime is spherically symmetric and static.
+The third is that the metric should reduce to the Minkowski metric at large distances from the mass, where gravitational effects are negligible.
+In other words,
+
+$$
+\begin{equation}
+\lim_{r \to \infty} g_{\mu\nu} = \eta_{\mu\nu}.
+\end{equation}
+$$
+
+The Minkowski metric in spherical coordinates is given by
+
+$$
+\begin{equation}
+\eta_{\mu\nu} = \mqty[
+    1 & 0 & 0 & 0 \\
+    0 & -1 & 0 & 0 \\
+    0 & 0 & -r^2 & 0 \\
+    0 & 0 & 0 & -r^2 \sin^2 \theta
+].
+\end{equation}
+$$
+
+<details>
+<summary>Derivation</summary>
+
+Let's derive the Minkowski metric in spherical coordinates.
+In Cartesian coordinates $(t, x, y, z)$, the Minkowski metric is given by
+
+$$
+\begin{equation}
+\eta_{\mu\nu} = \mqty[
+    1 & 0 & 0 & 0 \\
+    0 & -1 & 0 & 0 \\
+    0 & 0 & -1 & 0 \\
+    0 & 0 & 0 & -1
+].
+\end{equation}
+$$
+
+To convert to spherical coordinates $(t, r, \theta, \phi)$, we use the following transformations:
+
+$$
+\begin{align}
+t &= t, \\
+r &= \sqrt{x^2 + y^2 + z^2}, \\
+\theta &= \arccos\left(\frac{z}{r}\right), \\
+\phi &= \arctan2(y, x).
+\end{align}
+$$
+
+The basis vectors (which are just the partial derivative operators) can be expanded using the chain rule:
+
+$$
+\begin{align}
+\pdv{t} &= \pdv{t}, \\
+\pdv{r} &= \pdv{x}{r} \pdv{x} + \pdv{y}{r} \pdv{y} + \pdv{z}{r} \pdv{z} \\
+\pdv{\theta} &= \pdv{x}{\theta} \pdv{x} + \pdv{y}{\theta} \pdv{y} + \pdv{z}{\theta} \pdv{z} \\
+\pdv{\phi} &= \pdv{x}{\phi} \pdv{x} + \pdv{y}{\phi} \pdv{y} + \pdv{z}{\phi} \pdv{z}
+\end{align}
+$$
+
+Calculating the partial derivatives, we have
+
+$$
+\begin{align}
+\pdv{r} &= \sin\theta \cos\phi \pdv{x} + \sin\theta \sin\phi \pdv{y} + \cos\theta \pdv{z}, \\
+\pdv{\theta} &= r \cos\theta \cos\phi \pdv{x} + r \cos\theta \sin\phi \pdv{y} - r \sin\theta \pdv{z}, \\
+\pdv{\phi} &= -r \sin\theta \sin\phi \pdv{x} + r \sin\theta \cos\phi \pdv{y} + 0 \pdv{z},
+\end{align}
+$$
+
+so the metric is
+
+$$
+\begin{align}
+g_{rr} &= \qty(\pdv{r}) \cdot \qty(\pdv{r}) = -1, \\
+g_{\theta\theta} &= \qty(\pdv{\theta}) \cdot \qty(\pdv{\theta}) = -r^2, \\
+g_{\phi\phi} &= \qty(\pdv{\phi}) \cdot \qty(\pdv{\phi}) = -r^2 \sin^2 \theta, \\
+g_{r\theta} &= g_{r\phi} = g_{\theta\phi} = 0,
+\end{align}
+$$
+
+as you can verify by explicitly calculating the dot products.
+Notice that the $g_{\theta\theta}$ and $g_{\phi\phi}$ components have factors of $r^2$.
+This is because we are not using a normalized coordinate system.
+
+</details>
+
+The last assumption is that the metric should be static, meaning that it does not change with time.
+
+<detials>
+<summary>A more formal definition</summary>
+
+To be more precise, we need to invoke some concepts from differential geometry.
+A **Killing vector field** is a vector field that preserves the metric under its flow.
+In other words, if $K^\mu$ is a Killing vector field, then the Lie derivative of the metric with respect to $K^\mu$ is zero:
+
+$$
+\begin{equation}
+\mathcal{L}_K g_{\mu\nu} = 0.
+\end{equation}
+$$
+
+The Lie derivative is similar to just applying a vector as a directional derivative;
+
+$$
+\begin{equation}
+\mathcal{L}_K g_{\mu\nu} = K^\lambda \nabla_\lambda g_{\mu\nu} + g_{\lambda\nu} \nabla_\mu K^\lambda + g_{\mu\lambda} \nabla_\nu K^\lambda,
+\end{equation}
+$$
+
+</detials>
+
+
+

@@ -212,8 +212,9 @@ This theory was later challenged by the wave theory of light, which was supporte
 ### Stellar Parallax and the Magnitude System
 
 In their original forms, Kepler's laws of planetary motion were based on the relative sizes of the orbits, for their absolute sizes were not known.
-In 1761, however, the first successful measurement of the distance to Venus was made during a transit of Venus across the Sun.
+In 1761, however, the first successful measurement of the distance to Venus was made during a transit of Venus across the Sun (This is credited to Jean‑Baptiste Chappe d’Auteroche.).
 By observing the transit from different locations on Earth, astronomers were able to use parallax to calculate the distance to Venus and, consequently, the distance from Earth to the Sun (the astronomical unit, or AU).
+In 1838, Friedrich Bessel made the first successful measurement of stellar parallax, determining the distance to the star 61 Cygni.
 This parallax effect is extremely useful; our eyes use it to perceive depth, and astronomers use it to measure distances to nearby stars.
 
 import { StellarParallaxVisualizer } from "./History of Astronomy Figures.mdx"
@@ -250,6 +251,36 @@ As the distances to stars are so vast, the parallax angles are extremely small.
 This was why it took so long to notice the effect.
 Modern instruments are being developed to measure parallax angles.
 For instance, NASA's planned Space Interferometry Mission (SIM) aims to measure parallax angles with a precision of 1 microarcsecond, allowing for distance measurements to stars up to 10,000 light-years away.
+
+Along with the parallax effect, scientists at the time also studied and utilized the other behaviors of light.
+Galileo's telescope is one called a **refracting telescope**, which uses lenses to bend and focus light.
+On the other hand, Newton built the first **reflecting telescope**, which uses mirrors to gather and focus light.
+The refracting telescope makes use of Snell's law of refraction, named after Willebrord Snellius, who discovered it in 1621.
+(Although, Snell's law was first discovered by Persian scientist Ibn Sahl in 984 AD.
+The attribution of discoveries to Western scientists is a common theme in the history of science, often overlooking contributions from other cultures.)
+This law states that each material had a quantity called the **index of refraction** $n_\lambda$, which describes how much the speed of light is reduced inside the material compared to vacuum.
+The change in the speed of light causes the light to bend at the interface between two materials with different indices of refraction.
+Then, the law follows that
+
+$$
+\begin{equation}
+n_{1\lambda} \sin(\theta_1) = n_{2\lambda} \sin(\theta_2),
+\end{equation}
+$$
+
+where $\theta_1$ and $\theta_2$ are the angles of incidence and refraction, respectively, and the subscript $\lambda$ indicates that the index of refraction can depend on the wavelength of light.
+One immediate use of Snell's law is in the design of lenses for telescopes and other optical instruments.
+Each lens has a specific **focal length** $f_\lambda$, which is positive for a converging lens and negative for a diverging lens.
+It follows the **lensmaker's equation**
+
+$$
+\begin{equation}
+\frac{1}{f_\lambda} = (n_\lambda - 1) \qty(\frac{1}{R_1} - \frac{1}{R_2}),
+\end{equation}
+$$
+
+where $R_1$ and $R_2$ are the radii of curvature of the two surfaces of the lens.
+The study of optics from a geometric perspective, known as geometric optics, is fascinating, and we will dedicate a future note to it.
 
 ### Magnitude Scale
 
@@ -629,7 +660,16 @@ L_\lambda (T) \dd{\lambda} &= 4 \pi^2 R^2 \frac{2 h c^2}{\lambda^5} \frac{1}{e^{
 $$
 
 known as the **monochromatic luminosity** of the star, for the wavelength is in an infinitesimal interval so the color does not change.
-Integrating over all wavelengths, we have the total luminosity of the star:
+The flux for monochromatic luminosity is known as the **monochromatic flux**, given via the inverse-square law as
+
+$$
+\begin{equation}
+F_\lambda (T) \dd{\lambda} = \frac{L_\lambda (T) \dd{\lambda}}{4 \pi d^2} = \frac{2 \pi h c^2 R^2}{d^2 \lambda^5} \frac{1}{e^{hc/(\lambda k_B T)} - 1} \dd{\lambda}, \label{eq:monochromatic_flux}
+\end{equation}
+$$
+
+where $d$ is the distance from the star to the observer.
+Anyways, integrating Planck's law over all wavelengths, we have the total luminosity of the star:
 
 $$
 \begin{equation}
@@ -666,7 +706,101 @@ One idea is to use filters to isolate specific wavelength ranges and measure the
 For example, the UBV photometric system uses three filters: U (ultraviolet), B (blue), and V (visual).
 The Johnson-Cousins UBVRI system extends this to include R (red) and I (infrared) filters.
 
-### Light and Matter
+We can measure each star's apparent magnitudes physically by observing them through these filters.
+A filter is essentially a piece of glass or plastic that only allows light of certain wavelengths to pass through.
+Historically, astronomers used photographic plates with different emulsions to create filters that were sensitive to specific wavelength ranges.
+Nowadays, we use more advanced materials and technologies to create filters with precise transmission properties.
 
-The introduction of quantized energy levels by Planck was a revolutionary idea that laid the groundwork for the development of quantum mechanics.
-In 1835, French philosopher Auguste Comte (1798–1857) argued that it was impossible to determine the chemical composition of stars, as their light was too different from terrestrial sources.
+The difference in magnitudes between two filters is known as a **color index**.
+For instance, the color index $B - V$ is defined as the difference between the apparent magnitudes measured through the B and V filters:
+
+$$
+\begin{equation}
+B - V = m_B - m_V.
+\end{equation}
+$$
+
+When we measure the apparent and absolute magnitudes over all wavelengths, the result is known as the **bolometric magnitude**.
+However, since we cannot observe all wavelengths (for instance, ultraviolet and infrared light are absorbed by Earth's atmosphere), we often use the **visual magnitude** $m_V$ and **absolute visual magnitude** $M_V$, which are measured using the V filter.
+To account for the difference between the bolometric and visual magnitudes, we introduce the **bolometric correction** $BC$, defined as
+
+$$
+\begin{equation}
+BC := M_{\text{bol}} - M_V.
+\end{equation}
+$$
+
+Next, we want to relate the apparent magnitudes measured through different filters to the other physical properties of stars.
+A star's ultraviolet (U) magnitude, for instance, can be written as
+
+$$
+\begin{equation}
+m_U = -2.5 \log_{10} \qty(\int_0^\infty F_\lambda (T) \mathcal{S}_U(\lambda) \dd{\lambda}) + C_U,
+\end{equation}
+$$
+
+where $\mathcal{S}_U(\lambda)$ is a sensitivity function that describes how the U filter responds to different wavelengths, and $C_U$ is a constant that depends on the calibration of the photometric system.
+Such a constant also exists when we measure the bolometric magnitude.
+A bolometer (a device that measures the total power of incident electromagnetic radiation), in ideal conditions, would measure the total flux from a star without any wavelength dependence.
+Thus we have $\mathcal{S}_{\text{bol}}(\lambda) = 1$ for all $\lambda$, and the bolometric magnitude is given by
+
+$$
+\begin{equation}
+m_{\text{bol}} = -2.5 \log_{10} \qty(\int_0^\infty F_\lambda (T) \dd{\lambda}) + C_{\text{bol}}.
+\end{equation}
+$$
+
+The value for $C_{\text{bol}}$ is arbitrary, much like how potential energy is defined up to an additive constant.
+Historically, as the bolometric correction is given by $BC = M_{\text{bol}} - M_V$, astronomers have chosen to set $C_{\text{bol}}$ such that $BC$ is negative for all stars while remaining as small as possible.
+This should make sense; there is a small amount of ultraviolet and infrared light that is not captured by the V filter, and the sign is negative because magnitudes are defined such that brighter objects have lower (more negative) magnitudes.
+
+The color index $U - B$ can be calculated as
+
+$$
+\begin{equation}
+U - B = m_U - m_B = -2.5 \log_{10} \qty(\frac{\int_0^\infty F_\lambda (T) \mathcal{S}_U(\lambda) \dd{\lambda}}{\int_0^\infty F_\lambda (T) \mathcal{S}_B(\lambda) \dd{\lambda}}) + (C_U - C_B).
+\end{equation}
+$$
+
+If we plug in the monochromatic flux from Equation $\eqref{eq:monochromatic_flux}$, we have
+
+$$
+\begin{equation}
+U - B = -2.5 \log_{10} \qty(\frac{\int_0^\infty \frac{\mathcal{S}_U(\lambda)}{\lambda^5 (e^{hc/(\lambda k_B T)} - 1)} \dd{\lambda}}{\int_0^\infty \frac{\mathcal{S}_B(\lambda)}{\lambda^5 (e^{hc/(\lambda k_B T)} - 1)} \dd{\lambda}}) + (C_U - C_B).
+\end{equation}
+$$
+
+In other words, the distance $d$ and radius $R$ of the star cancel out, and the color index only depends on the temperature $T$ of the star and the properties of the filters used.
+
+Astronomers can use this relationship to estimate the temperature of a star based on its color index.
+If we plot the color index $U - B$ against the color index $B - V$ for a large number of stars, we obtain a diagram known as the **color-color diagram**.
+This diagram reveals a clear correlation between the two color indices, which can be used to classify stars based on their temperatures.
+
+## Summary and Next Steps
+
+In this section, we have explored the historical development of our understanding of stellar parallax, the magnitude system, and the wave nature of light.
+We have seen how the work of astronomers and physicists over the centuries has led to the modern theories of electromagnetism and quantum mechanics.
+We have also discussed how these theories have been applied to understand the properties of stars, such as their temperatures and luminosities.
+
+Once again, here are the key takeaways from this section, labeled based on who discovered or developed them.
+This is not necessarily microscopically chronological; rather, it is grouped by the main contributors to each idea.
+
+- **Galileo Galilei (1564–1642)**: Used the telescope to observe celestial objects, providing evidence for the heliocentric model of the solar system.
+    Proposed a precursor to Newton's first law of motion.
+- **Isaac Newton (1643–1727)**: Formulated the laws of motion and universal gravitation, laying the foundation for classical mechanics.
+    Developed the reflecting telescope and made significant contributions to optics.
+- **Jean-Baptiste Chappe d’Auteroche (1728–1769)**: Made the first successful measurement of the distance to Venus during a transit of Venus across the Sun (1761).
+- **Friedrich Bessel (1784–1846)**: Made the first successful measurement of stellar parallax (61 Cygni, 1838).
+- **Norman Pogson (1829–1891)**: Proposed the logarithmic scale for stellar magnitudes, establishing the modern magnitude system (1856).
+- **Thomas Young (1773–1829)**: Conducted the double-slit experiment, demonstrating the wave nature of light (1801).
+- **Ole Rømer (1644–1710)**: Made the first quantitative estimate of the speed of light by observing the eclipses of Jupiter's moons (1676).
+- **Christian Huygens (1629–1695)**: Proposed the wave theory of light and Huygens' principle, explaining the propagation of light waves (late 17th century).
+- **James Clerk Maxwell (1831–1879)**: Formulated Maxwell's equations, unifying electricity, magnetism, and optics into electromagnetism (1860s).
+- **Heinrich Hertz (1857–1894)**: Conducted experiments that confirmed the existence of electromagnetic waves, paving the way for the development of radio and wireless communication (1887).
+- **John Henry Poynting (1852–1914)**: Introduced the Poynting vector, describing the energy flow in electromagnetic fields (1884).
+- **Wilhelm Wien (1864–1928)**: Formulated Wien's displacement law, relating the temperature of a blackbody to the wavelength at which it emits radiation most intensely (1893).
+- **Josef Stefan (1835–1893)**: Empirically derived the Stefan-Boltzmann law, relating the total energy radiated by a blackbody to the fourth power of its temperature (1879).
+- **Ludwig Boltzmann (1844–1906)**: Theoretically derived the Stefan-Boltzmann law using thermodynamics and statistical mechanics (1884).
+- **Max Planck (1858–1947)**: Proposed the quantization of energy and formulated Planck's law of blackbody radiation, laying the groundwork for quantum mechanics (1900).
+
+In the next part of the history of astronomy, we are moving into the 20th century, where we will explore the development of quantum mechanics, general relativity, and other modern theories that have shaped our understanding of the universe.

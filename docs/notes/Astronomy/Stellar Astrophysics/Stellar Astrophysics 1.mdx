@@ -1,0 +1,49 @@
+---
+sidebar_position: 2.1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Brief Quickstart to Stars
+
+In the past few sections, we have discussed the history of astronomy from the ancient Greeks to modern times, covering key figures and discoveries that have shaped our understanding of the cosmos.
+Stars are the fundamental building blocks of galaxies and play a crucial role in the evolution of the universe.
+While we will dedicate much more time to discussing stars in the following sections, some readers may want a quick overview of the essential concepts related to stars before diving into the details.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Stellar Evolution
+
+A star is a massive, luminous sphere of plasma held together by its own gravity.
+Our Sun (denoted with $\odot$) is the star at the center of our solar system with a mass of approximately $1.989 \times 10^{30}$ kg (the **solar mass** $M_\odot$), a radius of about $6.96 \times 10^8$ meters (the **solar radius** $R_\odot$), and a luminosity of roughly $3.828 \times 10^{26}$ watts (the **solar luminosity** $L_\odot$).
+Stars are primarily composed of hydrogen and helium, with trace amounts of heavier elements.
+They are characterized by their mass, luminosity, temperature, and size, with these properties determining their life cycle and evolution.
+A visual representation of these properties can be found on the Hertzsprung-Russell (H-R) diagram, which plots stars according to their luminosity and temperature.
+
+Before a star forms, a cloud of gas and dust called a nebula collapses under its own gravity.
+As the cloud collapses, it heats up and forms a **protostar**, defined as a period where the core temperature is not yet high enough for nuclear fusion to occur.
+Some stars are able to reach about 10 million Kelvin in their cores, which allows hydrogen nuclei to undergo the **proton-proton chain reaction**, fusing hydrogen into helium and releasing a tremendous amount of energy in the process.
+This process, known as **nuclear fusion**, requires extremely high temperatures and pressures, as well as quantum tunneling, to overcome the electrostatic repulsion between positively charged nuclei.
+
+Once nuclear fusion begins, the star enters the **main sequence** phase, where it spends the majority of its life fusing hydrogen into helium in its core.
+The outward pressure from the energy released by fusion balances the inward pull of gravity, creating a stable hydrostatic equilibrium for the star.
+The star's position on the main sequence is determined by its mass, with more massive stars being hotter and more luminous.
+Young stars may also form **protoplanetary disks** around them, which can eventually lead to the formation of planets.
+These are disk-shaped as a result of the conservation of angular momentum during the collapse of the nebula, and thus rotate around the star in the same direction.
+This is why planets in our solar system all orbit the Sun in the same direction.
+When a star exhausts the hydrogen in its core, it leaves the main sequence, and its future evolution depends on its mass.
+

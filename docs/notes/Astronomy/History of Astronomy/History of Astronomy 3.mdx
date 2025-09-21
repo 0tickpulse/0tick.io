@@ -1,0 +1,683 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# History of Astronomy: Part 3
+
+In the previous parts of this series, we explored the historical development of astronomy and physics, focusing on key figures such as Galileo, Kepler, Newton, and Maxwell.
+We discussed how their discoveries and theories laid the groundwork for our modern understanding of the universe.
+Now we will move forward in time to the 20th century, which saw rapid and revolutionary advancements in both astronomy and physics.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Special Relativity and Quantum Mechanics
+
+In the early 20th century, there were several experimental results that challenged the classical understanding of physics.
+We have extensively discussed these before, but to summarize:
+
+1. Scientists initially believed that light traveled through a medium called the lumiferous ether, but the Michelson-Morley experiment (1887) failed to detect any motion of the Earth relative to this ether.
+2. Maxwell's equations predicted that the speed of light is $c = 1/\sqrt{\mu_0 \epsilon_0}$, which is constant and does not depend on the motion of the source or observer.
+3. The Lorentz force is seemingly not invariant under Galilean transformations, which was puzzling given the success of Maxwell's equations.
+
+These issues were resolved by Albert Einstein (1879–1955) in 1905 with his publication "On the Electrodynamics of Moving Bodies," where he introduced the theory of special relativity.
+
+His theory initially faced resistance, as it challenged the long-held notions of absolute space and time.
+Metaphysical intuitions about the nature of space and time were deeply ingrained in the scientific community, making it difficult for many to accept the radical implications of Einstein's work.
+However, over time, the predictions of special relativity were confirmed by numerous experiments, such as time dilation observed in fast-moving particles (e.g. muons) and the relativistic Doppler effect.
+
+Simultaneous to the development of special relativity, another groundbreaking theory was emerging: quantum mechanics. In the previous part, we discussed how Max Planck (1858–1947) introduced the idea of quantized energy levels to explain blackbody radiation in 1900. But we need to go back a bit further to understand the full context.
+
+### Discrete Spectra and Redshift
+
+Auguste Comte (1798–1857) was a French philosopher who is often regarded as the father of positivism and sociology. He famously declared that we would never be able to determine the chemical composition of stars, as their light appeared to be fundamentally different from terrestrial light. This was a significant misjudgment even at the time. William Hyde Wollaston (1766–1828) had already observed dark lines in the solar spectrum in 1802 when he passed sunlight through a prism. However, it was Joseph von Fraunhofer (1787–1826) who systematically studied these lines in 1814. He had no idea what they were, but he meticulously cataloged over 570 of them, which are now known as Fraunhofer lines. He labeled the most prominent lines with letters (A, B, C, etc.), and these lines correspond to specific wavelengths of light that are absorbed by elements in the Sun's atmosphere. Notably, the D lines correspond to the color of light emitted when table salt (sodium chloride) is heated in a flame.
+
+To establish a theory that could explain these discrete spectral lines, Robert Bunsen (1811–1899) and Gustav Kirchhoff (1824–1887) developed the field of **spectroscopy** in the 1850s. The word comes from the Latin "spectrum," meaning "image" or "apparition," and the Greek "skopein," meaning "to look" or "to examine." Spectroscopy involves analyzing the light emitted or absorbed by substances to determine their composition.
+
+Bunsen developed a special burner that produced a very clean and colorless flame (this is now known as the Bunsen burner). Along with Kirchhoff, he discovered that when different elements are heated in the flame, they emit light at specific wavelengths, producing characteristic emission spectra. For instance, Kirchhoff found that 70 bright lines emitted by iron vapor could be matched to 70 dark lines in the solar spectrum, confirming that the Sun contains iron. Their results were published in "Chemical Analysis by Spectrum Observations" in 1860. In this work, they also formulated **Kirchhoff's laws**. To be clear, these are not the same as Kirchhoff's circuit laws in electrical engineering. Kirchhoff's laws *of spectroscopy* state:
+
+1. A hot, dense object (like a star) produces a continuous spectrum of light.
+2. A hot, low-density gas produces an emission spectrum, consisting of bright lines at specific wavelengths.
+3. A cool, low-density gas in front of a hot, dense object produces an absorption spectrum, consisting of dark lines at specific wavelengths.
+
+Bunsen and Kirchhoff's work laid the foundation for understanding the composition of stars and other celestial objects through their spectra. They identified elements such as sodium, potassium, calcium, and iron in the Sun and other stars. This definitively proved that stars are made of the same elements found on Earth, dealing another blow to the last vestiges of Aristotelian cosmology. Spectroscopy quickly became a powerful tool for discovery. In 1868, Norman Lockyer identified a spectral line in the Sun's chromosphere that corresponded to no known terrestrial element. He correctly deduced it was a new element, which he named helium; it was not isolated on Earth until 1895.
+
+While the spectral lines were measured for the Sun, another step was needed to measure the lines for other stars. Christian Doppler (1803–1853) proposed in 1842 that the observed frequency of a wave depends on the relative motion of the source and the observer. This is now known as the **Doppler effect**.
+
+---
+
+Suppose a star is moving away from us at a velocity $v$. The observed frequency $\nu_o$ of light from the star is related to the source frequency $\nu_s$ by
+
+$$
+\begin{equation}
+\nu_o =\nu_s \qty(\frac{c}{c + v_\text{(star)}}).
+\end{equation}
+$$
+
+For a modern treatment of the Doppler effect, we can treat a wave as a covector $k_\mu$. The frequency observed by any observer is the number of times the basis vector $\partial_t$ fits into the wave covector $k$, which is given by
+
+$$
+\begin{equation}
+\nu = k(\partial_t).
+\end{equation}
+$$
+
+The wavenumber of the wave can be similarly defined as the number of times a spatial basis vector $\partial_x$ fits into the wave covector $k$, which is given by (assuming the wave is traveling in the $x$-direction)
+
+$$
+\begin{equation}
+k = k(\partial_x).
+\end{equation}
+$$
+
+In Galilean relativity, we just need to substitute $\partial_t \to \partial_t - v\partial_x$ to get
+
+$$
+\begin{equation}
+\nu_o = k(\partial_t - v\partial_x) =\nu_s - vk =\nu_s\qty(\frac{c - v}{c}).
+\end{equation}
+$$
+
+This is the non-relativistic Doppler effect for light. The relativistic Doppler effect can be derived by considering the Lorentz transformation of the wave covector $k_\mu$. We have
+
+$$
+\begin{equation}
+\mqty[k'_t & k'_x] = \mqty[k_t & k_x] \gamma \mqty[1 & \beta \\ \beta & 1],
+\end{equation}
+$$
+
+which leads to
+
+$$
+\begin{equation}
+k'_t = k_t \sqrt{\frac{1 + \beta}{1 - \beta}}.
+\end{equation}
+$$
+
+Thus
+
+$$
+\begin{equation}
+\nu_o =\nu_s \sqrt{\frac{1 + \beta}{1 - \beta}}.
+\end{equation}
+$$
+
+By the way, if the source is also angled at an angle $\theta$ relative to the observer, then we
+can express the wave covector as $k_\mu = (\omega, k \vu{n})$ where $\vu{n}$ is a unit vector in the direction of propagation of the wave.
+Then the relativistic Doppler effect becomes
+
+$$
+\begin{equation}
+\nu_o = \frac{\nu_s}{\gamma(1 - \beta \cos \theta)}.
+\end{equation}
+$$
+
+When objects are moving away from us, we observe a redshift (a shift to longer wavelengths), and when they are moving towards us, we observe a blueshift (a shift to shorter wavelengths). We quantify this shift using the **redshift parameter** $z$, defined as
+
+$$
+\begin{equation}
+z := \frac{\lambda_o - \lambda_s}{\lambda_s}.
+\end{equation}
+$$
+
+In the relativistic case this is
+
+$$
+\begin{equation}
+z = \sqrt{\frac{1 + \beta}{1 - \beta}} - 1.
+\end{equation}
+$$
+
+For low speeds ($v \ll c$), this reduces to the non-relativistic formula
+
+$$
+\begin{equation}
+z \approx \frac{v}{c}.
+\end{equation}
+$$
+
+---
+
+A **spectrograph** passes light through a narrow slit, disperses it with a prism or diffraction grating, and records the resulting spectrum on a photographic plate or CCD.
+Essentially, it isolates light from a small region of the sky and spreads it out into its component wavelengths.
+The maxima of the resulting pattern from the diffraction grating correspond to the wavelengths of light emitted by the source. The $n$th maximum occurs at an angle $\theta$ given by
+
+$$
+\begin{equation}
+n \lambda = d \sin \theta, \quad n = 0, 1, 2, \ldots,
+\end{equation}
+$$
+
+where $d$ is the spacing between the lines on the grating and $\theta$ is the angle of diffraction. The grating is able to distinguish between wavelengths that differ by
+
+$$
+\begin{equation}
+\Delta \lambda = \frac{\lambda}{nN},
+\end{equation}
+$$
+
+where $N$ is the total number of lines illuminated by the incoming light. This means that the more lines there are on the grating, the better its resolution. The ratio
+
+$$
+\begin{equation}
+R = \frac{\lambda}{\Delta \lambda} = nN
+\end{equation}
+$$
+
+is called the **resolving power** of the grating.
+
+### Photoelectric Effect
+
+As we previously discussed, physicists in the late 19th century were grappling with the nature of light and its interaction with matter. The wave theory of light, supported by experiments like Young's double-slit experiment and theories of electromagnetism, was well-established. However, certain phenomena could not be explained by wave theory alone.
+
+After Max Planck initiated the quantum revolution with his work on blackbody radiation, Albert Einstein (1879–1955) took the next step in 1905 and confirmed the physical reality of quantized light. When we shine light on a metal surface, electrons are emitted from the surface. This phenomenon is known as the **photoelectric effect**, whose name comes from the Greek word "photo," meaning "light," and "electric," referring to the electric charge of the emitted electrons.
+
+Classically, the energy of the light wave is given by the Poynting vector
+
+$$
+\begin{equation}
+\vb{S} = \frac{1}{\mu_0} \vb{E} \times \vb{B}.
+\end{equation}
+$$
+
+This means that the energy delivered to the metal surface should depend on the intensity of the light, which is proportional to the square of the amplitude of the electric field $E$. Therefore, if we increase the intensity of the light, we should be able to eject electrons with higher kinetic energy. Moreover, the frequency of the light should not matter; it does not affect the magnitude of the Poynting vector.
+
+The experimental results, however, were the total opposite. The kinetic energy of the emitted electrons did depend on the frequency, and it did not depend on the intensity at all. Below a certain cutoff frequency $\nu_0$ (which depends on the metal), no electrons were emitted, regardless of the intensity. Above this frequency, the kinetic energy of the emitted electrons increased linearly with frequency.
+
+Einstein explained these results by proposing that light consists of discrete packets of energy called **photons**. Each photon has an energy given by
+
+$$
+\begin{equation}
+E = h\nu = \frac{hc}{\lambda},
+\end{equation}
+$$
+
+where $h$ is Planck's constant and $\nu$ is the frequency. Using this idea, we can understand the photoelectric effect as follows. When a photon strikes the metal surface, it transfers its energy to an electron. First, some of the energy is used to overcome the binding energy of the electron to the metal, known as the **work function** $\phi$. The remaining energy is converted into the kinetic energy $K$ of the emitted electron. This leads to the equation
+
+$$
+\begin{equation}
+K = h\nu - \phi.
+\end{equation}
+$$
+
+This experiment provided strong evidence for the particle nature of light and was one of the key developments that led to the formulation of quantum mechanics. Einstein was awarded the Nobel Prize in Physics in 1921 for his explanation of the photoelectric effect, instead of for his more famous theories of special and general relativity.
+
+### Compton Scattering
+
+American physicist Arthur Compton (1892–1962) further confirmed the particle nature of light in 1923 through his experiments on X-ray scattering, now known as **Compton scattering**. Compton observed that when X-rays were scattered off electrons in a material, the scattered X-rays had a longer wavelength (lower energy) than the incident X-rays. This shift in wavelength could not be explained by classical wave theory.
+
+The key to understanding Compton scattering is to treat the interaction between the X-ray photon and the electron as a collision between two particles. In other words, we treat the photon as a particle with a momentum. This momentum is obtained by setting $m = 0$ in the relativistic momentum equation, giving
+
+$$
+\begin{equation}
+E = pc \implies p = \frac{E}{c} = \frac{h\nu}{c} = \frac{h}{\lambda}.
+\end{equation}
+$$
+
+Suppose an X-ray photon with initial wavelength $\lambda_i$ travels in the $x$-direction and collides with an electron at rest. After the collision, the photon is scattered at an angle $\theta$ with a new wavelength $\lambda_f$, and the electron recoils at an angle $\phi$ with momentum $p_{e, f}$. We can apply conservation of energy and momentum to this system.
+
+Conservation of energy gives
+
+$$
+\begin{equation}
+E_{\gamma, i} + E_{e, i} = E_{\gamma, f} + E_{e, f},
+\end{equation}
+$$
+
+which expands to
+
+$$
+\begin{equation}
+\frac{hc}{\lambda_i} + m_e c^2 = \frac{hc}{\lambda_f} + \sqrt{p_{e, f}^2 c^2 + m_e^2 c^4}.
+\end{equation}
+$$
+
+Conservation of momentum gives
+
+$$
+\begin{equation}
+\vb{p}_{\gamma, i} + \vb{p}_{e, i} = \vb{p}_{\gamma, f} + \vb{p}_{e, f}.
+\end{equation}
+$$
+
+Hence, the square magnitude of the electron's final momentum is
+
+$$
+\begin{equation}
+p_{e, f}^2 = (\vb{p}_{\gamma, i} - \vb{p}_{\gamma, f})^2 = p_{\gamma, i}^2 + p_{\gamma, f}^2 - 2 p_{\gamma, i} p_{\gamma, f} \cos \theta.
+\end{equation}
+$$
+
+Next, multiply both sides by $c^2$:
+
+$$
+\begin{equation}
+p_{e, f}^2 c^2 = p_{\gamma, i}^2 c^2 + p_{\gamma, f}^2 c^2 - 2 p_{\gamma, i} p_{\gamma, f} c^2 \cos \theta.
+\end{equation}
+$$
+
+The term $p_{\gamma, i}^2 c^2$ is just $(hf_i)^2$ (and likewise for $p_{\gamma, f}^2 c^2$), so
+
+$$
+\begin{equation}
+p_{e, f}^2 c^2 = (hf_i)^2 + (hf_f)^2 - 2 hf_i hf_f \cos \theta.
+\end{equation}
+$$
+
+Lastly, the left-hand side of this equation can be obtained from the conservation of energy, giving
+
+$$
+\begin{equation}
+p_{e, f}^2 c^2 = \qty(\frac{hc}{\lambda_i} - \frac{hc}{\lambda_f})^2 + 2 m_e c^2 \qty(\frac{hc}{\lambda_i} - \frac{hc}{\lambda_f}).
+\end{equation}
+$$
+
+Equating these two expressions for $p_{e, f}^2 c^2$ and simplifying leads to the **Compton wavelength shift equation**:
+
+$$
+\begin{equation}
+\lambda_f - \lambda_i = \frac{h}{m_e c} (1 - \cos \theta).
+\end{equation}
+$$
+
+The quantity $h/(m_e c)$ is known as the **Compton wavelength** of the electron, approximately $2.43 \times 10^{-12}$ meters. Compton's experiments confirmed this prediction, providing further evidence for the particle nature of light and the validity of quantum mechanics.
+
+To clarify, light exhibits both wave-like and particle-like properties, a concept known as wave-particle duality. When light propagates, it behaves like a wave, exhibiting interference and diffraction. However, when light interacts with matter, such as in the photoelectric effect or Compton scattering, it behaves like a particle, transferring discrete packets of energy and momentum.
+
+### The Rutherford and Bohr Models
+
+With the photon figured out, another important development in quantum mechanics was the nature of matter particles. Joseph John Thomson (1856–1940) discovered the electron in 1897, and Robert Millikan (1868–1953) measured its charge in 1909 using the oil drop experiment. By coating oil drops with a known amount of charge and observing their motion in an electric field, Millikan was able to determine the fundamental charge of the electron.
+Prior to the Bohr model, the dominant theory of the atom was the **Rutherford model**, proposed by Ernest Rutherford (1871–1937) in 1911. By directing alpha particles at a thin gold foil, Rutherford discovered that most particles passed through the foil, but some were deflected at large angles. This led him to propose that atoms consist of a small, dense nucleus containing positively charged protons, surrounded by negatively charged electrons. However, this model could not explain why atoms emitted discrete spectral lines.
+
+> "It was almost as incredible as if you fired a 15-inch shell at a piece of tissue paper and it came back and hit you." — Ernest Rutherford on the discovery of the atomic nucleus.
+
+His conclusion was that the atom is mostly empty space, with a tiny, dense nucleus at its center. This was a radical departure from the earlier "plum pudding" model proposed by J.J. Thomson, which envisioned the atom as a diffuse cloud of positive charge with negatively charged electrons embedded within it. A neutral atom must have an equal number of protons and electrons, so the nucleus must also contain neutral particles to account for the mass of the atom. James Chadwick (1891–1974) discovered the neutron in 1932, completing the basic picture of atomic structure. What was now needed was a way to arrange these particles to align with the observed spectral lines.
+
+The observed lines for the hydrogen atom are given by the **Balmer series**
+
+$$
+\begin{equation}
+\frac{1}{\lambda} = R_H \qty(\frac{1}{2^2} - \frac{1}{n^2}), \quad n = 3, 4, 5, \ldots,
+\end{equation}
+$$
+
+where $R_H$ is the Rydberg constant for hydrogen, equal to $1.09677583(13) \times 10^7 \text{ m}^{-1}$. The more general formula is
+
+$$
+\begin{equation}
+\frac{1}{\lambda} = R_H \qty(\frac{1}{m^2} - \frac{1}{n^2}),
+\end{equation}
+$$
+
+where $m$ and $n$ are integers with $n > m$. The Balmer series corresponds to transitions where $m = 2$. Other series include the Lyman series ($m = 1$), Paschen series ($m = 3$), Brackett series ($m = 4$), and Pfund series ($m = 5$). No theory at the time could explain why these lines were discrete or why they followed this specific pattern. Consider an electron moving in a circular orbit around a proton. According to classical electromagnetism, the electron should continuously emit radiation as it accelerates. If its acceleration is $a$, then the power radiated is given (in nonrelativistic contexts) by the Larmor formula, discovered by Joseph Larmor (1857–1942) in 1897:
+
+$$
+\begin{equation}
+P = \frac{2}{3} \frac{e^2 a^2}{4 \pi \epsilon_0 c^3}.
+\end{equation}
+$$
+
+As such, the electron would lose energy and spiral into the nucleus in a very short time, leading to the collapse of the atom in about $10^{-8}$ seconds. This was clearly not the case.
+
+In 1913, Niels Bohr (1885–1962) proposed a new model of the atom that incorporated quantum ideas to explain the discrete spectral lines. To be precise, this model is **semiclassical** because it is not fully quantum mechanical; it treats the electron as a classical particle moving in quantized orbits around the nucleus. Bohr made two key postulates:
+
+1. The electron can only occupy certain allowed orbits where its angular momentum is quantized:
+
+   $$
+   \begin{equation}
+   L = n \hbar, \quad n = 1, 2, 3, \ldots,
+   \end{equation}
+   $$
+
+   where $\hbar = h/(2\pi)$ is the reduced Planck constant.
+
+2. The electron does not emit radiation while in these allowed orbits. Radiation is only emitted or absorbed when the electron transitions between these orbits, with the energy of the photon given by the difference in energy levels.
+
+The attractive force between the electron and proton is given by Coulomb's law:
+
+$$
+\begin{equation}
+\vb{F} = -\frac{1}{4 \pi \epsilon_0} \frac{e^2}{r^2} \vu{r}.
+\end{equation}
+$$
+
+We shall be using the center of mass reference frame by using the reduced mass
+
+$$
+\begin{equation}
+\mu = \frac{m_e m_p}{m_e + m_p} = 0.999455679 m_e.
+\end{equation}
+$$
+
+The total mass is
+
+$$
+\begin{equation}
+M = m_e + m_p = 1.0005446 m_p.
+\end{equation}
+$$
+
+In the center of mass reference frame, we have
+
+$$
+\begin{equation}
+\vb{F} = \mu \vb{a}.
+\end{equation}
+$$
+
+Therefore,
+
+$$
+\begin{equation}
+\frac{1}{4 \pi \epsilon_0} \frac{e^2}{r^2} = \mu \frac{v^2}{r}.
+\end{equation}
+$$
+
+From this it is clear that the kinetic energy is
+
+$$
+\begin{equation}
+K = \frac{1}{2} \mu v^2 = \frac{1}{2} \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r}.
+\end{equation}
+$$
+
+The potential energy is
+
+$$
+\begin{equation}
+U = -\frac{1}{4 \pi \epsilon_0} \frac{e^2}{r},
+\end{equation}
+$$
+
+so the total energy is
+
+$$
+\begin{equation}
+E = K + U = -\frac{1}{2} \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r}.
+\end{equation}
+$$
+
+Now we leave the classical regime and apply Bohr's quantization condition. The angular momentum is
+
+$$
+\begin{equation}
+L = \mu v r = n \hbar.
+\end{equation}
+$$
+
+From this we can solve for the velocity:
+
+$$
+\begin{equation}
+v = \frac{n \hbar}{\mu r}.
+\end{equation}
+$$
+
+Substituting this into the kinetic energy gives
+
+$$
+\begin{equation}
+K = \frac{1}{2} \mu \qty(\frac{n \hbar}{\mu r})^2 = \frac{n^2 \hbar^2}{2 \mu r^2}.
+\end{equation}
+$$
+
+Equating this with the earlier expression for kinetic energy gives
+
+$$
+\begin{equation}
+\frac{n^2 \hbar^2}{2 \mu r^2} = \frac{1}{2} \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r}.
+\end{equation}
+$$
+
+From this we can solve for the radius of the $n$th orbit:
+
+$$
+\begin{equation}
+r_n = \frac{4 \pi \epsilon_0 n^2 \hbar^2}{\mu e^2} =: a_0 n^2,
+\end{equation}
+$$
+
+where $a_0$ is the **Bohr radius**, equal to approximately $5.2917720859(36) \times 10^{-11}$ meters. Substituting this back into the expression for total energy gives
+
+$$
+\begin{equation}
+E_n = -\frac{1}{2} \frac{1}{4 \pi \epsilon_0} \frac{e^2}{a_0 n^2} = -\frac{\mu e^4}{2 (4 \pi \epsilon_0)^2 \hbar^2} \frac{1}{n^2} =: -\frac{E_0}{n^2},
+\end{equation}
+$$
+
+where $E_0$ is the ground state energy, equal to approximately $13.7 \text{ eV}$. The energy levels are negative because the electron is bound to the nucleus; it would require positive energy to free it.
+
+We can show that this model reproduces the observed spectral lines. When an electron transitions from a higher energy level $n_i$ to a lower energy level $n_f$, it emits a photon with energy equal to the difference in energy levels:
+
+$$
+\begin{equation}
+\begin{split}
+E_\gamma &= E_{n_i} - E_{n_f} \\
+&= \frac{\mu e^4}{2 (4 \pi \epsilon_0)^2 \hbar^2} \qty(\frac{1}{n_f^2} - \frac{1}{n_i^2}).
+\end{split}
+\end{equation}
+$$
+
+Using the relation $E_\gamma = h\nu = hc/\lambda$, we find
+
+$$
+\begin{equation}
+\frac{1}{\lambda} = \frac{\mu e^4}{2 (4 \pi \epsilon_0)^2 \hbar^3 c} \qty(\frac{1}{n_f^2} - \frac{1}{n_i^2}).
+\end{equation}
+$$
+
+This matches the Rydberg formula with the Rydberg constant given by
+
+$$
+\begin{equation}
+R_H = \frac{\mu e^4}{2 (4 \pi \epsilon_0)^2 \hbar^3 c}.
+\end{equation}
+$$
+
+We are now ready to justify all of Kirchhoff's laws:
+
+1. "A hot, dense object produces a continuous spectrum of light." In a hot, dense object like a star, blackbody radiation dominates, given by the Planck functions $B_\nu(T)$ and $B_\lambda(T)$. The high density means that atoms are closely packed, leading to frequent collisions that broaden spectral lines and create a continuous spectrum.
+2. "A hot, low-density gas produces an emission spectrum." In a hot, low-density gas, electronic transitions in atoms lead to the emission of photons at specific wavelengths, resulting in an emission spectrum. The low density means that atoms are far apart, reducing collisions and allowing discrete spectral lines to be observed.
+3. "A cool, low-density gas in front of a hot, dense object produces an absorption spectrum." When light from a hot, dense object passes through a cool, low-density gas, atoms in the gas absorb photons at specific wavelengths corresponding to electronic transitions. This results in dark lines (absorption lines) in the otherwise continuous spectrum of the hot object.
+
+### Wave-Particle Duality and the de Broglie Hypothesis
+
+The Bohr model was a significant step forward in understanding atomic structure, but it was still not a complete theory. It could not explain the spectra of atoms with more than one electron, nor could it account for the fine structure of spectral lines or the Zeeman effect (the splitting of spectral lines in a magnetic field). A more comprehensive theory was needed.
+
+In 1924, French physicist Louis de Broglie (1892–1987) proposed a bold hypothesis that extended the concept of wave-particle duality to matter particles. He suggested that just as light exhibits both wave-like and particle-like properties, electrons and other matter particles also have wave-like characteristics.
+
+de Broglie presented his hypothesis in his doctoral thesis, where he proposed that the wavelength $\lambda$ of a particle is related to its momentum $p$ by the equation
+
+$$
+\begin{equation}
+\lambda = \frac{h}{p}.
+\end{equation}
+$$
+
+This initially outlandish idea was verified experimentally in 1927 by Clinton Davisson (1881–1958) and Lester Germer (1896–1971) through their electron diffraction experiments. They observed that electrons scattered off a crystal produced an interference pattern, similar to that produced by X-rays, confirming that electrons indeed have wave-like properties.
+
+de Broglie's hypothesis had profound implications for the Bohr model of the atom. If electrons have wave-like properties, then their allowed orbits around the nucleus can be understood as standing waves. For an electron to form a stable orbit, its wavelength must fit an integer number of times around the circumference of the orbit:
+
+$$
+\begin{equation}
+n \lambda = 2 \pi r, \quad n = 1, 2, 3, \ldots,
+\end{equation}
+$$
+
+where $r$ is the radius of the orbit. This condition is equivalent to Bohr's quantization of angular momentum, providing a physical basis for his postulates.
+
+Additionally, it calls into question the ontological nature of the electron. How can the electron interfere with itself? In the double-slit experiment, the electron seems to pass through both slits simultaneously, creating an interference pattern on the detection screen. This suggests that the electron does not have a definite position until it is measured, leading to the development of wavefunctions as an explanation.
+
+Note that in our studies of quantum mechanics, we jumped directly to the modern formalism with Hilbert spaces and operators, bypassing the semiclassical models. However, these historical models were crucial in shaping our understanding of atomic structure and the development of quantum mechanics.
+
+Werner Heisenberg (1901–1976) derived the uncertainty relation between position and momentum in 1927, which states that the more precisely we know a particle's position, the less precisely we can know its momentum, and vice versa:
+
+$$
+\begin{equation}
+\Delta x \Delta p \geq \frac{\hbar}{2}.
+\end{equation}
+$$
+
+Another interesting result is the idea of quantum tunneling. Consider the classical idea of total internal reflection, where a wave traveling in a prism with refractive index $n_\text{(glass)}$ hits the boundary of air with refractive index $n_\text{(air)} < n_\text{(glass)}$ at an angle greater than the critical angle $\theta_c = \sin^{-1}(n_\text{(air)}/n_\text{(glass)})$. This wave never interacts with the air, but the refractive index of air is still in the equation for the critical angle. This is because the wavefunction of the wave penetrates a small distance into the air and decays exponentially. This is known as the **evanescent wave**.
+
+Now, if one places a second prism very close to the first, the evanescent wave can interact with the second prism before it decays to zero, and becomes oscillatory again. This allows the wave to "tunnel" through the gap between the prisms, even though it does not have enough energy to overcome the potential barrier classically. This phenomenon is known as **quantum tunneling**.
+From de Broglie's hypothesis, electrons and other matter particles also have wave-like properties, allowing them to tunnel through potential barriers that they would not be able to overcome classically. This has important implications in various fields, including nuclear fusion in stars, semiconductor physics, and the operation of tunnel diodes and scanning tunneling microscopes.
+
+### The Birth of Real Quantum Mechanics
+
+The developments in atomic theory and the wave-particle duality of matter set the stage for the formulation of a complete theory of quantum mechanics. Erwin Schrödinger (1887–1961) developed wave mechanics in 1926, introducing the Schrödinger equation, which describes how the quantum state of a physical system changes over time. The time-dependent Schrödinger equation is given by
+
+$$
+\begin{equation}
+i \hbar \frac{\partial}{\partial t} \psi(\vb{x}, t) = -\frac{\hbar^2}{2m} \nabla^2 \psi(\vb{x}, t) + V(\vb{x}) \psi(\vb{x}, t).
+\end{equation}
+$$
+
+We can analytically solve the Schrödinger equation for the hydrogen atom, obtaining the same energy levels as the Bohr model, but now with a full quantum mechanical description. First, we plug in the classical Hamiltonian for the hydrogen atom
+
+$$
+\begin{equation}
+H = \frac{p^2}{2\mu} - \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r},
+\end{equation}
+$$
+
+which, when quantized, becomes
+
+$$
+\begin{equation}
+H = -\frac{\hbar^2}{2\mu} \nabla^2 - \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r}.
+\end{equation}
+$$
+
+We can use this to solve the time-independent Schrödinger equation
+
+$$
+\begin{equation}
+H \psi(\vb{x}) = \qty(-\frac{\hbar^2}{2\mu} \nabla^2 - \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r}) \psi(\vb{x}) = E \psi(\vb{x}).
+\end{equation}
+$$
+
+We can perform separation of variables by writing $\psi(\vb{x}) = R(r) Y(\theta, \phi)$. The radial part $R(r)$ satisfies the equation
+
+$$
+\begin{equation}
+-\frac{\hbar^2}{2\mu} \qty(\frac{1}{r^2} \dv{r} \qty(r^2 \dv{R}{r}) - \frac{l(l+1)}{r^2} R) - \frac{1}{4 \pi \epsilon_0} \frac{e^2}{r} R = E R,
+\end{equation}
+$$
+
+which solves to
+
+$$
+\begin{equation}
+R_{nl}(r) = \sqrt{\qty(\frac{2}{n a_0})^3 \frac{(n - l - 1)!}{2n (n + l)!}} e^{-r/(n a_0)} \qty(\frac{2r}{n a_0})^l L_{n - l - 1}^{2l + 1}\qty(\frac{2r}{n a_0}),
+\end{equation}
+$$
+
+where $L_{n - l - 1}^{2l + 1}$ are the associated Laguerre polynomials. The angular part $Y(\theta, \phi)$ satisfies the equation
+
+$$
+\begin{equation}
+\frac{1}{\sin \theta} \pdv{\theta} \qty(\sin \theta \pdv{Y}{\theta}) + \frac{1}{\sin^2 \theta} \pdv[2]{Y}{\phi} + l(l+1) Y = 0.
+\end{equation}
+$$
+
+The solutions to this are the **spherical harmonics**:
+
+$$
+\begin{equation}
+Y_l^m(\theta, \phi) = \sqrt{\frac{(2l + 1)}{4\pi} \frac{(l - m)!}{(l + m)!}} P_l^m(\cos \theta) e^{im\phi},
+\end{equation}
+$$
+
+where $P_l^m$ are the associated Legendre polynomials. The quantum numbers $n$, $l$, and $m$ arise naturally from the boundary conditions of the wavefunction.
+
+The energy levels are given by
+
+$$
+\begin{equation}
+E_n = -\frac{\mu e^4}{2 (4 \pi \epsilon_0)^2 \hbar^2} \frac{1}{n^2} = -\frac{E_0}{n^2},
+\end{equation}
+$$
+
+which matches the results from the Bohr model. The quantum numbers have the following ranges:
+
+- $n = 1, 2, 3, \ldots$ (principal quantum number)
+- $l = 0, 1, 2, \ldots, n - 1$ (azimuthal quantum number)
+- $m = -l, -l + 1, \ldots, l - 1, l$ (magnetic quantum number)
+
+The angular momentum operator is given by
+
+$$
+\begin{equation}
+\vb{L} = -i \hbar \vb{r} \times \nabla,
+\end{equation}
+$$
+
+with eigenvalues
+
+$$
+\begin{equation}
+L = \sqrt{l(l + 1)} \hbar,
+\end{equation}
+$$
+
+and
+
+$$
+\begin{equation}
+L_z = m \hbar.
+\end{equation}
+$$
+
+Different values of $l$ are typically referred to via historical spectroscopic notation: $l = 0, 1, 2, 3, 4, 5, \ldots$ correspond to $s, p, d, f, g, h, \ldots$ orbitals, respectively. From the work of physicists including Wolfgang Pauli (1900–1958) and Paul Dirac (1902–1984), we now know that fermions are spinors, which are objects that transform under the $(\frac{1}{2}, 0)$ or $(0, \frac{1}{2})$ representations of the Lorentz group. From a Clifford algebraic perspective, spinors are elements of a minimal left (or right) ideal of the Clifford algebra. The electron has spin $s = \frac{1}{2}$, leading to two possible spin states: $m_s = +\frac{1}{2}$ (spin-up) and $m_s = -\frac{1}{2}$ (spin-down). This intrinsic angular momentum is a purely quantum mechanical property with no classical analogue, and was demonstrated experimentally by the Stern-Gerlach experiment in 1922.
+
+The Pauli exclusion principle, formulated by Wolfgang Pauli in 1925, states that no two fermions can occupy the same quantum state simultaneously.
+This principle explains the structure of the periodic table and the behavior of electrons in atoms, as it dictates how electrons fill available energy levels and orbitals.
+With this principle, the field of chemistry could finally be explained from first principles.
+
+## General Relativity and Cosmology
+
+In 1915, Albert Einstein published his theory of general relativity, which describes gravity as the curvature of spacetime caused by mass and energy.
+His work began in 1907 with the equivalence principle, which states that the effects of gravity are locally indistinguishable from acceleration (for nonrotating reference frames).
+Naturally, it meant that spacetime is locally Minkowskian and obeys special relativity, but globally curved.
+This is perfectly described by a manifold, which is a topological space that locally resembles Euclidean space and allows for the definition of concepts like continuity, differentiability, and curvature.
+
+The Einstein field equations relate the geometry of spacetime to the distribution of matter and energy. In component form, they are given by
+
+$$
+\begin{equation}
+R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} + \Lambda g_{\mu\nu} = \kappa T_{\mu\nu}.
+\end{equation}
+$$
+
+The left-hand side describes the geometry of spacetime, while the right-hand side describes the matter and energy content.
+Einstein's original derivation involved trying to generalize Poisson's equation for gravity to be Lorentz covariant.
+It was only later that the Einstein-Hilbert action was discovered and applied to derive the same equation.
+
+As the equations are nonlinear and coupled, there are few known analytical solutions for the metric $g_{\mu\nu}$.
+The first came from Karl Schwarzschild (1873–1916) in 1916, who found the solution for the spacetime outside a spherically symmetric, non-rotating mass.
+It rests on a few assumptions: the spacetime is static (time-independent), spherically symmetric, and asymptotically flat (approaching Minkowski space at infinity).
+We will also set the cosmological constant $\Lambda = 0$ for simplicity.
+The energy-momentum tensor $T_{\mu\nu}$ is zero outside the mass, leading to the vacuum Einstein equations
+
+$$
+\begin{equation}
+R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} = 0.
+\end{equation}
+$$
+

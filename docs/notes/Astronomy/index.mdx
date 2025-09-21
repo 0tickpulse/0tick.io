@@ -1,0 +1,37 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Astronomy
+
+Astronomy is the scientific study of celestial objects, space, and the universe as a whole.
+Astrophysics is a branch of astronomy that applies the principles of physics and chemistry to understand how stars, galaxies, and the universe evolve.
+
+Virtually all of the concepts we have learned in relativity and quantum field theory can be applied to astrophysics.
+Newtonian mechanics describes the motion of planets and other celestial objects.
+Studies of particle physics and high-energy physics are essential for understanding phenomena such as cosmic rays, black holes, and the early universe.
+Condensed matter physics is crucial for understanding the properties of matter in extreme environments, such as neutron stars and white dwarfs.
+Nuclear physics tells us about the processes that power stars and the synthesis of elements in the universe.
+Thermodynamics and statistical mechanics are universally applicable, as they describe the behavior of matter and energy in various astrophysical systems.
+Even chemistry is important for understanding the composition of stars and planets, as well as the formation of molecules in space.
+Recently, for example, astrochemistry has become instrumental in the studies of abiogenesis.
+
+For this section, we will follow Carroll and Ostlie's "An Introduction to Modern Astrophysics" as a reference.
+I will obviously include other sources as well, but this is a great general textbook that covers a wide range of topics in astrophysics.
+
+Assumed knowledge includes classical (Newtonian, perhaps some Lagrangian and Hamiltonian) mechanics, electromagnetism, special and general relativity, as well as quantum mechanics.
+These are all topics I have written notes on, which is why I do not plan to cover them in detail here.
+Some knowledge of statistical mechanics, thermodynamics, and nuclear physics is also helpful, but as these are not topics I have written notes on, I will try to include some background information as needed.
