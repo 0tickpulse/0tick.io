@@ -1,5 +1,6 @@
 ---
-sidebar_position: 1
+sidebar_position: 0
+draft: true
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
@@ -22,6 +23,11 @@ To understand the Schwarzschild metric and general relativity, we need to introd
 The study of general relativity revolves around manifolds, but what exactly is a manifold?
 How do we describe the geometry of a manifold? To answer these questions, we will introduce some key concepts from differential geometry.
 These will mostly be informal definitions and explanations, as a full treatment of differential geometry is beyond the scope of an set of astronomy notes.
+
+One unfortunate aspect of differential geometry is that many textbooks and resources use different notations and conventions.
+Moreover, many common concepts are defined in different ways, which can be confusing for beginners.
+For instance, when we see $\vb{v}$, we usually say that it is a vector. In differental geometry, however, we say that $\vb{v}$ is a differential operator that acts on functions.
+When we see $\dd{f}$, we usually say that it is a differential (an infinitesimal change) of the function $f$. In differential geometry, however, we say that $\dd{f}$ is a covector (or one-form) that acts on vectors.
 
 ## Table of Contents
 
@@ -416,6 +422,65 @@ Suppose $\alpha^p$ is a $p$-form defined as
 
 $$
 \begin{equation}
-\alpha^p := \alpha(u^i) \dd{u^{i_1}} \wedge \dd{u^{i_2}} \wedge \cdots \wedge \dd{u^{i_p}},
+\alpha^p := \alpha(u^i) \dd{u^i} \wedge \dd{u^j} \wedge \cdots \wedge \dd{u^k},
+\end{equation}
+$$
+
+where $\alpha(u^i)$ is a scalar function.
+Then, the exterior differential of $\alpha^p$ is defined as
+
+$$
+\begin{equation}
+\begin{split}
+\dd{\alpha^p} &:= \dd{\alpha} \wedge \dd{u^i} \wedge \dd{u^j} \wedge \cdots \wedge \dd{u^k} \\
+&= \pdv{\alpha}{u^m} \dd{u^m} \wedge \dd{u^i} \wedge \dd{u^j} \wedge \cdots \wedge \dd{u^k}.
+\end{split}
+\end{equation}
+$$
+
+In three dimensions, the exterior differential of a 0-form, 1-form, and 2-form provides the gradient, curl, and divergence, respectively:
+
+$$
+\begin{align}
+\dd{f} &= \pdv{f}{u^i} \dd{u^i} = \pdv{f}{x} \dd{x} + \pdv{f}{y} \dd{y} + \pdv{f}{z} \dd{z}, \\
+\dd{\alpha^1} &= \pdv{\alpha_j}{u^i} \dd{u^i} \wedge \dd{u^j} = \qty(\pdv{\alpha_z}{y} - \pdv{\alpha_y}{z}) \dd{y} \wedge \dd{z} + \qty(\pdv{\alpha_x}{z} - \pdv{\alpha_z}{x}) \dd{z} \wedge \dd{x} + \qty(\pdv{\alpha_y}{x} - \pdv{\alpha_x}{y}) \dd{x} \wedge \dd{y}, \\
+\dd{\beta^2} &= \pdv{\beta_{ij}}{u^k} \dd{u^k} \wedge \dd{u^i} \wedge \dd{u^j} = \qty(\pdv{\beta_{yz}}{x} + \pdv{\beta_{zx}}{y} + \pdv{\beta_{xy}}{z}) \dd{x} \wedge \dd{y} \wedge \dd{z}.
+\end{align}
+$$
+
+As you can see, in Cartesian coordinates the first leads to $\dd{f} = \nabla f \cdot \dd{\vb{r}}$, the second to $\nabla \times \vb{\alpha^1} \cdot \dd{A}$, and the third to $\nabla \cdot \vb{\beta^2} \cdot \dd{V}$.
+The $\dd{A}$ and $\dd{V}$ are area and volume forms, respectively, which we have not formally defined yet.
+The exterior differential is also metric-independent, so it also means that we can now define concepts like gradient, curl, and divergence without a metric.
+
+Note that applying the exterior differential twice always gives zero, i.e., $\dd{}^2 = 0$.
+This means that the differential is a **nilpotent** operator.
+As a differential operator, the exterior differential also satisfies the Leibniz rule:
+
+$$
+\begin{equation}
+\dd{(\alpha^p \wedge \beta^q)} = \dd{\alpha^p} \wedge \beta^q + (-1)^p \alpha^p \wedge \dd{\beta^q}.
+\end{equation}
+$$
+
+There are two interesting consequences of these properties.
+
+First, if a $p$-form is known to be the exterior differential of some other form, i.e., $\alpha^p = \dd{\beta^{p-1}}$, then $\dd{\alpha^p} = 0$.
+In vector analysis, this is equivalent to saying that the curl of a gradient is zero, and the divergence of a curl is zero.
+This gives us $\nabla \times (\nabla f) = 0$ and $\nabla \cdot (\nabla \times \vb{\alpha^1}) = 0$ for free.
+
+Second, consider two one-forms $\alpha^1$ and $\beta^1$ in three-dimensional space.
+Then, the exterior differential of their wedge product is
+
+$$
+\begin{equation}
+\dd{(\alpha^1 \wedge \beta^1)} = \dd{\alpha^1} \wedge \beta^1 - \alpha^1 \wedge \dd{\beta^1}.
+\end{equation}
+$$
+
+This gives us a really nice identity in vector calculus:
+
+$$
+\begin{equation}
+\nabla \cdot (\vb{v} \times \vb{w}) = (\nabla \times \vb{v}) \cdot \vb{w} - \vb{v} \cdot (\nabla \times \vb{w}),
 \end{equation}
 $$

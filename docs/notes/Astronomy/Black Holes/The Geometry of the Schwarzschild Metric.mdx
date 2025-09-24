@@ -1,0 +1,171 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# The Geometry of the Schwarzschild Metric
+
+Previously, we derived the Schwarzschild metric by solving Einstein's field equations under the assumptions of spherical symmetry, staticity, and asymptotic flatness. The resulting metric describes the spacetime geometry outside a non-rotating, uncharged, spherically symmetric mass.
+The Schwarzschild metric is given by
+
+$$
+\begin{equation}
+g_{\mu\nu} = \mqty[
+    \qty(1 - \frac{r_s}{r}) & 0 & 0 & 0 \\
+    0 & -\qty(1 - \frac{r_s}{r})^{-1} & 0 & 0 \\
+    0 & 0 & -r^2 & 0 \\
+    0 & 0 & 0 & -r^2 \sin^2\theta
+],
+\end{equation}
+$$
+
+where $r_s = \frac{2GM}{c^2}$ is the Schwarzschild radius.
+Here, we will explore the geometric properties of the Schwarzschild metric and how it describes the curvature of spacetime around a massive object.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Gravitational Time Dilation
+
+Time dilation refers to the difference in the time coordinate $ct$ of two coordinate systems.
+As we are dealing with spherically symmetric spacetimes, we just need to consider the time and radial components of the metric, $ct$ and $r$.
+Our metric is thus two-dimensional, and we can write it as
+
+$$
+\begin{equation}
+g_{\mu\nu} = \mqty[
+    \qty(1 - \frac{r_s}{r}) & 0 \\
+    0 & -\qty(1 - \frac{r_s}{r})^{-1}
+].
+\end{equation}
+$$
+
+Let there be a mass $M$ at the origin (i.e. $r = 0$) which flows along the $t$ coordinate.
+We will draw gridlines, but remember that these do not represent physical distance!
+We never rely on our eyes or the coordinates to determine physical distances in curved spacetimes.
+We **only** rely on the metric to determine angles and distances.
+
+First, notice the length of $\partial_t$, as given by the inner product with itself:
+
+$$
+\begin{equation}
+\partial_t \cdot \partial_t = g_{tt} = 1 - \frac{r_s}{r}.
+\end{equation}
+$$
+
+Four cases arise:
+
+1. First, as $r \to \infty$, we have $\partial_t \cdot \partial_t \to 1$, which is the same as in flat spacetime.
+2. Second, as $r \to r_s$ from the right, $\partial \cdot \partial_t$ becomes smaller and smaller, but remains positive (within $[0, 1)$).
+    This means that outside the Schwarzschild radius, $\partial_t$ is a timelike vector, but its length shrinks as we approach $r_s$.
+3. *At* $r = r_s$, $\partial_t$ becomes a null/lightlike vector, as $\partial_t \cdot \partial_t = 0$.
+    This means that at the Schwarzschild radius, $\partial_t$ is neither timelike nor spacelike.
+4. Finally, as $r < r_s$, $\partial_t \cdot \partial_t < 0$, meaning that $\partial_t$ is a spacelike vector inside the Schwarzschild radius.
+    This means that inside the Schwarzschild radius, the $t$ coordinate behaves like a spatial coordinate.
+    Observers can traverse the $t$ coordinate in both directions like a spatial coordinate.
+
+We will discuss each of these cases in turn.
+
+### Outside the Schwarzschild Radius: r > rₛ, gₜₜ in [0, 1)
+
+Remember that the $t$ coordinate is responsible for measuring time.
+As such, a difference in length of $\partial_t$ across regions of spacetime indicates a difference in the flow of time.
+To calculate the flow of time, we can use the metric to compute the proper time $c\tau$ along a worldline:
+
+$$
+\begin{equation}
+c\tau = \int \sqrt{g_{\mu\nu} \frac{dx^\mu}{d\lambda} \frac{dx^\nu}{d\lambda}} \dd{\lambda}.
+\end{equation}
+$$
+
+Consider a scenario in which two observers are located at different but constant radial distances from the mass $M$.
+One observer is at a distance $r$ from the mass, while the other is at a much larger distance, effectively at infinity.
+
+Note that this is not a realistic scenario. The observers would naturally freefall towards the mass due to gravity.
+As such, they will require some form of propulsion to maintain their positions, or be standing on the surface of a planet or star, held up by electromagnetic forces.
+However, this is a useful thought experiment to understand gravitational time dilation.
+
+Anyways, we have
+
+$$
+\begin{equation}
+c\tau = \int \sqrt{g_{tt} \qty(\frac{d(ct)}{d\lambda})^2} \dd{\lambda} = \int \sqrt{1 - \frac{r_s}{r}} \abs{\frac{d(ct)}{d\lambda}} \dd{\lambda} = \sqrt{1 - \frac{r_s}{r}} ct.
+\end{equation}
+$$
+
+In a more familiar form, we have
+
+$$
+\begin{equation}
+c\tau = \frac{1}{\sqrt{1 - \frac{2GM}{rc^2}}} ct.
+\end{equation}
+$$
+
+This is similar to the time dilation formula in special relativity, where the velocity corresponds to $\sqrt{\frac{2GM}{r}}$, which is the escape velocity from a mass $M$ at a distance $r$.
+
+As $r \to r_s$ from the right, $\sqrt{1 - \frac{r_s}{r}} \to 0$, meaning that the conversion factor between $ct$ and $c\tau$ becomes very small.
+This means that time slows down as we approach the Schwarzschild radius from the outside.
+To take an example, suppose we are at $r = 1.5r_s$.
+Then, we have
+
+$$
+\begin{equation}
+c\tau = \sqrt{1 - \frac{r_s}{1.5r_s}} ct = \sqrt{\frac{1}{3}} ct \approx 0.577 ct.
+\end{equation}
+$$
+
+This means that for every second that passes for a distant observer, only about 0.577 seconds pass for an observer at $r = 1.5r_s$.
+If a year passes for a distant observer, only about 211 days pass for the observer at $r = 1.5r_s$.
+This phenomenon is known as **gravitational time dilation**, named because it is a form of time dilation specifically caused by gravity.
+
+In the same way we can compute the proper time, we can also consider the proper length $L_0$ between two radial positions $r_1$ and $r_2$.
+It's the same integral, but the curve needs to be spacelike (i.e. the inner product of the tangent vector with itself needs to be negative).
+
+$$
+\begin{equation}
+L_0 = \int \sqrt{-g_{\mu\nu} \frac{dx^\mu}{d\lambda} \frac{dx^\nu}{d\lambda}} \dd{\lambda}.
+\end{equation}
+$$
+
+This time, we have that $t$ is constant, so the only non-zero component of the tangent vector is $\frac{dr}{d\lambda}$.
+
+$$
+\begin{equation}
+L_0 = \int \sqrt{-g_{rr} \qty(\frac{dr}{d\lambda})^2} \dd{\lambda} = \int \sqrt{\qty(1 - \frac{r_s}{r})^{-1}} \abs{\frac{dr}{d\lambda}} \dd{\lambda} = \int_{r_1}^{r_2} \frac{1}{\sqrt{1 - \frac{r_s}{r}}} \dd{r} = \int_{r_1}^{r_2} \sqrt{\frac{r}{r - r_s}} \dd{r}.
+\end{equation}
+$$
+
+Unlike the previous integral, we can't just pull out the radical, as it depends on $r$.
+Let's look at the infinitesimal case:
+
+$$
+\begin{equation}
+\dd{L_0} = \sqrt{\frac{r}{r - r_s}} \dd{r}.
+\end{equation}
+$$
+
+In other words, a small change in the radial coordinate $\dd{r}$ corresponds to a larger proper length $\dd{L_0}$, as $\sqrt{\frac{r}{r - r_s}} > 1$ for all $r > r_s$.
+As $r \to \infty$, $\sqrt{\frac{r}{r - r_s}} \to 1$, meaning that far away from the mass, the proper length is approximately equal to the coordinate length.
+Conversely, as $r \to r_s$ from the right, $\sqrt{\frac{r}{r - r_s}} \to \infty$, meaning that near the Schwarzschild radius, a small change in the radial coordinate corresponds to a very large proper length.
+
+There is an analytical solution to the integral, which yields
+
+$$
+\begin{equation}
+L_0 = 2\sqrt{r(r - r_s)} - 
+\end{equation}
+$$

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
@@ -102,6 +102,7 @@ Recall that the Ricci tensor describes the degree to which the volume of a small
 :::
 
 The second assumption is that the spacetime is spherically symmetric and static.
+This means that the $theta$ and $\phi$ components of the metric must be the same as those in flat spacetime, as there is no preferred direction in a spherically symmetric spacetime.
 The third is that the metric should reduce to the Minkowski metric at large distances from the mass, where gravitational effects are negligible.
 In other words,
 
@@ -191,29 +192,276 @@ This is because we are not using a normalized coordinate system.
 </details>
 
 The last assumption is that the metric should be static, meaning that it does not change with time.
+The consequence is that
 
-<detials>
-<summary>A more formal definition</summary>
+1. $\partial_t g_{\mu\nu} = 0$ (time independence), and
+2. $g_{\mu\nu}(t) = g_{\mu\nu}(-t)$ (time reversal symmetry).
 
-To be more precise, we need to invoke some concepts from differential geometry.
-A **Killing vector field** is a vector field that preserves the metric under its flow.
-In other words, if $K^\mu$ is a Killing vector field, then the Lie derivative of the metric with respect to $K^\mu$ is zero:
+A more rigorous definition of a static spacetime is that it possesses a timelike Killing vector field that is hypersurface orthogonal.
+With the last assumption, the $ti$ components of the metric must be zero, as they would change sign under time reversal.
+
+To summarize, our assumptions are
+
+1. Vacuum: $T_{\mu\nu} = 0 \implies R_{\mu\nu} = 0$,
+2. Spherical symmetry,
+3. Asymptotic flatness: $\lim_{r \to \infty} g_{\mu\nu} = \eta_{\mu\nu}$,
+4. Static: $\partial_t g_{\mu\nu} = 0$ and $g_{\mu\nu}(t) = g_{\mu\nu}(-t)$.
+
+With these assumptions, we can write the metric as
 
 $$
 \begin{equation}
-\mathcal{L}_K g_{\mu\nu} = 0.
+g_{\mu\nu} = \mqty[
+    g_{tt}(r, \theta, \phi) & 0 & 0 & 0 \\
+    0 & g_{rr}(r, \theta, \phi) & 0 & 0 \\
+    0 & 0 & -C(r) r^2 & 0 \\
+    0 & 0 & 0 & -C(r) r^2 \sin^2 \theta
+].
 \end{equation}
 $$
 
-The Lie derivative is similar to just applying a vector as a directional derivative;
+The $g_{r\theta}$ and $g_{r\phi}$ components are zero as $r$ must point radially outward, while $\theta$ and $\phi$ point tangentially.
+Moreover, the $g_{tt}$ and $g_{rr}$ components depend only on $r$ due to spherical symmetry and time independence.
+As such, we can introduce the functions $A(r)$ and $B(r)$ such that
 
 $$
 \begin{equation}
-\mathcal{L}_K g_{\mu\nu} = K^\lambda \nabla_\lambda g_{\mu\nu} + g_{\lambda\nu} \nabla_\mu K^\lambda + g_{\mu\lambda} \nabla_\nu K^\lambda,
+g_{\mu\nu} = \mqty[
+    A(r) & 0 & 0 & 0 \\
+    0 & -B(r) & 0 & 0 \\
+    0 & 0 & -C(r) r^2 & 0 \\
+    0 & 0 & 0 & -C(r) r^2 \sin^2 \theta
+].
 \end{equation}
 $$
 
-</detials>
+Lastly, we will make a coordinate shift of $r \to \sqrt{C(r)} r$ to eliminate the $C(r)$ function.
+This leads us to
 
+$$
+\begin{equation}
+g_{\mu\nu} = \mqty[
+    A(r) & 0 & 0 & 0 \\
+    0 & -B(r) & 0 & 0 \\
+    0 & 0 & -r^2 & 0 \\
+    0 & 0 & 0 & -r^2 \sin^2 \theta
+],
+\end{equation}
+$$
 
+with
+
+$$
+\begin{align}
+\lim_{r \to \infty} A(r) &= 1, \\
+\lim_{r \to \infty} B(r) &= 1.
+\end{align}
+$$
+
+## LCC Coefficients
+
+Our next step is to solve for the functions $A(r)$ and $B(r)$ by applying the Ricci flat condition $R_{\mu\nu} = 0$.
+To do so, we need to choose a connection (a way to differentiate tensors on a manifold).
+In general relativity, we use the Levi-Civita connection (LCC), which is the unique torsion-free connection that is compatible with the metric.
+A LCC always exists for any (pseudo-)Riemannian manifold as stated by the fundamental theorem of Riemannian geometry.
+
+The LCC coefficients (also known as Christoffel symbols) are given by
+
+$$
+\begin{equation}
+\Gamma^\rho_{\mu\nu} = \frac{1}{2} g^{\rho\sigma} \qty(\partial_\mu g_{\nu\sigma} + \partial_\nu g_{\mu\sigma} - \partial_\sigma g_{\mu\nu}).
+\end{equation}
+$$
+
+I will not show the full derivation here, as it is quite tedious and can be found in many textbooks and online resources.
+The non-zero LCC coefficients are
+
+$$
+\begin{align}
+\Gamma_{00}^1 &= \frac{1}{2B} \partial_r A, \\
+\Gamma_{01}^0 &= \Gamma_{10}^0 = \frac{1}{2A} \partial_r A, \\
+\Gamma_{11}^1 &= \frac{1}{2B} \partial_r B, \\
+\Gamma_{12}^2 &= \Gamma_{21}^2 = \frac{1}{r}, \\
+\Gamma_{13}^3 &= \Gamma_{31}^3 = \frac{1}{r}, \\
+\Gamma_{22}^1 &= -\frac{r}{B}, \\
+\Gamma_{33}^1 &= -\frac{r \sin^2 \theta}{B}, \\
+\Gamma_{23}^3 &= \Gamma_{32}^3 = \cot \theta.
+\end{align}
+$$
+
+## Ricci Tensor
+
+Next we can compute the Ricci tensor using the LCC coefficients.
+Recall that Einstein's field equations tell us that $R_{\mu\nu} = 0$ in vacuum.
+As such, we can compute the Ricci tensor and set it to zero to solve for $A(r)$ and $B(r)$.
+
+Once again I will skip the full derivation. We only need to look at a few components of the Ricci tensor, as shown below.
+Differentiation is with respect to $r$ unless otherwise specified.
+
+$$
+\begin{align}
+R_{00} &= 2rABA'' - rAA'B' + 4ABA' - rB(A')^2 = 0, \\
+R_{11} &= -2rABA'' + rB(A')^2 + rAA'B' + 4A^2B' &= 0, \\
+R_{22} &= -2AB + 2AB^2 - rA'B + rAB' = 0
+\end{align}
+$$
+
+We can add the first two equations to eliminate the second derivative term, yielding
+
+$$
+\begin{equation}
+rA'B + rAB' = 0 \implies \partial_r (AB) = 0 \implies AB = \text{constant} = k_1.
+\end{equation}
+$$
+
+As $r \to \infty$, we have $A \to 1$ and $B \to 1$, so $k_1 = 1$.
+
+Plugging in these findings into the third equation, and doing some algebraic manipulation, we have
+
+$$
+\begin{equation}
+A(r) = 1 - \frac{k_2}{r},
+\end{equation}
+$$
+
+and naturally
+
+$$
+\begin{equation}
+B(r) = \qty(1 - \frac{k_2}{r})^{-1}.
+\end{equation}
+$$
+
+The constant $k_2$ turns out to be the Schwarzschild radius $r_s = \frac{2GM}{c^2}$, which can be determined by comparing the weak-field limit of the Schwarzschild metric to the Newtonian gravitational potential.
+
+## Low-Field Limit
+
+To determine the constant $k_2$, we can compare the Schwarzschild metric to the Newtonian gravitational potential in the weak-field limit.
+In this limit, Poisson's equation holds and can be written as
+
+$$
+\begin{equation}
+\dv[2]{x^i}{t} + \pdv{\Phi}{x^i} = 0,
+\end{equation}
+$$
+
+where $\Phi$ is the Newtonian gravitational potential.
+Notice that this equation is similar to the geodesic equation in general relativity, which is given by
+
+$$
+\begin{equation}
+\dv[2]{x^\mu}{\tau} + \Gamma^\mu_{\rho\sigma} U^\rho U^\sigma = 0,
+\end{equation}
+$$
+
+if we set $\tau = t$, $U^0 = c$, and $U^i = 0$.
+The geodesic equation reduces to
+
+$$
+\begin{equation}
+\dv[2]{x^i}{t} + c^2 \Gamma^i_{00} = 0.
+\end{equation}
+$$
+
+Comparing the two equations, we have
+
+$$
+\begin{equation}
+\Gamma^i_{00} = \frac{1}{c^2} \pdv{\Phi}{x^i}.
+\end{equation}
+$$
+
+Next, we also need to take the weak field limit of the metric to calculate this LCC coefficient.
+In this limit, we can write the metric as a perturbation of the Minkowski metric:
+
+$$
+\begin{equation}
+g_{\mu\nu} = \eta_{\mu\nu} + h_{\mu\nu}.
+\end{equation}
+$$
+
+There are two assumptions we need to make here:
+
+1. The perturbation is small: $|h_{\mu\nu}| \ll 1$. This means that the product $h_{\mu\nu} h_{\rho\sigma}$ is negligible.
+2. The perturbation's derivatives are small: $|\partial_\sigma h_{\mu\nu}| \ll 1$.
+    This means that $(\partial_\sigma h_{\mu\nu}) h_{\alpha\beta}$ and $(\partial_\sigma h_{\mu\nu})(\partial_\rho h_{\alpha\beta})$ are negligible.
+
+When we differentiate the metric, the Minkowski metric is constant, so we have
+
+$$
+\begin{equation}
+\partial_\sigma g_{\mu\nu} = \partial_\sigma h_{\mu\nu}.
+\end{equation}
+$$
+
+As such, the LCC coefficient $\Gamma^i_{00}$ becomes
+
+$$
+\begin{equation}
+\begin{split}
+\Gamma^i_{00} &= \frac{1}{2} g^{i\sigma} \qty(\partial_0 g_{0\sigma} + \partial_0 g_{0\sigma} - \partial_\sigma g_{00}) \\
+&= \frac{1}{2} \eta^{i\sigma} \qty(\partial_0 h_{0\sigma} + \partial_0 h_{0\sigma} - \partial_\sigma h_{00}) \\
+&= -\frac{1}{2} \eta^{ii} \qty(\partial_0 h_{0i} + \partial_0 h_{0i} - \partial_i h_{00}) \\
+&= \frac{1}{2} (-1) (-\partial_i h_{00}) \\
+&= \frac{1}{2} \partial_i h_{00}.
+\end{split}
+\end{equation}
+$$
+
+And since this must equal $\frac{1}{c^2} \pdv{\Phi}{x^i}$, we have
+
+$$
+\begin{equation}
+\partial_i h_{00} = \frac{2}{c^2} \pdv{\Phi}{x^i} \implies h_{00} = \frac{2\Phi}{c^2} (+ \text{constant}).
+\end{equation}
+$$
+
+We set the constant to zero, as we want the perturbation to vanish when the potential is zero.
+For a spherically symmetric mass distribution, the Newtonian gravitational potential is given by
+
+$$
+\begin{equation}
+\Phi = -\frac{GM}{r}.
+\end{equation}
+$$
+
+As such, we have
+
+$$
+\begin{equation}
+h_{00} = -\frac{2GM}{c^2 r}.
+\end{equation}
+$$
+
+This is true in both Cartesian and spherical coordinates, as the time component is invariant under spatial coordinate transformations.
+Anyways, we can then compare this to the $g_{00}$ component of the Schwarzschild metric in the weak-field limit:
+
+$$
+\begin{equation}
+1 - \frac{k_2}{r} = g_{00} = \eta_{00} + h_{00} = 1 - \frac{2GM}{c^2 r}.
+\end{equation}
+$$
+
+This implies that $k_2 = \frac{2GM}{c^2} = r_s$.
+
+Thus, we have derived the Schwarzschild metric:
+
+$$
+\begin{equation}
+g_{\mu\nu} = \mqty[
+    \qty(1 - \frac{r_s}{r}) & 0 & 0 & 0 \\
+    0 & -\qty(1 - \frac{r_s}{r})^{-1} & 0 & 0 \\
+    0 & 0 & -r^2 & 0 \\
+    0 & 0 & 0 & -r^2 \sin^2 \theta
+].
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+In this note, we derived the Schwarzschild metric by making several assumptions about the spacetime outside a spherically symmetric, non-rotating, and static mass.
+We started with the Einstein field equations and applied the Ricci flat condition, spherical symmetry, asymptotic flatness, and staticity to simplify the metric.
+Lastly, we determined the constants in the metric by comparing it to the Newtonian gravitational potential in the weak-field limit.
+
+Next, we will explore how the Schwarzschild metric predicts various phenomena, such as gravitational time dilation, the gravitational Doppler effect, the bending of light by gravity, and the precession of planetary orbits.
 

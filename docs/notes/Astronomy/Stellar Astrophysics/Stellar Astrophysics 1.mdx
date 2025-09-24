@@ -47,3 +47,57 @@ These are disk-shaped as a result of the conservation of angular momentum during
 This is why planets in our solar system all orbit the Sun in the same direction.
 When a star exhausts the hydrogen in its core, it leaves the main sequence, and its future evolution depends on its mass.
 
+### Classification of Stars on the H-R Diagram
+
+Stars are classified based on their spectral characteristics, which are determined by their surface temperature and the absorption lines in their spectra.
+The most common classification system is the Morgan-Keenan (MK) system, which uses the letters O, B, A, F, G, K, and M to denote different spectral types.
+O-type stars are the hottest and most massive, while M-type stars are the coolest and least massive.
+Each spectral type is further divided into subclasses using numbers from 0 to 9, with 0 being the hottest and 9 being the coolest within that type.
+For example, our Sun is classified as a G2V star, indicating it is a G-type star with a surface temperature of approximately 5,778 K and is a main-sequence star (denoted by the Roman numeral V).
+
+To visualize the classification of stars, we can plot a simplified Hertzsprung-Russell diagram.
+It is a scatter plot of stars showing the relationship between their absolute magnitudes or luminosities versus their stellar classifications or effective temperatures.
+
+<figure>
+
+![Hertzsprung-Russell Diagram](https://upload.wikimedia.org/wikipedia/commons/6/6b/HRDiagram.png)
+
+<figcaption>
+Observational Hertzsprung-Russell diagram, showing the relationship between stellar luminosity and surface temperature. The main sequence is the prominent diagonal band running from the top left (hot, luminous stars) to the bottom right (cool, dim stars). Other regions include giants, supergiants, and white dwarfs.
+By <a rel="nofollow" class="external text" href="http://www.atlasoftheuniverse.com/me.html">Richard Powell</a> - <a rel="nofollow" class="external text" href="http://www.atlasoftheuniverse.com/hr.html">The Hertzsprung Russell Diagram</a>, <a href="https://creativecommons.org/licenses/by-sa/2.5" title="Creative Commons Attribution-Share Alike 2.5">CC BY-SA 2.5</a>, <a href="https://commons.wikimedia.org/w/index.php?curid=1736396">Link</a>
+</figcaption>
+
+</figure>
+
+This diagram was independently developed by Ejnar Hertzsprung and Henry Norris Russell in the early 20th century.
+It reveals distinct groups of stars, including the main sequence, giants, supergiants, and white dwarfs.
+
+The $x$-axis has two scales: the top scale shows the spectral types (O, B, A, F, G, K, M) and the temperature in Kelvin, while the bottom scale shows the color index (B-V).
+Recall from our previous discussions that the temperature is directly related to the color of the star, with hotter stars appearing blue and cooler stars appearing red.
+The $B - V$ color index is the difference between a star's magnitude in the blue ($B$) and visual ($V$) bands, which is equal to
+
+$$
+\begin{equation}
+B - V = m_B - m_V = -2.5 \log_{10} \qty(\frac{F_B}{F_V}) = -2.5 \log_{10} \qty(\frac{\int_0^\infty F_\lambda S_B(\lambda) \dd{\lambda}}{\int_0^\infty F_\lambda S_V(\lambda) \dd{\lambda}}) + (C_B - C_V).
+\end{equation}
+$$
+
+We can use the formula
+
+$$
+\begin{equation}
+F_\lambda(T) = \frac{2 \pi h c^2 R^2}{d^2 \lambda^5} \frac{1}{e^{hc/(\lambda k_B T)} - 1} \dd{\lambda}
+\end{equation}
+$$
+
+to plug into the above equation:
+
+$$
+\begin{equation}
+B - V = -2.5 \log_{10} \qty(\frac{\int_0^\infty \frac{\mathcal{S}_B(\lambda)}{\lambda^5 (e^{hc/(\lambda k_B T)} - 1)} \dd{\lambda}}{\int_0^\infty \frac{\mathcal{S}_V(\lambda)}{\lambda^5 (e^{hc/(\lambda k_B T)} - 1)} \dd{\lambda}}) + (C_B - C_V).
+\end{equation}
+$$
+
+As the $d$ and $R$ terms cancel out, we see that the $B - V$ color index is only a function of the temperature $T$.
+As the temperature increases, the $B - V$ color index decreases, indicating that hotter stars are bluer.
+
