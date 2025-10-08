@@ -1,0 +1,209 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Introduction to Economics
+
+As mentioned in the introduction, economics is the study of resources and how they are allocated.
+**Scarcity** is the fundamental economic problem that arises because resources are limited, while human wants and needs are unlimited.
+This means that we must make choices about how to allocate our resources in order to satisfy our wants and needs.
+
+Economics can be broadly divided into two main branches: **microeconomics** and **macroeconomics**.
+
+In microeconomics, we study the behavior of individual economic agents, such as consumers, firms, and markets.
+We analyze households and their consumption and labor supply decisions; firms and their production and pricing decisions; and markets and how prices are determined through the interaction of supply and demand.
+In macroeconomics, we study the behavior of the economy as a whole.
+We analyze aggregate economic variables, such as gross domestic product (GDP), unemployment, inflation, and economic growth.
+Nations have national banks that control monetary policies, while their legislatures control fiscal policies.
+
+Here, we will begin with microeconomics, as it provides the foundation for understanding how markets work and how resources are allocated.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## The Problem of Scarcity
+
+Economics is fundamentally concerned with the problem of scarcity.
+Resources are limited, while human wants and needs are unlimited.
+Unlike a shortage, which is circumstantial, scarcity is a permanent condition.
+As mentioned, this means that we must make choices about how to allocate our resources in order to satisfy our wants and needs.
+
+A **resource** is anything that can be used to produce goods and services.
+Resources can be classified into four main categories:
+
+1. **Land**: This includes all natural resources, such as land, water, minerals, and forests.
+2. **Labor**: This includes all human effort, both physical and mental, that is used to produce goods and services.
+3. **Capital**: This includes materials and equipment used in the production of goods and services, such as machinery, buildings, and tools.
+4. **Entrepreneurship**: This includes the ability to combine the other three resources to produce goods and services.
+
+And of course, the most critical resource is **time**.
+Because resources are limited, we must make choices about how to allocate them.
+
+Ever since the dawn of civilization, humans have undergone specialization.
+This means that we do not produce everything we need by ourselves, but rather we specialize in producing certain goods and services, and then trade with others to obtain the goods and services we need.
+This is the basis for the division of labor, as formally introduced by Adam Smith in "The Wealth of Nations" (1776).
+Anyways, let's get our terms straight.
+
+A **good** is a tangible item that satisfies human wants and needs.
+A **public good** is a good that is non-excludable and non-rivalrous, meaning that one person's consumption of the good does not reduce its availability to others, and no one can be excluded from using the good. Examples of public goods include national defense, clean air, and public parks.
+
+The role of the government is different in different economic systems.
+In a **command economy**, the government controls the allocation of resources and makes all economic decisions.
+In a **market economy**, resources are allocated through the interaction of supply and demand in markets.
+No real economy is purely command or purely market. Most economies are mixed economies, which combine elements of both command and market economies.
+
+A **market** is an institution or mechanism that brings together buyers and sellers to exchange goods and services.
+Markets can be physical, such as a farmers' market or a shopping mall, or they can be virtual, such as an online marketplace or a stock exchange.
+Markets can also be classified based on the type of goods and services being exchanged, such as labor markets, financial markets, and commodity markets.
+
+A **price** is the amount of money that is exchanged for a good or service in a market.
+Prices are determined by the interaction of supply and demand in markets.
+For most of human history, prices were determined by barter, where goods and services were exchanged directly for other goods and services.
+However, barter has many limitations, such as the double coincidence of wants, leading to the idea of "money" as a medium of exchange.
+This first emerged in the form of commodity money, where goods such as gold, silver, and other precious metals were used as a medium of exchange.
+Today, we use fiat money, which is money that has no intrinsic value but is accepted as a medium of exchange because the government declares it to be legal tender.
+
+When we choose to allocate our resources to produce one good or service, we base it on how much **utility** we derive from it.
+However, by doing so, we are giving up the opportunity to produce another good or service.
+This is known as the **opportunity cost** of our decision.
+For example, if we choose to allocate our resources to produce more cars, we are giving up the opportunity to produce more computers.
+Such a trade-off can be visualized on a **production possibility frontier** (PPF), which shows the maximum combinations of two goods or services that can be produced with a given set of resources and technology.
+
+The shape of the PPF depends on the opportunity cost of producing one good or service in terms of the other.
+If the opportunity cost is constant, the PPF will be a straight line, following
+
+$$
+\begin{equation}
+Q_2 = \frac{R}{a_2} - \frac{a_1}{a_2} Q_1,
+\end{equation}
+$$
+
+where $Q_1$ and $Q_2$ are the quantities of goods 1 and 2, respectively; $R$ is the total amount of resources available; and $a_1$ and $a_2$ are the amounts of resources required to produce one unit of goods 1 and 2, respectively.
+Opportunity costs are constant when resources are perfectly adaptable to the production of both goods.
+
+If, for every additional unit of good 1 produced, the opportunity cost in terms of good 2 increases, the PPF will be concave to the origin.
+This is because resources are not perfectly adaptable to the production of both goods.
+If the opportunity cost decreases as more of good 1 is produced, the PPF will be convex to the origin.
+This is a rare case, but it can occur when there are economies of scale in the production of good 1.
+
+The decision-making process relies on an axiom of rationality; that individuals and firms make decisions that maximize their utility or profit, respectively.
+As such, we can roughly define economic as follows:
+
+<Boxed>
+
+Economics is the study of how economic agents make decisions due to the constraint of scarcity.
+
+</Boxed>
+
+When we define a cost or a benefit, we can either define it in absolute terms or in marginal terms.
+An **absolute cost** is the total cost of producing a good or service, while a **marginal cost** is the additional cost of producing one more unit of a good or service.
+When we think at the margin, we are thinking about the additional cost or benefit of a decision, rather than the total cost or benefit.
+
+### Optimizations
+
+Economic agents make decisions by comparing the marginal cost and marginal benefit of a decision.
+If the marginal benefit of a decision is greater than the marginal cost, the decision is worth making.
+On the other hand, if the marginal cost is greater than the marginal benefit, the decision is not worth making.
+
+The mathematical framework to describe such optimizations is called **constrained optimization**.
+In constrained optimization, we want to maximize or minimize an objective function subject to one or more constraints.
+
+Let's begin with a simple example about lump sum investments.
+Suppose we deposit $x$ dollars in a bank account that pays an annual interest rate of $r$.
+After $n$ years, the amount of money in the account (the **future value**, $\text{FV}$) will be
+
+$$
+\begin{equation}
+\text{FV} = x(1 + r)^n.
+\end{equation}
+$$
+
+Next, let's flip the problem around.
+If we want to have a future value of $\text{FV}$ after $n$ years, how much money do we need to deposit today (the **present value**, $\text{PV}$)?
+This is just
+
+$$
+\begin{equation}
+\text{PV} = \frac{\text{FV}}{(1 + r)^n}.
+\end{equation}
+$$
+
+Next, suppose we now have a situation in which we get paid $w$ dollars per year for the next $n$ years (an **annuity**).
+How much is this worth today?
+This is just the sum of the present values of each year's payment:
+
+$$
+\begin{equation}
+\text{PV} = \sum_{i=1}^{n} \frac{w}{(1 + r)^i} = w \frac{1 - (1 + r)^{-n}}{r}.
+\end{equation}
+$$
+
+(This is just a geometric series.)
+Finally, suppose we have a situation in which we get paid $w$ dollars per year forever (a **perpetuity**).
+How much is this worth today?
+We simply take the limit as $n \to \infty$ of the annuity formula:
+
+$$
+\begin{equation}
+\text{PV} = \lim_{n \to \infty} w \frac{1 - (1 + r)^{-n}}{r} = \frac{w}{r}.
+\end{equation}
+$$
+
+Another example is a consumer who wishes to, with a budget of $I$ dollars, purchase quantities $x_1$ and $x_2$ of two goods that have prices $p_1$ and $p_2$, respectively.
+The consumer wishes to maximize their utility $U(x_1, x_2)$ subject to the budget constraint
+
+$$
+\begin{equation}
+p_1 x_1 + p_2 x_2 \leq I.
+\end{equation}
+$$
+
+Before introducing Lagrange multipliers, we can derive a method for solving this problem graphically.
+Let the budget constraint be another function
+
+$$
+\begin{equation}
+g(x_1, x_2) = p_1 x_1 - p_2 x_2 = I.
+\end{equation}
+$$
+
+Then, the space defined by $g(x_1, x_2) = I$ is the set of all combinations of $x_1$ and $x_2$ that the consumer can afford.
+We then, want to find the highest value of $U(x_1, x_2)$ that intersects with the space defined by $g(x_1, x_2) = I$.
+This occurs when the two functions are tangent to each other, meaning that their gradients are parallel:
+
+$$
+\begin{equation}
+\nabla U(x_1, x_2) = \lambda \nabla g(x_1, x_2),
+\end{equation}
+$$
+
+where $\lambda$ is a scalar. We call $\lambda$ the **Lagrange multiplier**.
+Next, we introduce the auxiliary function
+
+$$
+\begin{equation}
+\mathcal{L}(x_1, x_2, \lambda) = U(x_1, x_2) - \lambda (g(x_1, x_2) - I).
+\end{equation}
+$$
+
+This is called the **Lagrangian**, not to be confused with the Lagrangian of classical mechanics.
+When the gradient $\nabla \mathcal{L}(x_1, x_2, \lambda) = 0$, the condition for tangency is satisfied, and the budget constraint is also satisfied.
+This gives us three equations with three unknowns, which we can solve to find the optimal values of $x_1$, $x_2$, and $\lambda$.
+
+## Capital
+
+A **capital good** is a good that is used to produce other goods and services.
+
+
+

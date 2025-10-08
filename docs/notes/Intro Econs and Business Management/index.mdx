@@ -1,0 +1,70 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Economics and Business Management
+
+In my set of notes, we mainly cover topics in mathematics and the natural sciences.
+Recently, we explored astronomy and astrophysics, and developed various theoretical frameworks, such as general relativity and quantum field theory, to understand the universe.
+However, we have not yet covered topics in the social sciences, which are equally important for understanding human behavior and society.
+
+Economics, abstractly, is the study of resources and how they are allocated.
+On a more practical level, we think of economics as the study of how individuals, businesses, and governments make decisions about production, consumption, and distribution of goods and services.
+Business management, on the other hand, is an applied discipline that focuses more on the practical aspects of running and managing a business or organization.
+It involves planning, organizing, leading, and controlling resources to achieve specific goals and objectives.
+
+It is exceedingly important to understand the principles of economics and business management for many reasons.
+On a personal level, economics is crucial for making informed decisions about personal finance, investments, and career choices.
+It makes us more informed citizens and voters, as we can better understand the implications of government policies and economic trends.
+On a societal level, *every single issue* we face has an economic component.
+We can endlessly discuss the IR spectra of greenhouse gases, but if we do not understand the economic implications of climate change, we will never be able to implement effective policies to mitigate its effects.
+We can study the molecular basis of medicine, but if we do not understand how healthcare systems work, we will never be able to provide effective healthcare to those in need.
+We can understand the potential of particle accelerators, but if we do not understand the economic implications of funding scientific research, we will never be able to advance our understanding of the universe.
+On a global level, economics is crucial for understanding international trade, globalization, and economic development.
+In our increasingly interconnected world, understanding the principles of economics and business management is essential for navigating the complexities of the global economy.
+
+Below is a list of some remarks about economics and business management from a scientific perspective.
+
+Social science is fundamentally different from natural science.
+In natural science, we can conduct controlled experiments to test hypotheses and theories.
+These are often repeatable and yield consistent results from isolating variables.
+However, as we have seen in biology, human behavior is immensely complex, and it is impossible to attribute a molecular basis to every behavior.
+As such, we rely on the emergent properties of neurological systems to understand human behavior.
+Ideas in psychology precisely are such emergent properties, and they are almost impossible to reduce to a molecular basis.
+
+In social science, we cannot conduct controlled experiments in the same way as in natural science.
+We cannot isolate variables in a social context, as human behavior is influenced by a multitude of factors, including cultural, social, economic, and political factors.
+Moreover, there is a significant amount of variability in human behavior, and experimenting on humans often raises ethical concerns.
+Therefore, social science tends to rely more on observational studies, surveys, and statistical analysis to understand human behavior and society.
+The predictions that we make in social science do not have the same level of certainty as those in natural science, and they are often subject to change based on new data and insights.
+
+This also means that social science tends to be more controversial and subject to debate.
+In economics, there are many different schools of thought, each with its own theories and models.
+Keynesian economics is based on the ability of governmental intervention to stabilize the economy.
+Classical economics, on the other hand, emphasizes the importance of free markets and limited government intervention.
+Behavioral economics incorporates insights from psychology to understand how individuals make decisions.
+Similarly, in business management, there are various approaches and strategies for managing organizations, such as scientific management, human relations management, and contingency management.
+These different approaches often lead to debates and disagreements among scholars and practitioners.
+
+The pedagogical result of this is that we need to pick a specific framework to begin the study.
+This is not to say that other frameworks are invalid, but rather that we need a starting point to build our understanding.
+We begin with a specific framework, then analyze its limitations and shortcomings, and then explore alternative frameworks.
+Note that natural science also operates this way; in quantum mechanics, we almost always use the Copenhagen interpretation, and it is only after a thorough understanding of the theory that we explore alternative interpretations, such as the many-worlds interpretation or pilot-wave theory.
+We discuss the ontological basis of Feynman's path integral only after studying how it works in practice.
+In chemistry, we begin with the valence bond theory, and only after understanding its limitations (e.g. aromaticity, resonance, paramagnetism of O2) do we explore molecular orbital theory.
+Therefore this approach should not be unfamiliar.
+
+Economics is unique in that it is a social science that is heavily quantitative.
+Modern economics is heavily axiomatic and rigorously mathematical.
+This, however, does not mean that economics is a purely theoretical discipline or that it is more scientific than other social sciences.
+It is merely the case that our assumptions are more quantitative than that of other social sciences.
