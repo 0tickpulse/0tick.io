@@ -1,0 +1,32 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Vector Spaces
+
+A vector space $(V, \mathbb{F})$ is a set $V$ along with a field $\mathbb{F}$, endowed with two operations: vector addition and scalar multiplication. The elements of $V$ are called vectors, and the elements of $\mathbb{F}$ are called scalars.
+A set of axioms must be satisfied for $(V, \mathbb{F})$ to be considered a vector space:
+
+1. **Closure under addition**: For any two vectors $u, v \in V$, their sum $u + v$ is also in $V$.
+2. **Commutativity of addition**: For any two vectors $u, v \in V$, $u + v = v + u$.
+3. **Associativity of addition**: For any three vectors $u, v, w \in V$, $(u + v) + w = u + (v + w)$.
+4. **Existence of additive identity**: There exists a vector $0 \in V$ such that for any vector $v \in V$, $v + 0 = v$.
+5. **Existence of additive inverse**: For every vector $v \in V$, there exists a vector $-v \in V$ such that $v + (-v) = 0$.
+6. **Closure under scalar multiplication**: For any scalar $a \in \mathbb{F}$ and any vector $v \in V$, the product $a \cdot v$ is also in $V$.
+7. **Distributivity of scalar multiplication with respect to vector addition**: For any scalar $a \in \mathbb{F}$ and any two vectors $u, v \in V$, $a \cdot (u + v) = a \cdot u + a \cdot v$.
+8. **Distributivity of scalar multiplication with respect to field addition**: For any two scalars $a, b \in \mathbb{F}$ and any vector $v \in V$, $(a + b) \cdot v = a \cdot v + b \cdot v$.
+9. **Associativity of scalar multiplication**: For any two scalars $a, b \in \mathbb{F}$ and any vector $v \in V$, $(a \cdot b) \cdot v = a \cdot (b \cdot v)$.
+10. **Existence of multiplicative identity**: For any vector $v \in V$, $1 \cdot v = v$, where $1$ is the multiplicative identity in $\mathbb{F}$.
+
+We can summarize the axioms into smaller statements.
+In particular, axioms 1-5 state that $(V, +)$ is an abelian group, and axioms 6-10 describe how scalar multiplication interacts with vector addition and field addition.
