@@ -22,8 +22,8 @@ export function MathEquation({ children, inline = false, ...options }: MathEquat
         ...options,
     };
     const input = new TeX({
-        packages: AllPackages,
         ...newOptions.tex,
+        packages: AllPackages,
     });
     const output = new SVG(newOptions.svg || undefined);
     // const output = new CHTML(newOptions.chtml || undefined);

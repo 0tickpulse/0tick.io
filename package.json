@@ -34,7 +34,7 @@
         "mafs": "^0.18.8",
         "mathbox": "2.3.2-rc1",
         "mathbox-react": "^0.3.0",
-        "mathjax-full": "^3.2.2",
+        "mathjax-full": "^3.2.1",
         "mathjs": "^12.4.3",
         "numeric": "^1.2.6",
         "prism-react-renderer": "^2.4.1",

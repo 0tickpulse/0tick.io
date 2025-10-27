@@ -36,13 +36,11 @@ const parseLinkFromAdmonitionTitle = (title: string): string | undefined => {
     // The input is "Definition/Proposition/etc X.Y.Z (title)"
     // We want to extract "X.Y.Z"
     // The first word can be anything
-    console.log({ title });
     if (typeof title !== "string") {
         return undefined;
     }
     const regex = /^[^\s]+\s+([\d.]+)\s*\(.*\)$/;
     const match = title.match(regex);
-    console.log({ title, match });
     return match?.[1];
 };
 
