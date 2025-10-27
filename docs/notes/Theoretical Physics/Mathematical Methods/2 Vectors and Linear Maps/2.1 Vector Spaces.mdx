@@ -1,0 +1,950 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 2.1 Vector Spaces
+
+Perhaps the most important definition in all of mathematical physics is that of a vector space.
+The study of vector spaces is called linear algebra, and it is the foundation for almost every area in physics.
+We will first begin with finite-dimensional vector spaces, and then move on to infinite-dimensional vector spaces in the next chapter.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Vectors
+
+A vector is an element of a vector space. We denote complex vectors as kets: $\ket{v} \in \mathcal{V}$.
+
+Some preliminary definitions:
+
+- A **group** is a set $G$ with a binary operation $\cdot: G \times G \to G$ that satisfies closure, associativity, identity, and invertibility.
+- An **abelian group** is a group that also satisfies commutativity.
+- A **field** is a set $F$ with two binary operations (addition and multiplication) that satisfy the properties of an abelian group under addition, a group under multiplication (excluding zero), and distributivity of multiplication over addition.
+
+:::definition Definition 2.1.1 (Vector Space)
+
+A **vector space** (or linear space) $(\mathcal{V}, \mathbb{F}, +, \cdot)$ over a field $\mathbb{F}$ is a non-empty set $\mathcal{V}$ of objects called vectors, on which two operations are defined: vector addition and scalar multiplication.
+Members of the field $\mathbb{F}$ are called scalars.
+
+We often denote a vector space simply as $\mathcal{V}$ when the field and operations are understood.
+These operations must satisfy the following axioms for all vectors and scalars:
+
+1. **Vector Addition**: For any two vectors $\ket{u}, \ket{v} \in \mathcal{V}$, their **sum** is denoted by $\ket{u} + \ket{v} \in \mathcal{V}$.
+    It satisfies the following axioms, making $(\mathcal{V}, +)$ an abelian group:
+
+    - Commutativity: $\ket{u} + \ket{v} = \ket{v} + \ket{u}$ for all $\ket{u}, \ket{v} \in \mathcal{V}$.
+    - Associativity: $\qty(\ket{u} + \ket{v}) + \ket{w} = \ket{u} + \qty(\ket{v} + \ket{w})$ for all $\ket{u}, \ket{v}, \ket{w} \in \mathcal{V}$.
+    - Existence of Zero Vector: There exists a a unique vector $\ket{0} \in \mathcal{V}$ such that $\ket{v} + \ket{0} = \ket{v}$ for all $\ket{v} \in \mathcal{V}$.
+    - Existence of Additive Inverse: For every vector $\ket{v} \in \mathcal{V}$, there exists a unique vector $-\ket{v} \in \mathcal{V}$ such that $\ket{v} + (-\ket{v}) = \ket{0}$.
+
+2. **Scalar Multiplication**: For any scalar $c \in \mathbb{C}$ and vector $\ket{v} \in \mathcal{V}$, their **product** is denoted by $c\ket{v} \in \mathcal{V}$.
+    It satisfies the following axioms:
+
+    - Compatibility with Field Multiplication: $a(b\ket{v}) = (ab)\ket{v}$ for all $a, b \in \mathbb{C}$ and $\ket{v} \in \mathcal{V}$.
+    - Identity Element of Scalar Multiplication: $1\ket{v} = \ket{v}$ for all $\ket{v} \in \mathcal{V}$, where $1$ is the multiplicative identity in $\mathbb{C}$.
+
+3. **Distributivity**:
+
+    - Distributivity of Scalar Multiplication with respect to Vector Addition: $a\qty(\ket{u} + \ket{v}) = a\ket{u} + a\ket{v}$ for all $a \in \mathbb{C}$ and $\ket{u}, \ket{v} \in \mathcal{V}$.
+    - Distributivity of Scalar Multiplication with respect to Field Addition: $(a + b)\ket{v} = a\ket{v} + b\ket{v}$ for all $a, b \in \mathbb{C}$ and $\ket{v} \in \mathcal{V}$.
+
+:::
+
+There are many, many examples of vector spaces. Here are a few.
+
+:::example Example 2.1.2 (Examples of Vector Spaces)
+
+Some examples of vector spaces are:
+
+- $\mathbb{R}$ is a vector space over itself.
+- $\mathbb{C}$ is a vector space over itself.
+- $\mathbb{R}^n$ is a vector space over $\mathbb{R}$.
+- $\mathbb{C}^n$ is a vector space over $\mathbb{C}$.
+- $\mathbb{R}$ is *not* a vector space over $\mathbb{C}$, since scalar multiplication is not closed.
+- The set of oriented line segments in $\mathbb{R}^n$ with the same initial point is a vector space over $\mathbb{R}$.
+- The set of all polynomials with real coefficients is a vector space over $\mathbb{R}$.
+- The set of all continuous functions from $\mathbb{R}$ to $\mathbb{R}$ is a vector space over $\mathbb{R}$.
+- The set of all $m \times n$ matrices with real entries is a vector space over $\mathbb{R}$.
+- The set of all $m \times n$ matrices with complex entries is a vector space over $\mathbb{C}$.
+- The set of all solutions to a homogeneous linear differential equation is a vector space over $\mathbb{R}$ or $\mathbb{C}$
+    (This is why you can do things like Fourier analysis and Laplace transforms).
+
+:::
+
+:::definition Definition 2.1.3 (Linear Independence)
+
+A set of vectors, $\{\ket{v_1}, \ket{v_2}, \ldots, \ket{v_n}\} \subseteq \mathcal{V}$, is said to be **linearly independent** if the only solution to the equation
+
+$$
+\begin{equation}
+\alpha_1 \ket{v_1} + \alpha_2 \ket{v_2} + \cdots + \alpha_n \ket{v_n} = \ket{0}
+\end{equation}
+$$
+
+is the trivial solution $\alpha_1 = \alpha_2 = \cdots = \alpha_n = 0$.
+
+:::
+
+:::definition Definition 2.1.4 (Subspace)
+
+A subset $\mathcal{W} \subseteq \mathcal{V}$ is called a **subspace** of $\mathcal{V}$ if $\mathcal{W}$ is itself a vector space under the same operations of vector addition and scalar multiplication as in $\mathcal{V}$.
+
+:::
+
+:::example Example 2.1.5 (Examples of Subspaces)
+
+Some examples of subspaces are:
+
+- The set $\{\ket{0}\}$ is a subspace of any vector space $\mathcal{V}$.
+- The set $\mathcal{V}$ itself is a subspace of $\mathcal{V}$.
+- The set of all vectors in $\mathbb{R}^3$ that lie on a given plane through the origin is a subspace of $\mathbb{R}^3$.
+- The set of all polynomials of degree at most $n$ is a subspace of the set of all polynomials.
+- The set of all continuous functions that vanish at a given point is a subspace of the set of all continuous functions.
+
+:::
+
+:::theorem Theorem 2.1.6 (Span is a Subspace)
+
+Let $S$ be a non-empty subset of a vector space $\mathcal{V}$.
+The set of all finite linear combinations of elements of $S$, denoted by $\text{Span}\{S\}$, forms a subspace of $\mathcal{V}$.
+
+---
+
+*Proof.* We need to show that $\text{Span}\{S\}$ is closed under vector addition and scalar multiplication, and that it contains the zero vector.
+
+Let $S = \{\ket{v_1}, \ket{v_2}, \ldots, \ket{v_n}\}$ be a non-empty subset of $\mathcal{V}$.
+By definition, $\text{Span}\{S\}$ consists of all vectors that can be expressed as finite linear combinations of the vectors in $S$:
+
+$$
+\begin{equation}
+\text{Span}\{S\} = \qty{\alpha_1 \ket{v_1} + \alpha_2 \ket{v_2} + \cdots + \alpha_n \ket{v_n} | \alpha_i \in \mathbb{C}, n \in \mathbb{N}}.
+\end{equation}
+$$
+
+1. **Closure under Vector Addition**: Let $\ket{u}, \ket{w} \in \text{Span}\{S\}$.
+    Then, by definition, there exist scalars $\alpha_i, b_i \in \mathbb{C}$ such that
+
+    $$
+    \begin{equation}
+    \ket{u} = \alpha_1 \ket{v_1} + \alpha_2 \ket{v_2} + \cdots + \alpha_n \ket{v_n},
+    \end{equation}
+    $$
+    and
+    $$
+    \begin{equation}
+    \ket{w} = b_1 \ket{v_1} + b_2 \ket{v_2} + \cdots + b_n \ket{v_n}.
+    \end{equation}
+    $$
+
+    Adding these two equations, we get
+
+    $$
+    \begin{equation}
+    \ket{u} + \ket{w} = (\alpha_1 + b_1) \ket{v_1} + (\alpha_2 + b_2) \ket{v_2} + \cdots + (\alpha_n + b_n) \ket{v_n}.
+    \end{equation}
+    $$
+
+    Since $\alpha_i + b_i$ are also scalars in $\mathbb{C}$, it follows that $\ket{u} + \ket{w} \in \text{Span}\{S\}$.
+
+2. **Closure under Scalar Multiplication**: Let $\ket{u} \in \text{Span}\{S\}$ and $c \in \mathbb{C}$.
+    Then, by definition, there exist scalars $\alpha_i \in \mathbb{C}$ such that
+
+    $$
+    \begin{equation}
+    \ket{u} = \alpha_1 \ket{v_1} + \alpha_2 \ket{v_2} + \cdots + \alpha_n \ket{v_n}.
+    \end{equation}
+    $$
+
+    Now, consider the vector $c \ket{u}$. We have
+
+    $$
+    \begin{equation}
+    c \ket{u} = c (\alpha_1 \ket{v_1} + \alpha_2 \ket{v_2} + \cdots + \alpha_n \ket{v_n}) = (c \alpha_1) \ket{v_1} + (c \alpha_2) \ket{v_2} + \cdots + (c \alpha_n) \ket{v_n}.
+    \end{equation}
+    $$
+
+    Since $c \alpha_i$ are also scalars in $\mathbb{C}$, it follows that $c \ket{u} \in \text{Span}\{S\}$.
+
+3. **Existence of Zero Vector**: Since $S$ is non-empty, let $\ket{v} \in S$.
+    Then, the zero vector $\ket{0}$ can be expressed as $0 \cdot \ket{v}$, which is a finite linear combination of elements of $S$.
+    Therefore, $\ket{0} \in \text{Span}\{S\}$.
+
+Since $\text{Span}\{S\}$ is closed under vector addition and scalar multiplication, and contains the zero vector, it follows that $\text{Span}\{S\}$ is a subspace of $\mathcal{V}$. $\blacksquare$
+
+---
+
+:::
+
+Another equivalent definition of the span is the smallest subspace containing $S$.
+By "smallest", we mean the intersection of *all* subspaces containing $S$.
+To prove this, we need to show that the span, as defined by linear combinations, is equal to the intersection of all subspaces containing $S$.
+We won't do this here, but it is a good exercise. (To prove $A = B$, show $A \subseteq B$ and $B \subseteq A$.)
+
+Subspaces have some nice properties:
+
+- The intersection of any collection of subspaces is also a subspace.
+- The sum of two subspaces $\mathcal{U}$ and $\mathcal{W}$, defined as $\mathcal{U} + \mathcal{W} = \{\ket{u} + \ket{w} | \ket{u} \in \mathcal{U}, \ket{w} \in \mathcal{W}\}$, is also a subspace.
+
+### Basis and Dimension
+
+:::definition Definition 2.1.7 (Basis)
+
+A **basis** of a vector space $\mathcal{V}$ is a set of vectors $\{\ket{v_1}, \ket{v_2}, \ldots, \ket{v_n}\} \subseteq \mathcal{V}$ that is linearly independent and spans $\mathcal{V}$.
+If the cardinality of the basis is finite, we say that $\mathcal{V}$ is **finite-dimensional**.
+If the cardinality of the basis is infinite, we say that $\mathcal{V}$ is **infinite-dimensional**.
+
+:::
+
+:::theorem Theorem 2.1.8 (Bases Have Equal Cardinality)
+
+For any finite-dimensional vector space $\mathcal{V}$, all bases of $\mathcal{V}$ have the same number of elements.
+
+---
+
+*Proof.* Let $\mathcal{V}$ be a finite-dimensional vector space, and let $\{\ket{v_1}, \ket{v_2}, \ldots, \ket{v_n}\}$ and $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_m}\}$ be two bases of $\mathcal{V}$.
+We need to show that $n = m$.
+
+This proof requires some concepts from linear algebra. We will delve into these concepts deeper in later sections, but for now, we will use them without proof.
+First is the concept of rank and nullity of a matrix.
+
+If we separate a matrix into its column vectors, the **rank** of the matrix is the dimension of the span of its column vectors.
+The **nullity** of the matrix is the dimension of the null space of the matrix, which is the set of all vectors $\vb{x}$ such that $\mathsf{A} \vb{x} = \vb{0}$.
+The rank-nullity theorem states that for any matrix $\mathsf{A}$ with $n$ columns, we have
+
+$$
+\begin{equation}
+\text{rank}(\mathsf{A}) + \text{nullity}(\mathsf{A}) = n,
+\end{equation}
+$$
+
+Anways, back to the proof.
+Since $\{\ket{v_1}, \ket{v_2}, \ldots, \ket{v_n}\}$ is a basis, it spans $\mathcal{V}$.
+Therefore, each vector $\ket{u_j}$ can be expressed as a linear combination of the vectors $\ket{v_i}$:
+
+$$
+\begin{equation}
+\ket{u_j} = \alpha_{1j} \ket{v_1} + \alpha_{2j} \ket{v_2} + \cdots + \alpha_{nj} \ket{v_n},
+\end{equation}
+$$
+
+for some scalars $\alpha_{ij} \in \mathbb{C}$.
+This gives us a system of $m$ equations in $n$ unknowns (the coefficients $\alpha_{ij}$).
+
+We can represent this system in matrix form as $\mathsf{A} \vb{x} = \vb{u}$, where $\mathsf{A}$ is an $m \times n$ matrix whose columns are the vectors $\ket{v_i}$, $\vb{x}$ is a vector of coefficients, and $\vb{u}$ is a vector of the vectors $\ket{u_j}$.
+In matrix form it looks like this:
+
+$$
+\begin{equation}
+\mqty[
+\alpha_{11} & \alpha_{12} & \cdots & \alpha_{1m} \\
+\alpha_{21} & \alpha_{22} & \cdots & \alpha_{2m} \\
+\vdots & \vdots & \ddots & \vdots \\
+\alpha_{n1} & \alpha_{n2} & \cdots & \alpha_{nm}
+] \mqty[
+    \ket{v_1} \\
+    \ket{v_2} \\
+    \vdots \\
+    \ket{v_n}
+] = \mqty[
+    \ket{u_1} \\
+    \ket{u_2} \\
+    \vdots \\
+    \ket{u_m}
+]
+\end{equation}
+$$
+
+Since $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_m}\}$ is a basis, it is linearly independent.
+This implies that the matrix $\mathsf{A}$ has full column rank, meaning that the columns of $\mathsf{A}$ are linearly independent.
+Therefore, the rank of $\mathsf{A}$ is $n$.
+
+By the rank-nullity theorem, we have
+
+$$
+\begin{equation}
+\text{rank}(\mathsf{A}) + \text{nullity}(\mathsf{A}) = n,
+\end{equation}
+$$
+
+where $\text{nullity}(\mathsf{A})$ is the dimension of the null space of $\mathsf{A}$.
+Since the columns of $\mathsf{A}$ are linearly independent, the null space of $\mathsf{A}$ contains only the zero vector, so $\text{nullity}(\mathsf{A}) = 0$.
+Thus, we have $\text{rank}(\mathsf{A}) = n$.
+
+Since $\mathsf{A}$ is an $m \times n$ matrix with rank $n$, it follows that $m \geq n$.
+By a symmetric argument, we can also show that $n \geq m$.
+Therefore, we conclude that $n = m$. $\blacksquare$
+
+---
+
+:::
+
+:::definition Definition 2.1.9 (Dimension)
+
+If a vector space $\mathcal{V}$ has a finite basis with $n$ elements, we say that $\mathcal{V}$ is **$n$-dimensional**, and we write $\dim(\mathcal{V}) = n$.
+
+:::
+
+Suppose we have a vector $\ket{a} \in \mathcal{V}$, and we want to express it in terms of a basis $\{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}\}$:
+
+$$
+\begin{equation}
+\ket{a} = \alpha_1 \ket{a_1} + \alpha_2 \ket{a_2} + \cdots + \alpha_n \ket{a_n}, \label{eq:vector-basis-expansion}
+\end{equation}
+$$
+
+for some scalars $\alpha_i \in \mathbb{C}$.
+It can be shown that the coefficients $\alpha_i$ are unique, and these are known as the **components** of the vector $\ket{a}$ in the basis $\{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}\}$.
+Importantly, **the components depend on the choice of basis**!
+When change of basis is relevant to the discussion, I will sometimes incorporate color coding to help keep track of which basis we are using.
+
+We can also write Equation $\eqref{eq:vector-basis-expansion}$ in matrix form as
+
+$$
+\begin{equation}
+\ket{a} = \mqty[
+    \ket{a_1} & \ket{a_2} & \cdots & \ket{a_n}
+] \mqty[
+    \alpha_1 \\
+    \alpha_2 \\
+    \vdots \\
+    \alpha_n
+],
+\end{equation}
+$$
+
+where the first matrix is an $m \times n$ matrix whose columns are the basis vectors, and the second matrix is an $n \times 1$ matrix whose entries are the components of $\ket{a}$.
+
+::example Example 2.1.10 (Examples of Bases)
+
+Some examples of bases are:
+
+- In $\mathbb{R}$, any nonzero number $a$ forms a basis, since any real number can be written as a scalar multiple of $a$. $\mathbb{R}$ is thus 1-dimensional.
+- In $\mathbb{C}$ over $\mathbb{R}$ (i.e., considering only real scalars), the set $\{1, i\}$ forms a basis, since any complex number can be written as a linear combination of $1$ and $i$. $\mathbb{C}$ is thus 2-dimensional over $\mathbb{R}$.
+- In $\mathbb{C}$ over itself, the set $\{1\}$ forms a basis, since any complex number can be written as a scalar (complex) multiple of $1$. $\mathbb{C}$ is thus 1-dimensional over itself.
+- In 3-dimensional Euclidean space, we have the basis $\{\vu{e}_x, \vu{e}_y, \vu{e}_z\}$, commonly used in Newtonian physics.
+- In $\mathbb{C}^n$, the standard basis is given by the vectors $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_n}\}$, where $\ket{e_i}$ has a $1$ in the $i$-th position and $0$ elsewhere.
+- In the matrix space $\mathcal{M}^{m \times n}$, the standard basis is given by the matrices $\{\mathsf{e}_{ij}\}$, where $\mathsf{e}_{ij}$ has a $1$ in the $(i, j)$ position and $0$ elsewhere.
+- In the function space $\mathcal{C}^\infty(a, b)$ of all infinitely differentiable functions on the interval $(a, b)$, the set of monomials $\{1, x, x^2, x^3, \ldots\}$ forms a basis.
+    By Taylor's theorem, any smooth function can be expressed as a power series in terms of these monomials.
+    Since this basis is infinite, $\mathcal{C}^\infty(a, b)$ is infinite-dimensional.
+- Similarly, functions can be expressed in terms of trigonometric functions (Fourier series) or orthogonal polynomials (Legendre, Hermite, etc.), leading to different bases for function spaces.
+
+:::
+
+## Factor Spaces
+
+Consider a vector space $\mathcal{V}$ and a subspace $\mathcal{W} \subseteq \mathcal{V}$.
+We can define an equivalence relation on $\mathcal{V}$ by saying that two vectors $\ket{v_1}, \ket{v_2} \in \mathcal{V}$ are equivalent if their difference is in $\mathcal{W}$:
+
+$$
+\begin{equation}
+\ket{v_1} \sim \ket{v_2} \iff \ket{v_1} - \ket{v_2} \in \mathcal{W}.
+\end{equation}
+$$
+
+This equivalence relation partitions $\mathcal{V}$ into equivalence classes.
+The factor space/quotient set $\mathcal{V} / \mathcal{W}$ is the set of all these equivalence classes.
+
+Can we turn $\mathcal{V} / \mathcal{W}$ into a vector space?
+Yes, we can define vector addition and scalar multiplication on the equivalence classes as follows:
+
+$$
+\begin{equation}
+\alpha [\ket{v}] + \beta [\ket{u}] = [\alpha \ket{v} + \beta \ket{u}],
+\end{equation}
+$$
+
+for any scalars $\alpha, \beta \in \mathbb{C}$ and equivalence classes $[\ket{v}], [\ket{u}] \in \mathcal{V} / \mathcal{W}$.
+
+Does this definition depend on the choice of representatives $\ket{v}$ and $\ket{u}$?
+To find out, suppose we have another representative $\ket{v'} \in [\ket{v}]$ and $\ket{u'} \in [\ket{u}]$.
+In order for our definition to be well-defined, we need to show that
+
+$$
+\begin{equation}
+[\alpha \ket{v} + \beta \ket{u}] = [\alpha \ket{v'} + \beta \ket{u'}] \iff \qty(\alpha \ket{v'} + \beta \ket{u'}) - \qty(\alpha \ket{v} + \beta \ket{u}) \in \mathcal{W}.
+\end{equation}
+$$
+
+But remember that $\ket{v'} \in [\ket{v}]$, so it is necessarily equal to $\ket{v'} = \ket{v} + \ket{w_1}$ for some $\ket{w_1} \in \mathcal{W}$.
+Similarly, $\ket{u'} = \ket{u} + \ket{w_2}$ for some $\ket{w_2} \in \mathcal{W}$.
+Therefore, if we subtract $\alpha \ket{v} + \beta \ket{u}$ from $\alpha \ket{v'} + \beta \ket{u'}$, we get
+
+$$
+\begin{equation}
+\qty(\alpha \ket{v} + \beta \ket{u}) - \qty(\alpha \ket{v} + \beta \ket{u}) = \alpha \ket{w_1} + \beta \ket{w_2}.
+\end{equation}
+$$
+
+The right-hand side is within $\mathcal{W}$, since $\mathcal{W}$ is a subspace and is closed under vector addition and scalar multiplication.
+Thus, our definition of vector addition and scalar multiplication on $\mathcal{V} / \mathcal{W}$ is well-defined.
+
+Also, since $[\ket{v}]$ is defined as the set $\{\ket{v} + \ket{w} | \ket{w} \in \mathcal{W}\}$, we sometimes abbreviate it as $\ket{v} + \mathcal{W}$.
+With this abbreviation, we have:
+
+| Abbreviated Notation | Full Notation |
+|---------------------|---------------|
+| $\ket{v} + \mathcal{W}$ | $[\ket{v}]$ |
+| $\mathcal{W} + \mathcal{W} = \mathcal{W}$ | $\ket{w_1} + \ket{w_2} \in \mathcal{W}$ for all $\ket{w_1}, \ket{w_2} \in \mathcal{W}$ |
+| $\alpha \mathcal{W} = \mathcal{W}$ | $\alpha \ket{w} \in \mathcal{W}$ for all $\ket{w} \in \mathcal{W}$ and $\alpha \in \mathbb{C}$ |
+| $\alpha \mathcal{W} + \beta \mathcal{W} = \mathcal{W}$ | $\alpha \ket{w_1} + \beta \ket{w_2} \in \mathcal{W}$ for all $\ket{w_1}, \ket{w_2} \in \mathcal{W}$ and $\alpha, \beta \in \mathbb{C}$ |
+
+### Factor Space Basis and Dimension
+
+Let's now find a basis for the factor space $\mathcal{V} / \mathcal{W}$.
+Summarizing what we have so far, we have that $\mathcal{V}$ is a vector space, $\mathcal{W}$ is a subspace of $\mathcal{V}$, and $\mathcal{V} / \mathcal{W}$ is the factor space.
+The factor space is defined as the set of equivalence classes $[\ket{v}] = \{\ket{v} + \ket{w} | \ket{w} \in \mathcal{W}\}$, and we have defined vector addition and scalar multiplication on these equivalence classes.
+We want to find a basis for $\mathcal{V} / \mathcal{W}$.
+
+The idea is to start with a basis for $\mathcal{W}$, extend it to a basis for $\mathcal{V}$, and then use the additional vectors to form a basis for $\mathcal{V} / \mathcal{W}$.
+Let $\{\ket{w_i}\}$ be a basis for $\mathcal{W}$.
+We can extend this basis to a basis for $\mathcal{V}$ by adding more vectors $\{\ket{u_j}\}$ such that $\{\ket{w_i}, \ket{u_j}\}$ is a basis for $\mathcal{V}$.
+This means that any vector $\ket{v} \in \mathcal{V}$ can be uniquely expressed as
+
+$$
+\begin{equation}
+\ket{v} = \sum_i \alpha_i \ket{w_i} + \sum_j \beta_j \ket{u_j},
+\end{equation}
+$$
+
+for some scalars $\alpha_i, \beta_j \in \mathbb{C}$.
+The equivalence class $[\ket{v}]$ can then be expressed as
+
+$$
+\begin{equation}
+[\ket{v}] = \ket{v} + \mathcal{W} = \sum_i \alpha_i \ket{w_i} + \sum_j \beta_j \ket{u_j} + \mathcal{W}.
+\end{equation}
+$$
+
+But since $\sum_i \alpha_i \ket{w_i} \in \mathcal{W}$, we can absorb it into the $\mathcal{W}$ term, leaving us with
+
+$$
+\begin{equation}
+[\ket{v}] = \sum_j \beta_j \ket{u_j} + \mathcal{W}.
+\end{equation}
+$$
+
+But wait, recall that $\ket{a} + \mathcal{W}$ is just another way of writing the equivalence class $[\ket{a}]$.
+Thus, we can write
+
+$$
+\begin{equation}
+[\ket{v}] = \qty[\sum_j \beta_j \ket{u_j}].
+\end{equation}
+$$
+
+Finally, recall that we add and scale equivalence classes by adding and scaling their representatives.
+Thus, we have
+
+$$
+\begin{equation}
+[\ket{v}] = \sum_j \beta_j [\ket{u_j}].
+\end{equation}
+$$
+
+This shows that the set $\{[\ket{u_j}]\}$ spans $\mathcal{V} / \mathcal{W}$.
+To show that it is linearly independent, suppose we have a linear combination that equals the zero equivalence class:
+
+$$
+\begin{equation}
+\sum_j \gamma_j [\ket{u_j}] = [\ket{0}] \iff \sum_j \gamma_j \ket{u_j} + \mathcal{W} = \mathcal{W} \iff \sum_j \gamma_j \ket{u_j} \in \mathcal{W}.
+\end{equation}
+$$
+
+As the sum is a member of $\mathcal{W}$, it can be expressed as a linear combination of the basis vectors $\{\ket{w_i}\}$:
+
+$$
+\begin{equation}
+\sum_j \gamma_j \ket{u_j} = \sum_i \delta_i \ket{w_i} \implies \sum_j \gamma_j \ket{u_j} - \sum_i \delta_i \ket{w_i} = \ket{0}.
+\end{equation}
+$$
+
+But wait, the set $\{\ket{w_i}, \ket{u_j}\}$ is a basis for $\mathcal{V}$, so it is linearly independent.
+Thus, the only solution to the above equation is $\gamma_j = 0$ for all $j$ and $\delta_i = 0$ for all $i$.
+Tracing back, this means that the only solution to $\sum_j \gamma_j [\ket{u_j}] = [\ket{0}]$ is $\gamma_j = 0$ for all $j$.
+Thus, the set $\{[\ket{u_j}]\}$ is linearly independent.
+
+Therefore, we have shown that $\{[\ket{u_j}]\}$ is a basis for $\mathcal{V} / \mathcal{W}$.
+
+Also, as a corollary, we have that
+
+$$
+\begin{equation}
+\dim(\mathcal{V} / \mathcal{W}) = \dim(\mathcal{V}) - \dim(\mathcal{W}).
+\end{equation}
+$$
+
+This is because if $\mathcal{W}$ has dimension $k$ and $\mathcal{V}$ has dimension $n$, then the basis for $\mathcal{V}$ consists of $k$ vectors from $\mathcal{W}$ and $n - k$ additional vectors.
+
+## Direct Sums vs Tensor Products
+
+Recall that in set theory, we can define the union and intersection of two sets.
+In vector spaces, we can define similar operations: the direct sum and the tensor product.
+
+First, the direct sum.
+Often we like to decompose a vector space into smaller, more manageable pieces.
+For example, in classical mechanics, we often decompose the motion of a particle into its $x$, $y$, and $z$ components.
+Let the overall vector space be $\mathbb{R}^3$, and let the subspaces be $\mathcal{V}_x$, $\mathcal{V}_y$, and $\mathcal{V}_z$, where each subspace consists of vectors that only have a nonzero component in the respective direction.
+The "sum" of these subspaces is the set of all vectors that can be written as the sum of vectors from each subspace:
+
+$$
+\begin{equation}
+\mathcal{V}_x + \mathcal{V}_y + \mathcal{V}_z := \{\ket{v_x} + \ket{v_y} + \ket{v_z} | \ket{v_x} \in \mathcal{V}_x, \ket{v_y} \in \mathcal{V}_y, \ket{v_z} \in \mathcal{V}_z\}.
+\end{equation}
+$$
+
+:::example Example 2.1.11 (xy and yz Planes)
+
+Now consider $\mathcal{U}$ to be the $xy$-plane in $\mathbb{R}^3$, and $\mathcal{W}$ to be the $yz$-plane in $\mathbb{R}^3$.
+We have $\mathcal{U} + \mathcal{W} = \mathbb{R}^3$, since
+
+$$
+\begin{equation}
+(x, y, z) = \qty(x, \frac{1}{2} y, 0) + \qty(0, \frac{1}{2} y, z).
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 2.1.12 (Direct Sum)
+
+If $\mathcal{V}$ is a vector space, and $\mathcal{U}, \mathcal{W} \subseteq \mathcal{V}$ are subspaces such that $\mathcal{U} + \mathcal{W} = \mathcal{V}$ and $\mathcal{U} \cap \mathcal{W} = \{\ket{0}\}$, then we say that $\mathcal{V}$ is the **direct sum** of $\mathcal{U}$ and $\mathcal{W}$, denoted by $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$.
+
+:::
+
+A more concrete way to think about the direct sum is this: suppose we write $\mathcal{U}$ as the set of $m \times 1$ matrices, and $\mathcal{W}$ as the set of $n \times 1$ matrices.
+Then, we can write the direct sum $\mathcal{U} \oplus \mathcal{W}$ as the set of $(m + n) \times 1$ matrices, where the first $m$ entries come from $\mathcal{U}$ and the last $n$ entries come from $\mathcal{W}$.
+
+$$
+\begin{equation}
+\underbrace{\mqty[
+    u_1 \\ u_2 \\ u_3
+]}_{\in \mathcal{U}} \oplus \underbrace{\mqty[
+    w_1 \\ w_2
+]}_{\in \mathcal{W}} \rightarrow \underbrace{\mqty[
+    v_1 \\ v_2 \\ v_3 \\ v_4 \\ v_5
+]}_{\in \mathcal{U} \oplus \mathcal{W}}.
+\end{equation}
+$$
+
+In other words, the direct sum "stacks" the two subspaces together, but keeps them separate.
+
+Evidently, we have $\dim(\mathcal{U} \oplus \mathcal{W}) = \dim(\mathcal{U}) + \dim(\mathcal{W})$, hence the name "direct sum".
+We will prove this later.
+
+:::proposition Proposition 2.1.13 (Characterization of Direct Sum)
+
+If $\mathcal{U}$ and $\mathcal{W}$ are subspaces of $\mathcal{V}$ such that $\mathcal{U} + \mathcal{W} = \mathcal{V}$, then $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$ if and only if every vector $\ket{v} \in \mathcal{V}$ can be uniquely expressed as $\ket{v} = \ket{u} + \ket{w}$, where $\ket{u} \in \mathcal{U}$ and $\ket{w} \in \mathcal{W}$.
+
+---
+
+*Proof.* ($\Rightarrow$) In proofs, to show $x$ is unique, we define two expressions for $x$ and show they are equal.
+
+Suppose $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$.
+Let $\ket{v} \in \mathcal{V}$ and suppose it can be written in two different ways:
+
+$$
+\begin{equation}
+\ket{v} = \ket{u_1} + \ket{w_1} = \ket{u_2} + \ket{w_2},
+\end{equation}
+$$
+
+for some $\ket{u_1}, \ket{u_2} \in \mathcal{U}$ and $\ket{w_1}, \ket{w_2} \in \mathcal{W}$.
+Subtracting the two equations, we get
+
+$$
+\begin{equation}
+\ket{u_1} - \ket{u_2} = \ket{w_2} - \ket{w_1}.
+\end{equation}
+$$
+
+The left-hand side is in $\mathcal{U}$, and the right-hand side is in $\mathcal{W}$.
+The only vector that is in both $\mathcal{U}$ and $\mathcal{W}$ is the zero vector, since $\mathcal{U} \cap \mathcal{W} = \{\ket{0}\}$.
+Thus, we have $\ket{u_1} - \ket{u_2} = \ket{0}$ and $\ket{w_2} - \ket{w_1} = \ket{0}$, which implies $\ket{u_1} = \ket{u_2}$ and $\ket{w_1} = \ket{w_2}$.
+Therefore, the representation of $\ket{v}$ as $\ket{u} + \ket{w}$ is unique.
+
+($\Leftarrow$) We need to show that if every vector $\ket{v} \in \mathcal{V}$ can be uniquely expressed as $\ket{v} = \ket{u} + \ket{w}$, where $\ket{u} \in \mathcal{U}$ and $\ket{w} \in \mathcal{W}$, then $\mathcal{U} \cap \mathcal{W} = \{\ket{0}\}$.
+
+Suppose we have the contradiction that there exists a nonzero vector $\ket{x}$ that is in both $\mathcal{U}$ and $\mathcal{W}$.
+But then we can write $\ket{x}$ as a sum in infinitely many ways:
+
+$$
+\begin{equation}
+\ket{x} = \ket{x} + \ket{0} = \ket{0} + \ket{x} = \frac{1}{2} \ket{x} + \frac{1}{2} \ket{x} = 2 \ket{x} + (-1) \ket{x} = \cdots
+\end{equation}
+$$
+
+Since we can write $\ket{x}$ in infinitely many ways, this contradicts the uniqueness of the representation of vectors in $\mathcal{V}$.
+Therefore, we must have $\mathcal{U} \cap \mathcal{W} = \{\ket{0}\}$.
+
+Since we have shown both directions, the proposition is proven. $\blacksquare$
+
+---
+
+:::
+
+:::definition Definition 2.1.14 (Direct Sum of Multiple Subspaces)
+
+If $\mathcal{V}$ is a vector space, and $\mathcal{U}_1, \mathcal{U}_2, \ldots, \mathcal{U}_n \subseteq \mathcal{V}$ are subspaces such that $\mathcal{U}_1 + \mathcal{U}_2 + \cdots + \mathcal{U}_n = \mathcal{V}$ and $\mathcal{U}_i \cap \mathcal{U}_j = \{\ket{0}\}$ for all $i \neq j$, then we say that $\mathcal{V}$ is the **direct sum** of $\mathcal{U}_1, \mathcal{U}_2, \ldots, \mathcal{U}_n$, denoted by
+
+$$
+\begin{equation}
+\mathcal{V} = \mathcal{U}_1 \oplus \mathcal{U}_2 \oplus \cdots \oplus \mathcal{U}_n = \bigoplus_{i=1}^n \mathcal{U}_i.
+\end{equation}
+$$
+
+:::
+
+:::proposition Proposition 2.1.15 (Linear Independence in Direct Sum)
+
+**Proposition 2.1.15** Let $\mathcal{V} = \bigoplus_{i=1}^n \mathcal{U}_i$.
+The set $\{ \ket{u_i} \}_{i=1}^n$, where $\ket{u_i} \in \mathcal{U}_i$ for each $i$, is linearly independent.
+
+Intuitively, this proposition makes sense: since the subspaces only intersect at the zero vector, no vector in one subspace can be written as a linear combination of vectors from the other subspaces.
+For instance, in $\mathbb{R}^3$, the $x$-axis and $y$-axis only intersect at the origin, so no vector on the $x$-axis can be written as a linear combination of vectors on the $y$-axis, and vice versa.
+
+---
+
+*Proof.* Suppose we have a set of $s$ vectors $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_s}\}$, where each $\ket{u_i} \in \mathcal{U}_i$.
+Write the direct sum of the subspaces as $\mathcal{W} = \bigoplus_{i=1}^s \mathcal{U}_i$, which does not necessarily span the entire vector space $\mathcal{V}$.
+
+We can always write $\mathcal{W} = \mathcal{U}_1 \oplus \mathcal{W}'$, where $\mathcal{W}' = \bigoplus_{i=2}^s \mathcal{U}_i$.
+To show that $\{\ket{u_i}\}$ is linearly independent, consider the equation
+
+$$
+\begin{equation}
+\sum_{i=1}^s \alpha_i \ket{u_i} = \alpha_1 \ket{u_1} + \alpha_2 \ket{u_2} + \cdots + \alpha_s \ket{u_s} = \ket{0},
+\end{equation}
+$$
+
+for some scalars $\alpha_i \in \mathbb{C}$. If we define $\alpha \ket{w} := \sum_{i=2}^s \alpha_i \ket{u_i}$, then we can rewrite the equation as
+
+$$
+\begin{equation}
+\alpha_1 \ket{u_1} + \alpha \ket{w} = \ket{0} \implies \alpha_1 \ket{u_1} = -\alpha \ket{w}.
+\end{equation}
+$$
+
+The left-hand side is in $\mathcal{U}_1$, and the right-hand side is in $\mathcal{W}'$.
+Since $\mathcal{U}_1 \cap \mathcal{W}' = \{\ket{0}\}$, we must have $\alpha_1 \ket{u_1} = \ket{0}$ and $-\alpha \ket{w} = \ket{0}$.
+But since $\ket{u_1} \neq \ket{0}$, we must have $\alpha_1 = 0$.
+
+We can make the same argument for $\alpha_2, \alpha_3, \ldots, \alpha_s$ by cyclically permuting the indices.
+Thus, we conclude that $\alpha_i = 0$ for all $i$, proving that the set $\{\ket{u_i}\}$ is linearly independent.
+Extending this to $s = n$ completes the proof. $\blacksquare$
+
+---
+
+:::
+
+:::proposition Proposition 2.1.16 (Existence of Complement Subspace)
+
+If $\mathcal{U}$ is a subspace of $\mathcal{V}$, then there exists a subspace $\mathcal{W}$ of $\mathcal{V}$ such that $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$.
+
+---
+
+*Proof.* Let $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_k}\}$ be a basis for the subspace $\mathcal{U}$.
+
+If $\mathcal{U} = \mathcal{V}$, then we can simply take $\mathcal{W} = \{\ket{0}\}$, and we are done.
+Otherwise, we can extend the basis of $\mathcal{U}$ to a basis of $\mathcal{V}$ by adding more vectors $\{\ket{w_1}, \ket{w_2}, \ldots, \ket{w_m}\}$ such that $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_k}, \ket{w_1}, \ket{w_2}, \ldots, \ket{w_m}\}$ is a basis for $\mathcal{V}$.
+
+Let $\mathcal{W}$ be the subspace spanned by $\{\ket{w_1}, \ket{w_2}, \ldots, \ket{w_m}\}$.
+They obviously span $\mathcal{V}$, since any vector $\ket{v} \in \mathcal{V}$ can be written as
+
+$$
+\begin{equation}
+\ket{v} = \sum_{i=1}^k \alpha_i \ket{u_i} + \sum_{j=1}^m \beta_j \ket{w_j},
+\end{equation}
+$$
+
+for some scalars $\alpha_i, \beta_j \in \mathbb{C}$.
+Their intersection is only the zero vector, since the basis vectors are linearly independent.
+
+Thus, we have $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$. $\blacksquare$
+
+---
+
+:::
+
+:::example Example 2.1.17 (xy Plane Complement)
+
+Consider the vector space $\mathbb{R}^3$ and the subspace $\mathcal{U}$ defined as the $xy$-plane, i.e., $\mathcal{U} = \{(x, y, 0) | x, y \in \mathbb{R}\}$.
+A basis for $\mathcal{U}$ is given by the vectors $\{\vu{e}_x, \vu{e}_y\}$, where $\vu{e}_x = (1, 0, 0)$ and $\vu{e}_y = (0, 1, 0)$.
+To find a subspace $\mathcal{W}$ such that $\mathbb{R}^3 = \mathcal{U} \oplus \mathcal{W}$, we can extend the basis of $\mathcal{U}$ to a basis of $\mathbb{R}^3$ by adding the vector $\vu{e}_z = (0, 0, 1)$.
+The subspace $\mathcal{W}$ is then spanned by $\{\vu{e}_z\}$, which is the $z$-axis, i.e., $\mathcal{W} = \{(0, 0, z) | z \in \mathbb{R}\}$.
+We have $\mathbb{R}^3 = \mathcal{U} \oplus \mathcal{W}$, since any vector $(x, y, z) \in \mathbb{R}^3$ can be uniquely expressed as
+
+$$
+\begin{equation}
+(x, y, z) = (x, y, 0) + (0, 0, z).
+\end{equation}
+$$
+
+:::
+
+:::proposition Proposition 2.1.18 (Dimension of Direct Sum)
+
+If $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$, then $\dim(\mathcal{V}) = \dim(\mathcal{U}) + \dim(\mathcal{W})$.
+
+---
+
+*Proof.* Let $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_k}\}$ be a basis for $\mathcal{U}$, and let $\{\ket{w_1}, \ket{w_2}, \ldots, \ket{w_m}\}$ be a basis for $\mathcal{W}$.
+
+By Proposition 2.1.15, the set $\{\ket{u_1}, \ket{u_2}, \ldots, \ket{u_k}, \ket{w_1}, \ket{w_2}, \ldots, \ket{w_m}\}$ is linearly independent.
+Also, since $\mathcal{V} = \mathcal{U} \oplus \mathcal{W}$, this set spans $\mathcal{V}$.
+
+Therefore, this set is a basis for $\mathcal{V}$.
+
+The number of vectors in this basis is $k + m$, where $k = \dim(\mathcal{U})$ and $m = \dim(\mathcal{W})$.
+Thus, we have
+
+$$
+\begin{equation}
+\dim(\mathcal{V}) = k + m = \dim(\mathcal{U}) + \dim(\mathcal{W}).
+\end{equation}
+$$
+
+$\blacksquare$
+
+---
+
+:::
+
+One may also find that the direct sum is very similar to the Cartesian product of sets.
+We can define two vector spaces $\mathcal{U}$ and $\mathcal{W}$, and their Cartesian product $\mathcal{U} \times \mathcal{W}$ as the set of all ordered pairs $\qty(\ket{u}, \ket{w})$, where $\ket{u} \in \mathcal{U}$ and $\ket{w} \in \mathcal{W}$.
+We can make $\mathcal{U} \times \mathcal{W}$ into a vector space by defining vector addition and scalar multiplication as follows:
+
+$$
+\begin{align}
+(\ket{u_1}, \ket{w_1}) + \qty(\ket{u_2}, \ket{w_2}) &:= \qty(\ket{u_1} + \ket{u_2}, \ket{w_1} + \ket{w_2}), \label{eq:direct-sum-addition-law} \\
+\alpha \qty(\ket{u}, \ket{w}) &:= \qty(\alpha \ket{u}, \alpha \ket{w}), \label{eq:direct-sum-scalar-multiplication-law}
+\end{align}
+$$
+
+for any $\ket{u_1}, \ket{u_2}, \ket{u} \in \mathcal{U}$, $\ket{w_1}, \ket{w_2}, \ket{w} \in \mathcal{W}$, and $\alpha \in \mathbb{C}$.
+
+:::proposition Proposition 2.1.19 (Isomorphism of Direct Sum and Cartesian Product)
+
+If we associate a vector in $\mathcal{U}$ as $\ket{u} \leftrightarrow \qty(\ket{u}, \ket{0}_V)$ and a vector in $\mathcal{W}$ as $\ket{w} \leftrightarrow \qty(\ket{0}_U, \ket{w})$, then we can see that the direct sum $\mathcal{U} \oplus \mathcal{W}$ is isomorphic to the Cartesian product $\mathcal{U} \times \mathcal{W}$.
+
+---
+
+*Proof.* First, let's show that their intersection is only the zero vector.
+
+Suppose there exists a vector in both $\mathcal{U}$ and $\mathcal{W}$.
+Then, we can write it as $\ket{u} = \qty(\ket{u}, \ket{0}_V)$ and $\ket{w} = \qty(\ket{0}_U, \ket{w})$.
+Since these two representations must be equal, we have, by the transitivity of equality, that
+
+$$
+\begin{equation}
+(\ket{u}, \ket{0}_V) = \qty(\ket{0}_U, \ket{w}) \implies \ket{u} = \ket{0}_U \text{ and } \ket{w} = \ket{0}_V.
+\end{equation}
+$$
+
+Thus, the only vector in both $\mathcal{U}$ and $\mathcal{W}$ is the zero vector.
+
+Therefore, we have $\mathcal{U} \cap \mathcal{W} = \{\ket{0}\}$.
+And as such, we have $\mathcal{U} \oplus \mathcal{W} = \mathcal{V}$.
+
+The mapping $\phi: \mathcal{U} \oplus \mathcal{W} \to \mathcal{U} \times \mathcal{W}$ defined by
+
+$$
+\begin{equation}
+\phi\qty(\ket{u} + \ket{w}) = \qty(\ket{u}, \ket{w})
+\end{equation}
+$$
+
+is a bijection, as there is one and only one pair $\qty(\ket{u}, \ket{w})$ for each vector $\ket{u} + \ket{w}$ in the direct sum. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.1.20 (Basis of Direct Sum)
+
+Let $\mathcal{U}$ and $\mathcal{W}$ be vector spaces with bases $\{\ket{a_i}\}_{i=1}^m$ and $\{\ket{b_j}\}_{j=1}^n$, respectively.
+Define the set
+
+$$
+\begin{equation}
+\ket{c_k} := \begin{cases}
+\qty(\ket{a_k}, \ket{0}_W) & \text{for } 1 \leq k \leq m, \\
+\qty(\ket{0}_U, \ket{b_{k-m}}) & \text{for } m+1 \leq k \leq m+n
+\end{cases}.
+\end{equation}
+$$
+
+Then, the set $\{\ket{c_k}\}_{k=1}^{m+n}$ is a basis for the direct sum $\mathcal{U} \oplus \mathcal{W}$, which has dimension $m + n$.
+
+---
+
+*Proof.* Before proving it, let's understand what the theorem is saying.
+
+Suppose $\mathcal{U}$ is $3$-dimensional and can be represented as the set of $3 \times 1$ matrices, and $\mathcal{W}$ is $2$-dimensional and can be represented as the set of $2 \times 1$ matrices.
+The new vectors $\ket{c_k}$ are then
+
+$$
+\begin{align}
+\ket{c_1} &= \qty(\mqty[1 \\ 0 \\ 0], \mqty[0 \\ 0]) = \mqty[1 \\ 0 \\ 0 \\ 0 \\ 0], \\
+\ket{c_2} &= \qty(\mqty[0 \\ 1 \\ 0], \mqty[0 \\ 0]) = \mqty[0 \\ 1 \\ 0 \\ 0 \\ 0], \\
+\ket{c_3} &= \qty(\mqty[0 \\ 0 \\ 1], \mqty[0 \\ 0]) = \mqty[0 \\ 0 \\ 1 \\ 0 \\ 0], \\
+\ket{c_4} &= \qty(\mqty[0 \\ 0 \\ 0], \mqty[1 \\ 0]) = \mqty[0 \\ 0 \\ 0 \\ 1 \\ 0], \\
+\ket{c_5} &= \qty(\mqty[0 \\ 0 \\ 0], \mqty[0 \\ 1]) = \mqty[0 \\ 0 \\ 0 \\ 0 \\ 1].
+\end{align}
+$$
+
+See how the vectors $\ket{c_k}$ are just the basis vectors of $\mathcal{U}$ and $\mathcal{W}$ "stacked" together, with zeros filling in the gaps?
+
+Anyways, let's prove the theorem.
+First, we need to show that the set $\{\ket{c_k}\}_{k=1}^{m+n}$ is linearly independent.
+
+To do this, we assume a linear combination of the vectors $\ket{c_k}$ equals the zero vector:
+
+$$
+\begin{equation}
+\sum_{k=1}^{m+n} \alpha_k \ket{c_k} = \alpha_1 \ket{c_1} + \alpha_2 \ket{c_2} + \cdots + \alpha_{m+n} \ket{c_{m+n}} = \ket{0},
+\end{equation}
+$$
+
+for some scalars $\alpha_k \in \mathbb{C}$.
+We can rewrite the left-hand side as
+
+$$
+\begin{equation}
+\ket{0} = \sum_{k=1}^{m+n} \alpha_k \ket{c_k} = \sum_{i=1}^m \alpha_i \qty(\ket{a_i}, \ket{0}_W) + \sum_{j=1}^n \alpha_{m+j} \qty(\ket{0}_U, \ket{b_j}) = \qty(\sum_{i=1}^m \alpha_i \ket{a_i}, \sum_{j=1}^n \alpha_{m+j} \ket{b_j}).
+\end{equation}
+$$
+
+So
+
+$$
+\begin{equation}
+\qty(\sum_{i=1}^m \alpha_i \ket{a_i}, \sum_{j=1}^n \alpha_{m+j} \ket{b_j}) = \qty(\ket{0}_U, \ket{0}_W) \implies \sum_{i=1}^m \alpha_i \ket{a_i} = \ket{0}_U \text{ and } \sum_{j=1}^n \alpha_{m+j} \ket{b_j} = \ket{0}_W.
+\end{equation}
+$$
+
+Since $\{\ket{a_i}\}$ and $\{\ket{b_j}\}$ are bases for $\mathcal{U}$ and $\mathcal{W}$, respectively, they are linearly independent.
+Thus, we must have $\alpha_i = 0$ for all $i$ and $\alpha_{m+j} = 0$ for all $j$.
+
+Therefore, the set $\{\ket{c_k}\}_{k=1}^{m+n}$ is linearly independent.
+
+Next, we need to show that the set $\{\ket{c_k}\}_{k=1}^{m+n}$ spans $\mathcal{U} \oplus \mathcal{W}$.
+To do this, let $\ket{v} \in \mathcal{U} \oplus \mathcal{W}$.
+Then we can write
+
+$$
+\begin{equation}
+\ket{v} = \ket{u} + \ket{w},
+\end{equation}
+$$
+
+for some $\ket{u} \in \mathcal{U}$ and $\ket{w} \in \mathcal{W}$. This comes directly from the definition of the direct sum.
+Since $\{\ket{a_i}\}$ is a basis for $\mathcal{U}$, and $\{\ket{b_j}\}$ is a basis for $\mathcal{W}$, we can write
+
+$$
+\begin{equation}
+\ket{v} = \sum_{i=1}^m \alpha_i \ket{a_i} + \sum_{j=1}^n \beta_j \ket{b_j},
+\end{equation}
+$$
+
+for some scalars $\alpha_i, \beta_j \in \mathbb{C}$.
+But then we can rewrite this as
+
+$$
+\begin{equation}
+\ket{v} = \sum_{i=1}^m \alpha_i \qty(\ket{a_i}, \ket{0}_W) + \sum_{j=1}^n \beta_j \qty(\ket{0}_U, \ket{b_j}) = \sum_{k=1}^{m+n} \gamma_k \ket{c_k},
+\end{equation}
+$$
+
+for some scalars $\gamma_k \in \mathbb{C}$.
+Thus, the set $\{\ket{c_k}\}_{k=1}^{m+n}$ spans $\mathcal{U} \oplus \mathcal{W}$.
+
+Therefore, we have shown that the set $\{\ket{c_k}\}_{k=1}^{m+n}$ is a basis for $\mathcal{U} \oplus \mathcal{W}$.
+Finally, since the basis has $m + n$ vectors, we have $\dim(\mathcal{U} \oplus \mathcal{W}) = m + n$. $\blacksquare$
+
+---
+
+:::
+
+So, given a Cartesian product $\mathcal{U} \times \mathcal{W}$, we can always find a corresponding direct sum $\mathcal{U} \oplus \mathcal{W}$ defined by the addition and scaling laws as in equations $\eqref{eq:direct-sum-addition-law}$ and $\eqref{eq:direct-sum-scalar-multiplication-law}$.
+This direct sum is isomorphic to the Cartesian product, and has dimension equal to the sum of the dimensions of the two vector spaces.
+There is another set of addition and scaling laws that also define a vector space isomorphic to the Cartesian product, as follows:
+
+$$
+\begin{align}
+\alpha\qty(\ket{u_1}, \ket{w_1}) &= \qty(\alpha \ket{u_1}, \ket{w_1}) = \qty(\ket{u_1}, \alpha \ket{w_1}), \\
+\qty(\alpha_1 \ket{u_1} + \alpha_2 \ket{u_2}, \ket{v}) &= \qty(\alpha_1 \ket{u_1}, \ket{v}) + \qty(\alpha_2 \ket{u_2}, \ket{v}), \\
+\qty(\ket{u}, \beta_1 \ket{w_1} + \beta_2 \ket{w_2}) &= \qty(\ket{u}, \beta_1 \ket{w_1}) + \qty(\ket{u}, \beta_2 \ket{w_2}).
+\end{align}
+$$
+
+The vector space defined over the Cartesian products using these laws is called the **tensor product** of $\mathcal{U}$ and $\mathcal{W}$, denoted by $\mathcal{U} \otimes \mathcal{W}$.
+For two vectors $\ket{u} \in \mathcal{U}$ and $\ket{w} \in \mathcal{W}$, we denote their tensor product as $\ket{u} \otimes \ket{w}$ or simply $\ket{u w}$.
+
+If we expand their bases and apply the above laws, we can see that
+
+$$
+\begin{equation}
+\begin{split}
+\ket{u} \otimes \ket{w} &= \qty(\sum_{i=1}^m \alpha_i \ket{a_i}) \otimes \qty(\sum_{j=1}^n \beta_j \ket{b_j}) \\
+&= \sum_{i=1}^m \sum_{j=1}^n \alpha_i \beta_j \qty(\ket{a_i} \otimes \ket{b_j}).
+\end{split}
+\end{equation}
+$$
+
+Thus, the set $\{\ket{a_i} \otimes \ket{b_j}\}_{i=1,j=1}^{m,n}$ spans $\mathcal{U} \otimes \mathcal{W}$.
+Moreover, the dimensionality of the tensor product is given by
+
+$$
+\begin{equation}
+\dim(\mathcal{U} \otimes \mathcal{W}) = \dim(\mathcal{U}) \cdot \dim(\mathcal{W}),
+\end{equation}
+$$
+
+hence the name "tensor product".
+
+Intuitively, the tensor product can be thought of as a way to combine two vector spaces into a larger one, where the basis vectors of the new space are formed by taking all possible combinations of the basis vectors from the original spaces.
+In matrix form, it looks like replacing each entry of a matrix with another matrix:
+
+$$
+\begin{equation}
+\mqty[ a & b \\ c & d ] \otimes \mqty[e & f \\ g & h] = \mqty[
+    a {\mqty[e & f \\ g & h]} & b {\mqty[e & f \\ g & h]} \\
+    c {\mqty[e & f \\ g & h]} & d {\mqty[e & f \\ g & h]}
+].
+\end{equation}
+$$
+
+Technically, when we define $\otimes$ over vector spaces, that is a tensor product.
+When we use $\otimes$ for elements of vector spaces, that is called the **Kronecker product**.
+However, in physics, we often use the same symbol $\otimes$ for both operations, and the context usually makes it clear which one is being referred to.
+We will just use the word "tensor product" to refer to both operations.
+
+## Summary and Next Steps
+
+In this section, we have introduced the basics of vector spaces, including their definitions, properties, and examples.
+
+Here are the key points to remember:
+
+- A vector space is a set of vectors that can be added together and multiplied by scalars, satisfying certain axioms.
+- Subspaces are subsets of vector spaces that are also vector spaces.
+- The span of a set of vectors is the set of all linear combinations of those vectors.
+- A basis of a vector space is a set of linearly independent vectors that span the entire space.
+- The dimension of a vector space is the number of vectors in its basis.
+- The direct sum of subspaces combines them into a larger space while keeping them separate.
+- The tensor product of vector spaces combines them into a larger space where basis vectors are formed by all possible combinations of the original basis vectors.
+
+Vector spaces alone are not enough to describe physical systems.
+Much like how we needed metrics to define distances in geometry, we need additional structures to define concepts like length and angle in vector spaces.
+These additional structures lead us to the concept of inner product spaces, which we will explore in the next section.

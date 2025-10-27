@@ -15,10 +15,11 @@
         "typecheck": "tsc"
     },
     "dependencies": {
-        "@docusaurus/core": "3.8.1",
-        "@docusaurus/preset-classic": "3.8.1",
-        "@docusaurus/theme-mermaid": "^3.8.1",
-        "@easyops-cn/docusaurus-search-local": "^0.51.1",
+        "@docusaurus/core": "3.9.2",
+        "@docusaurus/faster": "^3.9.2",
+        "@docusaurus/preset-classic": "3.9.2",
+        "@docusaurus/theme-mermaid": "^3.9.2",
+        "@easyops-cn/docusaurus-search-local": "^0.52.1",
         "@mdx-js/react": "^3.1.0",
         "classnames": "^2.5.1",
         "clsx": "^1.2.1",
@@ -49,9 +50,9 @@
         "three": "0.157.0"
     },
     "devDependencies": {
-        "@docusaurus/module-type-aliases": "3.7.0",
-        "@docusaurus/tsconfig": "^3.6.3",
-        "@docusaurus/types": "^3.6.3",
+        "@docusaurus/module-type-aliases": "3.9.1",
+        "@docusaurus/tsconfig": "^3.9.1",
+        "@docusaurus/types": "^3.9.1",
         "@tsconfig/docusaurus": "^2.0.3",
         "@types/color-convert": "^2.0.4",
         "@types/color-rgba": "^2.1.3",

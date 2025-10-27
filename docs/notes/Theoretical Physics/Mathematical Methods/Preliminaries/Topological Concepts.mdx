@@ -1,0 +1,149 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Topological Concepts
+
+In this section, we will review some basic topological concepts that will be useful in understanding more advanced topics in mathematical physics.
+
+This section is *not* based on Hassani, but rather on my own understanding of topology.
+This means that it won't be numbered like the other sections.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Open and Closed Sets
+
+Before even defining a topological space, we need some intuition about spaces in general.
+If we just skip to defining a topology over a set, it might be hard to grasp the concept of what topology even is.
+Often, in mathematics and physics, we can think of different things geometrically.
+For example, when we studied quantum mechanics, we say that $\text{SO}(3)$, the group of rotations in 3D space, can be thought of as a sphere with antipodal points identified.
+In general relativity, we classified spacetimes based on how they are curved (e.g. positively curved, negatively curved, flat).
+To formalize this idea of "space", we need to define some concepts in topology.
+What makes $\text{SO}(3)$ equivalent to a sphere? Can we prove it?
+
+Anyways, we will start by analyzing metric spaces, which are sets with a notion of distance.
+These are more intuitive to think about, since we can visualize distances in our head.
+Later, we will generalize this to spaces without a metric, but this is a good starting point.
+
+**Definition** (open ball) In a metric space $(M, d)$, an **open ball** of radius $r > 0$ centered at a point $x \in M$ is the set
+
+$$
+\begin{equation}
+B(x, r) = \{y \in M | d(x, y) < r\}
+\end{equation}
+$$
+
+In other words, an open ball is the set of all points that are within a distance $r$ from the point $x$.
+In $\mathbb{R}^3$ with the usual Euclidean metric, an open ball is just a sphere without its surface.
+If we change the metric, the shape of the open ball will change as well.
+
+**Definition** (closed ball) In a metric space $(M, d)$, a **closed ball** of radius $r > 0$ centered at a point $x \in M$ is the set
+
+$$
+\begin{equation}
+\overline{B}(x, r) = \{y \in M | d(x, y) \leq r\}
+\end{equation}
+$$
+
+This is just like an open ball, but it includes the surface as well.
+
+The next important idea is to distinguish points that are "inside" a set from those that are not.
+Intuitively, a point is "inside" a set if we can draw an open ball around it that is completely contained within the set.
+
+**Definition** (interior) A point $x \in M$ is an **interior point** of a set $A \subseteq M$ if there exists an open ball $B(x, r)$ such that $B(x, r) \subseteq A$.
+More concretely, there exists some radius $\epsilon > 0$ such that for all points $y \in M$ with $d(x, y) < \epsilon$, we have $y \in A$.
+
+The **interior** of a set $A$, denoted by $\text{int}(A)$, is the set of all interior points of $A$.
+
+Interior sets follow some nice properties:
+
+- $\text{int}(A) \subseteq A$ for any set $A \subseteq M$.
+- $\text{int}(\text{int}(A)) = \text{int}(A)$ for any set $A \subseteq M$.
+- $\text{int}(A \cap B) = \text{int}(A) \cap \text{int}(B)$ for any sets $A, B \subseteq M$.
+- $\text{int}(A) \cup \text{int}(B) \\subseteq \text{int}(A \cup B)$ for any sets $A, B \subseteq M$.
+- $A \subseteq B$ implies $\text{int}(A) \subseteq \text{int}(B)$ for any sets $A, B \subseteq M$.
+
+We will not prove these properties here, but they are not too hard to show.
+
+For an example, consider the set $[a, b] \subseteq \mathbb{R}$.
+The interior of this set is the open interval $(a, b)$, since any point in $(a, b)$ has an open ball around it that is completely contained within $[a, b]$.
+However, the points $a$ and $b$ do not have this property, since any open ball around them will include points that are not in $[a, b]$.
+
+Notice that with the definition of an interior set, we were able to isolate out $a$ and $b$ as special points.
+Specifically, they are on the "edge" of the set.
+It seems as though the set $(a, b)$ is different from the set $[a, b]$ because of these two points.
+This leads us to the next important concept: open and closed sets.
+
+**Definition** (open set) A set $A \subseteq M$ is **open** if $A = \text{int}(A)$.
+In other words, a set is open if all of its points are interior points.
+
+For example, the set $(a, b)$ is open, since all of its points are interior points.
+On the other hand, the set $[a, b]$ is not open, since the points $a$ and $b$ are not interior points.
+
+Properties of open sets include:
+
+- The empty set $\emptyset$ is open. By definition, $\text{int}(\emptyset) = \emptyset$, so $\emptyset$ is open.
+- The open ball is open (hence the name).
+- For any set $A$, $\text{int}(A)$ is open, for $\text{int}(A) = \text{int}(\text{int}(A))$.
+- The finite intersection of open sets is open.
+- The arbitrary union of open sets is open.
+
+Once again, we will not prove these properties here, but they are not too hard to show.
+Just use an $\epsilon$-ball argument.
+
+### Closed Sets
+
+To discuss closed sets, we need to define the concept of a limit point.
+
+In calculus, we learned about sequences and their limits.
+For a sequence $\{x_n\}$, we say that it converges to a limit $L$ if for any $\epsilon > 0$, there exists an integer $N$ such that for all $n > N$, $|x_n - L| < \epsilon$.
+In other words, as $n$ gets larger and larger, the terms of the sequence get closer and closer to $L$, and any finite number of terms can be made to be within any small distance $\epsilon$ of $L$.
+
+Let's generalize this idea to metric spaces.
+For a sequence $\{x_n\}$ in a metric space $(M, d)$, we say that it converges to a limit $L \in M$ if for any $\epsilon > 0$, there exists an integer $N$ such that for all $n > N$, $d(x_n, L) < \epsilon$.
+
+When we consider the condition $d(x_n, L) < \epsilon$, we can think of it as saying that the points $x_n$ are eventually contained within the open ball $B(L, \epsilon)$.
+As such, we can also think about convergence in terms of open balls:
+
+<Boxed>
+
+**Definition** (convergence) A sequence $\{x_n\}$ in a metric space $(M, d)$ converges to a limit $L \in M$ if for any open ball $B(L, \epsilon)$, there exists an integer $N$ such that for all $n > N$, $x_n \in B(L, \epsilon)$.
+
+</Boxed>
+
+
+
+## Topological Spaces
+
+In abstract algebra, we learn about fields to genearlize the real numbers.
+Likewise, in topology, we learn about topological spaces to generalize metric spaces.
+
+We saw that in a space, if we have a metric, we can define open sets in that space.
+Now, we can think about doing the reverse, and starting with a definition of open sets, and then defining structures on the space based on that.
+
+In other words, if we have a set $M$, we can define a collection of subsets of $M$ that we will call "open sets".
+This collection is known as a **topology** on $M$.
+Obviously, since they are called "open sets", we want them to satisfy the properties of open sets that we saw earlier:
+
+- The empty set $\emptyset$ and the entire set $M$ are in the topology.
+- The finite intersection of sets in the topology is also in the topology.
+- The arbitrary union of sets in the topology is also in the topology.
+
+This is great; even without a metric, we can define various structures, such as continuity, convergence, and connectedness, using only the concept of open sets.
+
+If $M$ is a set and $\mathcal{T}$ is a topology on $M$, then the pair $(M, \mathcal{T})$ is called a **topological space**.
+Let's consider some concrete examples.
+
+

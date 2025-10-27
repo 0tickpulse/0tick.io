@@ -22,4 +22,10 @@ export const MATH_MACROS: Record<string, string | [string, number]> = {
 
     // Feynman slash
     "slashed": ["\\not{#1}", 1],
+
+    // Equivalence relation
+    "eqv": "\\triangleright\\triangleleft",
+
+    // Bold sans serif
+    "boldsf": ["\\boldsymbol{\\mathsf{#1}}", 1],
 };

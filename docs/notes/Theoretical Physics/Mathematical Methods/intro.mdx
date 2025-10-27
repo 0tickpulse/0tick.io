@@ -19,3 +19,143 @@ This includes topics such as linear algebra, calculus, differential equations, c
 We will also cover some more advanced topics such as functional analysis, distribution theory, and category theory
 Interestingly, much of the mathematics here revolve around vector spaces. Therefore, we will start with a review of vector spaces and linear algebra.
 
+For this section we will follow *Mathematical Physics: A Modern Introduction to Its Foundations* by Sadri Hassani, which is an excellent book that covers all the necessary mathematics needed for theoretical physics.
+
+As did Hassani, I have included a table for the various symbols used in this section.
+Some of them might differ from the book.
+
+| Symbol | Meaning |
+|--------|---------|
+| General Symbols | |
+| $\forall$ | For all |
+| $\exists$ | There exists |
+| iff | If and only if |
+| $A := B$ | $A$ is defined to be $B$ |
+| $\implies$ | Implies |
+| $\mathbb{N}$ | The set of natural numbers |
+| $\mathbb{Z}$ | The set of integers |
+| $\mathbb{Q}$ | The set of rational numbers |
+| $\mathbb{R}$ | The set of real numbers |
+| $\mathbb{C}$ | The set of complex numbers; $\{a + bi | a, b \in \mathbb{R}, i^2 = -1\}$ |
+| $\mathbb{H}$ | The set of quaternions; $\{a + bi + cj + dk | a, b, c, d \in \mathbb{R}, i^2 = j^2 = k^2 = ijk = -1\}$
+| Set-theoretic Symbols | |
+| $\in$ | Element of |
+| $\notin$ | Not an element of |
+| $\subset$ | Subset of |
+| $\subseteq$ | Subset of or equal to |
+| $\emptyset$ | The empty set |
+| $\cup$ | Union |
+| $\cap$ | Intersection |
+| $\complement A$ | Complement of set $A$ |
+| $A \times B$ | Cartesian product of sets $A$ and $B$; $\{(a,b) | a \in A, b \in B\}$ |
+| $P(A)$ | Power set of $A$; the set of all subsets of $A$ |
+| Maps and Relations | |
+| $\triangleright$ | A relation |
+| $\sim$ | An equivalence relation |
+| $[a]$ | The equivalence class of $a$ |
+| $f: A \to B$ | A map $f$ from set $A$ to set $B$ |
+| $x \mapsto f(x)$ | $f(x)$ is the image of $x$ under the map $f$ |
+| $\text{id}_A$ | The identity map on set $A$ |
+| $g \circ f$ | The composition of maps $f$ and $g$ |
+| $\ker f$ | The kernel of the map $f$; $\{a \in A | f(a) = 0\}$ |
+| $\text{im} f$ | The image of the map $f$; $\{f(a) \| a \in A\}$ |
+| Linear Algebra and Abstract Algebra | |
+| $\mathcal{V}$ | A vector space |
+| $\mathcal{V}^*$ | The dual space of the vector space $\mathcal{V}$ |
+| $\ket{a}$ | A vector in a vector space (Dirac notation) |
+| $\bra{a}$ | A covector/covariant vector/dual vector/linear functional/1-form/bra vector in the dual space (Dirac notation) |
+| $\braket{a}{b}$ | The inner product of vectors $\ket{a}$ and $\ket{b}$ (Dirac notation) |
+| $\|a\|$ | The norm of vector $\ket{a}$ |
+| $\mathbb{R}^n$ | The $n$-dimensional real vector space |
+| $\mathbb{C}^n$ | The $n$-dimensional complex vector space |
+| $\mathcal{M}^{m \times n}(\mathbb{R})$ | The set of all $m \times n$ matrices with real entries |
+| $\mathcal{M}^{m \times n}(\mathbb{C})$ | The set of all $m \times n$ matrices with complex entries |
+| $\mathbb{R}^\infty$ | The set of absolutely convergent real sequences |
+| $\mathbb{C}^\infty$ | The set of absolutely convergent complex sequences |
+| $\mathcal{P}^c[t]$ | The set of all complex polynomials in the variable $t$ |
+| $\mathcal{P}^r[t]$ | The set of all real polynomials in the variable $t$ |
+| $\mathcal{P}^c_n[t]$ | The set of all complex polynomials in the variable $t$ of degree at most $n$ |
+| $\mathcal{P}^r_n[t]$ | The set of all real polynomials in the variable $t$ of degree at most $n$ |
+| $\mathcal{C}^0(a, b)$ | The set of all continuous functions on the (real) interval $(a, b)$ |
+| $\mathcal{C}^n(a, b)$ | The set of all $n$-times continuously differentiable functions on the (real) interval $(a, b)$ |
+| $\mathcal{C}^\infty(a, b)$ | The set of all infinitely differentiable (smooth) functions on the (real) interval $(a, b)$ |
+| $\text{Span}\{S\}$ | The span of the set $S$; the set of all finite linear combinations of elements of $S$ |
+| $\oplus$ | Direct sum of vector spaces |
+| $\bigoplus_{k = 1}^n$ | Direct sum of multiple vector spaces |
+| $\otimes$ | Tensor product of vector spaces |
+| $\bigotimes_{k = 1}^n$ | Tensor product of multiple vector spaces |
+| $\langle a, \mathbf{\alpha} \rangle$ | The dual pairing of vector $a$ and covector $\mathbf{\alpha}$ |
+| $\mathcal{A}$ | An algebra over a field |
+| $\mathcal{L}(\mathcal{V})$ | The algebra of all linear maps from the vector space $\mathcal{V}$ to itself |
+| $\text{End}(\mathcal{V})$ | The algebra of all linear maps from the vector space $\mathcal{V}$ to itself |
+| $\oplus$ | Direct sum of algebras |
+| $\bigoplus_{k = 1}^n$ | Direct sum of multiple algebras |
+| $\otimes$ | Tensor product of algebras |
+| $\bigotimes_{k = 1}^n$ | Tensor product of multiple algebras |
+| $\mathcal{M}(\mathbb{F})$ | The algebra of all square matrices with entries from the field $\mathbb{F}$ |
+| $\mathcal{C}(\mathcal{V})$ | The Clifford algebra of the inner product space $\mathcal{V}$ |
+| $\vee$ | The Clifford product |
+
+## List of Theorems, Definitions, etc.
+
+### 1.1 Sets
+
+- [Definition 1.1.1 (relation, equivalence relation, equivalence class)](./Preliminaries/1%20Sets#1-1-1)
+
+### 2.1 Vector Spaces
+
+- [Definition 2.1.1 (Vector Space)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-1)
+- [Example 2.1.2 (Examples of Vector Spaces)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-2)
+- [Definition 2.1.3 (Linear Independence)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-3)
+- [Definition 2.1.4 (Subspace)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-4)
+- [Example 2.1.5 (Examples of Subspaces)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-5)
+- [Theorem 2.1.6 (Span is a Subspace)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-6)
+- [Definition 2.1.7 (Basis)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-7)
+- [Theorem 2.1.8 (Bases Have Equal Cardinality)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-8)
+- [Definition 2.1.9 (Dimension)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-9)
+- [Example 2.1.10 (Examples of Bases)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-10)
+- [Example 2.1.11 (xy and yz Planes)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-11)
+- [Definition 2.1.12 (Direct Sum)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-12)
+- [Proposition 2.1.13 (Characterization of Direct Sum)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-13)
+- [Definition 2.1.14 (Direct Sum of Multiple Subspaces)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-14)
+- [Proposition 2.1.15 (Linear Independence in Direct Sum)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-15)
+- [Proposition 2.1.16 (Existence of Complement Subspace)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-16)
+- [Example 2.1.17 (xy Plane Complement)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-17)
+- [Proposition 2.1.18 (Dimension of Direct Sum)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-18)
+- [Proposition 2.1.19 (Isomorphism of Direct Sum and Cartesian Product)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-19)
+- [Theorem 2.1.20 (Basis of Direct Sum)](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-20)
+
+(We also briefly discuss the tensor product of vector spaces.)
+
+### 2.2 Inner Product Spaces
+
+- [Definition 2.2.1 (Inner Product, Inner Product Space)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-1)
+- [Box 2.2.2 (Shorthand Notations)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-2)
+- [Example 2.2.3 (Examples of Inner Products)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-3)
+- [Definition 2.2.4 (Orthogonal, Normal, Orthonormal)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-4)
+- [Example 2.2.5 (Inner Product of Direct Sums)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-5)
+- [Example 2.2.6 (Examples of Orthonormal Bases)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-6)
+- [Theorem 2.2.7 (Schwarz Inequality)](./2%20Vectors%20and%20Linear%20Maps/2.2%20Inner%20Product%20Spaces#2-2-7)
+
+### 2.3 Linear Maps
+
+- [Example 2.3.1 (Common Maps)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-1)
+- [Definition 2.3.2 (Linear Map, Endomorphism)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-2)
+- [Box 2.3.3 (Shorthand for Endomorphisms)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-3)
+- [Definition 2.3.4 (Isometric Map, Isometry, Unitary Operator)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-4)
+- [Example 2.3.5 (Examples of Linear Maps)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-5)
+- [Box 2.3.6 (Equality of Linear Maps)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-6)
+- [Theorem 2.3.7 (Zero Endomorphism)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-7)
+- [Theorem 2.3.8](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-8)
+- [Theorem 2.3.9 (kernel)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-9)
+- [Theorem 2.3.10 (image and rank)](./2%20Vectors%20and%20Linear%20Maps/2.3%20Linear%20Maps#2-3-10)
+
+### 2.4 Complex Structures
+
+- [Box 2.4.1](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-1)
+- [Definition 2.4.2 (complex, bilinear inner product)](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-2)
+- [Definition 2.4.3 (adjoint, self-adjoint, skew)](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-3)
+- [Proposition 2.4.4](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-4)
+- [Definition 2.4.5 (complex structure)](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-5)
+- [Proposition 2.4.6](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-6)
+- [Theorem 2.4.7 (Existence of Complex Structures)](./2%20Vectors%20and%20Linear%20Maps/2.4%20Complex%20Structures#2-4-7)

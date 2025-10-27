@@ -1,0 +1,125 @@
+---
+sidebar_position: 5
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Chapter 1 Solutions
+
+Here are the solutions to the exercises in Chapter 1 of Mathematical Physics: A Modern Introduction to Its Foundations by Sadri Hassani.
+
+<TOCInline toc={toc} />
+
+<details>
+
+<summary>
+
+## 1.1
+
+Show that the number of subsets of a set containing $n$ elements is $2^n$.
+
+</summary>
+
+There are a few ways to show this.
+One way is to use a combinatorial argument. In a set $A$ with $n$ elements, each element can either be included in a subset or not.
+Thus, for each element, there are two choices: to include it or not.
+Since there are $n$ elements, the total number of subsets is given by multiplying the number of choices for each element, which is $2^n$. $\blacksquare$
+
+Another way to show this is by using induction.
+
+**Base Case**: For $n = 0$, the set is empty, and there is only one subset, which is the empty set itself. Thus, the number of subsets is $2^0 = 1$.
+**Inductive Step**: Assume that for a set with $k$ elements, the number of subsets is $2^k$.
+Now, consider a set with $k + 1$ elements. We can think of this set as the union of a set with $k$ elements and an additional element.
+The subsets of this new set can be divided into two categories: those that do not include the additional element and those that do.
+The number of subsets that do not include the additional element is equal to the number of subsets of the original set with $k$ elements, which is $2^k$ by the inductive hypothesis.
+The number of subsets that include the additional element is also equal to the number of subsets of the original set with $k$ elements, which is again $2^k$.
+Thus, the total number of subsets for the set with $k + 1$ elements is $2^k + 2^k = 2 \cdot 2^k = 2^{k + 1}$.
+
+By the principle of mathematical induction, we conclude that the number of subsets of a set containing $n$ elements is $2^n$ for all non-negative integers $n$. $\blacksquare$
+
+</details>
+
+<details>
+
+<summary>
+
+## 1.2
+
+Let $A$, $B$, and $C$ be sets in a universal set $U$. Show that:
+
+1. $A \subset B$ and $B \subset C$ implies $A \subset C$.
+2. $A \subset B$ iff $A \cap B = A$ iff $A \cup B = B$.
+3. $A \subset B$ and $B \subset C$ implies $(A \cup B) \subset C$.
+4. $A \cup B = (A \cap B) \cup (A \setminus B) \cup (B \setminus A)$.
+
+*Hint*: To show the equality of two sets, show that each set is a subset of the other.
+
+</summary>
+
+Let's prove each part step by step.
+
+1. Assume $A \subset B$ and $B \subset C$.
+
+    The former means that for every element $x \in A$, we have $x \in B$.
+    The latter means that for every element $y \in B$, we have $y \in C$.
+    Combining these two statements, we see that for every element $x \in A$, we have $x \in B$ and thus $x \in C$.
+    Therefore, $A \subset C$. $\blacksquare$
+
+2. We will prove the equivalence in two parts.
+
+    - ($\Rightarrow$) Assume $A \subset B$.
+        This means that for every element $x \in A$, we have $x \in B$.
+        So $A$ is a subset of $B$. Moreover, there are no elements in $A$ that are not in $B$, so $A \cap B = A$.
+
+        Also, since every element of $A$ is in $B$, the union $A \cup B$ is just $B$ itself, so $A \cup B = B$.
+    - ($\Leftarrow$) Assume $A \cap B = A$.
+        This means that every element in $A$ is also in $B$, so $A \subset B$.
+
+        Similarly, assume $A \cup B = B$.
+        This means that every element in $A$ is also in $B$, so $A \subset B$.
+
+    Therefore, we have shown in both directions that $A \subset B$ iff $A \cap B = A$ iff $A \cup B = B$. $\blacksquare$
+
+    It is insightful to draw a Venn diagram to visualize this.
+
+    ```mermaid
+    graph LR;
+        subgraph B
+            subgraph A
+                A1((x))
+                A2((y))
+                A3((z))
+            end
+        end
+    ```
+
+3. Assume $A \subset B$ and $B \subset C$.
+
+    We want to show that $(A \cup B) \subset C$.
+    From the previous part, we know that $A \subset B$ implies $A \cup B = B$.
+    Since $B \subset C$, we have $A \cup B = B \subset C$.
+    Therefore, $(A \cup B) \subset C$. $\blacksquare$
+
+4. We will prove the equality by showing that each side is a subset of the other.
+
+</details>
+
+<details>
+
+<summary>
+
+
+
+</summary>
+
+
+
+</details>

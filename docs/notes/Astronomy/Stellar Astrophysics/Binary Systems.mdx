@@ -1,0 +1,239 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Binary Systems
+
+We begin our discussion of stars with binary systems, which are systems of two stars orbiting around their common center of mass.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Binary System Classification
+
+Let's recap what we know so far about astronomy as a whole.
+From our study of mechanics and thermal radiation, we know that the properties stars can be measured by their radiation curves, spectra, luminosities, and stellar parallax.
+These allow for the prediction of their effective temperature (the temperature of a blackbody that would emit the same total amount of electromagnetic radiation), radius, and chemical composition.
+We can use Kepler's laws and Newton's law of gravitation to determine the masses of stars in binary systems.
+
+Binary systems are classified into several types, not mutually exclusive, based on how they are observed.
+If telescopes can easily resolve the two stars as separate points of light, they are called visual binaries.
+If only one star is visible, but its motion indicates the presence of an unseen companion, it is called an astrometric binary.
+If the orbital plane is aligned such that one star periodically passes in front of the other, causing a dip in brightness, it is called an eclipsing binary.
+Here is a more complete list of binary system classifications:
+
+1. **Optical doubles**: These are pairs of stars that appear close together in the sky but are not gravitationally bound. They are simply a line-of-sight coincidence.
+2. **Visual binaries**: These are pairs of stars that can be resolved as separate points of light through a telescope. Their orbital motion can be observed over time.
+3. **Astrometric binaries**: In these systems, only one star is visible, but its motion indicates the presence of an unseen companion. The visible star's position wobbles due to the gravitational influence of the companion.
+4. **Eclipsing binaries**: These are systems where the orbital plane is aligned such that one star periodically passes in front of the other, causing a dip in brightness. This can be observed as changes in the light curve of the system.
+5. **Spectrum binaries**: These are systems where their spectra are superimposed but still distinguishable. There is a Doppler shift in the spectral lines as the stars orbit each other, and each star's spectral lines shift in opposite directions.
+    If the orbital period is very long, but the two stars are similar in brightness, we may still observe a binary system by recognizing their spectra (which are superimposed and shift in opposite directions).
+6. **Spectral binaries**: These are systems where the spectral lines of one star are visible, but the companion's lines are not. The visible star's spectral lines exhibit periodic Doppler shifts due to its motion around the center of mass.
+
+### Visual Binaries
+
+Visual binaries are binary star systems where both stars can be resolved as separate points of light through a telescope.
+Recall that the Rayleigh criterion gives the minimum angular separation $\theta$ that a telescope can resolve:
+
+$$
+\begin{equation}
+\theta = 1.22 \frac{\lambda}{D},
+\end{equation}
+$$
+
+where $\lambda$ is the wavelength of light and $D$ is the diameter of the telescope's aperture.
+Thus, the larger the telescope, the smaller the angular separation it can resolve.
+This means that whether a binary system is classified as a visual binary depends on the telescope used to observe it.
+
+Consider one such system where the two stars have masses $m_1$ and $m_2$, and they orbit their common center of mass.
+Let the vectors $\vb{r}_1$ and $\vb{r}_2$ denote the positions of the two stars relative to the center of mass, and let $\vb{r} = \vb{r}_2 - \vb{r}_1$ be the relative position vector from star 1 to star 2.
+Also assume that the plane of the orbit is perpendicular to our line of sight, so there is no inclination angle to consider.
+
+Using the center of mass condition, we have
+
+$$
+\begin{equation}
+m_1 \vb{r}_1 + m_2 \vb{r}_2 = \vb{0},
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\frac{m_1}{m_2} = \frac{r_2}{r_1}.
+\end{equation}
+$$
+
+The separations are proportional to the semimajor axes $a_1$ and $a_2$ of their elliptical orbits, so
+
+$$
+\begin{equation}
+\frac{m_1}{m_2} = \frac{a_2}{a_1}.
+\end{equation}
+$$
+
+Now translating this to the angular separation, we know that the angular separation $\alpha_1$ of star 1 from the observer (a distance $d$ away) is given by
+
+$$
+\begin{equation}
+\alpha_1 = \frac{a_1}{d},
+\end{equation}
+$$
+
+because we approximate $\tan(\alpha_1) \approx \alpha_1$ for small angles.
+Thus the mass ratio can be expressed in terms of the angular separations as
+
+$$
+\begin{equation}
+\frac{m_1}{m_2} = \frac{\alpha_2}{\alpha_1}.
+\end{equation}
+$$
+
+Notice that $d$ vanishes from the equation, so we do not need to know the distance to the binary system to determine the mass ratio.
+
+Now consider what happens if we introduce an inclination angle $i$ between the orbital plane and our line of sight.
+Suppose the plane of the orbit intersects the plane of the sky along a line we call the **line of nodes**.
+Our observed angular separations $\tilde{\alpha}_1$ and $\tilde{\alpha}_2$ are the projections of the true angular separations $\alpha_1$ and $\alpha_2$ onto the plane of the sky.
+Using basic trigonometry, we find that
+
+$$
+\begin{align}
+\tilde{\alpha}_1 &= \alpha_1 \cos(i), \\
+\tilde{\alpha}_2 &= \alpha_2 \cos(i).
+\end{align}
+$$
+
+Thus, the mass ratio in terms of the observed angular separations is
+
+$$
+\begin{equation}
+\frac{m_1}{m_2} = \frac{\tilde{\alpha}_2}{\tilde{\alpha}_1} = \frac{\alpha_2 \cos(i)}{\alpha_1 \cos(i)} = \frac{\alpha_2}{\alpha_1}.
+\end{equation}
+$$
+
+Notice that the inclination angle $i$ also vanishes from the equation, so we can still determine the mass ratio without knowing the inclination angle.
+
+Knowing their ratio, we can determine their individual masses if we know the total mass of the system.
+From Kepler's third law, we have
+
+$$
+\begin{equation}
+P^2 = \frac{4 \pi^2 a^3}{G (m_1 + m_2)},
+\end{equation}
+$$
+
+where $P$ is the orbital period and $a = a_1 + a_2$ is the semimajor axis of the relative orbit.
+Rearranging, we find
+
+$$
+\begin{equation}
+m_1 + m_2 = \frac{4 \pi^2 (\alpha d)^3}{G P^2} = \frac{4 \pi^2}{G} \qty(\frac{d}{\cos(i)})^3 \frac{\tilde{\alpha}^3}{P^2},
+\end{equation}
+$$
+
+where $\tilde{\alpha} = \tilde{\alpha}_1 + \tilde{\alpha}_2$ is the observed angular semimajor axis.
+Here, we see that the total mass depends on the distance $d$ and the inclination angle $i$.
+If we can measure $d$ through stellar parallax, and estimate $i$ through other means, we can determine the total mass of the system.
+With both the total mass and the mass ratio, we can solve for the individual masses $m_1$ and $m_2$.
+
+By the way, to measure the angle of inclination, we can make use of Kepler's first law.
+When projected onto the plane of the sky, the elliptical orbit appears as another ellipse.
+However, the projected center of mass would not be at one of the foci of the projected ellipse.
+By measuring the distance from the projected center of mass to the projected foci, we can determine the angle of inclination $i$ using the relationship between the true and projected semimajor and semiminor axes.
+
+### Eclipsing/Spectroscopic Binaries
+
+Now we consider binary systems where the orbital plane is nearly aligned with our line of sight, leading to eclipses or detectable Doppler shifts in their spectra.
+In these systems, we cannot resolve the two stars visually, but we can observe changes in brightness or spectral lines.
+
+One important measurement is the radial velocity of each star, which is the component of their velocity along our line of sight.
+This can be determined from the Doppler shift of their spectral lines, and is affected by the inclination angle $i$ of the orbit.
+For instance, if the orbital motion is perpendicular to our line of sight, then there is no radial velocity component.
+On the other hand, if it is perfectly aligned, then the radial velocity is maximized, with velocities
+
+$$
+\begin{align}
+v_{1r}^\text{max} &= v_1 \sin(i), \\
+v_{2r}^\text{max} &= v_2 \sin(i).
+\end{align}
+$$
+
+In the special case of circular orbits, the orbital velocities $v_1$ and $v_2$ are constant, so the radial velocities vary sinusoidally with time.
+For elliptical orbits, the radial velocities vary more complexly, but still periodically.
+
+Suppose we assume that the orbits have a very low eccentricity (nearly circular).
+The velocities $v_1$ and $v_2$ can be expressed in terms of the semimajor axes and the orbital period as
+
+$$
+\begin{align}
+v_1 &= \frac{2 \pi a_1}{P}, \\
+v_2 &= \frac{2 \pi a_2}{P}.
+\end{align}
+$$
+
+Using the same formula for the mass ratio as before, we have
+
+$$
+\begin{equation}
+\frac{m_1}{m_2} = \frac{a_2}{a_1} = \frac{v_2}{v_1} = \frac{v_{2r}^\text{max}}{v_{1r}^\text{max}}. \label{eq:eclipsing-mass-ratio}
+\end{equation}
+$$
+
+Thus, we can determine the mass ratio from the maximum radial velocities, without needing to know the inclination angle.
+
+Just like before, we can determine the total mass using Kepler's third law.
+Using
+
+$$
+\begin{equation}
+a = a_1 + a_2 = \frac{P}{2 \pi} (v_1 + v_2),
+\end{equation}
+$$
+
+we find
+
+$$
+\begin{equation}
+m_1 + m_2 = \frac{P}{2 \pi G} (v_1 + v_2)^3 = \frac{P}{2 \pi G} \qty(\frac{v_{1r} + v_{2r}}{\sin(i)})^3.
+\end{equation}
+$$
+
+As such, we can determine the total mass if we know the inclination angle $i$ and can measure the radial velocities.
+If one star is much brighter than the other, we may only be able to measure one radial velocity.
+Such a system is called a **single-lined spectroscopic binary**.
+In this case, we can still determine the mass by invoking Equation $\ref{eq:eclipsing-mass-ratio}$ to express the unknown radial velocity in terms of the known one and the mass ratio.
+This results in
+
+$$
+\begin{equation}
+m_1 + m_2 = \frac{P}{2 \pi G} \qty(\frac{v_{1r} (1 + \frac{m_1}{m_2})}{\sin(i)})^3,
+\end{equation}
+$$
+
+or
+
+$$
+\begin{equation}
+\frac{(m_2 \sin(i))^3}{(m_1 + m_2)^2} = \frac{P v_{1r}^3}{2 \pi G}.
+\end{equation}
+$$
+
+Notice that the right-hand side is entirely made up of quantities that are readily observable.
+We call this the **mass function** of the binary system.
+(Generally, "mass functions" refer to expressions that relate the masses of components in a system to observable quantities.)

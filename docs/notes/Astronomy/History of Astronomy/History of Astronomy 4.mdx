@@ -1,0 +1,134 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# History of Astronomy: Part 4
+
+In this section, we will conclude our overview of the history of astronomy by discussing developments in the 21st century.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Understanding of Galactic Evolution
+
+In 1962, Olin J. Eggen (1919–1998), Donald Lynden-Bell (1935–2018), and Allan R. Sandage (1926–2010) proposed the ELS model to explain the formation of the Milky Way galaxy.
+Based on observed associations between metallicity and stellar kinematics, they noticed that the most metal-poor stars tended to have highly elliptical orbits (with high eccentricity) and were distributed in a roughly spherical halo around the galaxy.
+
+To explain this, they proposed that the Milky Way formed from the rapid collapse of a large gas cloud, a proto-Galactic nebula.
+The oldest stars formed first during this collapse, inheriting the low metallicity of the primordial gas, as the interstellar medium had not yet been enriched by multiple generations of star formation and supernovae.
+On the other hand, younger stars formed later in the collapse, when the gas had become more enriched with heavy elements from previous generations of stars.
+These younger stars tended to have more circular orbits and were concentrated in the galactic disk.
+This model provided a coherent explanation for the observed correlations between stellar metallicity, kinematics, and spatial distribution in the Milky Way.
+
+But there are problems with the ELS model.
+The proto-Galactic nebula would have an initial rotation, which means that almost all halo stars and globular clusters should be rotating in roughly the same direction.
+However, observations show that about half of these objects are in retrograde orbits, contradicting the predictions of the ELS model.
+Also, observations have demonstrated that the outer halo essentially has zero angular momentum, which is inconsistent with the idea of a collapsing rotating cloud.
+
+## Galaxy Cluster Research
+
+Galaxy clusters are the second largest gravitationally bound structures in the universe (the largest being superclusters).
+They consist of hundreds to thousands of galaxies bound together by gravity, along with hot gas and dark matter.
+Studying galaxy clusters helps astronomers understand large-scale structure formation, dark matter distribution, and cosmological parameters.
+
+Galaxy clusters were first identified in the 1930s by Fritz Zwicky, who observed the Coma Cluster and noted that the visible mass of the galaxies was insufficient to account for the observed gravitational effects.
+This led to the postulation of dark matter, an unseen form of matter that exerts gravitational influence.
+Since then, numerous galaxy clusters have been discovered and studied using various observational techniques, including optical surveys, X-ray observations, and gravitational lensing.
+
+Previously, we discussed the prevailing paradigm of cosmology (The Lambda Cold Dark Matter Model, or ΛCDM) and how it explains the formation of large-scale structures like galaxy clusters.
+
+In the early universe, there existed small density fluctuations due to quantum perturbations during inflation.
+They follow a Gaussian random field distribution with a nearly scale-invariant power spectrum.
+Over time, these fluctuations grew under the influence of gravity, leading to the formation of structures like galaxies and galaxy clusters.
+Dark matter played a crucial role in this process, as it provided the gravitational wells necessary for baryonic matter to collapse into.
+
+To quantify our understanding of galaxy clusters and their distribution, astronomers use several key parameters.
+The mass of a galaxy cluster is unfortunately difficult to define, for there is no clear boundary where a cluster ends.
+The **critical density** $\rho_c$ is defined as the density required for the universe to be flat.
+It is given by
+
+$$
+\begin{equation}
+\rho_c = \frac{3 H^2}{8 \pi G},
+\end{equation}
+$$
+
+where $H$ is the Hubble parameter.
+With this density, if we have $\Lambda = 0$ in the Friedmann equations, then the universe will be flat with $k = 0$.
+
+Given a redshift parameter $z$, we can define the **virial radius** $R_{200}$ of a galaxy cluster as the radius within which the average density is 200 times the critical density at that redshift.
+Mathematically, this is expressed as
+
+$$
+\begin{equation}
+\expval{\rho} (R_{200}) = 200 \rho_c(z).
+\end{equation}
+$$
+
+Then, the **virial mass** $M_{200}$ is defined as the total mass enclosed within the virial radius $R_{200}$:
+
+$$
+\begin{equation}
+M_{200} = \int_0^{R_{200}} 4 \pi r^2 \rho(r) \dd{r}.
+\end{equation}
+$$
+
+The density $\rho(r)$ can be modeled using various profiles, such as the Navarro-Frenk-White (NFW) profile or the Einasto profile, which are derived from simulations and observations.
+For example, in the case of the NFW profile, we define $r_s$ as a **scale radius** (the radius at which the logarithmic slope of the density profile changes).
+Then, the NFW profile is given by
+
+$$
+\begin{equation}
+\rho(r) = \frac{\rho_0}{\frac{r}{r_s} \qty(1 + \frac{r}{r_s})^2},
+\end{equation}
+$$
+
+where $\rho_0$ is a characteristic density parameter (related to the concentration parameter of the cluster).
+
+By studying the distribution and properties of galaxy clusters, astronomers can gain insights into the underlying cosmological model, the nature of dark matter, and the processes governing structure formation in the universe.
+
+### Sampling Galaxy Clusters
+
+We begin our study of galaxy clusters by sampling them from large-scale cosmological simulations.
+These simulations model the evolution of the universe from its early stages to the present day, incorporating the effects of dark matter, dark energy, and baryonic matter.
+
+One key aspect of these simulations is the identification and filtering of galaxy clusters.
+We define the function $n(M, z)$ as the number density of galaxy clusters with mass $M$ at redshift $z$.
+Its derivative with respect to mass is given by
+
+$$
+\dv{n(M, z)}{M}
+$$
+
+and represents the number of clusters per unit volume per unit mass interval.
+As the total number $N$ of clusters in a given volume $V$ is
+
+$$
+\begin{equation}
+N = V \int_{M_{\min}}^{M_{\max}} \dv{n(M, z)}{M} \dd{M},
+\end{equation}
+$$
+
+we have
+
+$$
+\begin{equation}
+\dv{N(M, z)}{M} = V \dv{n(M, z)}{M}.
+\end{equation}
+$$
+

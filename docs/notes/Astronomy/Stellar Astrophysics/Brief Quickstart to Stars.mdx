@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2.1
+sidebar_position: 1
 ---
 
 import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
@@ -73,8 +73,13 @@ This diagram was independently developed by Ejnar Hertzsprung and Henry Norris R
 It reveals distinct groups of stars, including the main sequence, giants, supergiants, and white dwarfs.
 
 The $x$-axis has two scales: the top scale shows the spectral types (O, B, A, F, G, K, M) and the temperature in Kelvin, while the bottom scale shows the color index (B-V).
+The usage of spectral types is historical, dating back to the early 20th century when astronomers classified stars based on their spectral lines.
+It was only later that we realized that the surface temperature was a better indicator of a star's properties.
+
 Recall from our previous discussions that the temperature is directly related to the color of the star, with hotter stars appearing blue and cooler stars appearing red.
-The $B - V$ color index is the difference between a star's magnitude in the blue ($B$) and visual ($V$) bands, which is equal to
+A simple explanation would be that the color corresponds to the peak wavelength of the star's blackbody radiation, as described by Wien's displacement law.
+
+The $B - V$ color index is the difference between a star's magnitude in the blue ($B$) and visual ($V$) bands;
 
 $$
 \begin{equation}
@@ -100,4 +105,43 @@ $$
 
 As the $d$ and $R$ terms cancel out, we see that the $B - V$ color index is only a function of the temperature $T$.
 As the temperature increases, the $B - V$ color index decreases, indicating that hotter stars are bluer.
+
+The $y$-axis also has two scales: the left scale shows the absolute magnitude $M_V$, while the right scale shows the luminosity $L$ in terms of the solar luminosity $L_\odot$.
+The absolute magnitude is related to the luminosity by the formula
+
+$$
+\begin{equation}
+M_V = M_{V, \odot} - 2.5 \log_{10} \qty(\frac{L}{L_\odot}),
+\end{equation}
+$$
+
+where $M_{V, \odot} \approx 4.83$ is the absolute magnitude of the Sun in the visual band.
+
+Generally, stars on the main sequence follow a mass-luminosity relation, where more massive stars are more luminous.
+This is because more massive stars exert greater gravitational pressure on their cores, leading to higher temperatures and more rapid fusion rates.
+The energy produced by fusion is then radiated away from the star's surface, resulting in higher luminosity.
+
+### Stellar Lifecycles Based on Mass
+
+The lifecycle of a star is primarily determined by its initial mass, which influences its temperature, luminosity, and the types of nuclear fusion processes that occur in its core.
+
+Generally, stars can be categorized into three main mass ranges: low-mass stars (less than about 2 solar masses), intermediate-mass stars (between about 2 and 8 solar masses), and high-mass stars (greater than about 8 solar masses).
+
+For low-mass stars, such as red dwarfs, they have relatively long lifespans, often exceeding tens of billions of years.
+Their temperatures are lower, and thus they burn their hydrogen fuel slowly (recall that the rate of a reaction, whether nuclear or chemical, generally increases with temperature).
+As they exhaust their hydrogen fuel, the helium begins to accumulate in the core, and the star expands into a red giant.
+Eventually, the core temperature becomes high enough to ignite helium fusion, producing carbon and oxygen.
+After the helium is exhausted, the star sheds its outer layers, creating a planetary nebula, and the core remains as a white dwarf, which will eventually cool and fade over time.
+
+Intermediate-mass stars, like our Sun, have shorter lifespans of a few billion years.
+They also expand into red giants after exhausting their hydrogen fuel, but they can ignite helium fusion more easily due to their higher core temperatures.
+After the helium is exhausted, they may go through additional fusion stages, producing heavier elements up to carbon and oxygen.
+These stars also end their lives as white dwarfs after shedding their outer layers.
+
+High-mass stars have the shortest lifespans, often only a few million years, due to their high luminosities and rapid consumption of nuclear fuel.
+They undergo a series of fusion stages, producing heavier elements such as neon, magnesium, silicon, and iron.
+Once the core is primarily iron, fusion can no longer produce energy, leading to a catastrophic collapse of the core and a subsequent supernova explosion.
+The remnant core may become a neutron star or, if massive enough, collapse further into a black hole.
+Neutron stars are incredibly dense objects composed primarily of neutrons, while black holes have gravitational fields so strong that not even light can escape.
+We will dedicate an entire section to discussing black holes and the Schwarzschild metric later.
 

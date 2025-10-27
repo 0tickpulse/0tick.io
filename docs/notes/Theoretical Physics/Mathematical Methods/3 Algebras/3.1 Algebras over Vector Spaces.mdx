@@ -1,0 +1,35 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 3.1 Algebras over Vector Spaces
+
+In this section, we will introduce the concept of algebras over vector spaces.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+In many physical applications, there are often natural ways to "multiply" vectors together.
+We can multiply matrices together, we can take the cross product of vectors in $\mathbb{R}^3$, and we can multiply complex numbers together.
+
+**Definition 3.1.1** (algebra over a field) An **algebra** $\mathcal{A}$ over a field $\mathbb{F}$ is a vector space over $\mathbb{F}$ equipped with a bilinear map (called multiplication) $\cdot : \mathcal{A} \times \mathcal{A} \to \mathcal{A}$.
+The image of $(\vb{a}, \vb{b})$ under this map is denoted by $\vb{a} \vb{b}$ for all $\vb{a}, \vb{b} \in \mathcal{A}$.
+This multiplication must satisfy the following properties for all $\vb{a}, \vb{b}, \vb{c} \in \mathcal{A}$ and all $\alpha, \beta \in \mathbb{F}$:
+
+1. Linearity in the first argument: $(\alpha \vb{a} + \beta \vb{b}) \vb{c} = \alpha (\vb{a} \vb{c}) + \beta (\vb{b} \vb{c})$,
+2. Linearity in the second argument: $\vb{a} (\alpha \vb{b} + \beta \vb{c}) = \alpha (\vb{a} \vb{b}) + \beta (\vb{a} \vb{c})$.
+
+

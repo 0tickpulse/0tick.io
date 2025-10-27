@@ -1,0 +1,278 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 2.4 Complex Structures
+
+In this section, we will delve further into how vector spaces behave when we introduce complex scalars.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Complex Vector Spaces
+
+:::box Box 2.4.1
+
+Unless otherwise stated, all inner products are sesquilinear as defined in Definition 2.2.1.
+
+:::
+
+We first redefine the inner product in a complex vector space.
+
+:::definition Definition 2.4.2 (complex, bilinear inner product)
+
+Let $\mathcal{V}$ be a vector space over $\mathbb{F} = \mathbb{C}$ or $\mathbb{R}$.
+An inner product on $\mathcal{V}$ is a function $g: \mathcal{V} \times \mathcal{V} \to \mathbb{F}$ such that for all $\ket{u}, \ket{v}, \ket{w} \in \mathcal{V}$ and all $\alpha, \beta \in \mathbb{F}$, the following properties hold:
+
+1. Symmetry: $g(\ket{u}, \ket{v}) = g(\ket{v}, \ket{u})$,
+2. Bilinearity: $g(\alpha \ket{u} + \beta \ket{v}, \ket{w}) = \alpha g(\ket{u}, \ket{w}) + \beta g(\ket{v}, \ket{w})$ and $g(\ket{u}, \alpha \ket{v} + \beta \ket{w}) = \alpha g(\ket{u}, \ket{v}) + \beta g(\ket{u}, \ket{w})$,
+3. Nondegeneracy: If $g(\ket{u}, \ket{v}) = 0$ for all $\ket{v} \in \mathcal{V}$, then $\ket{u} = \ket{0}$.
+
+This is similar to Definition 2.2.1, except that we have replaced the conjugate symmetry and sesquilinearity with regular symmetry and bilinearity.
+We also forego the positive-definiteness condition, as it is often too restrictive in many physical applications.
+
+With Dirac's bra-ket notation, we can write the inner product as $g(\ket{u}, \ket{v}) = \braket{u}{v}_\mathbb{F}$, with the subscript to distinguish it from the usual sesquilinear inner product $\braket{u}{v}$.
+
+:::
+
+:::definition Definition 2.4.3 (adjoint, self-adjoint, skew)
+
+Let $\boldsf{A} \in \text{End}(\mathcal{V})$ be an endomorphism on a vector space $\mathcal{V}$.
+Then the **adjoint** of $\boldsf{A}$, denoted by $\boldsf{A}^\mathsf{T}$, is the unique endomorphism satisfying
+
+$$
+\begin{equation}
+\braket{\boldsf{A}a}{b}_\mathbb{F} = \braket{a}{\boldsf{A}^\mathsf{T} b}_\mathbb{F}.
+\end{equation}
+$$
+
+An operator $\boldsf{A} \in \text{End}(\mathcal{V})$ is said to be **self-adjoint** if $\boldsf{A} = \boldsf{A}^\mathsf{T}$.
+It is said to be **skew** if $\boldsf{A} = -\boldsf{A}^\mathsf{T}$.
+
+:::
+
+It is easy to see that $(\boldsf{A}^\mathsf{T})^\mathsf{T} = \boldsf{A}$ for all $\boldsf{A} \in \text{End}(\mathcal{V})$.
+To see this, we have
+
+$$
+\begin{equation}
+\braket{\boldsf{A}a}{b}_\mathbb{F} = \braket{a}{\boldsf{A}^\mathsf{T} b}_\mathbb{F} = \braket{(\boldsf{A}^\mathsf{T})^\mathsf{T} a}{b}_\mathbb{F},
+\end{equation}
+$$
+
+and since $\braket{\cdot}{\cdot}_\mathbb{F}$ is nondegenerate, we must have $(\boldsf{A}^\mathsf{T})^\mathsf{T} = \boldsf{A}$.
+
+:::proposition Proposition 2.4.4
+
+An endomorphism $\boldsf{A} \in \text{End}(\mathcal{V})$ on a vector space $\mathcal{V}$ is skew if and only if $\braket{a}{\boldsf{A}a}_\mathbb{F} = 0$ for all $\ket{a} \in \mathcal{V}$.
+
+---
+
+*Proof*.
+
+($\Rightarrow$) Assume that $\boldsf{A}$ is skew.
+Then for all $\ket{a} \in \mathcal{V}$, we have
+
+$$
+\begin{equation}
+\braket{a}{\boldsf{A}a}_\mathbb{F} = \braket{\boldsf{A}^\mathsf{T} a}{a}_\mathbb{F} = \braket{-\boldsf{A} a}{a}_\mathbb{F} = -\braket{a}{\boldsf{A} a}_\mathbb{F},
+\end{equation}
+$$
+
+which implies that $\braket{a}{\boldsf{A}a}_\mathbb{F} = 0$.
+
+($\Leftarrow$) Assume that $\braket{a}{\boldsf{A}a}_\mathbb{F} = 0$ for all $\ket{a} \in \mathcal{V}$.
+Then for all $\ket{a}, \ket{b} \in \mathcal{V}$ and all $\alpha, \beta \in \mathbb{F}$, we have
+
+$$
+\begin{equation}
+\braket{\alpha a + \beta b}{\boldsf{A}(\alpha a + \beta b)}_\mathbb{F} = 0.
+\end{equation}
+$$
+
+Expanding this out using bilinearity, we get
+
+$$
+\begin{equation}
+\alpha^2 \braket{a}{\boldsf{A}a}_\mathbb{F} + \alpha \beta \braket{a}{\boldsf{A}b}_\mathbb{F} + \beta \alpha \braket{b}{\boldsf{A}a}_\mathbb{F} + \beta^2 \braket{b}{\boldsf{A}b}_\mathbb{F} = 0.
+\end{equation}
+$$
+
+Since $\braket{a}{\boldsf{A}a}_\mathbb{F} = 0$ and $\braket{b}{\boldsf{A}b}_\mathbb{F} = 0$ by assumption, we have
+
+$$
+\begin{equation}
+\alpha \beta \braket{a}{\boldsf{A}b}_\mathbb{F} + \beta \alpha \braket{b}{\boldsf{A}a}_\mathbb{F} = 0.
+\end{equation}
+$$
+
+Since this holds for all $\alpha, \beta \in \mathbb{F}$, we must have
+
+$$
+\begin{equation}
+0 = \braket{a}{\boldsf{A}b}_\mathbb{F} + \braket{b}{\boldsf{A}a}_\mathbb{F} = \braket{a}{\boldsf{A}b}_\mathbb{F} + \braket{a}{\boldsf{A}^\mathsf{T} b}_\mathbb{F} = \braket{a}{(\boldsf{A} + \boldsf{A}^\mathsf{T}) b}_\mathbb{F}.
+\end{equation}
+$$
+
+As $\braket{\cdot}{\cdot}_\mathbb{F}$ is nondegenerate, we must have $\boldsf{A} + \boldsf{A}^\mathsf{T} = 0$, i.e., $\boldsf{A}$ is skew. $\blacksquare$
+
+---
+
+:::
+
+Notice the following. Recall from Theorem 2.3.8 that in a sesquilinear inner product space, we have $\boldsf{A} = \boldsf{0}$ if and only if $\braket{a}{\boldsf{A}a} = 0$ for all $\ket{a} \in \mathcal{V}$.
+Here, in a bilinear inner product space, we have $\boldsf{A}$ is *skew* if and only if $\braket{a}{\boldsf{A}a}_\mathbb{F} = 0$ for all $\ket{a} \in \mathcal{V}$.
+This demonstrates how much positive-definiteness restricts the structure of an inner product space.
+
+:::definition Definition 2.4.5 (complex structure)
+
+A **complex structure** on a real vector space $\mathcal{V}$ is an endomorphism $\boldsf{J} \in \text{End}(\mathcal{V})$ such that $\boldsf{J}^2 = -\boldsf{1}$ and $\braket{\boldsf{J}a}{\boldsf{J}b} = \braket{a}{b}$ for all $\ket{a}, \ket{b} \in \mathcal{V}$ (i.e., $\boldsf{J}$ is an isometry).
+
+:::
+
+We dropped the subscript $\mathbb{F}$ in the inner product here since $\mathcal{V}$ is a real vector space, and $\braket{\cdot}{\cdot}_\mathbb{R}$ is just the usual inner product $\braket{\cdot}{\cdot}$.
+
+The reason they are important is that they eventually allow us to relate real vector spaces to complex vector spaces.
+This is important; many physical systems are naturally described using real vector spaces, but complex vector spaces often have nicer mathematical properties.
+For instance, eigenvalues may be available only in the complex field.
+If you have tried to diagonalize a matrix or find its Jordan normal form, using complex numbers often makes the process much easier.
+
+:::proposition Proposition 2.4.6
+
+All complex structures $\boldsf{J}$ on a real inner product space $\mathcal{V}$ are skew.
+
+---
+
+*Proof*.
+
+Let $\boldsf{J}$ be a complex structure on a real inner product space $\mathcal{V}$.
+Let $\ket{a} \in \mathcal{V}$ be arbitrary, and let $\ket{b} = \boldsf{J} \ket{a}$.
+Then, we have
+
+$$
+\begin{equation}
+\braket{a}{\boldsf{J}a} = \braket{a}{b} = \braket{\boldsf{J}a}{\boldsf{J}b} = \braket{\boldsf{J}a}{\boldsf{J}^2 a} = \braket{\boldsf{J}a}{-\boldsf{1} a} = -\braket{\boldsf{J}a}{a}.
+\end{equation}
+$$
+
+But as the inner product for real vector spaces is symmetric, we have $\braket{\boldsf{J}a}{a} = \braket{a}{\boldsf{J}a}$.
+Thus, we have
+
+$$
+\begin{equation}
+\braket{a}{\boldsf{J}a} = -\braket{a}{\boldsf{J}a},
+\end{equation}
+$$
+
+which implies that $\braket{a}{\boldsf{J}a} = 0$ for all $\ket{a} \in \mathcal{V}$.
+By Proposition 2.4.4, we conclude that $\boldsf{J}$ is skew. $\blacksquare$
+
+:::
+
+Another important theorem is the following.
+
+:::theorem Theorem 2.4.7 (Existence of Complex Structures)
+
+Given a real inner product space $\mathcal{V}$, a complex structure $\boldsf{J}$ on $\mathcal{V}$ exists only if $\dim \mathcal{V}$ is even.
+In particular, the set $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_n}, \boldsf{J}\ket{e_1}, \boldsf{J}\ket{e_2}, \ldots, \boldsf{J}\ket{e_n}\}$ forms an orthonormal basis for $\mathcal{V}$, where $n = \frac{1}{2} \dim \mathcal{V}$.
+
+---
+
+*Proof*. We can prove this by construction using a Gram-Schmidt-like process.
+Start with any nonzero vector $\ket{a} \in \mathcal{V}$.
+Normalize it to get $\ket{e_1} = \frac{\ket{a}}{\norm{a}}$.
+Then, define $\ket{e_{n+1}} = \boldsf{J} \ket{e_1}$.
+
+As $\boldsf{J}$ is an isometry, we have $\norm{e_{n+1}} = 1$.
+Moreover, as $\boldsf{J}$ is skew by Proposition 2.4.6, we have
+
+$$
+\begin{equation}
+\braket{e_1}{e_{n+1}} = \braket{e_1}{\boldsf{J} e_1} = 0
+\end{equation}
+$$
+
+due to Proposition 2.4.4.
+Thus, $\{\ket{e_1}, \ket{e_{n+1}}\}$ is an orthonormal set.
+
+Now, consider the orthonormal subset $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_n}\}$.
+For each $\ket{e_i}$, define $\ket{e_{n+i}} = \boldsf{J} \ket{e_i}$.
+Therefore, there will always be an even number of vectors in the orthonormal subset.
+If any new vector is linearly independent from the existing set, we simply add both the vector and its image under $\boldsf{J}$ to the orthonormal set.
+Continuing this process, we eventually obtain an orthonormal basis for $\mathcal{V}$ of the desired form. $\blacksquare$
+
+:::
+
+So what has all this built up to?
+Complex structures, as we have seen, allow us to take an orthonormal basis of a real vector space and pair up the basis vectors, effectively doubling the dimension.
+This should remind you of how complex numbers can be represented as pairs of real numbers.
+By introducing $i$ to the set of real numbers, we double the dimension of the space.
+Similarly, complex structures allow us to introduce a notion of "imaginary" directions in a real vector space, effectively turning it into a complex vector space.
+This process is called complexification and is defined below.
+
+:::definition Definition 2.4.8 (complexification)
+
+Let $\mathcal{V}$ be a real vector space.
+Then, the **complexification** of $\mathcal{V}$, denoted by $\mathcal{V}_\mathbb{C}$, is defined as the tensor product
+
+$$
+\begin{equation}
+\mathcal{V}_\mathbb{C} := \mathcal{V} \otimes_\mathbb{R} \mathbb{C}
+\end{equation}
+$$
+
+with the scalar multiplication defined by
+
+$$
+\begin{equation}
+\alpha (\ket{v} \otimes z) := \ket{v} \otimes (\alpha z)
+\end{equation}
+$$
+
+for all $\ket{v} \in \mathcal{V}$, $z \in \mathbb{C}$, and $\alpha \in \mathbb{C}$.
+
+:::
+
+The complexification $\mathcal{V}_\mathbb{C}$ can be thought of as the set of all formal linear combinations $\ket{v_1} \otimes z_1 + \ket{v_2} \otimes z_2 + \ldots + \ket{v_n} \otimes z_n$ with $\ket{v_i} \in \mathcal{V}$ and $z_i \in \mathbb{C}$.
+In other words, the basis vectors of $\mathcal{V}_\mathbb{C}$ are of the form $\ket{e_i} \otimes 1$ and $\ket{e_i} \otimes i$, where $\{\ket{e_i}\}$ is a basis for $\mathcal{V}$.
+The dimensions scale as follows:
+
+$$
+\begin{align}
+\dim_\mathbb{C} \mathcal{V}_\mathbb{C} &= \dim_\mathbb{R} \mathcal{V}, \\
+\dim_\mathbb{R} \mathcal{V}_\mathbb{C} &= 2 \dim_\mathbb{R} \mathcal{V}.
+\end{align}
+$$
+
+($\dim_\mathbb{C} \mathcal{V}_\mathbb{C}$ denotes the dimension of $\mathcal{V}_\mathbb{C}$ as a complex vector space, while $\dim_\mathbb{R} \mathcal{V}_\mathbb{C}$ denotes its dimension as a real vector space.)
+
+The inner product on $\mathcal{V}_\mathbb{C}$ is defined as a sesquilinear (Hermitian) inner product with
+
+$$
+\begin{equation}
+\braket{v_1 \otimes z_1}{v_2 \otimes z_2} := z_1^* z_2 \braket{v_1}{v_2}.
+\end{equation}
+$$
+
+The complex structure $\boldsf{J}$ acts similar to multiplication by $i$.
+In particular, a dimension-$2n$ real vector space $\mathcal{V}$ with a complex structure can be identified with a dimension-$n$ complex vector space, where the tensor product is replaced by the action of $\boldsf{J}$:
+
+$$
+\begin{equation}
+(a + ib) \otimes \ket{v} \leftrightarrow (a + b\boldsf{J}) \ket{v}.
+\end{equation}
+$$
+
+If the basis of $\mathcal{V}$ is $\{\ket{e_i}, \boldsf{J} \ket{e_i}\}_{i=1}^n$, then the corresponding basis of $\mathcal{V}_\mathbb{C}$ is $\{\ket{e_i} \otimes 1, \ket{e_i} \otimes i\}_{i=1}^n$.
+

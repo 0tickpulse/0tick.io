@@ -1,0 +1,461 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Sets and Maps
+
+Mathematics has always been about understanding structures and patterns.
+Ancient Greek mathematicians studied geometry and number theory, while modern mathematicians explore abstract algebra, topology, and category theory.
+However, for the longest time, there was no formal framework to study these structures and patterns.
+In other words, we do not have a formal language to describe what a "structure" or "pattern" is.
+This changed in the late 19th and early 20th centuries with the development of set theory by Georg Cantor and others.
+Set theory provides a formal framework to study collections of objects, which we call sets.
+
+As we are about to study heavily abstract topics in theoretical physics --- think fiber bundles, Lie groups, measure theory, and functional analysis --- it is essential to have a solid understanding of set theory.
+
+Also, the section and theorem numbering follows Hassani's book.
+You can consider this set of notes to be my annotated version, or a different perspective, of the book.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## 1.1 Sets
+
+A **set** is a collection of distinct objects, considered as an object in its own right.
+A **singleton** is a set with exactly one element, and an **empty set** is a set with no elements, denoted by $\emptyset$.
+It is defined as
+
+$$
+\begin{equation}
+\emptyset := \{ x | x \neq x \}.
+\end{equation}
+$$
+
+If $A$ and $B$ are sets, then $A$ is a **subset** of $B$, denoted by $A \subseteq B$, if every element of $A$ is also an element of $B$.
+Two sets $A$ and $B$ are **equal**, denoted by $A = B$, if they have the same elements, i.e., $A \subseteq B$ and $B \subseteq A$.
+Set operations include:
+
+$$
+\begin{align}
+A \cup B &:= \{ x | x \in A \text{ or } x \in B \} \quad \text{(union)} \\
+A \cap B &:= \{ x | x \in A \text{ and } x \in B \} \quad \text{(intersection)} \\
+A \setminus B &:= \{ x | x \in A \text{ and } x \notin B \} \quad \text{(set difference)} \\
+\complement A &:= \{ x | x \notin A \} \quad \text{(complement)}
+\end{align}
+$$
+
+In a specific theory, we often have a **universal set** $U$ that contains all the objects under consideration.
+The **power set** of a set $A$, denoted by $\mathcal{P}(A)$, is the set of all subsets of $A$.
+For example, if $A = \{1, 2\}$, then $\mathcal{P}(A) = \{\emptyset, \{1\}, \{2\}, \{1, 2\}\}$.
+By Cantor's theorem, the power set of a set $A$ has a strictly greater cardinality than $A$ itself.
+For example, the set of natural numbers $\mathbb{N}$ is countably infinite, while its power set $\mathcal{P}(\mathbb{N})$ is uncountably infinite.
+
+The **Cartesian product** of two sets $A$ and $B$, denoted by $A \times B$, is the set of all ordered pairs $(a, b)$ where $a \in A$ and $b \in B$:
+
+$$
+\begin{equation}
+A \times B := \{ (a, b) | a \in A, b \in B \}.
+\end{equation}
+$$
+
+:::definition Definition 1.1.1 (relation, equivalence relation, equivalence class)
+
+A **relation** $\triangleright$ from a set $A$ to a set $B$ is a subset of the Cartesian product $A \times B$.
+If $(a, b) \in R$, we say that $a$ is related to $b$ by $\triangleright$, denoted by $a \triangleright b$.
+
+An **equivalence relation** on a set $A$ is a relation $\sim$ on $A$ that satisfies the following properties for all $a, b, c \in A$:
+
+1. **Reflexivity**: $a \sim a$.
+2. **Symmetry**: If $a \sim b$, then $b \sim a$.
+3. **Transitivity**: If $a \sim b$ and $b \sim c$, then $a \sim c$.
+
+The **equivalence class** of an element $a \in A$ under the equivalence relation $\sim$ is the set of all elements in $A$ that are related to $a$:
+
+$$
+\begin{equation}
+[a] := \{ x \in A | x \sim a \}.
+\end{equation}
+$$
+
+:::
+
+:::proposition Proposition 1.1.2 (disjoint or equal equivalence classes)
+
+If $\sim$ is an equivalence relation on a set $A$, then $\forall a, b \in A$, either $[a] \cap [b] = \emptyset$ or $[a] = [b]$.
+
+---
+
+*Proof.* Let $c$ be an element in $[a]$. Obviously, either $c \in [b]$ or $c \notin [b]$.
+Let's consider the two cases.
+
+First, if $c \in [b]$, then by definition of equivalence class, $c \sim b$.
+Since $c \in [a]$, we also have $c \sim a$, and by symmetry $a \sim c$.
+By transitivity, we have $a \sim b$.
+Then, for any $x \in [a]$, we have $x \sim a$. By transitivity, $x \sim b$, so $x \in [b]$.
+Thus $[a] \subseteq [b]$.
+By symmetry of the argument, we also have $[b] \subseteq [a]$.
+Therefore, $[a] = [b]$.
+
+Second, we have $c \notin [b]$. For any $x \in [a]$, we have $x \sim a$.
+By transitivity, if $x \in [b]$, then $a \sim b$ and thus since $c \sim a$, we have $c \sim b$, which contradicts the assumption that $c \notin [b]$.
+Therefore, $x \notin [b]$ for all $x \in [a]$, and thus $[a] \cap [b] = \emptyset$.
+
+Thus, we have shown that either $[a] \cap [b] = \emptyset$ or $[a] = [b]$.
+$\blacksquare$
+
+---
+
+:::
+
+:::example Example 1.1.3 (examples of equivalence relations)
+
+There are some examples of relations:
+
+- The equality of real numbers is an equivalence relation.
+- Comparison of real numbers (i.e., $<$, $>$, $\leq$, $\geq$) is not an equivalence relation.
+- Congruence modulo $n$ on the set of integers $\mathbb{Z}$ is an equivalence relation.
+- Similarity of triangles is an equivalence relation.
+- In electromagnetism, two vector potentials $\mathbf{A}$ and $\mathbf{A'}$ are related by a gauge transformation if there exists a scalar function $\chi$ such that $\mathbf{A'} = \mathbf{A} + \nabla \chi$. This relation is an equivalence relation.
+
+:::
+
+:::definition Definition 1.1.4 (partition)
+
+A **partition** of a set $A$ is a collection of non-empty subsets $\{A_i\}_{i \in I}$ of $A$ such that
+
+1. $\bigcup_{i \in I} A_i = A$,
+2. $A_i \cap A_j = \emptyset$ for all $i \neq j$.
+
+:::
+
+In other words, a partition of a set $A$ is a way of dividing $A$ into a collection of smaller sets that do not overlap and together cover the entire set $A$.
+For example, the set of integers $\mathbb{Z}$ can be partitioned into even and odd integers.
+In basic calculus, we partition the real line $\mathbb{R}$ into intervals to define the Riemann integral.
+
+There is a deep connection between equivalence relations and partitions.
+Let $\sim$ be an equivalence relation on a set $A$.
+Then, the set of equivalence classes $\{[a] | a \in A\}$ forms a partition of $A$.
+Conversely, given a partition $\{A_i\}_{i \in I}$ of a set $A$, we can define an equivalence relation $\sim$ on $A$ by saying that $a \sim b$ if and only if $a$ and $b$ belong to the same subset $A_i$ of the partition.
+
+To put this more concretely, consider an example. Suppose we have $\mathbb{Z}$ and the equivalence relation of congruence modulo $3$.
+The equivalence classes are $[0] = \{ \ldots, -6, -3, 0, 3, 6, \ldots \}$, $[1] = \{ \ldots, -5, -2, 1, 4, 7, \ldots \}$, and $[2] = \{ \ldots, -4, -1, 2, 5, 8, \ldots \}$.
+These equivalence classes form a partition of $\mathbb{Z}$, as they are non-empty, disjoint, and their union is $\mathbb{Z}$.
+
+The collection $\{[a] | a \in A\}$ is called the **quotient set** of $A$ by the equivalence relation $\sim$, denoted by $A / \sim$.
+
+## 1.2 Maps
+
+Now that we have a solid understanding of sets and relations, how do we relate different sets to each other?
+One way is through the concept of a **map**.
+A **map** $f$ from a set $A$ to a set $B$, denoted by $f: A \to B$, is a rule that assigns to each element $a \in A$ an element $b \in B$, denoted by $f(a) = b$.
+Each element $a \in A$ corresponds to exactly one element $b \in B$, but an element $b \in B$ can correspond to multiple elements in $A$.
+
+Three important terms are:
+
+- The set $A$ is called the **domain** of the map $f$.
+- The set $B$ is called the **codomain** of the map $f$.
+- If $f(a) = b$, then $b$ is called the **image** of $a$ under $f$, and $a$ is called a **preimage** of $b$.
+    We notate the image as $f(A) = \{ f(a) | a \in A \} \subseteq B$, and the preimage as $f^{-1}(B) = \{ a \in A | f(a) \in B \} \subseteq A$.
+
+:::definition Definition 1.2.1 (Function)
+
+If a map's codomain is a set of numbers (e.g., $\mathbb{R}$, $\mathbb{C}$, $\mathbb{Z}$), then the map is usually called a **function**.
+
+:::
+
+The **identity map** on a set $A$, denoted by $\text{id}_A$, is the map that assigns each element to itself, i.e., $\text{id}_A(a) = a$ for all $a \in A$.
+
+The **graph** of $f$, written as $\Gamma_f$, is the set of ordered pairs $\{(a, f(a)) | a \in A\} \subseteq A \times B$.
+In elementary algebra, we often visualize the graph of a function $f: \mathbb{R} \to \mathbb{R}$ by plotting the points $(x, f(x))$ in the Cartesian plane.
+
+If we have two maps $f: A \to B$ and $g: B \to C$, we can compose them to get a new map $g \circ f: A \to C$, defined by $(g \circ f)(a) = g(f(a))$ for all $a \in A$.
+Function composition is associative, i.e., if we have three maps $f: A \to B$, $g: B \to C$, and $h: C \to D$, then
+
+$$
+\begin{equation}
+h \circ (g \circ f) = (h \circ g) \circ f.
+\end{equation}
+$$
+
+The identity map acts as the identity element for function composition, i.e., for any map $f: A \to B$, we have
+
+$$
+\begin{equation}
+f \circ \text{id}_A = f \quad \text{and} \quad \text{id}_B \circ f = f.
+\end{equation}
+$$
+
+(These properties make the collection of all sets and maps between them into a **category**, which we will explore in more detail later.)
+
+A map $f: A \to B$ is called **injective** (or one-to-one) if for all $a_1, a_2 \in A$, $f(a_1) = f(a_2)$ implies $a_1 = a_2$.
+In other words, different elements in the domain map to different elements in the codomain.
+When visualized in the Cartesian plane, an injective function passes the horizontal line test.
+
+A map $f: A \to B$ is called **surjective** (or onto) if for every $b \in B$, there exists at least one $a \in A$ such that $f(a) = b$.
+In other words, every element in the codomain has at least one preimage in the domain.
+The sine function $f(x) = \sin x$ is not surjective when considered as a map from $\mathbb{R}$ to $\mathbb{R}$, but it is surjective when considered as a map from $\mathbb{R}$ to the interval $[-1, 1]$.
+
+A map $f: A \to B$ is called **bijective** if it is both injective and surjective.
+A bijective map establishes a one-to-one correspondence between the elements of the domain and codomain.
+A bijective map has an **inverse** map $f^{-1}: B \to A$, defined by $f^{-1}(b) = a$ if and only if $f(a) = b$.
+The inverse map satisfies the properties $f^{-1} \circ f = \text{id}_A$ and $f \circ f^{-1} = \text{id}_B$.
+
+If we consider $f: A \to B$, we can define an equivalence relation $\triangleright$ on $A$ by saying that $a_1 \triangleright a_2$ if and only if $f(a_1) = f(a_2)$, where $=$ is another equivalence relation on $B$ (usually the equality relation).
+For example, consider the map $f: \mathbb{R} \to \mathbb{R}$ defined by $f(x) = x^2$.
+Then, we have $1 \triangleright -1$ because $f(1) = f(-1) = 1$.
+This is obviously not a bijective map, as it is not injective.
+Generally, for any $x$, $f^{-1}(x)$ can be any element in $[x]$.
+
+To make $f$ bijective, we can restrict the domain to a subset of $A$ that contains exactly one representative from each equivalence class.
+For example, if we restrict the domain of $f(x) = x^2$ to $[0, \infty)$, then $f$ becomes bijective.
+In fact, for any $f: A \to B$, we can define another map $\tilde{f}: A / \triangleright \to B$ by $\tilde{f}([a]) = f(a)$, known as the **quotient map**.
+This map is always injective, as different equivalence classes map to different elements in $B$.
+However, it may not be surjective, as some elements in $B$ may not have a preimage in $A$.
+
+:::proposition Proposition 1.2.2 (quotient map bijectivity)
+
+The quotient map $\tilde{f}: A / \triangleright \to f(A)$ is bijective.
+
+---
+
+*Proof.* This is quite obvious from the definition of the quotient map.
+
+We have already established that $\tilde{f}$ is injective.
+To show that it is surjective, let $b \in f(A)$.
+By definition of the image, there exists $a \in A$ such that $f(a) = b$.
+Then, we have $\tilde{f}([a]) = f(a) = b$.
+Thus, every element in $f(A)$ has a preimage in $A / \triangleright$.
+Therefore, $\tilde{f}$ is surjective.
+$\blacksquare$
+
+---
+
+:::
+
+There are some very important examples of maps and quotient maps:
+
+:::example Example 1.2.3 (sine/cosine and their inverses)
+
+Consider the sine and cosine functions, $f(x) = \sin x$ and $g(x) = \cos x$.
+These functions are not bijective when considered as maps from $\mathbb{R}$ to $\mathbb{R}$, but they become bijective when restricted to the interval $[-\frac{\pi}{2}, \frac{\pi}{2}]$ for sine and $[0, \pi]$ for cosine.
+The inverse functions, $\sin^{-1} x$ and $\cos^{-1} x$, are called the arcsine and arccosine functions, respectively.
+
+:::
+
+:::example Example 1.2.4 (canonical projection map and quotient map)
+
+For any set $A$ with equivalence relation $\sim$, the **canonical projection** map $\pi: A \to A / \sim$ is defined by $\pi(a) = [a]$.
+This is a very important map, as it allows us to "collapse" the set $A$ into its equivalence classes.
+The canonical projection map is always surjective, as every equivalence class has at least one representative in $A$.
+However, it may not be injective, as different elements in $A$ may belong to the same equivalence class.
+The quotient map $\tilde{\pi}: A / \sim \to A / \sim$ is the identity map, which is obviously bijective.
+
+:::
+
+Also, domains of maps can be Cartesian products of sets.
+The dot product is given by $\cdot: \mathcal{V} \times \mathcal{V} \to \mathbb{R}$, where $\mathcal{V}$ is a real vector space.
+A few important examples of maps with Cartesian product domains include:
+
+- A **binary operation** on a set $A$ is a map $*: A \times A \to A$.
+    Examples include addition and multiplication on $\mathbb{R}$, $\mathbb{C}$, and $\mathbb{Z}$.
+    Binary operations with certain properties give rise to algebraic structures such as groups, rings, and fields.
+- A **bilinear map** between two vector spaces $\mathcal{V}$ and $\mathcal{W}$ over a field $\mathbb{F}$ is a map $B: \mathcal{V} \times \mathcal{W} \to \mathbb{F}$ that is linear in each argument.
+    Examples include the dot product and the cross product in $\mathbb{R}^3$.
+    These form the basis of multilinear algebra and tensor analysis.
+
+## 1.3 Metric Spaces
+
+Another important structure on a set is a **metric**.
+Sets themselves do not have any notion of distance or closeness between elements.
+To make things physically relevant or even useful at all, we need to endow additional structures to sets.
+
+:::definition Definition 1.3.1 (metric)
+
+A **metric** on a set $M$ is a function $d: M \times M \to \mathbb{R}$ that satisfies the following properties for all $x, y, z \in M$:
+
+1. **Non-negativity**: $d(x, y) \geq 0$, and $d(x, y) = 0$ iff $x = y$.
+2. **Symmetry**: $d(x, y) = d(y, x)$.
+3. **Triangle inequality**: $d(x, z) \leq d(x, y) + d(y, z)$.
+
+:::
+
+Sometimes, the non-negativity property does not hold for some metrics, to which case we call them **pseudometrics**.
+Our universe is a pseudometric space, as the distance between two points in spacetime can be zero even if they are not the same point (i.e., for lightlike separated points).
+
+Anyways, a set $M$ equipped with a metric $d$ is called a **metric space**, denoted by $(M, d)$.
+
+:::example Example 1.3.2 (examples of metrics)
+
+Examples of metrics include:
+
+- For $M = \mathbb{R}$ or $M = \mathbb{Q}$, the absolute value metric is defined by $d(x, y) = |x - y|$.
+- For $M$ to be the surface of a 2-sphere in $\mathbb{R}^3$, the great-circle distance metric is defined by $d(x, y) = r \cdot \theta$, where $r$ is the radius of the sphere and $\theta$ is the angle between the vectors from the center of the sphere to points $x$ and $y$.
+- For $\mathcal{C}^0(a, b)$ (the set of all continuous functions on the interval $(a, b)$), the metric
+
+    $$
+    \begin{equation}
+    d(f, g) = \int_a^b |f(x) - g(x)| \dd{x}
+    \end{equation}
+    $$
+
+    defines a metric space.
+- For $\mathcal{C}^0_B(a, b)$, a bounded continuous function space, we can define
+
+    $$
+    \begin{equation}
+    d(f, g) = \sup_{x \in (a, b)} |f(x) - g(x)|,
+    \end{equation}
+    $$
+
+    which is called the uniform metric.
+- In $\mathbb{R}^n$, we can define the Euclidean metric by
+
+    $$
+    \begin{equation}
+    d(\mathbf{x}, \mathbf{y}) = \sqrt{\sum_{i=1}^n (x_i - y_i)^2},
+    \end{equation}
+    $$
+
+    where $\mathbf{x} = (x_1, x_2, \ldots, x_n)$ and $\mathbf{y} = (y_1, y_2, \ldots, y_n)$.
+- In $\mathbb{R}^n$, we can also define the Manhattan metric by
+
+    $$
+    \begin{equation}
+    d(\mathbf{x}, \mathbf{y}) = \sum_{i=1}^n |x_i - y_i|,
+    \end{equation}
+    $$
+
+    where $\mathbf{x} = (x_1, x_2, \ldots, x_n)$ and $\mathbf{y} = (y_1, y_2, \ldots, y_n)$.
+    This metric is named after the grid-like street layout of Manhattan, where the distance between two points is the sum of the absolute differences of their coordinates.
+    It is used in various applications, including urban planning, robotics, and machine learning.
+
+:::
+
+A **sequence** in a set $M$ is a function $s: \mathbb{N} \to M$, where $\mathbb{N}$ is the set of natural numbers.
+Typically, the value of $s(n)$ is denoted by $s_n$, and the set as $\{s_n\}_{n=1}^\infty$.
+
+:::definition Definition 1.3.3 (Convergent Sequence)
+
+A sequence $\{s_n\}$ in a metric space $(M, d)$ is said to **converge** to a point $s \in M$ if for every $\epsilon > 0$, there exists a natural number $N$ such that for all $n \geq N$, $d(s_n, s) < \epsilon$.
+
+The sequence **converges** to $s$, denoted by $\lim_{n \to \infty} s_n = s$ or $s_n \to s$ as $n \to \infty$.
+
+:::
+
+In other words, a sequence converges to a point if the terms of the sequence get arbitrarily close to that point as $n$ increases.
+Unfortunately, we can't readily tell if a sequence converges just by looking at it.
+A weaker notion is that of a **Cauchy sequence**.
+
+:::definition Definition 1.3.4 (Cauchy Sequence)
+
+A sequence $\{s_n\}$ in a metric space $(M, d)$ is called a **Cauchy sequence** if for every $\epsilon > 0$, there exists a natural number $N$ such that for all $m, n \geq N$, $d(s_n, s_m) < \epsilon$.
+
+In other words, a Cauchy sequence is a sequence where the terms get arbitrarily close to each other as $n$ increases.
+
+:::
+
+Every convergent sequence is a Cauchy sequence, but the converse is not necessarily true.
+
+---
+
+*Proof.* Let $\{s_n\}$ be a convergent sequence in a metric space $(M, d)$ that converges to a point $L \in M$.
+
+This obviously means that for every $\epsilon > 0$, there exists a natural number $N$ such that for all $n \geq N$, $d(s_n, L) < \epsilon / 2$.
+We add a $/ 2$ for convenience; scaling $\epsilon$ by a constant does not change the definition.
+
+Now, recall the triangle inequality property of a metric and apply it to $d(s_n, s_m)$:
+
+$$
+\begin{equation}
+d(s_n, s_m) \leq d(s_n, L) + d(L, s_m).
+\end{equation}
+$$
+
+For all $m, n \geq N$, we have $d(s_n, L) < \epsilon / 2$ and $d(L, s_m) < \epsilon / 2$, as it is convergent.
+Thus, we have
+
+$$
+\begin{equation}
+d(s_n, s_m) < \epsilon / 2 + \epsilon / 2 = \epsilon.
+\end{equation}
+$$
+
+This means that for every $\epsilon > 0$, there exists a natural number $N$ such that for all $m, n \geq N$, $d(s_n, s_m) < \epsilon$.
+Thus, all convergent sequences are Cauchy sequences.
+
+Next, we show that not all Cauchy sequences are convergent.
+A simple way to prove is by counterexample.
+Consider the metric space $(\mathbb{Q}, d)$, where $d(x, y) = |x - y|$ is the absolute value metric.
+Consider the sequence $\{s_n\}$ defined by successive approximations of $\pi$:
+
+$$
+\begin{equation}
+\{s_n\} = \{3, 3.1, 3.14, 3.141, 3.1415, \ldots\}.
+\end{equation}
+$$
+
+This sequence is a Cauchy sequence, as for every $\epsilon > 0$, we can find a natural number $N$ such that for all $m, n \geq N$, $|s_n - s_m| < \epsilon$.
+However, this sequence does not converge in $\mathbb{Q}$, as $\pi$ is not a rational number.
+This shows that not all Cauchy sequences are convergent. $\blacksquare$
+
+---
+
+If we want all Cauchy sequences to be convergent, we need to impose an additional condition on the metric space.
+
+:::definition Definition 1.3.5 (Complete Metric Space)
+
+A metric space $(M, d)$ is called **complete** if every Cauchy sequence in $M$ converges to a point in $M$.
+
+:::
+
+Any incomplete metric space can be "completed" by adding the limit points of all Cauchy sequences.
+For example, the set of rational numbers $\mathbb{Q}$ is not complete, as the sequence $\{3, 3.1, 3.14, 3.141, 3.1415, \ldots\}$ does not converge in $\mathbb{Q}$.
+However, we can complete $\mathbb{Q}$ by adding the irrational numbers, resulting in the set of real numbers $\mathbb{R}$, which is complete.
+
+## 1.4 Cardinality
+
+Finally, we discuss the concept of **cardinality**, which is a measure of the "size" of a set.
+Infinity has always been a tricky concept in mathematics.
+The ancient Greeks were aware of the concept of infinity, but they did not have a rigorous way to deal with it.
+The modern treatment of infinity began with Georg Cantor in the late 19th century, who developed set theory and introduced the concept of cardinality.
+With a formal definition of cardinality and related concepts, we resolve paradoxes such as Zeno's paradox and Hilbert's paradox of the Grand Hotel.
+
+For finite sets, the cardinality is simply the number of elements in the set.
+For infinite sets, we need a more sophisticated approach.
+
+A set $A$ is said to be **countably infinite** if there exists a bijective map $f: \mathbb{N} \to A$, where $\mathbb{N}$ is the set of natural numbers.
+In other words, a set is countably infinite if its elements can be put into a one-to-one correspondence with the natural numbers.
+Examples of countably infinite sets include the set of integers $\mathbb{Z}$ and the set of rational numbers $\mathbb{Q}$.
+
+A set $A$ is said to be **uncountably infinite** if it is infinite, but there does not exist a bijective map $f: \mathbb{N} \to A$.
+In other words, a set is uncountably infinite if its elements cannot be put into a one-to-one correspondence with the natural numbers.
+An example of an uncountably infinite set is the set of real numbers $\mathbb{R}$.
+
+We can make a visual demonstration to show that $\mathbb{Q}$ has a bijection with $\mathbb{N}$. Let's create an infinite matrix, where the rows and columns are indexed by natural numbers, and the entry at row $i$ and column $j$ is the rational number $\frac{i}{j}$.
+
+$$
+\begin{equation}
+\mqty[
+\frac{1}{1} & \frac{1}{2} & \frac{1}{3} & \frac{1}{4} & \cdots \\
+\frac{2}{1} & \frac{2}{2} & \frac{2}{3} & \frac{2}{4} & \cdots \\
+\frac{3}{1} & \frac{3}{2} & \frac{3}{3} & \frac{3}{4} & \cdots \\
+\frac{4}{1} & \frac{4}{2} & \frac{4}{3} & \frac{4}{4} & \cdots \\
+\vdots & \vdots & \vdots & \vdots & \ddots
+]
+\end{equation}
+$$
+
+Notice that if we traverse the matrix in a diagonal manner, we can list all the rational numbers.
+We can start from the top-left corner and move diagonally down to the right, then move to the next diagonal and repeat the process.
+This way, we can list all the rational numbers in a sequence, showing that $\mathbb{Q}$ is countably infinite.

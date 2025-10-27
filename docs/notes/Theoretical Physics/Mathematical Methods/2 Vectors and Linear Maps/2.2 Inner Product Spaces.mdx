@@ -1,0 +1,582 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 2.2 Inner Product Spaces
+
+In the previous section, we defined vector spaces.
+Now, we will define inner product spaces, which are vector spaces with an additional structure called an inner product.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Definition
+
+An **inner product** is a generalization of the familiar dot product in $\mathbb{R}^n$.
+It is a function that takes two vectors and returns a scalar, satisfying certain properties.
+
+The dot product in $\mathbb{R}^n$ is defined as a function $g: \mathbb{R}^n \times \mathbb{R}^n \to \mathbb{R}$ such that for any two vectors $\vb{a}$ and $\vb{b}$ in $\mathbb{R}^n$,
+
+$$
+\begin{align}
+g(\vb{a}, \vb{b}) &= g(\vb{b}, \vb{a}), \\
+g(\alpha \vb{a} + \beta \vb{b}, \vb{c}) &= \alpha g(\vb{a}, \vb{c}) + \beta g(\vb{b}, \vb{c}), \\
+g(\vb{a}, \vb{a}) &\geq 0, \\
+g(\vb{a}, \vb{a}) &= 0 \iff \vb{a} = \vb{0}.
+\end{align}
+$$
+
+To generalize to complex vector spaces, we need to be careful with applying these properties.
+Notice that
+
+$$
+\begin{equation}
+g(i\ket{a}, i\ket{a}) = i^2 g(\ket{a}, \ket{a}) = -g(\ket{a}, \ket{a}),
+\end{equation}
+$$
+
+meaning either $g(\ket{a}, \ket{a})$ or $g(i\ket{a}, i\ket{a})$ is negative, violating the positive-definiteness property.
+To account for this, we make it such that the inner product is linear in one argument and conjugate-linear in the other.
+The choice of which argument is linear and which is conjugate-linear is arbitrary, but we will follow the physics convention of making the second argument linear.
+Thus, the linearity property becomes
+
+$$
+\begin{align}
+g\qty(\alpha_1 \ket{u_1} + \alpha_2 \ket{u_2}, \ket{v}) &= \alpha_1^* g(\ket{u_1}, \ket{v}) + \alpha_2^* g(\ket{u_2}, \ket{v}), \\
+g\qty(\ket{u}, \beta_1 \ket{w_1} + \beta_2 \ket{w_2}) &= \beta_1 g(\ket{u}, \ket{w_1}) + \beta_2 g(\ket{u}, \ket{w_2}).
+\end{align}
+$$
+
+As a direct consequence of this, we have
+
+$$
+\begin{equation}
+g(\ket{u_1}, \ket{w_1}) = [g(\ket{w_1}, \ket{u_1})]^*.
+\end{equation}
+$$
+
+As we will see later, the inner product $g$ is unique for finite-dimensional vector spaces.
+As such, we can drop the $g$ and opt for a different notation.
+Different texts use different notations, but we will use the Dirac notation, which is common in quantum mechanics:
+
+$$
+\begin{equation}
+g(\ket{u}, \ket{v}) = \braket{u}{v}.
+\end{equation}
+$$
+
+(This notation has many advantages, including a built-in duality between vectors and linear functionals, which we will discuss later.)
+With all these definitions, we can now formally define an inner product.
+
+:::definition Definition 2.2.1 (Inner Product, Inner Product Space)
+
+An **inner product** on a complex vector space $\mathcal{V}$ is a function $\braket{\cdot}{\cdot}: V \times V \to \mathbb{C}$ such that for any vectors $\ket{a}, \ket{b}, \ket{c} \in V$ and any scalars $\alpha, \beta \in \mathbb{C}$,
+
+1. $\braket{a}{b} = [\braket{b}{a}]^*$ (conjugate symmetry),
+2. $\bra{a} (\alpha \ket{b} + \beta \ket{c}) = \alpha \braket{a}{b} + \beta \braket{a}{c}$ (linearity in the second argument),
+3. $\braket{a}{a} \geq 0$ and $\braket{a}{a} = 0 \iff \ket{a} = \ket{0}$ (positive-definiteness).
+
+A vector space $\mathcal{V}$ equipped with an inner product is called an **inner product space**.
+
+:::
+
+If you have studied any relativity, you might recognize that these properties are somewhat problematic.
+Null vectors, which are non-zero vectors with zero norm, exist in relativity.
+Moreover, the metric in relativity can be negative, which violates the positive-definiteness property.
+These issues arise because the metric in relativity is not positive-definite.
+Instead, it is a **pseudo-inner product**, which relaxes the positive-definiteness property to allow for null vectors and negative norms.
+
+As the complex inner product is not actually bilinear, we need to be careful when manipulating inner products.
+It is more accurate to say that the inner product is **sesquilinear** (meaning "one and a half linear"), or **Hermitian**.
+
+:::box Box 2.2.2 (Shorthand Notations)
+
+We can use the following shorthand notations for inner products:
+
+$$
+\begin{equation}
+\bra{a} (\alpha \ket{b} + \beta \ket{c}) = \braket{a}{\alpha b + \beta c}.
+\end{equation}
+$$
+
+:::
+
+:::example Example 2.2.3 (Examples of Inner Products)
+
+Here are some examples of inner products:
+
+- The standard inner product on $\mathbb{C}^n$ is defined as follows.
+    For any two vectors $\vb{a} = (\alpha_1, \alpha_2, \ldots, \alpha_n)$ and $\vb{b} = (\beta_1, \beta_2, \ldots, \beta_n)$ in $\mathbb{C}^n$,
+
+    $$
+    \begin{equation}
+    \braket{a}{b} = \sum_{i=1}^n \alpha_i^* \beta_i.
+    \end{equation}
+    $$
+- For $\mathbb{C}^\infty$, the space of infinite sequences of complex numbers, we can define the inner product as follows.
+    For any two sequences $\{a_n\}$ and $\{b_n\}$ in $\mathbb{C}^\infty$,
+
+    $$
+    \begin{equation}
+    \braket{a}{b} = \sum_{n=1}^\infty a_n^* b_n,
+    \end{equation}
+    $$
+
+    provided that the series converges.
+- Suppose $x(t)$ and $y(t)$ are two functions in $\mathcal{P}^c[t]$ (the space of complex polynomials in $t$).
+    We can define the inner product as follows:
+
+    $$
+    \begin{equation}
+    \braket{x}{y} = \int_0^1 w(t) x(t)^* y(t) \, dt.
+    \end{equation}
+    $$
+
+    Here, $w(t)$ is a **weight function** that is positive and integrable on the interval $[0, 1]$.
+- Suppose $f(x)$ and $g(x)$ are two functions in $C[a, b]$ (the space of continuous functions on the interval $[a, b]$).
+    We can define the inner product as follows:
+
+    $$
+    \begin{equation}
+    \braket{f}{g} = \int_a^b f(x)^* g(x) \, dx.
+    \end{equation}
+    $$
+
+:::
+
+:::definition Definition 2.2.4 (Orthogonal, Normal, Orthonormal)
+
+**Definition 2.2.4** (orthonormal) Two vectors $\ket{a}$ and $\ket{b}$ in an inner product space are said to be **orthogonal** if their inner product is zero, i.e., $\braket{a}{b} = 0$.
+A vector $\ket{a}$ is said to be a **normal vector** if its norm is one, i.e., $\braket{a}{a} = 1$.
+A basis $B = \{\ket{e_i}\}_{i=1}^n$ of an inner product space is said to be **orthonormal** if
+
+$$
+\begin{equation}
+\braket{e_i}{e_j} = \delta_{ij},
+\end{equation}
+$$
+
+where $\delta_{ij}$ is the Kronecker delta, which is $1$ if $i = j$ and $0$ otherwise.
+
+:::
+
+:::example Example 2.2.5 (Inner Product of Direct Sums)
+
+Suppose $\mathcal{U}$ and $\mathcal{V}$ are inner product spaces with inner products $\braket{\cdot}{\cdot}_\mathcal{U}$ and $\braket{\cdot}{\cdot}_\mathcal{V}$, respectively.
+Let $\mathcal{W} = \mathcal{U} \oplus \mathcal{V}$ be the direct sum of $\mathcal{U}$ and $\mathcal{V}$.
+We can define an inner product on $\mathcal{W}$ as follows:
+
+$$
+\begin{equation}
+\braket{u_1 \oplus v_1}{u_2 \oplus v_2}_\mathcal{W} = \braket{u_1}{u_2}_\mathcal{U} + \braket{v_1}{v_2}_\mathcal{V}.
+\end{equation}
+$$
+
+Also, if we define the identification $\mathcal{U} = \{ \ket{u} \oplus \ket{0} : \ket{u} \in \mathcal{U} \}$ and $\mathcal{V} = \{ \ket{0} \oplus \ket{v} : \ket{v} \in \mathcal{V} \}$, then $\mathcal{U}$ and $\mathcal{V}$ are orthogonal subspaces of $\mathcal{W}$.
+
+:::
+
+:::example Example 2.2.6 (Examples of Orthonormal Bases)
+
+Here are some examples of orthonormal bases:
+
+- In $\mathbb{C}^n$ or $\mathbb{R}^n$, the standard basis $\{\hat{e}_1, \hat{e}_2, \ldots, \hat{e}_n\}$ defined as
+
+    $$
+    \begin{equation}
+    \hat{e}_i = (0, 0, \ldots, 1, \ldots, 0),
+    \end{equation}
+    $$
+
+    where the $1$ is in the $i$-th position, is an orthonormal basis with respect to the standard inner product.
+- In $C[a, b]$, the set of functions $\qty{ \sqrt{\frac{2}{b-a}} \sin\left(\frac{n \pi (x - a)}{b - a}\right) }_{n=1}^\infty$ is an orthonormal basis with respect to the inner product defined as
+
+    $$
+    \begin{equation}
+    \braket{f}{g} = \int_a^b f(x) g(x) \, dx.
+    \end{equation}
+    $$
+
+:::
+
+As one can see, orthonormal bases are very useful in inner product spaces.
+They allow us to easily compute inner products and norms of vectors by simply taking the coefficients of the vectors in the basis.
+If we have another basis that is not orthonormal, we can always use the Gram-Schmidt process to convert it into an orthonormal basis.
+
+The Gram-Schmidt process is a method for orthonormalizing a set of vectors in an inner product space.
+Suppose we have a basis $B = \{\ket{a_i}\}_{i=1}^n$ of an inner product space $\mathcal{V}$.
+
+Consider the first two vectors $\ket{a_1}$ and $\ket{a_2}$.
+We can define the first orthonormal vector $\ket{e_1}$ as the normalization of $\ket{a_1}$:
+
+$$
+\begin{equation}
+\ket{e_1} = \frac{\ket{a_1}}{\sqrt{\braket{a_1}{a_1}}}.
+\end{equation}
+$$
+
+Next, if we decompose $\ket{a_2}$ into a component parallel to $\ket{e_1}$ and a component orthogonal to $\ket{e_1}$, we have
+
+$$
+\begin{equation}
+\ket{a_2} = \ket{a_2^\perp} + \ket{a_2^\parallel},
+\end{equation}
+$$
+
+and we can find $\ket{a_2^\parallel}$ by projecting $\ket{a_2}$ onto $\ket{e_1}$:
+
+$$
+\begin{equation}
+\ket{a_2^\parallel} = \braket{e_1}{a_2} \ket{e_1}.
+\end{equation}
+$$
+
+Thus, we have
+
+$$
+\begin{equation}
+\ket{a_2^\perp} = \ket{a_2} - \braket{e_1}{a_2} \ket{e_1}.
+\end{equation}
+$$
+
+We can then normalize $\ket{a_2^\perp}$ to get the second orthonormal vector $\ket{e_2}$:
+
+$$
+\begin{equation}
+\ket{e_2} = \frac{\ket{a_2^\perp}}{\sqrt{\braket{a_2^\perp}{a_2^\perp}}}.
+\end{equation}
+$$
+
+For the third, we can repeat the process.
+We decompose $\ket{a_3}$ into components parallel and orthogonal to the subspace spanned by $\ket{e_1}$ and $\ket{e_2}$:
+
+$$
+\begin{equation}
+\ket{a_3} = \ket{a_3^\perp} + \ket{a_3^\parallel},
+\end{equation}
+$$
+
+where
+
+$$
+\begin{equation}
+\ket{a_3^\parallel} = \braket{e_1}{a_3} \ket{e_1} + \braket{e_2}{a_3} \ket{e_2}.
+\end{equation}
+$$
+
+Thus, we have
+
+$$
+\begin{equation}
+\ket{a_3^\perp} = \ket{a_3} - \braket{e_1}{a_3} \ket{e_1} - \braket{e_2}{a_3} \ket{e_2}.
+\end{equation}
+$$
+
+We can then normalize $\ket{a_3^\perp}$ to get the third orthonormal vector $\ket{e_3}$:
+
+$$
+\begin{equation}
+\ket{e_3} = \frac{\ket{a_3^\perp}}{\sqrt{\braket{a_3^\perp}{a_3^\perp}}}.
+\end{equation}
+$$
+
+More generally, for the $k$-th vector $\ket{a_k}$, we can decompose it into components parallel and orthogonal to the subspace spanned by $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_{k-1}}\}$:
+
+$$
+\begin{equation}
+\ket{a_k} = \ket{a_k^\perp} + \ket{a_k^\parallel},
+\end{equation}
+$$
+
+where
+
+$$
+\begin{equation}
+\ket{a_k^\parallel} = \sum_{i=1}^{k-1} \braket{e_i}{a_k} \ket{e_i}.
+\end{equation}
+$$
+
+Thus, we have
+
+$$
+\begin{equation}
+\ket{a_k^\perp} = \ket{a_k} - \sum_{i=1}^{k-1} \braket{e_i}{a_k} \ket{e_i},
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\ket{e_k} = \frac{\ket{a_k^\perp}}{\sqrt{\braket{a_k^\perp}{a_k^\perp}}} = \frac{\ket{a_k} - \sum_{i=1}^{k-1} \braket{e_i}{a_k} \ket{e_i}}{\sqrt{\braket{a_k - \sum_{i=1}^{k-1} \braket{e_i}{a_k} e_i}{a_k - \sum_{i=1}^{k-1} \braket{e_i}{a_k} e_i}}}.
+\end{equation}
+$$
+
+Repeating this process for all vectors in the basis $B$, we obtain an orthonormal basis $E = \{\ket{e_i}\}_{i=1}^n$ of $\mathcal{V}$.
+
+Also, important to the discussion of inner products is the **Schwarz inequality**.
+
+:::theorem Theorem 2.2.7 (Schwarz Inequality)
+
+For any vectors $\ket{a}$ and $\ket{b}$ in an inner product space $\mathcal{V}$,
+
+$$
+\begin{equation}
+|\braket{a}{b}|^2 \leq \braket{a}{a} \braket{b}{b}.
+\end{equation}
+$$
+
+Equality holds if and only if $\ket{a}$ and $\ket{b}$ are linearly dependent (i.e., one is a scalar multiple of the other).
+
+---
+
+*Proof*. Consider the vector $\ket{c} = \ket{a} - \lambda \ket{b}$, where $\lambda$ is a scalar to be determined later.
+By the positive-definiteness property of the inner product, we have
+
+$$
+\begin{equation}
+\braket{c}{c} = \braket{a - \lambda b}{a - \lambda b} \geq 0.
+\end{equation}
+$$
+
+Expanding the left-hand side, we get
+
+$$
+\begin{equation}
+\braket{c}{c} = \braket{a}{a} - \lambda^* \braket{a}{b} - \lambda \braket{b}{a} + |\lambda|^2 \braket{b}{b}.
+\end{equation}
+$$
+
+Choosing $\lambda = \frac{\braket{b}{a}}{\braket{b}{b}}$ (assuming $\ket{b} \neq \ket{0}$), we have
+
+$$
+\begin{equation}
+\braket{c}{c} = \braket{a}{a} - \frac{|\braket{a}{b}|^2}{\braket{b}{b}} \geq 0,
+\end{equation}
+$$
+
+which implies
+
+$$
+\begin{equation}
+|\braket{a}{b}|^2 \leq \braket{a}{a} \braket{b}{b}.
+\end{equation}
+$$
+
+If $\ket{a}$ and $\ket{b}$ are linearly dependent, then $\ket{a} = \mu \ket{b}$ for some scalar $\mu$, and we have equality.
+Conversely, if we have equality, then $\braket{c}{c} = 0$, which implies $\ket{c} = \ket{0}$, and thus $\ket{a}$ and $\ket{b}$ are linearly dependent. $\blacksquare$
+
+---
+
+:::
+
+It is certainly possible to visualize the Schwarz inequality in $\mathbb{R}^2$ or $\mathbb{R}^3$.
+Essentially, it states that if you project one vector onto another, the length of the projection cannot exceed the length of the original vector.
+However, the power of our approach is that it works in any inner product space, even those that are infinite-dimensional and/or not easily visualizable.
+
+:::definition Definition 2.2.8 (Norm, Normed Vector Space)
+
+The **norm** of a vector $\ket{a}$ in an inner product space $\mathcal{V}$ is defined as
+
+$$
+\begin{equation}
+\|a\| = \sqrt{\braket{a}{a}}.
+\end{equation}
+$$
+
+The norm satisfies the following properties for any vectors $\ket{a}, \ket{b} \in \mathcal{V}$ and any scalar $\alpha \in \mathbb{C}$:
+
+1. $\|a\| \geq 0$ and $\|a\| = 0 \iff \ket{a} = \ket{0}$ (positive-definiteness),
+2. $\|\alpha \ket{a}\| = |\alpha| \|a\|$ (absolute homogeneity),
+3. $\|a + \ket{b}\| \leq \|a\| + \|\ket{b}\|$ (triangle inequality).
+
+Also, we write the shorthand $\|\alpha a + \beta b\|$ to mean $\|\alpha \ket{a} + \beta \ket{b}\|$.
+
+A vector space equipped with a norm is called a **normed vector space**.
+Normed vector spaces are more general than inner product spaces, as not all norms can be derived from an inner product.
+However, every inner product space is a normed vector space, as the norm can be derived from the inner product.
+
+:::
+
+Also, a norm induces a metric on the vector space, defined as
+
+$$
+\begin{equation}
+d(\ket{a}, \ket{b}) = \|a - b\|.
+\end{equation}
+$$
+
+:::theorem Theorem 2.2.9 (Inner Product Characterization via Parallelogram Law)
+
+If $\mathcal{V}$ is a normed vector space with norm $\|\cdot\|$, then $\mathcal{V}$ is an inner product space if and only if the norm satisfies the parallelogram law
+
+$$
+\begin{equation}
+\|a + b\|^2 + \|a - b\|^2 = 2\|a\|^2 + 2\|b\|^2
+\end{equation}
+$$
+
+for all vectors $\ket{a}, \ket{b} \in \mathcal{V}$.
+
+---
+
+*Proof*. ($\Rightarrow$) Suppose $\mathcal{V}$ is an inner product space with inner product $\braket{\cdot}{\cdot}$.
+Then, for any vectors $\ket{a}, \ket{b} \in \mathcal{V}$, we have
+
+$$
+\begin{equation}
+\begin{split}
+\|a + b\|^2 + \|a - b\|^2 &= \braket{a + b}{a + b} + \braket{a - b}{a - b} \\
+&= \braket{a}{a} + \braket{a}{b} + \braket{b}{a} + \braket{b}{b} + \braket{a}{a} - \braket{a}{b} - \braket{b}{a} + \braket{b}{b} \\
+&= 2\braket{a}{a} + 2\braket{b}{b} \\
+&= 2\|a\|^2 + 2\|b\|^2.
+\end{split}
+\end{equation}
+$$
+
+($\Leftarrow$) Suppose $\mathcal{V}$ is a normed vector space with norm $\|\cdot\|$ satisfying the parallelogram law.
+To skip some tedious algebra, we can use the polarization identity to define an inner product as follows:
+
+$$
+\begin{equation}
+\braket{a}{b} = \frac{1}{4} \left( \|a + b\|^2 - \|a - b\|^2 + i\|a + ib\|^2 - i\|a - ib\|^2 \right).
+\end{equation}
+$$
+
+It can be verified that this inner product satisfies all the properties of an inner product. $\blacksquare$
+
+---
+
+:::
+
+By the way, why is it called the "parallelogram law"?
+Because in $\mathbb{R}^2$, if you have two vectors $\vb{a}$ and $\vb{b}$ originating from the same point, they form a parallelogram.
+If you take the sum of the squares of the lengths of the diagonals of the parallelogram, it equals twice the sum of the squares of the lengths of the sides.
+This is a direct consequence of the law of cosines.
+
+:::theorem Theorem 2.2.10 (Inner Product Existence)
+
+Every finite-dimensional vector space can be equipped with an inner product.
+
+---
+
+*Proof*. Let $\mathcal{V}$ be a finite-dimensional vector space with basis $B = \{\ket{e_i}\}_{i=1}^n$.
+We can define an inner product on $\mathcal{V}$ by specifying the inner products of the basis vectors.
+Specifically, given two vectors $\ket{a} = \sum_{i=1}^n \alpha_i \ket{e_i}$ and $\ket{b} = \sum_{j=1}^n \beta_j \ket{e_j}$, their inner product is obviously
+
+$$
+\begin{equation}
+\braket{a}{b} = \sum_{i=1}^n \sum_{j=1}^n \alpha_i^* \beta_j \braket{e_i}{e_j}.
+\end{equation}
+$$
+
+Then, we just need to define $\braket{e_i}{e_j}$ for all $i, j$.
+This is arbitrary; *any* choice will do, as long as the resulting inner product satisfies the properties of an inner product.
+Let's label the matrix $g$ such that $g_{ij} = \braket{e_i}{e_j}$.
+Since $\braket{e_i}{e_j} = [\braket{e_j}{e_i}]^*$, we have $g_{ij}W = g_{ji}^*$, so $g = (g^T)^* = g^\dagger$ (i.e., $g$ is Hermitian).
+
+Also, as the inner product is positive-definite, we have $\braket{a}{b} = 0$ if and only if $\ket{a} = \ket{0}$.
+This makes our matrix $g$ have a determinant that is non-zero, as if $\det(g) = 0$, then there exists a non-zero vector $\ket{a}$ such that $g\ket{a} = \ket{0}$, which implies $\braket{a}{a} = 0$.
+
+In summary, we can define an inner product on $\mathcal{V}$ by choosing any Hermitian matrix $g$ with a non-zero determinant and defining $\braket{e_i}{e_j} = g_{ij}$.
+Then, the inner product of any two vectors in $\mathcal{V}$ is given by
+
+$$
+\begin{equation}
+\braket{a}{b} = \sum_{i=1}^n \sum_{j=1}^n \alpha_i^* \beta_j g_{ij}.
+\end{equation}
+$$
+
+Thus, every finite-dimensional vector space can be equipped with an inner product. $\blacksquare$
+
+---
+
+:::
+
+The matrix $g$ is called the metric tensor matrix.
+
+:::example Example 2.2.11 (Norms on Cⁿ)
+
+Consider $\mathbb{C}^n$. The usual inner product and its associated norm are given by
+
+$$
+\begin{equation}
+\|a\| = \sqrt{\braket{a}{a}} = \sqrt{\sum_{i=1}^n |\alpha_i|^2},
+\end{equation}
+$$
+
+where $\ket{a} = (\alpha_1, \alpha_2, \ldots, \alpha_n) \in \mathbb{C}^n$.
+Additionally, the metric function $d$ induced by this norm is
+
+$$
+\begin{equation}
+d(\ket{a}, \ket{b}) = \|a - b\| = \sqrt{\sum_{i=1}^n |\alpha_i - \beta_i|^2}.
+\end{equation}
+$$
+
+Another norm on $\mathbb{C}^n$ is
+
+$$
+\begin{equation}
+\|a\|_p = \qty(\sum_{i=1}^n |\alpha_i|^p)^{1/p},
+\end{equation}
+$$
+
+for any positive real number $p \geq 1$.
+This is called the $p$-norm.
+
+To verify that this is indeed a norm, we need to check the three properties of a norm:
+
+1. Positive-definiteness: $\|a\|_p \geq 0$ and $\|a\|_p = 0 \iff \ket{a} = \ket{0}$.
+    This is clearly true, as the sum of non-negative numbers is non-negative, and the sum is zero if and only if all $\alpha_i$ are zero.
+2. Absolute homogeneity: $\|\gamma \ket{a}\|_p = |\gamma| \|a\|_p$ for any scalar $\gamma \in \mathbb{C}$.
+    This is also true, as
+
+    $$
+    \begin{equation}
+    \|\gamma a\|_p = \qty(\sum_{i=1}^n |\gamma \alpha_i|^p)^{1/p} = |\gamma| \qty(\sum_{i=1}^n |\alpha_i|^p)^{1/p} = |\gamma| \|a\|_p.
+    \end{equation}
+    $$
+3. Triangle inequality: $\|a + \ket{b}\|_p \leq \|a\|_p + \|\ket{b}\|_p$.
+    This is a bit more involved, but it can be proven using Minkowski's inequality, which states that for any sequences of real numbers $\{x_i\}$ and $\{y_i\}$,
+
+    $$
+    \begin{equation}
+    \qty(\sum_{i=1}^n |x_i + y_i|^p)^{1/p} \leq \qty(\sum_{i=1}^n |x_i|^p)^{1/p} + \qty(\sum_{i=1}^n |y_i|^p)^{1/p}.
+    \end{equation}
+    $$
+
+    We can apply this inequality to the sequences $\{|\alpha_i|\}$ and $\{|\beta_i|\}$ to obtain the triangle inequality for the $p$-norm.
+Thus, the $p$-norm is indeed a norm on $\mathbb{C}^n$.
+
+This norm is not induced by an inner product unless $p = 2$, for it only satisfies the parallelogram law when $p = 2$.
+
+:::
+
+## Summary and Next Steps
+
+In this section, we defined inner product spaces, which are vector spaces equipped with an inner product.
+We discussed the properties of inner products, norms, and metrics, and we saw that every finite-dimensional vector space can be equipped with an inner product.
+
+Here are the key points to remember:
+
+- An inner product is a function that takes two vectors and returns a scalar, satisfying conjugate symmetry, linearity in one argument, and positive-definiteness.
+- An inner product space is a vector space equipped with an inner product.
+- The norm of a vector is derived from the inner product and satisfies positive-definiteness, absolute homogeneity, and the triangle inequality.
+- A norm induces a metric on the vector space.
+- Every finite-dimensional vector space can be equipped with an inner product.
+
+Now, our main obstacle is the fact that we are restricted to one vector space.
+How does one traverse between different vector spaces?
+This is where the concept of linear maps comes in, which we will discuss in the next section.

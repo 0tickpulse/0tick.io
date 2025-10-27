@@ -15,17 +15,22 @@ const config = {
     tagline: "My personal website",
     favicon: "img/favicon.ico",
 
+    future: {
+        experimental_faster: true,
+        v4: true,
+    },
+
     customFields: {
         mathJaxOptions: {
             loader: { load: ["[tex]/mathtools", "[tex]/cancel"] },
             tex: {
                 tags: "ams",
                 macros: MATH_MACROS,
-                packages: { "[+]": ["autoload", "mhchem", "newcommand", "gensymb", "ams", "cancel", "mathtools", "html", "configmacros", "physics"] },
+                packages: { "[+]": ["autoload", "boldsymbol", "mhchem", "newcommand", "gensymb", "ams", "cancel", "mathtools", "html", "configmacros", "physics"] },
             },
-            svg: {
-                scale: 1.2,
-            },
+            // svg: {
+            //     scale: 1.2,
+            // },
         } as Options,
     },
 
@@ -105,7 +110,7 @@ const config = {
                         },
                     ],
                     admonitions: {
-                        keywords: ["problem"],
+                        keywords: ["problem", "theorem", "definition", "proposition", "example", "box"],
                         extendDefaults: true,
                     },
                 },

@@ -25,33 +25,7 @@ In this section, we will continue our exploration of the history of astronomy, f
 
 <TOCInline toc={toc} />
 
-## Galileo and Newton
-
-The invention of the telescope in the early 17th century revolutionized astronomy.
-Galileo Galilei (1564–1642) was one of the first to use a telescope to observe the heavens.
-He was the first to propose a version of Newton's first law, as well as the kinematic principles of acceleration.
-Using his telescope, Galileo made several important discoveries, including:
-
-- The Milky Way is actually composed of a vast number of individual stars, instead of being a nebulous cloud as previously thought.
-- The four largest moons of Jupiter (now known as the Galilean moons: Io, Europa, Ganymede, and Callisto) orbit the planet, providing strong evidence against the geocentric model of the universe.
-- The phases of Venus, which could only be explained by a heliocentric model (as the sun's light illuminates different portions of Venus as it orbits the sun).
-- The rough and uneven surface of the Moon, which contradicted the Aristotelian idea of perfect celestial spheres.
-- Sunspots on the surface of the Sun, indicating that the Sun is not a perfect, unchanging body.
-
-Galileo's observations provided strong evidence in favor of the heliocentric model proposed by Copernicus, and they challenged the prevailing Aristotelian view of the cosmos.
-The Catholic Church, which held significant influence over intellectual life in Europe at the time, challenged Galileo's findings.
-In 1616, The Holy Office declared heliocentrism to be "foolish and absurd in philosophy, and formally heretical."
-Galileo was also warned by Cardinal Roberto Bellarmine not to "hold, teach, or defend" the heliocentric view.
-
-In 1623, however, his friend and admirer Cardinal Maffeo Barberini became Pope Urban VIII, and Galileo was given permission to write about heliocentrism as a hypothesis.
-He published his findings in "Dialogue Concerning the Two Chief World Systems" in 1632, which presented arguments for both the geocentric and heliocentric models.
-While it was technically neutral, the book was clearly biased in favor of heliocentrism.
-The character representing the heliocentric view was named "Salviati," after Galileo's friend and supporter, while the character representing the geocentric view was named "Simplicio," which was interpreted as a derogatory term meaning "simpleton."
-As a result, Galileo was tried by the Roman Catholic Inquisition in 1633 and found "vehemently suspect of heresy."
-He was forced to recant his views and spent the rest of his life under house arrest.
-
-Despite the controversy surrounding Galileo's work, his observations laid the groundwork for future developments in astronomy and physics.
-Eventually, in 1992, Pope John Paul II formally acknowledged the errors made by the Church in its handling of the Galileo affair.
+## Newton's Work
 
 Isaac Newton (1643–1727) built upon the work of Galileo and others to develop a comprehensive theory of motion and gravitation.
 While the Plague ravaged Europe in 1665, Newton retreated to his family estate in Woolsthorpe, where he made several groundbreaking discoveries.
@@ -176,7 +150,230 @@ $$
 
 ### Kepler's First Law
 
-{/* Todo */}
+We shall use the center-of-mass frame, and begin by considering the torque on the system
+
+$$
+\begin{equation}
+\dv{\vb{L}}{t} = \dv{t} (\vb{r} \times \vb{p}) = \vb{r} \times \dv{\vb{p}}{t} + \dv{\vb{r}}{t} \times \vb{p} = \vb{r} \times \vb{F} + \vb{v} \times \vb{p}.
+\end{equation}
+$$
+
+The second term is zero, since $\vb{v} \times \vb{p} = \mu \vb{v} \times \vb{v} = 0$.
+The first term is also zero, since the gravitational force is central, i.e., $\vb{F} \parallel \vb{r}$.
+Thus, $\dv{\vb{L}}{t} = 0$, so the angular momentum $\vb{L}$ is conserved.
+
+Anyways, we can also write the angular momentum as
+
+$$
+\begin{equation}
+\begin{split}
+\vb{L} &= \mu \vb{r} \times \vb{v} = \mu \vb{r} \times \qty(\dv{t} \vb{r}) \\
+&= \mu r \vu{r} \times \qty(\dv{r}{t} \vu{r} + r \dv{\theta}{t} \vu{\theta}) \\
+&= \mu r^2 \dv{\theta}{t} \vu{r} \times \dv{\vu{r}}{t}
+\end{split}
+\end{equation}
+$$
+
+Next, consider the acceleration of the vector $\vb{r}$.
+We have
+
+$$
+\begin{equation}
+\vb{a} = -\frac{GM}{r^2} \vu{r},
+\end{equation}
+$$
+
+so the cross product of $\vb{a}$ with $\vb{L}$ is
+
+$$
+\begin{equation}
+\vb{a} \times \vb{L} = -\frac{GM}{r^2} \vu{r} \times (\mu r^2 \dv{\theta}{t} \vu{r} \times \dv{\vu{r}}{t}).
+\end{equation}
+$$
+
+Using the vector triple product identity $\vb{A} \times (\vb{B} \times \vb{C}) = \vb{B} (\vb{A} \cdot \vb{C}) - \vb{C} (\vb{A} \cdot \vb{B})$, we have
+
+$$
+\begin{equation}
+\vb{a} \times \vb{L} = GM \mu \dv{\vu{r}}{t}.
+\end{equation}
+$$
+
+We can rewrite the left-hand side as $\dv{t} (\vb{v} \times \vb{L})$ since $\vb{L}$ is constant, so
+
+$$
+\begin{equation}
+\dv{t} (\vb{v} \times \vb{L}) = \dv{t} (GM \mu \vu{r}).
+\end{equation}
+$$
+
+Integrating both sides with respect to time, we have
+
+$$
+\begin{equation}
+\vb{v} \times \vb{L} = GM \mu \vu{r} + \vb{D}
+\end{equation}
+$$
+
+with $\vb{D}$ a constant vector of integration.
+
+It is easy to see that $\vb{v} \times \vb{L}$ is within the plane of the orbit, so $\vb{D}$ is also within the plane of the orbit.
+Also, consider when the magnitude of both sides is greatest. For the left-hand side, this occurs when the velocity is greatest, which is at perihelion.
+For the right, this occurs when $\vb{D}$ is parallel to $\vu{r}$.
+Thus, $\vb{D}$ must point towards the perihelion.
+
+Taking the dot product of both sides with $\vb{r}$, we have
+
+$$
+\begin{equation}
+(\vb{v} \times \vb{L}) \cdot \vb{r} = GM \mu + \vb{D} \cdot \vb{r}.
+\end{equation}
+$$
+
+Using the scalar triple product identity $\vb{A} \cdot (\vb{B} \times \vb{C}) = \vb{B} \cdot (\vb{C} \times \vb{A}) = \vb{C} \cdot (\vb{A} \times \vb{B})$, we have
+
+$$
+\begin{equation}
+\vb{L} \cdot (\vb{r} \times \vb{v}) = GM \mu r + rD \cos(\theta),
+\end{equation}
+$$
+
+where $\theta$ is the angle between $\vb{D}$ and $\vb{r}$.
+But $\vb{r} \times \vb{v} = \vb{L} / \mu$, so
+
+$$
+\begin{equation}
+L^2 / \mu = GM \mu r + rD \cos(\theta),
+\end{equation}
+$$
+
+which rearranges to
+
+<Boxed>
+
+$$
+\begin{equation}
+r = \frac{L^2 / \mu}{GM \mu + D \cos(\theta)}.
+\end{equation}
+$$
+
+</Boxed>
+
+This is the equation of a conic section in polar coordinates, with one focus at the origin.
+If we define the eccentricity $e := D / (GM \mu)$, then we can rewrite this as
+
+$$
+\begin{equation}
+r = \frac{a(1 - e^2)}{1 + e \cos(\theta)},
+\end{equation}
+$$
+
+where $a := L^2 / (GM \mu^2 (1 - e^2))$ is the semi-major axis of the ellipse.
+
+Kepler's first law is thus proven: the orbit of a planet is an ellipse.
+One caveat is that the focus is at the center of mass, not the Sun which Kepler assumed.
+Kepler could not have known this, for the center of mass is so close to the Sun that it is nearly indistinguishable from it.
+
+Anyways, we can arrange the two equations for $a$ and $e$ to find that
+
+$$
+\begin{equation}
+L = \mu \sqrt{GM a (1 - e^2)}.
+\end{equation}
+$$
+
+When $e = 0$, the orbit is circular, and $L = \mu \sqrt{GM a}$, which is the maximum angular momentum for a given semi-major axis.
+When $e = 1$, the orbit is parabolic, and $L = 0$.
+
+### Kepler's Second Law
+
+For the second law, we need to understand how to integrate in polar coordinates.
+The area element in polar coordinates is $\dd{A} = r \dd{r} \dd{\theta}$, so given a curve $r(\theta)$, the area enclosed by the curve and the origin is
+
+$$
+\begin{equation}
+A = \int_{\theta' = 0}^{\theta} \int_{r' = 0}^{r(\theta')} r' \dd{r'} \dd{\theta'} = \frac{1}{2} \int_0^{\theta} r(\theta')^2 \dd{\theta'}.
+\end{equation}
+$$
+
+An infinitesimal change in area is thus
+
+$$
+\begin{equation}
+\dd{A} = \frac{1}{2} r^2 \dd{\theta},
+\end{equation}
+$$
+
+and its time derivative is
+
+$$
+\begin{equation}
+\dv{A}{t} = \frac{1}{2} r^2 \dv{\theta}{t}.
+\end{equation}
+$$
+
+As the term $r \dv{\theta}{t}$ is the tangential velocity $v_\theta$, we have
+
+$$
+\begin{equation}
+\dv{A}{t} = \frac{1}{2} r v_\theta.
+\end{equation}
+$$
+
+Finally, by definition, $\vb{r}$ and $\vb{v}_\theta$ are orthogonal, so $r v_\theta$ is the magnitude of the cross product $\vb{r} \times \vb{v}$.
+But that is just the angular momentum divided by the reduced mass, so
+
+$$
+\begin{equation}
+\dv{A}{t} = \frac{L}{2\mu}.
+\end{equation}
+$$
+
+Notice that $L$ is constant (as we proved earlier), so $\dv{A}{t}$ is also constant.
+This does it: a line segment joining a planet and the Sun sweeps out equal areas during equal intervals of time.
+
+### Kepler's Third Law
+
+Historically speaking, Newton's law of gravitation was formulated to explain Kepler's third law.
+We can now demonstrate that Newton's law of gravitation does indeed lead to Kepler's third law.
+Begin by integrating Kepler's second law over one full orbit (with period $P$):
+
+$$
+\begin{equation}
+A = \int_0^P \dv{A}{t} \dd{t} = \int_0^P \frac{L}{2\mu} \dd{t} = \frac{L P}{2\mu}.
+\end{equation}
+$$
+
+The area of an ellipse is $A = \pi a b$, where $a$ and $b$ are the semi-major and semi-minor axes, respectively.
+Thus we have
+
+$$
+\begin{equation}
+\pi a b = \frac{L P}{2\mu} \implies P = \frac{2\pi a b \mu}{L}.
+\end{equation}
+$$
+
+From the equation of an ellipse, we have $b = a \sqrt{1 - e^2}$.
+Also, from earlier, we have $L = \mu \sqrt{GM a (1 - e^2)}$.
+Substituting these into the equation for $P$, we have
+
+$$
+\begin{equation}
+P = \frac{2\pi a^2 \sqrt{1 - e^2} \mu}{\mu \sqrt{GM a (1 - e^2)}} = 2\pi \sqrt{\frac{a^3}{GM}}.
+\end{equation}
+$$
+
+Finally, squaring both sides, we have
+
+$$
+\begin{equation}
+P^2 = \frac{4\pi^2}{GM} a^3,
+\end{equation}
+$$
+
+which is Kepler's third law: the square of the orbital period is proportional to the cube of the semi-major axis.
+Notice that according to this formulation, the square is also inversely proportional to the total mass of the system, which is an observation Kepler could not have made.
+He referenced the data of Brahe, whose data involved the planets orbiting the Sun, whose mass is so much greater than that of any planet that it is effectively constant.
 
 ### Virial Theorem
 
@@ -201,6 +398,147 @@ $$
 
 where $\tau$ is the time period over which the average is taken.
 
+A homogeneous function of degree $n$ is a function $f(\vb{r})$ that satisfies the property
+
+$$
+\begin{equation}
+f(\lambda \vb{r}) = \lambda^n f(\vb{r}).
+\end{equation}
+$$
+
+We can choose a potential of the form $U(\vb{r}) = k r^{-1}$, where $k$ is a constant.
+This obviously satisfies the property of a homogeneous function of degree $n = -1$, so our form of the virial theorem applies.
+
+We will define a new term, the **virial** $G$, as
+
+$$
+\begin{equation}
+G := \sum_{i=1}^{N} \vb{p}_i \cdot \vb{r}_i,
+\end{equation}
+$$
+
+where $\vb{p}_i$ and $\vb{r}_i$ are the momentum and position of the $i$-th particle, respectively.
+This term is useful because its time derivative is related to the kinetic and potential energies of the system.
+Taking the time derivative of $G$, we have
+
+$$
+\begin{equation}
+\dv{G}{t} = \sum_{i=1}^{N} \qty(\dv{\vb{p}_i}{t} \cdot \vb{r}_i + \vb{p}_i \cdot \dv{\vb{r}_i}{t}) = \sum_{i=1}^{N} \qty(\vb{F}_i \cdot \vb{r}_i + m_i v_i^2),
+\end{equation}
+$$
+
+where $\vb{F}_i$ is the force on the $i$-th particle, and we used the fact that $\dv{\vb{r}_i}{t} = \vb{v}_i$ and $\vb{p}_i = m_i \vb{v}_i$.
+The second term is just twice the total kinetic energy $K$ of the system, so
+
+$$
+\begin{equation}
+\dv{G}{t} = 2K + \sum_{i=1}^{N} \vb{F}_i \cdot \vb{r}_i.
+\end{equation}
+$$
+
+On the other hand, we can also write the time derivative of $G$ as
+
+$$
+\begin{equation}
+\begin{split}
+\dv{G}{t} &= \dv{t} \qty(\sum_{i=1}^{N} \vb{p}_i \cdot \vb{r}_i) = \dv{t} \qty(\sum_{i=1}^{N} m_i \vb{v}_i \cdot \vb{r}_i) \\
+&= \dv{t} \qty(\sum_{i=1}^{N} m_i \dv{\vb{r}_i}{t} \cdot \vb{r}_i) \\
+&= \dv{t} \qty(\sum_{i=1}^{N} \frac{1}{2} \dv{t} (m_i r_i^2)) \\
+&= \frac{1}{2} \dv[2]{I}{t}.
+\end{split}
+\end{equation}
+$$
+
+Here, $I := \sum_{i=1}^{N} m_i r_i^2$ is the moment of inertia of the system about the origin.
+Notice the careful use of the chain rule here; $\dv{t} r_i^2 = 2\vb{r}_i \cdot \dv{\vb{r}_i}{t}$.
+Combining the two expressions for $\dv{G}{t}$, we have
+
+$$
+\begin{equation}
+\frac{1}{2} \dv[2]{I}{t} - 2K = \sum_{i=1}^{N} \vb{F}_i \cdot \vb{r}_i.
+\end{equation}
+$$
+
+The term on the right is known as the **virial of Clausius**.
+Clausius (1822–1888) was a German physicist and mathematician who made significant contributions to the field of thermodynamics.
+He is best known for formulating the second law of thermodynamics and introducing the concept of entropy.
+He also made important contributions to the kinetic theory of gases and the study of heat transfer.
+
+Next, we need to consider all the forces acting on each particle in the system.
+Let $\vb{F}_{ij}$ denote the force on particle $i$ due to particle $j$.
+Then, the total force on particle $i$ is
+
+$$
+\begin{equation}
+\vb{F}_i = \sum_{j \neq i} \vb{F}_{ij}.
+\end{equation}
+$$
+
+Substituting this into the previous equation, we have
+
+$$
+\begin{equation}
+\sum_{i=1}^{N} \vb{F}_i \cdot \vb{r}_i = \sum_{i=1}^{N} \sum_{j \neq i} \vb{F}_{ij} \cdot \vb{r}_i.
+\end{equation}
+$$
+
+We also have $\vb{r}_i = \frac{1}{2} (\vb{r}_i - \vb{r}_j) + \frac{1}{2} (\vb{r}_i + \vb{r}_j)$, so
+
+$$
+\begin{equation}
+\sum_{i=1}^{N} \vb{F}_i \cdot \vb{r}_i = \frac{1}{2} \sum_{i=1}^{N} \sum_{j \neq i} \vb{F}_{ij} \cdot (\vb{r}_i - \vb{r}_j) + \frac{1}{2} \sum_{i=1}^{N} \sum_{j \neq i} \vb{F}_{ij} \cdot (\vb{r}_i + \vb{r}_j).
+\end{equation}
+$$
+
+For the rightmost term, due to Newton's third law, we have $\vb{F}_{ij} = -\vb{F}_{ji}$, so the term vanishes from symmetry.
+On the other hand, the left term is not zero because $\vb{F}_{ij}$ and $\vb{r}_i - \vb{r}_j$ are parallel (as the forces are central).
+In our context, the force is the gravitational force
+
+$$
+\begin{equation}
+\vb{F}_{ij} = G \frac{m_i m_j}{r_{ij}^2} \vu{r}_{ij},
+\end{equation}
+$$
+
+where $\vb{r}_{ij} = \vb{r}_i - \vb{r}_j$ and $r_{ij} = |\vb{r}_{ij}|$. The unit vector $\vu{r}_{ij} = -\vb{r}_{ij} / r_{ij}$ points from particle $i$ to particle $j$.
+Thus, we have
+
+$$
+\begin{equation}
+\sum_{i=1}^{N} \vb{F}_i \cdot \vb{r}_i = -\frac{1}{2} \sum_{i=1}^{N} \sum_{j \neq i} G \frac{m_i m_j}{r_{ij}^2} r_{ij} = -\frac{1}{2} \sum_{i=1}^{N} \sum_{j \neq i} G \frac{m_i m_j}{r_{ij}} = U,
+\end{equation}
+$$
+
+where $U$ is the total gravitational potential energy of the system.
+Substituting this back into our earlier equation, we have
+
+$$
+\begin{equation}
+\frac{1}{2} \dv[2]{I}{t} - 2K = U.
+\end{equation}
+$$
+
+We can take the time average of both sides over a long time period $\tau$.
+If the system is stable and bound, then $I$ does not diverge as $t \to \infty$, so the term $\frac{1}{2} \dv[2]{I}{t}$ averages to zero.
+All periodic systems are stable and bound, so this applies to planetary systems.
+Thus, we have
+
+$$
+\begin{equation}
+-2 \expval{K} = \expval{U} \implies \expval{K} = -\frac{1}{2} \expval{U}.
+\end{equation}
+$$
+
+This is the virial theorem, specifically for a $U$ that is a homogeneous function of degree $n = -1$.
+If the degree was different, we would have $\expval{K} = \frac{n}{2} \expval{U}$ instead.
+As a corollary, the time average of the total energy $E = K + U$ of the system is
+
+$$
+\begin{equation}
+\expval{E} = \expval{K} + \expval{U} = -\frac{1}{2} \expval{U} + \expval{U} = \frac{1}{2} \expval{U}.
+\end{equation}
+$$
+
 ## Light and Optics
 
 Another field that Newton made significant contributions to was optics.
@@ -208,6 +546,33 @@ In his book Optiks, published in 1704, Newton described his experiments with lig
 He demonstrated that white light is composed of a spectrum of colors, which can be separated using a prism.
 He also proposed the particle theory of light, suggesting that light is made up of tiny particles called "corpuscles."
 This theory was later challenged by the wave theory of light, which was supported by experiments such as Thomas Young's double-slit experiment in 1801.
+
+Previously, we discussed how Galileo used a refracting telescope to make astronomical observations.
+Over the years, the mathematical and physical understanding of optics improved, leading to the development of more advanced telescopes.
+
+The **focal plane** of a lens or mirror is the plane where light rays converge to form an image.
+In astronomy, the focal plane is where the image of a celestial object is formed by the telescope's optics.
+We assume that celestial objects are located practically at infinity, so the light rays entering the telescope are parallel.
+If such rays approach a lens at an angle $\theta$ relative to the optical axis, they will be focused to a point in the focal plane at a distance $y = f \tan(\theta)$ from the optical axis, where $f$ is the focal length of the lens.
+For small angles, we can approximate $\tan(\theta) \approx \theta$ (in radians), so the distance from the optical axis in the focal plane is approximately
+
+$$
+\begin{equation}
+y \approx f \theta.
+\end{equation}
+$$
+
+This relationship is also captured by the **plate scale**, which is a differential relation given by
+
+$$
+\begin{equation}
+\dd{y} = f \dd{\theta} \iff \dv{\theta}{y} = \frac{1}{f} \iff \dv{y}{\theta} = f.
+\end{equation}
+$$
+
+What does this mean? If we increase the focal length $f$, then $\dv{y}{\theta}$ increases, meaning that a small change in angle $\dd{\theta}$ corresponds to a larger change in position $\dd{y}$ in the focal plane.
+This is desirable in astronomy, as celestial objects are often very far away, resulting in very small angular separations.
+By increasing the focal length, we can spread out the image in the focal plane, allowing for better resolution and detail.
 
 ### Stellar Parallax and the Magnitude System
 
@@ -251,36 +616,6 @@ As the distances to stars are so vast, the parallax angles are extremely small.
 This was why it took so long to notice the effect.
 Modern instruments are being developed to measure parallax angles.
 For instance, NASA's planned Space Interferometry Mission (SIM) aims to measure parallax angles with a precision of 1 microarcsecond, allowing for distance measurements to stars up to 10,000 light-years away.
-
-Along with the parallax effect, scientists at the time also studied and utilized the other behaviors of light.
-Galileo's telescope is one called a **refracting telescope**, which uses lenses to bend and focus light.
-On the other hand, Newton built the first **reflecting telescope**, which uses mirrors to gather and focus light.
-The refracting telescope makes use of Snell's law of refraction, named after Willebrord Snellius, who discovered it in 1621.
-(Although, Snell's law was first discovered by Persian scientist Ibn Sahl in 984 AD.
-The attribution of discoveries to Western scientists is a common theme in the history of science, often overlooking contributions from other cultures.)
-This law states that each material had a quantity called the **index of refraction** $n_\lambda$, which describes how much the speed of light is reduced inside the material compared to vacuum.
-The change in the speed of light causes the light to bend at the interface between two materials with different indices of refraction.
-Then, the law follows that
-
-$$
-\begin{equation}
-n_{1\lambda} \sin(\theta_1) = n_{2\lambda} \sin(\theta_2),
-\end{equation}
-$$
-
-where $\theta_1$ and $\theta_2$ are the angles of incidence and refraction, respectively, and the subscript $\lambda$ indicates that the index of refraction can depend on the wavelength of light.
-One immediate use of Snell's law is in the design of lenses for telescopes and other optical instruments.
-Each lens has a specific **focal length** $f_\lambda$, which is positive for a converging lens and negative for a diverging lens.
-It follows the **lensmaker's equation**
-
-$$
-\begin{equation}
-\frac{1}{f_\lambda} = (n_\lambda - 1) \qty(\frac{1}{R_1} - \frac{1}{R_2}),
-\end{equation}
-$$
-
-where $R_1$ and $R_2$ are the radii of curvature of the two surfaces of the lens.
-The study of optics from a geometric perspective, known as geometric optics, is fascinating, and we will dedicate a future note to it.
 
 ### Magnitude Scale
 
@@ -454,6 +789,114 @@ d \sin(\theta) = m \lambda, \quad m = 0, \pm 1, \pm 2, \ldots,
 $$
 
 where $d$ is now the distance between adjacent slits.
+
+### Rayleigh Criterion
+
+We return to the discussion of telescopes.
+In addition to being able to focus light to a point, a telescope must also be able to *resolve* two closely spaced objects.
+By "resolve," we mean being able to distinguish the two objects as separate entities, rather than a single blurred object, especially when they are very close together in the sky.
+The ability to resolve two objects is limited by diffraction, which causes light waves to spread out as they pass through an aperture, such as the lens or mirror of a telescope.
+
+To explain how single-slit diffraction occurs, consider a slit of width $D$ illuminated by monochromatic light of wavelength $\lambda$.
+According to Huygens' principle, every point within the slit acts as a source of secondary wavelets.
+These wavelets interfere with each other, leading to a diffraction pattern on a screen placed far away.
+
+Suppose one ray travels straight through the center of the slit to a point on the screen at an angle $\theta$.
+Another ray travels from the top edge of the slit (a distance $D/2$ from the center) to the same point on the screen.
+The condition for destructive interference (a dark fringe) between these two rays is that the path difference between them is equal to half a wavelength, i.e.,
+
+$$
+\begin{equation}
+\frac{D}{2} \sin(\theta) = \frac{1}{2} \lambda \implies D \sin(\theta) = \lambda.
+\end{equation}
+$$
+
+We can repeat this argument for rays originating from other points within the slit, leading to the general condition for destructive interference:
+
+$$
+\begin{equation}
+D \sin(\theta) = m \lambda, \quad m = \pm 1, \pm 2, \pm 3, \ldots.
+\end{equation}
+$$
+
+<figure>
+    <div style={{ background: "white", padding: "1em", borderRadius: "8px" }}>
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/1/14/Airy-pattern.svg"
+            alt="Computer-generated Airy pattern"
+            style={{ display: "block", margin: "0 auto", maxWidth: "450px", width: "100%" }}
+        />
+    </div>
+    <figcaption>
+
+    Computer-generated Airy pattern created by a circular aperture. The central bright region is known as the Airy disk, surrounded by concentric rings of decreasing brightness. The first dark ring occurs at an angle $\theta$ where $D \sin(\theta) = 1.22 \lambda$, which defines the Rayleigh criterion for resolution.
+    By <a href="https://en.wikipedia.org/wiki/User:Sakurambo" class="extiw" title="wikipedia:User:Sakurambo">Sakurambo</a> at <a href="https://en.wikipedia.org/wiki/" class="extiw" title="wikipedia:">English Wikipedia</a> <a href="https://en.wikipedia.org/wiki/User_talk:Sakurambo" class="extiw" title="en:User talk:Sakurambo">桜ん坊</a> - Created in <a href="https://en.wikipedia.org/wiki/Adobe_Illustrator" class="extiw" title="en:Adobe Illustrator">Adobe Illustrator</a> and then edited to incorporate gradient stops calculated in <a href="https://en.wikipedia.org/wiki/Chipmunk_Basic" class="extiw" title="en:Chipmunk Basic">Chipmunk Basic</a> (see below for source code)., Public Domain, <a href="https://commons.wikimedia.org/w/index.php?curid=18640280">Link</a>
+
+    </figcaption>
+</figure>
+
+If we have a circular aperture (like in most telescopes), by symmetry, the diffraction pattern will be circularly symmetric.
+To analytically derive the diffraction pattern, we will have to double integrate over the circular aperture.
+This will come later, but for now we just need to know that Sir George Biddell Airy (1801–1892) worked out the mathematics in 1835.
+It is for this reason that the central bright region of the diffraction pattern is known as the **Airy disk**.
+The equation is similar to the single-slit case with $D \sin(\theta) = m \lambda$, but this time, $m$ takes on different values.
+
+| Ring | $m$ Value | $I / I_0$ (intensity ratio) |
+|------|-----------|-----------------------------|
+| Central maximum | $0.000$ | $1.00000$ |
+| First minimum | $1.220$ | |
+| Second maximum | $1.635$ | $0.01750$ |
+| Second minimum | $2.233$ | |
+| Third maximum | $2.679$ | $0.00416$ |
+| Third minimum | $3.238$ | |
+
+(Table taken from Carroll & Ostlie, Table 6.1.)
+
+Now the key point is this: suppose we have two point sources of light (e.g., two stars) separated by a small angle $\theta$.
+Each point source will produce its own Airy disk on the image plane of the telescope.
+They will superimpose to form a combined diffraction pattern.
+If the two sources are very close together, their Airy disks will overlap significantly, making it difficult to distinguish them as separate sources.
+
+<figure>
+    <div style={{ background: "white", padding: "1em", borderRadius: "8px" }}>
+        <img
+            src="https://martinbaileyphotography.com/wp-content/uploads/2021/03/Airy_Disk_Patterns_Web.jpg"
+            alt="Different superimposed Airy patterns"
+            style={{ display: "block", margin: "0 auto", maxWidth: "450px", width: "100%" }}
+        />
+    </div>
+    <figcaption>
+    Different superimposed Airy patterns. The leftmost pattern shows two Airy disks that are well separated, allowing for clear resolution of the two sources. The middle pattern shows two Airy disks that are closer together, with their first dark rings overlapping, making it more challenging to resolve them. The rightmost pattern shows two Airy disks that are so close that they merge into a single blurred pattern, making it impossible to distinguish the two sources.
+
+    <a href="https://martinbaileyphotography.com/2021/03/23/how-to-find-the-diffraction-limit-of-your-lenses-podcast-735/">Source</a>
+    </figcaption>
+</figure>
+
+Can we quantify when two point sources can be resolved?
+Consider when two sources are close together such that they are not clearly separated.
+This means that the angular separation $\theta_\text{min}$ is small.
+We define the criterion to be that the central maximum of one Airy disk coincides with the first minimum of the other.
+From the Airy disk condition, we have
+
+$$
+\begin{equation}
+D \sin(\theta_\text{min}) = 1.22 \lambda \implies \theta_\text{min} \approx 1.22 \frac{\lambda}{D} \quad (\theta_\text{min} \ll 1).
+\end{equation}
+$$
+
+This is known as the **Rayleigh criterion** for resolution, named after Lord Rayleigh (John William Strutt, 1842–1919), who formulated it in 1879.
+Notice that the minimum resolvable angle $\theta_\text{min}$ decreases as the aperture diameter $D$ increases, and increases with increasing wavelength $\lambda$.
+This means that larger telescopes can resolve finer details, and shorter wavelengths of light (e.g., blue light) can resolve finer details than longer wavelengths (e.g., red light).
+
+Real-life observations do not always achieve the theoretical limit set by the Rayleigh criterion.
+This is due to many factors, one of which is the turbulence in Earth's atmosphere, which causes the light from celestial objects to be distorted as it passes through the atmosphere.
+This effect is known as **astronomical seeing**.
+To mitigate this, astronomers use techniques such as adaptive optics, which involve using deformable mirrors to correct for atmospheric distortions in real-time.
+Additionally, space-based telescopes, such as the Hubble Space Telescope, avoid atmospheric effects altogether by operating above Earth's atmosphere.
+
+Also, as we know, the index of refraction depends on the wavelength of light, leading to **chromatic aberration** in lenses.
+This means that different colors of light are focused at different points, causing blurring and color fringing in images.
+To reduce chromatic aberration, we can introduce correcting lenses made of different types of glass with varying dispersion properties.
 
 ### Electrodynamics and the EM Spectrum
 
@@ -785,14 +1228,14 @@ We have also discussed how these theories have been applied to understand the pr
 Once again, here are the key takeaways from this section, labeled based on who discovered or developed them.
 This is not necessarily microscopically chronological; rather, it is grouped by the main contributors to each idea.
 
-- **Galileo Galilei (1564–1642)**: Used the telescope to observe celestial objects, providing evidence for the heliocentric model of the solar system.
-    Proposed a precursor to Newton's first law of motion.
 - **Isaac Newton (1643–1727)**: Formulated the laws of motion and universal gravitation, laying the foundation for classical mechanics.
     Developed the reflecting telescope and made significant contributions to optics.
 - **Jean-Baptiste Chappe d’Auteroche (1728–1769)**: Made the first successful measurement of the distance to Venus during a transit of Venus across the Sun (1761).
 - **Friedrich Bessel (1784–1846)**: Made the first successful measurement of stellar parallax (61 Cygni, 1838).
 - **Norman Pogson (1829–1891)**: Proposed the logarithmic scale for stellar magnitudes, establishing the modern magnitude system (1856).
 - **Thomas Young (1773–1829)**: Conducted the double-slit experiment, demonstrating the wave nature of light (1801).
+- **Sir George Biddell Airy (1801–1892)**: Worked out the mathematics of diffraction through a circular aperture, leading to the concept of the Airy disk and the Rayleigh criterion for resolution (1835).
+- **Lord Rayleigh (1842–1919)**: Contributed to the Rayleigh criterion for resolution, and attempted to derive the blackbody radiation spectrum using classical physics (late 19th century).
 - **Ole Rømer (1644–1710)**: Made the first quantitative estimate of the speed of light by observing the eclipses of Jupiter's moons (1676).
 - **Christian Huygens (1629–1695)**: Proposed the wave theory of light and Huygens' principle, explaining the propagation of light waves (late 17th century).
 - **James Clerk Maxwell (1831–1879)**: Formulated Maxwell's equations, unifying electricity, magnetism, and optics into electromagnetism (1860s).

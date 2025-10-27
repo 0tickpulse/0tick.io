@@ -655,9 +655,15 @@ With this principle, the field of chemistry could finally be explained from firs
 In 1915, Albert Einstein published his theory of general relativity, which describes gravity as the curvature of spacetime caused by mass and energy.
 His work began in 1907 with the equivalence principle, which states that the effects of gravity are locally indistinguishable from acceleration (for nonrotating reference frames).
 Naturally, it meant that spacetime is locally Minkowskian and obeys special relativity, but globally curved.
-This is perfectly described by a manifold, which is a topological space that locally resembles Euclidean space and allows for the definition of concepts like continuity, differentiability, and curvature.
 
-The Einstein field equations relate the geometry of spacetime to the distribution of matter and energy. In component form, they are given by
+Einstein based the mathematical framework of general relativity on differential geometry, which studies curved spaces.
+Spacetime is perfectly described by a manifold, which is a topological space that locally resembles Euclidean space and allows for the definition of concepts like continuity, differentiability, and curvature.
+The metric tensor $g_{\mu\nu}$ makes the space a **pseudo-Riemannian manifold**, allowing for the measurement of distances and angles.
+The curvature of spacetime is described by the **Riemann curvature tensor** $R^\rho_{\sigma\mu\nu}$, a measure of holonomy that quantifies how vectors change when parallel transported around infinitesimal loops.
+The trace of the Riemann tensor gives the **Ricci curvature tensor** $R_{\mu\nu} = R^\rho_{\mu\rho\nu}$, which summarizes how volumes change in curved spacetime.
+Then, taking another trace, we obtain the **Ricci scalar** $R = g^{\mu\nu} R_{\mu\nu}$, which provides a single number characterizing the curvature of spacetime at a point.
+
+Einstein formulated the **Einstein field equations** to relate the curvature of spacetime to the distribution of matter and energy. In component form, they are given by
 
 $$
 \begin{equation}
@@ -667,17 +673,124 @@ $$
 
 The left-hand side describes the geometry of spacetime, while the right-hand side describes the matter and energy content.
 Einstein's original derivation involved trying to generalize Poisson's equation for gravity to be Lorentz covariant.
-It was only later that the Einstein-Hilbert action was discovered and applied to derive the same equation.
+It would initially lead to $R_{\mu\nu} = \kappa T_{\mu\nu}$, but this does not satisfy the conservation of energy and momentum, as $\nabla^\mu R_{\mu\nu} \neq 0$.
+The contracted Bianchi identity ensures that $\nabla^\mu (R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu}) = 0$, so the term $-\frac{1}{2} R g_{\mu\nu}$ was added to fix this.
+It was only later that the Einstein-Hilbert action was discovered and applied to derive the same equation via the principle of stationary action.
 
-As the equations are nonlinear and coupled, there are few known analytical solutions for the metric $g_{\mu\nu}$.
-The first came from Karl Schwarzschild (1873–1916) in 1916, who found the solution for the spacetime outside a spherically symmetric, non-rotating mass.
-It rests on a few assumptions: the spacetime is static (time-independent), spherically symmetric, and asymptotically flat (approaching Minkowski space at infinity).
-We will also set the cosmological constant $\Lambda = 0$ for simplicity.
-The energy-momentum tensor $T_{\mu\nu}$ is zero outside the mass, leading to the vacuum Einstein equations
+Anyways, the first solution came in 1916 from Karl Schwarzschild (1873–1916), who found the metric outside a spherically symmetric, non-rotating mass. The **Schwarzschild metric** is given in matrix form by
 
 $$
 \begin{equation}
-R_{\mu\nu} - \frac{1}{2} R g_{\mu\nu} = 0.
+g_{\mu\nu} = \mqty[
+-(1 - \frac{2GM}{c^2 r}) & 0 & 0 & 0 \\
+0 & (1 - \frac{2GM}{c^2 r})^{-1} & 0 & 0 \\
+0 & 0 & r^2 & 0 \\
+0 & 0 & 0 & r^2 \sin^2 \theta
+],
 \end{equation}
 $$
 
+where $M$ is the mass of the object, $G$ is the gravitational constant, and $(t, r, \theta, \phi)$ are the Schwarzschild coordinates. From this metric, we can derive important predictions of general relativity:
+
+1. **Perihelion Precession of Mercury**: The orbit of Mercury precesses over time due to the curvature of spacetime caused by the Sun's mass. General relativity predicts an additional precession of approximately 43 arcseconds per century, which matches observations.
+2. **Gravitational Time Dilation**: Clocks in a gravitational field run slower compared to those far away from massive objects. This effect has been confirmed by experiments comparing atomic clocks at different altitudes.
+3. **Black Holes**: The Schwarzschild solution predicts the existence of black holes for $r < r_s = \frac{2GM}{c^2}$, known as the Schwarzschild radius. Inside this radius, the escape velocity exceeds the speed of light, leading to an event horizon beyond which no information can escape (as causation is limited by the speed of light).
+4. **Gravitational Redshift**: Light escaping from a gravitational field is redshifted, meaning its wavelength increases. This effect has been observed in light from white dwarfs and in laboratory experiments.
+5. **Gravitational Lensing**: Massive objects can bend the path of light, causing distant objects to appear distorted or multiplied. This phenomenon has been observed in various astrophysical contexts, such as the bending of light from distant galaxies by intervening galaxy clusters.
+
+We will dedicate a future chapter to extensively cover the Schwarschild metric and black holes.
+
+Einstein also predicted the existence of gravitational waves. When choosing a certain gauge, the linearized Einstein field equations reduce to a wave equation in the metric perturbation $h_{\mu\nu}$.
+This leads to solutions that describe ripples in spacetime propagating at the speed of light.
+Once again, this has been confirmed experimentally, this time by the LIGO and Virgo collaborations, which detected gravitational waves from merging black holes and neutron stars.
+
+The next year, in 1917, Einstein published "Cosmological Considerations in the General Theory of Relativity," where he applied his field equations to the entire universe.
+The main conclusion was that the universe could not be infinite, as that leads to mathematical inconsistencies.
+It had to have a finite universe with a positive spatial curvature $k$.
+But the spherical model was not stable, so he introduced the **cosmological constant** $\Lambda$ to counteract gravity and achieve a static universe.
+The value he gave was
+
+$$
+\begin{equation}
+\Lambda = \frac{1}{R^2} = \frac{4 \pi G \rho}{c^2},
+\end{equation}
+$$
+
+where $R$ is the radius of curvature of the universe and $\rho$ is the average density of matter.
+This constant was inserted into the Einstein field equations as shown earlier.
+It works because $\Lambda g_{\mu\nu}$ is divergence-free, i.e., $\nabla^\mu (\Lambda g_{\mu\nu}) = 0$, satisfying the conservation of energy and momentum.
+As this value was very close to zero, it can be neglected in most non-cosmological uses.
+
+In 1922, Alexander Friedmann (1888–1925) derived solutions to the Einstein field equations that describe a homogeneous and isotropic expanding or contracting universe.
+The universe's expansion can be described via a time-dependent scale factor $a(t)$, where $t$ is a cosmic time coordinate.
+The metric for such a universe is given by the **Friedmann-Lemaître-Robertson-Walker (FLRW) metric**, named after Friedmann, Georges Lemaître (1894–1966), Howard Robertson (1903–1961), and Arthur Walker (1909–2001).
+Each of them independently derived the same metric, which is given in matrix form by
+
+$$
+\begin{equation}
+g_{\mu\nu} = \mqty[
+-1 & 0 & 0 & 0 \\
+0 & \frac{a(t)^2}{1 - k r^2} & 0 & 0 \\
+0 & 0 & a(t)^2 r^2 & 0 \\
+0 & 0 & 0 & a(t)^2 r^2 \sin^2 \theta
+],
+\end{equation}
+$$
+
+where $k$ is the spatial curvature constant, which can take values of $-1$, $0$, or $+1$ corresponding to open, flat, or closed universes, respectively. From this metric, we can derive the **Friedmann equations**, which govern the dynamics of the universe's expansion:
+
+$$
+\begin{align}
+\qty(\frac{\dot{a}}{a})^2 &= \frac{8 \pi G}{3} \rho - \frac{kc^2}{a^2} + \frac{\Lambda c^2}{3}, \\
+\frac{\ddot{a}}{a} &= -\frac{4 \pi G}{3} \qty(\rho + \frac{3p}{c^2}) + \frac{\Lambda c^2}{3},
+\end{align}
+$$
+
+where $\rho$ is the energy density, $p$ is the pressure, and $\Lambda$ is the cosmological constant. These equations describe how the scale factor $a(t)$ evolves over time based on the matter and energy content of the universe.
+These results were published in 1922 under "On the Curvature of Space."
+Einstein initially rejected Friedmann's solutions, believing them to be incorrect.
+However, he eventually conceded after Friedmann pointed out a mistake in Einstein's calculations.
+
+Empirical evidence for the expanding universe came from spectroscopic observations and redshift measurements of distant galaxies.
+In 1912, Vesto Slipher (1875–1969) began measuring the radial velocities of spiral nebulae (now known to be galaxies) using the Doppler effect.
+He found that many of these nebulae exhibited redshifts, indicating they were moving away from us.
+In 1927, Georges Lemaître independently derived the FLRW metric, built upon Einstein's paper and the redshift observation, and proposed an expanding universe.
+In his paper, he (1) noted that a constant spatial curvature $R_0$ is a valid solution to Einstein's field equations; (2) proposed that the universe expanded asymptotically; and (3) derived a linear relationship between the recessional velocity of galaxies and their distance from us:
+
+$$
+\begin{equation}
+R_0 = \frac{rc}{v \sqrt{3}}.
+\end{equation}
+$$
+
+Two years later, in 1929, Edwin Hubble (1889–1953) published his observations of distant galaxies, confirming Lemaître's predictions.
+He independently proposed a similar linear relationship between the recessional velocity of galaxies and their distance, now known as **Hubble's law**:
+
+$$
+\begin{equation}
+v = Hr,
+\end{equation}
+$$
+
+where $v$ is the radial velocity of the galaxy, $r$ is its distance from us, and $H$ is the **Hubble parameter** given by
+
+$$
+\begin{equation}
+H := \frac{\dot{a}}{a}.
+\end{equation}
+$$
+
+One year later, in 1930, Lemaître proposed that the universe began from a single point, which he called the "primeval atom," now known as the **Big Bang theory**.
+(Interestingly, the name "Big Bang" was a derogatory term coined by Fred Hoyle (1915–2001) during a 1949 radio broadcast, as he favored the steady state theory of the universe.)
+
+After being aware of Hubble's work, it was clear to Einstein that the universe was not static but seemingly expanding at a constant rate.
+He abandoned the cosmological constant. According to physicist George Gamow (1904–1968), Einstein later referred to the cosmological constant as his "biggest blunder."
+
+## Radio Astronomy and the Cosmic Microwave Background
+
+Karl Jansky (1905–1950) is considered the father of radio astronomy.
+In 1931, while working at Bell Laboratories, he experimented with the detection of radio waves from thunderstorms.
+Using a large directional antenna, he discovered a persistent hiss of unknown origin that repeated every 23 hours and 56 minutes, corresponding to the sidereal day.
+This indicated that the source was extraterrestrial, as it was tied to the stars rather than the Sun.
+Jansky identified the source as the center of the Milky Way galaxy, located in the constellation Sagittarius.
+This discovery marked the beginning of radio astronomy, opening a new window to observe the universe.

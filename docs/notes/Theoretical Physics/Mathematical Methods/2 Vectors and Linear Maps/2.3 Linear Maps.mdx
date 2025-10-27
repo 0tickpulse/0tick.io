@@ -1,0 +1,710 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 2.3 Linear Maps
+
+In this section, we will discuss linear maps between vector spaces.
+A linear map is a function that preserves the operations of vector addition and scalar multiplication.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Just like Hassani, we will begin by reviewing common maps in general.
+
+:::example Example 2.3.1 (Common Maps)
+
+Some examples of maps are:
+
+- The map $f: \mathbb{R}^2 \to \mathbb{R}^2$ defined by $f(x, y) = (2x, 3y)$.
+- The map $g: \mathbb{R}^2 \to \mathbb{R}$ defined by $g(x, y) = x + y^2$.
+- The map $F: \mathbb{R}^2 \to \mathbb{C}$ defined by $F(x, y) = u(x, y) + iv(x, y)$, where $u$ and $v$ are real-valued functions.
+- The map $R_{\theta}: \mathbb{R}^2 \to \mathbb{R}^2$ defined by $R_{\theta}(x, y) = (x\cos(\theta) - y\sin(\theta), x\sin(\theta) + y\cos(\theta))$, which represents a rotation by an angle $\theta$.
+- The map $M: [t_i, t_f] \to \mathbb{R}^3$ defined by $M(t) = (x(t), y(t), z(t))$, which represents a curve in 3D space parameterized by $t$.
+    We often use this to represent the trajectory of a particle in space over time.
+- The map $S: \mathbb{R}^3 \to \mathbb{R}^3$ defined by $S(x, y, z) = (x + a, y + b, z + c)$, which represents a translation by the vector $(a, b, c)$.
+
+:::
+
+:::definition Definition 2.3.2 (Linear Map, Endomorphism)
+
+Let $\mathcal{V}$ and $\mathcal{W}$ be vector spaces over the same field $\mathbb{F}$, which we will take to be $\mathbb{C}$.
+A **linear map** (or **linear transformation**) is a map $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ that satisfies, for all $\ket{a}, \ket{b} \in \mathcal{V}$ and all scalars $\alpha, \beta \in \mathbb{F}$,
+
+$$
+\begin{equation}
+\boldsf{T}(\alpha \ket{a} + \beta \ket{b}) = \alpha \boldsf{T}(\ket{a}) + \beta \boldsf{T}(\ket{b}).
+\end{equation}
+$$
+
+The set of all linear maps $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ is denoted by $\mathcal{L}(\mathcal{V}, \mathcal{W})$.
+
+If the domain and codomain are the same, i.e. $\mathcal{V} = \mathcal{W}$, then we call $\boldsf{T}$ a **linear operator** or **endomorphism** on $\mathcal{V}$.
+When we act a linear map on a vector, we often drop the bracket and write $\boldsf{T}(\ket{a})$ as $\boldsf{T}\ket{a}$.
+The set of all endomorphisms on $\mathcal{V}$ is denoted by $\mathcal{L}(\mathcal{V})$ or $\text{End}(\mathcal{V})$.
+
+:::
+
+:::box Box 2.3.3 (Shorthand for Endomorphisms)
+
+$\mathcal{L}(\mathcal{V}, \mathcal{W})$ is a vector space, and so is $\mathcal{L}(\mathcal{V}) = \text{End}(\mathcal{V}) = \mathcal{L}(\mathcal{V}, \mathcal{V})$.
+
+:::
+
+In other words, we can add linear maps and multiply them by scalars, and the result is still a linear map.
+Let's define these operations.
+
+First, the **zero map** $\boldsf{0}: \mathcal{V} \to \mathcal{W}$ is defined by $\boldsf{0}\ket{a} = \ket{0}$ for all $\ket{a} \in \mathcal{V}$, where $\ket{0}$ is the zero vector in $\mathcal{W}$.
+This map sends every vector in $\mathcal{V}$ to the zero vector in $\mathcal{W}$.
+
+Next, the **sum** of two linear maps $\boldsf{S}, \boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ is defined by
+
+$$
+\begin{equation}
+(\boldsf{S} + \boldsf{T})\ket{a} = \boldsf{S}\ket{a} + \boldsf{T}\ket{a}.
+\end{equation}
+$$
+
+Lastly, the **scalar multiplication** of a linear map $\boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ by a scalar $\alpha \in \mathbb{F}$ is defined by
+
+$$
+\begin{equation}
+(\alpha \boldsf{T})\ket{a} = \alpha (\boldsf{T}\ket{a}).
+\end{equation}
+$$
+
+:::definition Definition 2.3.4 (Isometric Map, Isometry, Unitary Operator)
+
+A linear map $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ is called **isometric** if it preserves the inner product, i.e. for all $\ket{a}, \ket{b} \in \mathcal{V}$,
+
+$$
+\begin{equation}
+\braket{\boldsf{T}a}{\boldsf{T}b} = \braket{a}{b}.
+\end{equation}
+$$
+
+In other words, an isometric map preserves the lengths of vectors and the angles between them.
+If $\mathcal{V} = \mathcal{W}$, then an isometric map is called an **isometry** or **unitary operator**.
+
+:::
+
+:::example Example 2.3.5 (Examples of Linear Maps)
+
+Some examples of linear maps are:
+
+- For any one-dimensional vector space, the only linear maps are the zero map and scalar multiplication by a constant; $\boldsf{T}\ket{a} = \alpha \ket{a}$ for some $\alpha \in \mathbb{F}$.
+    If $\boldsf{T}$ is an isometry, then $\alpha$ must be a complex number with unit magnitude, i.e. $\alpha = e^{i\theta}$ for some $\theta \in \mathbb{R}$.
+- Let $\ket{x}$ be a polynomial in $\mathcal{P}^c[t]$ (the space of complex polynomials in $t$).
+    The map $\boldsf{D}: \mathcal{P}^c[t] \to \mathcal{P}^c[t]$ defined by $\boldsf{D}\ket{x} = \dv{t} \ket{x}$ is a linear map, since differentiation is a linear operation.
+    However, it is not an isometry, since it does not preserve the inner product.
+    Similarly, the map $\boldsf{I}: \mathcal{P}^c[t] \to \mathcal{P}^c[t]$ defined by $\boldsf{I}\ket{x} = \int \ket{x} \dd{t}$ is also a linear map, but not an isometry.
+
+    We can write both maps in terms of the basis $\{1, t, t^2, \ldots\}$ (the monomials).
+    $\ket{x}$ can be expressed as $\ket{x} = \sum_{n=0}^{\infty} a_n t^n$ for some coefficients $a_n \in \mathbb{C}$.
+    Then, we have
+
+    $$
+    \begin{equation}
+    \boldsf{D}\ket{x} = \sum_{n=1}^{\infty} n a_n t^{n-1}, \quad \boldsf{I}\ket{x} = \sum_{n=0}^{\infty} \frac{a_n}{n+1} t^{n+1}.
+    \end{equation}
+    $$
+- Rotations and reflections in $\mathbb{R}^2$ and $\mathbb{R}^3$ are isometries, since they preserve lengths and angles.
+    For example, the rotation map $R_{\theta}: \mathbb{R}^2 \to \mathbb{R}^2$ defined by $R_{\theta}(x, y) = (x\cos(\theta) - y\sin(\theta), x\sin(\theta) + y\cos(\theta))$ is an isometry.
+- In Minkowski space, the set of all isometries is called the **Poincaré group**.
+    This group includes translations, rotations, and boosts (changes in velocity).
+    The Poincaré group is important in special relativity, as it describes the symmetries of spacetime.
+
+:::
+
+:::box Box 2.3.6 (Equality of Linear Maps)
+
+Two linear maps $\boldsf{S}, \boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ are equal, i.e. $\boldsf{S} = \boldsf{T}$, if and only if $\boldsf{S}\ket{a_i} = \boldsf{T}\ket{a_i}$ for all vectors $\ket{a_i}$ in a basis of $\mathcal{V}$.
+In other words, linear maps are uniquely determined by their action on a basis.
+
+:::
+
+:::theorem Theorem 2.3.7 (Zero Endomorphism)
+
+Let $\ket{a}, \ket{b} \in \mathcal{V}$ be non-zero vectors in an inner product space $\mathcal{V}$.
+Any endomorphism $\boldsf{T} \in \text{End}(\mathcal{V})$ is equal to the zero map $\boldsf{0}$ if and only if $\mel{b}{\boldsf{T}}{a} = \braket{b}{\boldsf{T}{a}} = 0$ for all $\ket{a}, \ket{b} \in \mathcal{V}$.
+
+---
+
+*Proof*.
+
+($\Rightarrow$) If $\boldsf{T} = \boldsf{0}$, then for any $\ket{a}, \ket{b} \in \mathcal{V}$, we have $\mel{b}{\boldsf{T}}{a} = \braket{b}{\boldsf{0}{a}} = \braket{b}{0} = 0$.
+
+($\Leftarrow$) Conversely, suppose that $\mel{b}{\boldsf{T}}{a} = 0$ for all $\ket{a}, \ket{b} \in \mathcal{V}$.
+Since this holds for all $\ket{b}$, we can choose $\ket{b} = \boldsf{T}\ket{a}$, which gives us $\braket{\boldsf{T}{a}}{\boldsf{T}{a}} = 0$.
+The inner product of a vector with itself is zero if and only if the vector is the zero vector.
+Thus, we have $\boldsf{T}\ket{a} = \ket{0}$ for all $\ket{a} \in \mathcal{V}$, which means that $\boldsf{T} = \boldsf{0}$. $\blacksquare$
+
+---
+
+:::
+
+Similarly,
+
+:::theorem Theorem 2.3.8
+
+Any endomorphism $\boldsf{T} \in \text{End}(\mathcal{V})$ is equal to the zero map $\boldsf{0}$ if and only if $\mel{a}{\boldsf{T}}{a} = 0$ for all $\ket{a} \in \mathcal{V}$.
+
+---
+
+*Proof*.
+
+($\Rightarrow$) If $\boldsf{T} = \boldsf{0}$, then for any $\ket{a} \in \mathcal{V}$, we have $\mel{a}{\boldsf{T}}{a} = \braket{a}{\boldsf{0}{a}} = \braket{a}{0} = 0$.
+This part is trivial.
+
+($\Leftarrow$) Conversely, suppose that $\mel{a}{\boldsf{T}}{a} = 0$ for all $\ket{a} \in \mathcal{V}$.
+Choose a vector $\alpha \ket{a} + \beta \ket{b}$ for some $\ket{a}, \ket{b} \in \mathcal{V}$ and $\alpha, \beta \in \mathbb{C}$.
+From definitions of linear maps and inner products, we have
+
+$$
+\begin{equation}
+\begin{split}
+\mel{\alpha a + \beta b}{\boldsf{T}}{\alpha a + \beta b} &= \braket{\alpha a + \beta b}{\boldsf{T}(\alpha a + \beta b)} \\
+&= \braket{\alpha a + \beta b}{\alpha \boldsf{T}a + \beta \boldsf{T}b} \\
+&= \alpha^* \alpha \braket{a}{\boldsf{T}a} + \alpha^* \beta \braket{a}{\boldsf{T}b} + \beta^* \alpha \braket{b}{\boldsf{T}a} + \beta^* \beta \braket{b}{\boldsf{T}b} \\
+&= |\alpha|^2 \mel{a}{\boldsf{T}}{a} + \alpha^* \beta \mel{a}{\boldsf{T}}{b} + \beta^* \alpha \mel{b}{\boldsf{T}}{a} + |\beta|^2 \mel{b}{\boldsf{T}}{b} \\
+&= \alpha^* \beta \mel{a}{\boldsf{T}}{b} + \beta^* \alpha \mel{b}{\boldsf{T}}{a},
+\end{split}
+\end{equation}
+$$
+
+where we used the assumption that $\mel{a}{\boldsf{T}}{a} = 0$ and $\mel{b}{\boldsf{T}}{b} = 0$.
+(Prior to applying the assumption, the equation is called the **polarization identity**.)
+
+Let $\alpha = \beta = 1$.
+Then, we have $\mel{a}{\boldsf{T}}{b} + \mel{b}{\boldsf{T}}{a} = 0$.
+Let $\alpha = i$ and $\beta = 1$.
+Then, we have $-i\mel{a}{\boldsf{T}}{b} + i\mel{b}{\boldsf{T}}{a} = 0$.
+Combining these two equations, we get $\mel{a}{\boldsf{T}}{b} = 0$ and $\mel{b}{\boldsf{T}}{a} = 0$ for all $\ket{a}, \ket{b} \in \mathcal{V}$.
+
+By Theorem 2.3.7, we conclude that $\boldsf{T} = \boldsf{0}$. $\blacksquare$
+
+---
+
+:::
+
+From what we have learned so far, we can determine if two linear maps $\boldsf{S}, \boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ are equal in a few ways.
+
+- $\boldsf{S} = \boldsf{T}$ if and only if $\boldsf{S} - \boldsf{T} = \boldsf{0}$.
+- $\boldsf{S} = \boldsf{T}$ if and only if $\boldsf{S}\ket{a_i} = \boldsf{T}\ket{a_i}$ for all vectors $\ket{a_i}$ in a basis of $\mathcal{V}$ (Box 2.3.6).
+- $\boldsf{S} = \boldsf{T}$ if and only if $\mel{b}{\boldsf{S}}{a} = \mel{b}{\boldsf{T}}{a}$ for all $\ket{a} \in \mathcal{V}$ and $\ket{b} \in \mathcal{W}$ (Theorem 2.3.7).
+
+### 2.3.1 Kernels
+
+:::theorem Theorem 2.3.9 (kernel)
+
+For a linear map $\boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$, the **kernel** (or **null space**) of $\boldsf{T}$, defined as
+
+$$
+\begin{equation}
+\text{ker}(\boldsf{T}) = \{\ket{a} \in \mathcal{V} | \boldsf{T}\ket{a} = \ket{0}\},
+\end{equation}
+$$
+
+forms a subspace of $\mathcal{V}$.
+
+Intuitively, if we visualize vectors as arrows on a plane, the kernel is the set of all vectors that get squished down to the zero vector by the linear map $\boldsf{T}$.
+If the kernel is not just the zero vector, then there are directions in the domain that get completely flattened out by the map.
+Then, the map is not one-to-one, since multiple vectors in the domain can map to the same vector in the codomain (the zero vector).
+We will formalize this idea later.
+
+---
+
+*Proof*. We need to show that the kernel is closed under addition and scalar multiplication, and that it contains the zero vector.
+
+First, it obviously contains the zero vector, since $\boldsf{T}\ket{0} = \ket{0}$.
+
+Next, let $\ket{a}, \ket{b} \in \text{ker}(\boldsf{T})$.
+Then, we have $\boldsf{T}\ket{a} = \ket{0}$ and $\boldsf{T}\ket{b} = \ket{0}$.
+
+By the linearity of $\boldsf{T}$, we have
+
+$$
+\begin{equation}
+\boldsf{T}(\ket{a} + \ket{b}) = \boldsf{T}\ket{a} + \boldsf{T}\ket{b} = \ket{0} + \ket{0} = \ket{0}.
+\end{equation}
+$$
+
+Thus, $\ket{a} + \ket{b} \in \text{ker}(\boldsf{T})$, so the kernel is closed under addition.
+
+Finally, let $\alpha \in \mathbb{F}$ and $\ket{a} \in \text{ker}(\boldsf{T})$.
+Then, we have $\boldsf{T}\ket{a} = \ket{0}$.
+By the linearity of $\boldsf{T}$, we have
+
+$$
+\begin{equation}
+\boldsf{T}(\alpha \ket{a}) = \alpha \boldsf{T}\ket{a} = \alpha \ket{0} = \ket{0}.
+\end{equation}
+$$
+
+Thus, $\alpha \ket{a} \in \text{ker}(\boldsf{T})$, so the kernel is closed under scalar multiplication.
+Therefore, the kernel of $\boldsf{T}$ is a subspace of $\mathcal{V}$. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.3.10 (image and rank)
+
+The **image** (or **range**) of a linear map $\boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$, defined as
+
+$$
+\begin{equation}
+\boldsf{T}(\mathcal{V}) = \{\boldsf{T}\ket{a} | \ket{a} \in \mathcal{V}\},
+\end{equation}
+$$
+
+forms a subspace of $\mathcal{W}$.
+The dimension of the image is called the **rank** of $\boldsf{T}$, denoted by $\text{rank}(\boldsf{T})$.
+
+---
+
+*Proof*. We need to show that the image is closed under addition and scalar multiplication, and that it contains the zero vector.
+
+First, it obviously contains the zero vector, since $\boldsf{T}\ket{0} = \ket{0}$.
+
+Next, let $\ket{w_1}, \ket{w_2} \in \boldsf{T}(\mathcal{V})$.
+Then, there exist $\ket{a_1}, \ket{a_2} \in \mathcal{V}$ such that $\ket{w_1} = \boldsf{T}\ket{a_1}$ and $\ket{w_2} = \boldsf{T}\ket{a_2}$.
+By the linearity of $\boldsf{T}$, we have
+
+$$
+\begin{equation}
+\ket{w_1} + \ket{w_2} = \boldsf{T}\ket{a_1} + \boldsf{T}\ket{a_2} = \boldsf{T}(\ket{a_1} + \ket{a_2}).
+\end{equation}
+$$
+
+Since $\ket{w_1} + \ket{w_2}$ is the image of $\ket{a_1} + \ket{a_2} \in \mathcal{V}$, we have $\ket{w_1} + \ket{w_2} \in \boldsf{T}(\mathcal{V})$, so the image is closed under addition.
+
+Finally, let $\alpha \in \mathbb{F}$ and $\ket{w} \in \boldsf{T}(\mathcal{V})$.
+Then, there exists $\ket{a} \in \mathcal{V}$ such that $\ket{w} = \boldsf{T}\ket{a}$.
+By the linearity of $\boldsf{T}$, we have
+
+$$
+\begin{equation}
+\alpha \ket{w} = \alpha \boldsf{T}\ket{a} = \boldsf{T}(\alpha \ket{a}).
+\end{equation}
+$$
+
+Thus, $\alpha \ket{w} \in \boldsf{T}(\mathcal{V})$, so the image is closed under scalar multiplication.
+Therefore, the image of $\boldsf{T}$ is a subspace of $\mathcal{W}$. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.3.11 (injectivity of linear maps)
+
+A linear map $\boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ is **injective** (or **one-to-one**) if and only if $\text{ker}(\boldsf{T}) = \{\ket{0}\}$.
+
+If the kernel contains only the zero vector, it is known as a **trivial kernel**.
+Injectivity means that different vectors in the domain map to different vectors in the codomain.
+
+---
+
+*Proof*.
+
+($\Rightarrow$) Suppose that $\boldsf{T}$ is injective.
+Then, for any $\ket{a} \in \text{ker}(\boldsf{T})$, we have $\boldsf{T}\ket{a} = \ket{0}$.
+
+Since $\boldsf{T}$ is injective, the only vector that maps to $\ket{0}$ is $\ket{0}$ itself. Therefore, we must have $\ket{a} = \ket{0}$, which shows that $\text{ker}(\boldsf{T}) = \{\ket{0}\}$.
+
+($\Leftarrow$) Conversely, suppose that $\text{ker}(\boldsf{T}) = \{\ket{0}\}$.
+We need to show that $\boldsf{T}$ is injective.
+
+Let $\ket{a}, \ket{b} \in \mathcal{V}$ be such that $\boldsf{T}\ket{a} = \boldsf{T}\ket{b}$.
+Then, we have
+
+$$
+\boldsf{T}\ket{a} - \boldsf{T}\ket{b} = \ket{0} \implies \boldsf{T}(\ket{a} - \ket{b}) = \ket{0}.
+$$
+
+Since $\text{ker}(\boldsf{T}) = \{\ket{0}\}$, it follows that $\ket{a} - \ket{b} = \ket{0}$, or $\ket{a} = \ket{b}$.
+Thus, $\boldsf{T}$ is injective. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.3.12 (isometries are injective)
+
+All linear, isometric maps $\boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ are injective.
+
+---
+
+*Proof*. Suppose that $\boldsf{T}$ is isometric and linear.
+Let $\ket{a} \in \text{ker}(\boldsf{T})$.
+Then, we have $\boldsf{T}\ket{a} = \ket{0}$.
+
+By the isometric property of $\boldsf{T}$, we have
+
+$$
+\begin{equation}
+\braket{a}{a} = \braket{\boldsf{T}a}{\boldsf{T}a} = \braket{0}{0} = 0.
+\end{equation}
+$$
+
+Since the inner product of a vector with itself is zero if and only if the vector is the zero vector, we have $\ket{a} = \ket{0}$.
+Therefore, any vector in the kernel must be the zero vector, which means that $\text{ker}(\boldsf{T}) = \{\ket{0}\}$.
+By Theorem 2.3.11, we conclude that $\boldsf{T}$ is injective. $\blacksquare$
+
+---
+
+:::
+
+Lastly,
+
+:::theorem Theorem 2.3.13 (dimension theorem)
+
+For a linear map $\boldsf{T} \in \mathcal{L}(\mathcal{V}, \mathcal{W})$ with $\dim(\mathcal{V}) < \infty$, we have
+
+$$
+\begin{equation}
+\text{rank}(\boldsf{T}) + \dim(\text{ker}(\boldsf{T})) = \dim(\mathcal{V}),
+\end{equation}
+$$
+
+assuming that both vector spaces are over the same field $\mathbb{F}$.
+
+---
+
+*Proof*. Let $\{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}\}$ be a basis for $\text{ker}(\boldsf{T})$, where $n = \dim(\text{ker}(\boldsf{T}))$.
+We can extend this basis to a basis for $\mathcal{V}$ by adding vectors $\{\ket{a_{n+1}}, \ket{a_{n+2}}, \ldots, \ket{a_m}\}$, where $m = \dim(\mathcal{V})$.
+Thus, we have a basis for $\mathcal{V}$ given by $\{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}, \ket{a_{n+1}}, \ket{a_{n+2}}, \ldots, \ket{a_m}\}$.
+
+The vectors $\{\ket{a_{n+1}}, \ket{a_{n+2}}, \ldots, \ket{a_m}\}$ are linearly independent and not in the kernel of $\boldsf{T}$.
+Therefore, their images under $\boldsf{T}$, i.e. $\{\boldsf{T}\ket{a_{n+1}}, \boldsf{T}\ket{a_{n+2}}, \ldots, \boldsf{T}\ket{a_m}\}$, are also linearly independent in $\mathcal{W}$.
+These images span the image of $\boldsf{T}$, i.e. $\boldsf{T}(\mathcal{V})$.
+Thus, they form a basis for $\boldsf{T}(\mathcal{V})$.
+
+The number of vectors in this basis is $m - n$, which is the dimension of the image of $\boldsf{T}$, i.e. $\text{rank}(\boldsf{T})$.
+Therefore, we have
+
+$$
+\begin{equation}
+\text{rank}(\boldsf{T}) = m - n \implies \text{rank}(\boldsf{T}) + n = m \implies \text{rank}(\boldsf{T}) + \dim(\text{ker}(\boldsf{T})) = \dim(\mathcal{V}).
+\end{equation}
+$$
+
+This completes the proof. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Corollary 2.3.14
+
+In a finite-dimensional vector space, an endomorphism is bijective if it is either injective or surjective.
+
+---
+
+*Proof*. Let $\boldsf{T} \in \text{End}(\mathcal{V})$ be an endomorphism on a finite-dimensional vector space $\mathcal{V}$.
+
+If $\boldsf{T}$ is injective, then by Theorem 2.3.11, we have $\text{ker}(\boldsf{T}) = \{\ket{0}\}$, which means that $\dim(\text{ker}(\boldsf{T})) = 0$.
+By Theorem 2.3.13, we have
+
+$$
+\begin{equation}
+\text{rank}(\boldsf{T}) + \dim(\text{ker}(\boldsf{T})) = \dim(\mathcal{V}) \implies \text{rank}(\boldsf{T}) + 0 = \dim(\mathcal{V}) \implies \text{rank}(\boldsf{T}) = \dim(\mathcal{V}).
+\end{equation}
+$$
+
+Since the rank of $\boldsf{T}$ is equal to the dimension of $\mathcal{V}$, the image of $\boldsf{T}$ is the entire space $\mathcal{V}$, which means that $\boldsf{T}$ is surjective.
+
+If $\boldsf{T}$ is surjective, then the image of $\boldsf{T}$ is the entire space $\mathcal{V}$, which means that $\text{rank}(\boldsf{T}) = \dim(\mathcal{V})$.
+By Theorem 2.3.13, we have
+
+$$
+\begin{equation}
+\text{rank}(\boldsf{T}) + \dim(\text{ker}(\boldsf{T})) = \dim(\mathcal{V}) \implies \dim(\mathcal{V}) + \dim(\text{ker}(\boldsf{T})) = \dim(\mathcal{V}) \implies \dim(\text{ker}(\boldsf{T})) = 0.
+\end{equation}
+$$
+
+This means that $\text{ker}(\boldsf{T}) = \{\ket{0}\}$, which means that $\boldsf{T}$ is injective.
+Therefore, in a finite-dimensional vector space, an endomorphism is bijective if it is either injective or surjective. $\blacksquare$
+
+---
+
+:::
+
+We will skip Example 2.3.15; see Hassani for details.
+
+### 2.3.2 Linear Isomorphisms
+
+We have alluded to the idea of isomorphisms in previous sections.
+In the context of vector spaces, two vector spaces can look (be notationally) different but still be fundamentally identical in structure.
+For instance, the vector space of polynomials of degree at most $n$ and the vector space of $(n+1)$-tuples of real numbers are isomorphic, as they both have dimension $n+1$ and share the same vector space properties.
+In quantum mechanics, we see that Pauli matrices are isomorphic to the quaternions.
+
+:::definition Definition 2.3.16 (linear isomorphism)
+
+Let $\mathcal{V}$ and $\mathcal{W}$ be vector spaces over the same field $\mathbb{F}$.
+$\mathcal{V}$ and $\mathcal{W}$ are said to be **linearly isomorphic**, i.e., $\mathcal{V} \cong \mathcal{W}$, if there exists a bijective linear map $\boldsf{T}: \mathcal{V} \to \mathcal{W}$.
+
+If $\mathcal{V} = \mathcal{W}$, then $\boldsf{T}$ is called a **automorphism** on $\mathcal{V}$.
+An automorphism is an invertible linear map on $\mathcal{V}$.
+The set of all automorphisms on $\mathcal{V}$ is denoted by $\text{GL}(\mathcal{V})$ or $\text{Aut}(\mathcal{V})$.
+The "GL" stands for "general linear", where the term "linear" refers to linear maps, and "general" indicates that these maps are not restricted to any special properties (like being orthogonal or unitary).
+
+:::
+
+:::proposition Proposition 2.3.17 (isometry is automorphism)
+
+A linear isometry $\boldsf{T} \in \mathcal{L}(\mathcal{V})$ on a finite-dimensional inner product space $\mathcal{V}$ is an automorphism, i.e., $\boldsf{T} \in \text{GL}(\mathcal{V})$.
+
+---
+
+*Proof*. By Theorem 2.3.12, we know that $\boldsf{T}$ is injective.
+Since $\mathcal{V}$ is finite-dimensional, by Corollary 2.3.14, $\boldsf{T}$ is also surjective.
+Therefore, $\boldsf{T}$ is bijective, which means that $\boldsf{T} \in \text{GL}(\mathcal{V})$. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.3.18 (isomorphism and nullity)
+
+A surjective linear map $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ is an isomorphism if and only if $\dim(\text{ker}(\boldsf{T})) = 0$.
+
+---
+
+*Proof*.
+
+($\Rightarrow$) Suppose that $\boldsf{T}$ is an isomorphism.
+Then, $\boldsf{T}$ is bijective, which means that it is injective.
+By Theorem 2.3.11, we have $\text{ker}(\boldsf{T}) = \{\ket{0}\}$, which means that $\dim(\text{ker}(\boldsf{T})) = 0$.
+
+($\Leftarrow$) Conversely, suppose that $\dim(\text{ker}(\boldsf{T})) = 0$.
+Then, $\text{ker}(\boldsf{T}) = \{\ket{0}\}$, which means that $\boldsf{T}$ is injective by Theorem 2.3.11.
+Since $\boldsf{T}$ is also surjective by assumption, it follows that $\boldsf{T}$ is bijective.
+Therefore, $\boldsf{T}$ is an isomorphism. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.3.19
+
+If $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ is an injective linear map, and $\{\ket{a_i}\} \subseteq \mathcal{V}$ is linearly independent, then $\{\boldsf{T}\ket{a_i}\} \subseteq \mathcal{W}$ is also linearly independent.
+
+---
+
+*Proof*. Suppose that $\{\ket{a_i}\} \subseteq \mathcal{V}$ is linearly independent.
+We need to show that $\{\boldsf{T}\ket{a_i}\} \subseteq \mathcal{W}$ is also linearly independent.
+
+From the fact that $\{\ket{a_i}\}$ is linearly independent, we have
+
+$$
+\begin{equation}
+\sum_i \alpha_i \ket{a_i} = \ket{0} \implies \alpha_i = 0 \text{ for all } i.
+\end{equation}
+$$
+
+Now, consider the linear combination of the images under $\boldsf{T}$:
+
+$$
+\begin{equation}
+\sum_i \beta_i \boldsf{T}\ket{a_i} = \boldsf{T}\qty(\sum_i \beta_i \ket{a_i}) = \boldsf{T}\ket{0} = \ket{0}.
+\end{equation}
+$$
+
+Since $\boldsf{T}$ is injective, the only way for $\boldsf{T}\qty(\sum_i \beta_i \ket{a_i})$ to equal $\ket{0}$ is if $\sum_i \beta_i \ket{a_i} = \ket{0}$.
+By the linear independence of $\{\ket{a_i}\}$, this implies that $\beta_i = 0$ for all $i$.
+Therefore, $\{\boldsf{T}\ket{a_i}\} \subseteq \mathcal{W}$ is also linearly independent. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 2.3.20 (dimensionality of isomorphic vector spaces)
+
+If two finite-dimensional vector spaces $\mathcal{V}$ and $\mathcal{W}$ are isomorphic, i.e., $\mathcal{V} \cong \mathcal{W}$, then they have the same dimension, i.e., $\dim(\mathcal{V}) = \dim(\mathcal{W})$.
+
+---
+
+*Proof*. Suppose that $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ is an isomorphism.
+Then, $\boldsf{T}$ is bijective, which means that it is both injective and surjective.
+
+Since $\boldsf{T}$ is injective, by Theorem 2.3.19, the image of any basis of $\mathcal{V}$ under $\boldsf{T}$ is a linearly independent set in $\mathcal{W}$.
+Let $\{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}\}$ be a basis for $\mathcal{V}$, where $n = \dim(\mathcal{V})$.
+Then, the set $\{\boldsf{T}\ket{a_1}, \boldsf{T}\ket{a_2}, \ldots, \boldsf{T}\ket{a_n}\}$ is linearly independent in $\mathcal{W}$.
+Since $\boldsf{T}$ is surjective, the image of $\mathcal{V}$ under $\boldsf{T}$ spans $\mathcal{W}$.
+Therefore, the set $\{\boldsf{T}\ket{a_1}, \boldsf{T}\ket{a_2}, \ldots, \boldsf{T}\ket{a_n}\}$ forms a basis for $\mathcal{W}$.
+Thus, we have $\dim(\mathcal{W}) = n = \dim(\mathcal{V})$.
+Therefore, if two finite-dimensional vector spaces are isomorphic, they have the same dimension. $\blacksquare$
+
+---
+
+:::
+
+This means that for any $N$-dimensional vector space over $\mathbb{R}$, we can find an isomorphism to $\mathbb{R}^N$, and likewise for $\mathbb{C}$ and $\mathbb{C}^N$.
+
+:::proposition Proposition 2.3.21
+
+Let $\mathcal{U}$ and $\mathcal{V}$ be subspaces of $\mathcal{W}$ such that $\mathcal{U} \oplus \mathcal{V} = \mathcal{W}$.
+Let $\boldsf{T} \in \text{GL}(\mathcal{W})$ be an automorphism on $\mathcal{W}$.
+If it leaves one of the summands invariant, i.e., $\boldsf{T}(\mathcal{U}) = \mathcal{U}$, then it also leaves the other summand invariant, i.e., $\boldsf{T}(\mathcal{V}) = \mathcal{V}$.
+
+---
+
+*Proof*. We can prove this in one line,
+
+$$
+\begin{equation}
+\mathcal{U} \oplus \mathcal{V} = \mathcal{W} = \boldsf{T}(\mathcal{W}) = \boldsf{T}(\mathcal{U} \oplus \mathcal{V}) = \boldsf{T}(\mathcal{U}) \oplus \boldsf{T}(\mathcal{V}) = \mathcal{U} \oplus \boldsf{T}(\mathcal{V}) \implies \boldsf{T}(\mathcal{V}) = \mathcal{V}.
+\end{equation}
+$$
+
+$\blacksquare$
+
+---
+
+:::
+
+:::example Example 2.3.22 (another proof of the dimension theorem)
+
+Let $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ be a linear map with $\dim(\mathcal{V}) < \infty$.
+Define a linear map $\boldsf{T}': \mathcal{V} / \ker(\boldsf{T}) \to \boldsf{T}(\mathcal{V})$ as follows.
+The domain is the quotient space $\mathcal{V} / \ker(\boldsf{T})$, whose elements are equivalence classes based on the relation $\ket{a} \sim \ket{b}$ if and only if $\ket{a} - \ket{b} \in \ker(\boldsf{T})$.
+In other words, $[a] = \{\ket{a} + \ket{k} | \ket{k} \in \ker(\boldsf{T})\}$.
+
+If $[a]$ is represented by any vector $\ket{a} \in \mathcal{V}$, then we define $\boldsf{T}'$ to act as
+
+$$
+\begin{equation}
+\boldsf{T}'([a]) = \boldsf{T}\ket{a}.
+\end{equation}
+$$
+
+We need to show that $\boldsf{T}'$ is well-defined, i.e., if $[a] = [b]$, then $\boldsf{T}'([a]) = \boldsf{T}'([b])$.
+If $[a] = [b]$, then $\ket{a} \sim \ket{b}$, which means that $\ket{a} - \ket{b} \in \ker(\boldsf{T})$.
+Denote the difference as $\ket{c} := \ket{a} - \ket{b}$.
+
+Then
+
+$$
+\begin{equation}
+\boldsf{T}'([b]) := \boldsf{T}\ket{b} = \boldsf{T}(\ket{a} - \ket{c}) = \boldsf{T}\ket{a} - \boldsf{T}\ket{c} = \boldsf{T}\ket{a} - \ket{0} = \boldsf{T}\ket{a} = \boldsf{T}'([a]),
+\end{equation}
+$$
+
+where we used the linearity of $\boldsf{T}$ and the fact that $\ket{c} \in \ker(\boldsf{T})$.
+Next, we show that $\boldsf{T}'$ is linear.
+Let $[a], [b] \in \mathcal{V} / \ker(\boldsf{T})$ and $\alpha, \beta \in \mathbb{F}$.
+Then,
+
+$$
+\begin{equation}
+\boldsf{T}'(\alpha [a] + \beta [b]) = \boldsf{T}'([\alpha a + \beta b]) = \boldsf{T}(\alpha \ket{a} + \beta \ket{b}) = \alpha \boldsf{T}\ket{a} + \beta \boldsf{T}\ket{b} = \alpha \boldsf{T}'([a]) + \beta \boldsf{T}'([b]).
+\end{equation}
+$$
+
+Thus, $\boldsf{T}'$ is linear.
+Finally, we show that $\boldsf{T}'$ is bijective.
+To show injectivity, suppose that $\boldsf{T}'([a]) = \boldsf{T}'([b])$.
+Then, we have $\boldsf{T}\ket{a} = \boldsf{T}\ket{b}$.
+By the linearity of $\boldsf{T}$, we have $\boldsf{T}(\ket{a} - \ket{b}) = \ket{0}$, which means that $\ket{a} - \ket{b} \in \ker(\boldsf{T})$.
+Thus, $\ket{a} \sim \ket{b}$, which implies that $[a] = [b]$.
+
+To show surjectivity, let $\ket{w} \in \boldsf{T}(\mathcal{V})$.
+Then, there exists $\ket{a} \in \mathcal{V}$ such that $\boldsf{T}\ket{a} = \ket{w}$.
+Thus, we have $\boldsf{T}'([a]) = \boldsf{T}\ket{a} = \ket{w}$.
+Therefore, $\boldsf{T}'$ is bijective.
+
+By Theorem 2.3.20, since $\boldsf{T}'$ is an isomorphism, we have
+
+$$
+\begin{equation}
+\dim(\mathcal{V} / \ker(\boldsf{T})) = \dim(\boldsf{T}(\mathcal{V})).
+\end{equation}
+$$
+
+By the dimension formula for quotient spaces, we have
+
+$$
+\begin{equation}
+\dim(\mathcal{V} / \ker(\boldsf{T})) = \dim(\mathcal{V}) - \dim(\ker(\boldsf{T})).
+\end{equation}
+$$
+
+Combining these two equations, we get
+
+$$
+\begin{equation}
+\dim(\mathcal{V}) - \dim(\ker(\boldsf{T})) = \dim(\boldsf{T}(\mathcal{V})) \implies \text{rank}(\boldsf{T}) + \dim(\ker(\boldsf{T})) = \dim(\mathcal{V}),
+\end{equation}
+$$
+
+which is the dimension theorem.
+
+:::
+
+Generally, we have
+
+:::theorem Theorem 2.3.23
+
+Suppose $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ is a linear map between finite-dimensional vector spaces. Let $\mathcal{U}$ be a subspace of $\mathcal{V}$.
+We can define a linear map $\boldsf{T}': \mathcal{V} / \mathcal{U} \to \boldsf{T}(\mathcal{V})$ by $\boldsf{T}'([a]) = \boldsf{T}\ket{a}$, where $[a]$ is the equivalence class of $\ket{a}$ in the quotient space $\mathcal{V} / \mathcal{U}$.
+Then, $\boldsf{T}'$ is well-defined and linearly isomorphic.
+
+:::
+
+Lastly, consider the linear map $\boldsf{T}: (\mathcal{U} \oplus \mathcal{V}) \otimes \mathcal{W} \to (\mathcal{U} \otimes \mathcal{W}) \oplus (\mathcal{V} \otimes \mathcal{W})$ defined by
+
+$$
+\begin{equation}
+\boldsf{T}((\ket{u} + \ket{v}) \otimes \ket{w}) = (\ket{u} \otimes \ket{w}) \oplus (\ket{v} \otimes \ket{w}),
+\end{equation}
+$$
+
+for all $\ket{u} \in \mathcal{U}$, $\ket{v} \in \mathcal{V}$, and $\ket{w} \in \mathcal{W}$.
+By the universal property of tensor products and direct sums, $\boldsf{T}$ is well-defined and linear.
+It is also bijective, with the inverse map given by
+
+$$
+\begin{equation}
+\boldsf{T}^{-1}((\ket{u} \otimes \ket{w}) \oplus (\ket{v} \otimes \ket{w})) = (\ket{u} + \ket{v}) \otimes \ket{w}.
+\end{equation}
+$$
+
+Thus, $\boldsf{T}$ is a linear isomorphism, meaning
+
+$$
+\begin{equation}
+(\mathcal{U} \oplus \mathcal{V}) \otimes \mathcal{W} \cong (\mathcal{U} \otimes \mathcal{W}) \oplus (\mathcal{V} \otimes \mathcal{W}).
+\end{equation}
+$$
+
+## Summary and Next Steps
+
+In this section, we explored various properties of linear maps between vector spaces, including kernels, images, injectivity, and isomorphisms.
+We established key theorems that connect these concepts, such as the dimension theorem and the characterization of injective maps.
+
+Here are the key points to remember:
+
+- Definition 2.3.2: A linear map is a function between vector spaces that preserves vector addition and scalar multiplication.
+- Theorem 2.3.9: The kernel of a linear map is a subspace of the domain.
+- Theorem 2.3.10: The image of a linear map is a subspace of the codomain, and its dimension is called the rank.
+- Theorem 2.3.11: A linear map is injective if and only if its kernel is trivial (contains only the zero vector).
+- Theorem 2.3.13: The dimension theorem relates the rank and nullity of a linear map to the dimension of the domain.
+- Theorem 2.3.20: Isomorphic vector spaces have the same dimension.
+
+With these concepts in mind, we will now take a closer look at complex vector spaces and inner product spaces in the next section, which are fundamental in quantum mechanics.
+
+
