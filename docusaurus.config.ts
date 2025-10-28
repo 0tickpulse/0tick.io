@@ -2,7 +2,7 @@ import type * as Preset from "@docusaurus/preset-classic";
 import type { Config } from "@docusaurus/types";
 import { themes } from "prism-react-renderer";
 
-import rehypeKatex from "rehype-katex";
+// import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import rehypeMathjax, { Options } from "rehype-mathjax/svg";
 import { MATH_MACROS } from "./mathMacros";
@@ -22,12 +22,47 @@ const config = {
 
     customFields: {
         mathJaxOptions: {
-            loader: { load: ["[tex]/mathtools", "[tex]/cancel"] },
+            loader: {
+                load: [
+                    "[tex]/autoload",
+                    "[tex]/boldsymbol",
+                    "[tex]/mhchem",
+                    "[tex]/newcommand",
+                    "[tex]/gensymb",
+                    "[tex]/ams",
+                    "[tex]/cancel",
+                    "[tex]/mathtools",
+                    "[tex]/html",
+                    "[tex]/configmacros",
+                    "[tex]/physics",
+                ],
+            },
             tex: {
                 tags: "ams",
                 macros: MATH_MACROS,
-                packages: { "[+]": ["autoload", "boldsymbol", "mhchem", "newcommand", "gensymb", "ams", "cancel", "mathtools", "html", "configmacros", "physics"] },
+                // packages: ["autoload", "boldsymbol", "mhchem", "newcommand", "gensymb", "ams", "cancel", "mathtools", "html", "configmacros", "physics"],
+                packages: {
+                    "[+]": [
+                        "autoload",
+                        "boldsymbol",
+                        "mhchem",
+                        "newcommand",
+                        "gensymb",
+                        "ams",
+                        "cancel",
+                        "mathtools",
+                        "html",
+                        "configmacros",
+                        "physics",
+                    ],
+                },
             },
+            chtml: {
+                "fontURL": "https://cdn.jsdelivr.net/npm/@mathjax/mathjax-newcm-font/chtml/woff2",
+            }
+            // output: {
+            //     font: "mathjax-newcm"
+            // }
             // svg: {
             //     scale: 1.2,
             // },
@@ -78,7 +113,7 @@ const config = {
             /** @type {import("@easyops-cn/docusaurus-search-local").PluginOptions} */
             {
                 hashed: true,
-                docsRouteBasePath: ["notes"]
+                docsRouteBasePath: ["notes"],
             },
         ],
     ],

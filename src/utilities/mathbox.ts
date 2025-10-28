@@ -1,40 +1,20 @@
 import config from "@generated/docusaurus.config";
 import { isEqual } from "lodash";
-import { TeX } from "mathjax-full/js/input/tex.js";
-import { AllPackages } from "mathjax-full/js/input/tex/AllPackages.js";
-import { mathjax } from "mathjax-full/js/mathjax.js";
-import { SVG } from "mathjax-full/js/output/svg.js";
+import { TeX } from "@mathjax/src/js/input/tex.js";
+// import { AllPackages } from "@mathjax/src/js/input/tex/AllPackages.js";
+import { mathjax } from "@mathjax/src/js/mathjax.js";
+import { CHTML } from "@mathjax/src/js/output/chtml.js";
 import { Options } from "rehype-mathjax";
+import { renderMathToHtml } from "@site/src/components/Math";
 
 function mathboxLatexElement(el, text: string, inline = false, options: Options) {
-    const siteConfig = config;
-    const newOptions = {
-        ...(siteConfig.customFields.mathJaxOptions as Options),
-        ...options,
-    };
-    const input = new TeX({
-        packages: AllPackages,
-        ...newOptions.tex,
-    });
-    const output = new SVG(newOptions.svg || undefined);
-    // co`nst output = new CHTML(newOptions.chtml || undefined);
-    try {
-        const doc = mathjax.document("", { InputJax: input, OutputJax: output });
-        const domNode: HTMLElement = doc.convert(text, {
-            display: !inline,
-        });
-        return el(
-            "div",
-            { dangerouslySetInnerHTML: { __html: domNode.outerHTML } },
-        )
-    } catch (e) {
-        console.log(`Error in MathJax: ${e}`, {
-            newOptions,
-            siteConfig: siteConfig.customFields.mathJaxOptions,
-            config: siteConfig.customFields.mathJaxOptions,
-            eq: isEqual(siteConfig.customFields.mathJaxOptions, siteConfig.customFields.mathJaxOptions),
-        });
-    }
+    const { html, css } = renderMathToHtml(text, inline, options);
+    return el(
+        "div",
+        {
+            dangerouslySetInnerHTML: `<style>${css}</style>${html}`,
+        }
+    )
 }
 
 export { mathboxLatexElement };
