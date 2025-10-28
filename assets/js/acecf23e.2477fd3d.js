@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunk_0_tick_io=self.webpackChunk_0_tick_io||[]).push([["3220"],{94326:function(t){t.exports=JSON.parse('{"blogBasePath":"/blog","blogTitle":"Blog","authorsListPath":"/blog/authors"}')}}]);
