@@ -1,0 +1,43 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Nucleic Acids and Proteins
+
+Nucleic acids and proteins are two of the most important classes of biomolecules in living organisms. They play crucial roles in the storage, transmission, and expression of genetic information, as well as in various cellular functions.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Nucleic Acids
+
+Nucleic acids are polymers made up of nucleotide monomers. The two main types of nucleic acids are deoxyribonucleic acid (DNA) and ribonucleic acid (RNA). DNA is the genetic material that carries the instructions for the development, functioning, growth, and reproduction of all known living organisms and many viruses. RNA plays a crucial role in the synthesis of proteins and can also have catalytic and regulatory functions. Modern abiogenesis research suggests that RNA may have been the first genetic material, leading to the "RNA world" hypothesis.
+
+A quick note: we represent the structures of molecules in a few ways. Skeletal and line-angle formulas are commonly used in organic chemistry to represent the bonding between atoms in a molecule. More accurate representations include ball-and-stick models and space-filling models, which provide a three-dimensional view of the molecule's structure.
+
+The monomeric units of nucleic acids are nucleotides, which consist of three components: a nitrogenous base, a five-carbon sugar (ribose in RNA and deoxyribose in DNA), and one or more phosphate groups. The nitrogenous bases can be classified into two categories: purines (adenine and guanine) and pyrimidines (cytosine, thymine in DNA, and uracil in RNA), based on whether they are polycyclic or monocyclic structures.
+
+<figure>
+    <img src={require("./figures/nucleotide.png").default} alt="Nucleotide Structure" />
+    <figcaption>Nucleotide Structure: A nucleotide consists of a nitrogenous base, a five-carbon sugar, and one or more phosphate groups.</figcaption>
+</figure>
+
+
+
+
+
+

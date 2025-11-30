@@ -1,0 +1,156 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Fundamental Concepts in Biochemistry
+
+We shall begin with a discussion of some fundamental concepts in biochemistry that are essential for understanding the molecular basis of life. We will begin from the very basics, considering the quantum mechanical nature of subatomic particles, and build up to the complex interactions that govern biological systems. I will be writing this from the perspective of a high-level physicist who wishes to understand biochemistry from a very fundamental level. As such, the intended audience is someone with a strong background in physics and mathematics, but who may not be familiar with life sciences.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Atoms and Molecules
+
+All matter is composed of atoms, which are the basic units of chemical elements. Atoms consist of a nucleus (containing protons and neutrons) surrounded by electrons. The way atoms interact and bond with each other forms molecules, which are the building blocks of biological systems.
+
+A proton is a particle made of two up quarks and one down quark, held together by the strong nuclear force mediated by gluons. They obey Fermi-Dirac statistics, which means they are fermions with half-integer spin. There is ongoing research into nuclear physics to better understand the behavior of protons in various environments. In the future, we may be able to manipulate protons the same way we manipulate electrons today, leading to unimaginable advancements in technology and medicine.
+
+An electron is a fundamental subatomic particle with a negative electric charge. It is classified as a lepton and has a spin of 1/2, making it a fermion. It obeys the Dirac equation
+
+$$
+\begin{equation}
+(i\gamma^\mu \partial_\mu - m)\psi = 0,
+\end{equation}
+$$
+
+where $\gamma^\mu$ are the gamma matrices (i.e., members of the spacetime Clifford algebra), $\partial_\mu$ is the four-gradient operator, $m$ is the mass of the electron, and $\psi$ is the electron's Dirac bispinor wavefunction.
+While we won't delve deeply into the quantum mechanics of electrons here, it's important to recognize their fundamental role in chemical bonding and reactions. Solving the Dirac equation for electrons in various potentials is a key aspect of quantum chemistry and solid-state physics. The simplest solution is the hydrogen atom, which consists of one proton and one electron, from which we can derive the energy levels and spectral lines of hydrogen.
+
+There are a few rules that govern how nuclei and electrons interact to form atoms and molecules. First, they obey the Pauli exclusion principle, which states that no two fermions can occupy the same quantum state simultaneously. A simple mathematical expression of this principle is that applying the creation operator twice to the same state yields zero, i.e.,
+
+$$
+\begin{equation}
+(c^\dagger_i)^2 \ket{0} = 0
+\end{equation}
+$$
+
+where $c^\dagger_i$ is the creation operator for a fermion in state $i$, and $\ket{0}$ is the vacuum state. This principle, along with the quantization of energy levels (explained by spectral theory), dictates how electrons fill atomic orbitals and how atoms bond to form molecules. For more details, refer to the notes on quantum field theory.
+
+### Chemical Bonds
+
+The **potential energy** is the energy stored in a system due to the positions of its components. As it is defined as the line integral of the force $\vb{F}$ over a path from point $a$ to point $b$, we have
+
+$$
+\begin{equation}
+\vb{F} = -\nabla U,
+\end{equation}
+$$
+
+meaning that forces point in the direction of decreasing potential energy. We can also see this using Lagrangian mechanics and field theory. For instance, consider a scalar field $\phi$ with a potential $V(\phi)$. The Lagrangian density is typically given by
+
+$$
+\begin{equation}
+\mathcal{L} = \frac{1}{2} \partial_\mu \phi \partial^\mu \phi - V(\phi).
+\end{equation}
+$$
+
+Solving the Euler-Lagrange equation for this Lagrangian leads to
+
+$$
+\begin{equation}
+\Box \phi = -\dv{V}{\phi},
+\end{equation}
+$$
+
+where $\Box$ is the d'Alembertian operator. While this doesn't directly give us forces, it shows how fields evolve in response to potential gradients, analogous to how particles move under Newtonian forces derived from potential energy.
+
+As such, it is a fundamental concept that **things happen to lower the potential energy of a system**. One such example is the formation of chemical bonds between atoms. Covalent bonds form when atoms share electrons to achieve a more stable electron configuration, typically resembling that of noble gases. They are explained by two main theories: Valence Bond Theory and Molecular Orbital Theory. Ionic bonds, on the other hand, form when one atom donates an electron to another, resulting in positively and negatively charged ions that attract each other due to electrostatic forces. At an atomic level, classical electrodynamics is typically sufficient to explain these interactions, for the effects of quantum electrodynamics are negligible at this scale (as can be seen from the fine-structure constant $\alpha \approx \frac{1}{137}$). However, we must still consider quantum mechanics to fully understand the behavior of electrons in atoms and molecules.
+
+## Noncovalent Interactions
+
+Chemical bonds produce molecules, but there are also weaker interactions known as **noncovalent interactions**. They can occur between molecules or within different parts of a large molecule, and they play crucial roles in biological systems, such as in the folding of proteins and the binding of substrates to enzymes.
+Formally, they differ from chemical bonds in that they do not involve the sharing or transfer of electrons between atoms. Instead, they arise from electrostatic interactions. The potential energy associated with these interactions typically has a local minimum at a certain distance between the molecules, leading to attraction at longer ranges and repulsion at shorter ranges. Noncovalent interactions can be broken and formed through thermal fluctuations, making them dynamic and reversible.
+
+Suppose we have two molecules, molecule A and molecule B. Molecule A consists of atoms 1 to 4, and molecule B consists of atoms 5 to 8. We deduce the total potential energy $U$ of the system by summing the pairwise potential energies between all atoms in molecule A and all atoms in molecule B;
+
+$$
+\begin{equation}
+U = \sum_{i=1}^{4} \sum_{j=5}^{8} U_{ij},
+\end{equation}
+$$
+
+where $U_{ij}$ is the potential energy between atom $i$ in molecule A and atom $j$ in molecule B. Common types of noncovalent interactions include hydrogen bonding, van der Waals forces (including London dispersion forces and dipole-dipole interactions), and ionic interactions. Typically, the overall shape of the potential energy curve for noncovalent interactions resembles a Lennard-Jones potential, which can be expressed as
+
+$$
+\begin{equation}
+U(r) = 4\epsilon \qty[\qty(\frac{\sigma}{r})^{12} - \qty(\frac{\sigma}{r})^{6}],
+\end{equation}
+$$
+
+with $r$ being the distance between the two interacting particles and $\sigma$ being the distance at which the potential energy is zero. The parameter $\epsilon$ represents the depth of the potential well, indicating the strength of the interaction. One of the terms represents the repulsive forces at short distances (due to overlapping electron clouds), while the other term represents the attractive forces at longer distances (due to induced dipoles). The powers were chosen empirically to fit experimental data and capture the essential features of intermolecular interactions.
+A graph of the Lennard-Jones potential is shown below:
+
+<Mafs pan={false} viewBox={{x: [0, 5] }}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => Math.abs(x) < 0.5 ? 100 : 4 * (Math.pow(1 / x, 12) - Math.pow(1 / x, 6))} color={color("blue")} />
+</Mafs>
+
+The first type of noncovalent interaction we shall discuss is the van der Waals interaction, which occurs between all atoms and molecules due to temporary fluctuations in electron distribution that create instantaneous dipoles. Its shape can be approximated by the Lennard-Jones potential described above, but is more accurately modeled using quantum mechanical methods, with London's multipole expansion approximation being
+
+$$
+\begin{equation}
+U(r) = -\frac{3}{2} \frac{\alpha_1 \alpha_2 I_1 I_2}{I_1 + I_2} \frac{1}{r^6},
+\end{equation}
+$$
+
+where $\alpha_1$ and $\alpha_2$ are the polarizabilities of the two interacting particles, $I_1$ and $I_2$ are their ionization energies, and $r$ is the distance between them. Importantly, it is equal to the Lennard-Jones potential without the repulsive term $4\epsilon \qty(\frac{\sigma}{r})^{12}$.
+Its graph is shown below.
+
+<Mafs pan={false} viewBox={{x: [0, 5], y: [-1, 0] }}>
+    <Coordinates.Cartesian />
+    <Plot.OfX y={(x) => -1 / Math.pow(x, 6)} color={color("green")} />
+</Mafs>
+
+Note that this does not reflect the repulsive forces that occur at short distances due to overlapping electron clouds, which is why the Lennard-Jones potential includes an additional repulsive term. The asymptote at $r \to \infty$ indicates that the van der Waals forces become negligible at large distances, and the energy is equal to the thermal energy of the system. The repulsive forces at short distances lead to the commonly known **steric hindrance**, which prevents atoms from getting too close to each other.
+
+While they are weak, van der Waals interactions are not negligible. Geckos can walk on walls and ceilings due to the cumulative effect of van der Waals forces between the millions of tiny hairs on their feet and the surface they are walking on. Their strength is based on the surface area of contact, which is maximized by the fine structure of the gecko's footpads.
+
+A stronger form of noncovalent interaction is the ionic interaction, which occurs between charged particles. They are significantly stronger than van der Waals forces and can be described by Coulomb's law. The strength, however, can be reduced in aqueous environments due to the high dielectric constant of water. As such, for example, they are much stronger in the interior of proteins than on their surfaces, where they are exposed to water.
+
+Lastly, dipoles can interact through dipole-dipole interactions, which occur between molecules that have permanent dipole moments. The potential energy of the interaction between two dipoles $\mu_1$ and $\mu_2$ separated by a distance $r$ can be expressed as
+
+$$
+\begin{equation}
+U(r) = -\frac{\mu_1 \mu_2}{4\pi \epsilon_0 r^3} \qty(2\cos\theta_1 \cos\theta_2 - \sin\theta_1 \sin\theta_2 \cos\phi),
+\end{equation}
+$$
+
+where $\epsilon_0$ is the permittivity of free space, $\theta_1$ and $\theta_2$ are the angles between the dipoles and the line connecting them, and $\phi$ is the angle between the planes containing the dipoles. This interaction is orientation-dependent and can lead to attractive or repulsive forces depending on the relative orientations of the dipoles. If one of the atoms is a hydrogen atom bonded to a highly electronegative atom (like oxygen, nitrogen, or fluorine), it can form a hydrogen bond with another electronegative atom. Similar to ionic interactions, dipole interactions are also weakened in aqueous environments due to the high dielectric constant of water. Moreover, water creates an attenuation effect as it can hydrogen bond with itself, effectively shielding other dipoles from each other.
+
+## Summary and Next Steps
+
+In this note, we have covered some fundamental concepts in biochemistry, including the nature of atoms and molecules, chemical bonds, and noncovalent interactions. These concepts form the basis for understanding more complex biological systems and processes.
+
+Here are some key takeaways:
+
+- Atoms are the basic units of matter, consisting of a nucleus and electrons.
+- Protons are composite particles made of quarks, and electrons are fermions described by the Dirac equation.
+- Electrons obey the Pauli exclusion principle, which governs their arrangement in atoms and molecules.
+- Chemical bonds (covalent and ionic) are formed to lower the potential energy of a system.
+- Noncovalent interactions (van der Waals forces, ionic interactions, and dipole-dipole interactions) play crucial roles in biological systems and are generally weaker than chemical bonds.
+
+In the next section, we will explore the first two major classes of biomolecules: proteins and nucleic acids. Also, we will delve much deeper into the energetics of these interactions in a later note on thermodynamics and kinetics in biochemical systems.
