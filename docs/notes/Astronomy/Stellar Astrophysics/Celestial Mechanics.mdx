@@ -1,0 +1,140 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Celestial Mechanics
+
+Previously, we explored the basics of binary star systems and their orbital dynamics.
+Now, we will formally develop how these dynamics arise from Newtonian mechanics and gravitation.
+This is extremely important; understanding celestial mechanics is crucial for studying stellar evolution, galaxy formation, and cosmology.
+When we later study the Schwarszschild solution, we will see how celestial mechanics is modified by general relativity.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Suppose we have two bodies of masses $m_1$ and $m_2$ orbiting each other under their mutual gravitational attraction.
+This is a Keplerian binary system, and we can analyze its motion using Newton's laws of motion and gravitation.
+
+### Review of Center of Mass Frame
+
+We start by defining the center of mass (cm) of the system, so that we can simplify the two-body problem into an equivalent one-body problem.
+We have already done the basics in the section on the history of astronomy, but we will review it here for completeness.
+Let the position vectors of the two bodies be $\vb{r}_1$ and $\vb{r}_2$.
+The center of mass $\vb{R}$ is given by
+
+$$
+\begin{equation}
+\vb{R} = \frac{m_1 \vb{r}_1 + m_2 \vb{r}_2}{m_1 + m_2}.
+\end{equation}
+$$
+
+We will operate on the vector $\vb{r} = \vb{r}_2 - \vb{r}_1$, which points from mass $m_1$ to mass $m_2$.
+Newton's second law for the two-body system can be written as
+
+$$
+\begin{equation}
+\vb{F} = (m_1 + m_2) \vb{a}_{\text{cm}},
+\end{equation}
+$$
+
+where $\vb{a}_{\text{cm}}$ is the acceleration of the center of mass.
+As there are no external forces acting on the system, the center of mass moves with constant velocity, i.e., $\vb{a}_{\text{cm}} = \vb{0}$.
+This means that the center of mass is at rest or moving with constant velocity, and we can choose a reference frame where the center of mass is $\vb{0}$.
+So
+
+$$
+\begin{equation}
+\vb{0} = \frac{m_1 \vb{r}_1 + m_2 \vb{r}_2}{m_1 + m_2} \implies m_1 \vb{r}_1 = - m_2 \vb{r}_2.
+\end{equation}
+$$
+
+We can recover the individual position vectors $\vb{r}_1$ and $\vb{r}_2$ in terms of $\vb{r}$ as follows:
+
+$$
+\begin{align}
+\vb{r}_1 &= -\frac{m_2}{m_1 + m_2} \vb{r} = \frac{\mu}{m_1} \vb{r}, \\
+\vb{r}_2 &= \frac{m_1}{m_1 + m_2} \vb{r} = -\frac{\mu}{m_2} \vb{r},
+\end{align}
+$$
+
+where $\mu = \frac{m_1 m_2}{m_1 + m_2}$ is the reduced mass of the system.
+Often we can treat one mass as much larger than the other (e.g., a star and a planet), in which case $\mu \approx m_1$ if $m_1 \ll m_2$.
+In the center of mass frame, Newton's second law becomes (see the section on the history of astronomy for details)
+
+$$
+\begin{equation}
+\vb{F}_{12} = \mu \vb{a} = \mu \dv[2]{\vb{r}}{t},
+\end{equation}
+$$
+
+where $\vb{F}_{12}$ is the force on mass $m_2$ due to mass $m_1$.
+If we plug in the gravitational force
+
+$$
+\begin{equation}
+\vb{F}_{12} = - \frac{G m_1 m_2}{r_{12}^2} \hat{\vb{r}}_{12},
+\end{equation}
+$$
+
+we have
+
+$$
+\begin{equation}
+\mu \dv[2]{\vb{r}}{t} = -\frac{G m_1 m_2}{r_{12}^2} \hat{\vb{r}}_{12}.
+\end{equation}
+$$
+
+Finally, dropping the subscripts, we have the equation of motion for the relative position vector $\vb{r}$:
+
+$$
+\begin{equation}
+\mu \dv[2]{\vb{r}}{t} = -\frac{G m_1 m_2}{r^2} \hat{\vb{r}}.
+\end{equation}
+$$
+
+This is equivalent to a one-body problem where a single body of mass $\mu$ moves under the influence of a central gravitational potential due to a fixed mass $M = m_1 + m_2$ located at the origin.
+
+### Energy and Angular Momentum Conservation
+
+The next step is to derive the conserved quantities of the system, namely the total energy and angular momentum.
+The total mechanical energy $E$ of the system is given by the sum of the kinetic and potential energies:
+
+$$
+\begin{equation}
+E = T + U = \frac{1}{2} \mu v^2 - \frac{G m_1 m_2}{r},
+\end{equation}
+$$
+
+where $v = |\dv{\vb{r}}{t}|$ is the relative speed of the two bodies.
+In polar coordinates $(r, \theta)$, the velocity can be expressed as
+
+$$
+\begin{equation}
+\vb{v} = v_r \vu{r} + v_\theta \vu{\theta} = \dv{r}{t} \vu{r} + r \dv{\theta}{t} \vu{\theta},
+\end{equation}
+$$
+
+meaning that
+
+$$
+\begin{equation}
+E = \frac{1}{2} \mu \qty[\qty(\dv{r}{t})^2 + r^2 \qty(\dv{\theta}{t})^2] - \frac{G m_1 m_2}{r}.
+\end{equation}
+$$
