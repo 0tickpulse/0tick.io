@@ -1,0 +1,297 @@
+---
+sidebar_position: 5
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 2.5 Linear Functionals
+
+A linear functional is a special type of linear map that takes a vector as input and produces a scalar (a single number) as output.
+We will study linear functionals as a precursor to the more general concept of multilinear maps.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+A linear functional is a linear map where the second vector space is the field of scalars itself. The set of all linear functionals from a vector space $\mathcal{V}$ to its field of scalars $\mathbb{F}$ is called the dual space of $\mathcal{V}$, denoted as $\mathcal{V}^*$;
+
+$$
+\begin{equation}
+\mathcal{V}^* = \mathcal{L}(\mathcal{V}, \mathbb{F}).
+\end{equation}
+$$
+
+Since they are so common, there are many names for linear functionals. They include covectors, dual vectors, bra vectors (with Dirac notation), and one-forms (in differential geometry).
+
+:::example Example 2.5.1 (Examples of Linear Functionals)
+
+Let $\ket{\alpha} \in \mathbb{C}^n$ be a vector in an $n$-dimensional complex vector space.
+The sum of all components of $\ket{\alpha}$ is a linear functional $f: \mathbb{C}^n \to \mathbb{C}$ defined as
+
+$$
+\begin{equation}
+f(\ket{\alpha}) = \sum_{i=1}^n \alpha_i.
+\end{equation}
+$$
+
+Similarly, let $\mathsf{M}$ be a complex $m \times n$ matrix. The sum of all entries of $\mathsf{M}$ is a linear functional $\omega: \mathcal{M}^{m \times n} \to \mathbb{C}$ defined as
+
+$$
+\begin{equation}
+\omega(\mathsf{M}) = \sum_{i=1}^m \sum_{j=1}^n \mu_{ij}.
+\end{equation}
+$$
+
+If we just take the diagonal entries of $\mathsf{M}$ and sum them up, we get another linear functional $\boldsf{\theta}: \mathcal{M}^{n \times n} \to \mathbb{C}$ called the trace, defined as
+
+$$
+\begin{equation}
+\boldsf{\theta}(\mathsf{M}) = \sum_{i=1}^n \mu_{ii}.
+\end{equation}
+$$
+
+Some functionals are linear functionals over function spaces. Specifically, let $f \in \mathcal{C}^0(a, b)$. Then, the linear functional $\boldsf{int}: \mathcal{C}^0(a, b) \to \mathbb{R}$ defined as
+
+$$
+\begin{equation}
+\boldsf{int}(f) = \int_a^b f(t) \dd{t}
+\end{equation}
+$$
+
+is the definite integral of $f$ over the interval $[a, b]$.
+
+There is a duality between inner products and linear functionals. In particular, given an inner product space $\mathcal{V}$ with inner product $\braket{\cdot}{\cdot}$, for each fixed vector $\ket{\beta} \in \mathcal{V}$, we can define a linear functional $f_{\beta}: \mathcal{V} \to \mathbb{F}$ as
+
+$$
+\begin{equation}
+f_{\beta}(\ket{\alpha}) = \braket{\beta}{\alpha}.
+\end{equation}
+$$
+
+:::
+
+We shall show that this duality exists between vectors and linear functionals, between vector spaces and dual spaces, and between linear maps and their dual maps.
+There exists a linear isomorphism between a finite-dimensional vector space $\mathcal{V}$ and its dual space $\mathcal{V}^*$. We can think of a linear functional as a row vector that acts on a column vector from the left via matrix multiplication to produce a scalar:
+
+$$
+\begin{equation}
+\boldsf{\phi}_\alpha (\ket{\beta}) = \mqty[\alpha_1 & \alpha_2 & \cdots & \alpha_n] \mqty[\beta_1 \\ \beta_2 \\ \vdots \\ \beta_n] = \sum_{i=1}^n \alpha_i \beta_i.
+\end{equation}
+$$
+
+More accurately, a vector is represented itself as a product of a column vector and the standard basis row vectors:
+
+$$
+\begin{equation}
+\ket{\beta} = \mqty[\ket{a_1} & \ket{a_2} & \cdots & \ket{a_n}] \mqty[\beta_1 \\ \beta_2 \\ \vdots \\ \beta_n] = \sum_{i=1}^n \beta_i \ket{a_i},
+\end{equation}
+$$
+
+where $\{\ket{a_i}\}_{i=1}^n$ is the standard basis of $\mathcal{V}$.
+Similarly, we can define a basis for the dual space $\mathcal{V}^*$ consisting of linear functionals $\{\boldsf{\phi}_i\}_{i=1}^n$ such that
+
+$$
+\begin{equation}
+\boldsf{\phi}_i(\ket{a_j}) = \delta_{ij},
+\end{equation}
+$$
+
+where $\delta_{ij}$ is the Kronecker delta.
+Written in matrix form, we have
+
+$$
+\begin{equation}
+\boldsf{\phi}_\alpha (\ket{\beta}) = \mqty[\boldsf{\phi}_1 \\ \boldsf{\phi}_2 \\ \vdots \\ \boldsf{\phi}_n] \mqty[\alpha_1 & \alpha_2 & \cdots & \alpha_n] \mqty[\ket{a_1} & \ket{a_2} & \cdots & \ket{a_n}] \mqty[\beta_1 \\ \beta_2 \\ \vdots \\ \beta_n] = \sum_{i=1}^n \sum_{j=1}^n \alpha_i \beta_j \boldsf{\phi}_i(\ket{a_j}) = \sum_{i=1}^n \alpha_i \beta_i.
+\end{equation}
+$$
+
+We can summarize this in a theorem.
+
+:::theorem Theorem 2.5.2 (Isomorphism between a Finite-Dimensional Vector Space and its Dual Space)
+
+Let $\mathcal{V}$ be a finite-dimensional vector space over the field $\mathbb{F}$ with basis $\{\ket{a_i}\}_{i=1}^n$, with basis $B = \{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_n}\}$.
+Then, its dual space $\mathcal{V}^*$ is also finite-dimensional with the same dimension as $\mathcal{V}$, and there exists a basis $B^* = \{\boldsf{\phi}_1, \boldsf{\phi}_2, \ldots, \boldsf{\phi}_n\}$ of $\mathcal{V}^*$ such that
+
+$$
+\begin{equation}
+\boldsf{\phi}_i(\ket{a_j}) = \delta_{ij}.
+\end{equation}
+$$
+
+:::
+
+From this theorem, it is clear that for every vector in $\mathcal{V}$, there exists a unique corresponding linear functional in $\mathcal{V}^*$, and vice versa. Specifically, for each vector $\ket{\alpha} \in \mathcal{V}$, we can define a corresponding linear functional $\boldsf{\phi}_\alpha \in \mathcal{V}^*$ as
+
+$$
+\begin{equation}
+\boldsf{\phi}_\alpha (\ket{\beta}) = \sum_{i=1}^n \alpha_i \beta_i,
+\end{equation}
+$$
+
+for all $\ket{\beta} \in \mathcal{V}$.
+
+:::definition Definition 2.5.3 (Annihilator)
+
+Let $\mathcal{V}$ be a vector space over the field $\mathbb{F}$, and let $\ket{\alpha} \in \mathcal{V}$ be a vector.
+The annihilator of $\ket{\alpha}$ is a linear functional $\boldsf{\phi} \in \mathcal{V}^*$ such that $\boldsf{\phi}(\ket{\alpha}) = 0$.
+
+The space of all annihilators of a subspace $\mathcal{W} \subseteq \mathcal{V}$ is called the annihilator of $\mathcal{W}$, denoted as $\mathcal{W}^0$.
+
+:::
+
+$\mathcal{W}^0$ is a subspace of the dual space $\mathcal{V}^*$. To see this, let $\boldsf{\phi}_1, \boldsf{\phi}_2 \in \mathcal{W}^0$ be two annihilators of $\mathcal{W}$, and let $c_1, c_2 \in \mathbb{F}$ be two scalars. Then, for any vector $\ket{w} \in \mathcal{W}$, we have
+
+$$
+\begin{equation}
+(c_1 \boldsf{\phi}_1 + c_2 \boldsf{\phi}_2)(\ket{w}) = c_1 \boldsf{\phi}_1(\ket{w}) + c_2 \boldsf{\phi}_2(\ket{w}) = c_1 \cdot 0 + c_2 \cdot 0 = 0.
+\end{equation}
+$$
+
+Thus, $c_1 \boldsf{\phi}_1 + c_2 \boldsf{\phi}_2$ is also an annihilator of $\mathcal{W}$, and hence $\mathcal{W}^0$ is closed under addition and scalar multiplication.
+
+Also, suppose $\mathcal{W}$ has basis $\{\ket{w_1}, \ket{w_2}, \ldots, \ket{w_k}\}$. We can always extend its basis to a basis of $\mathcal{V}$ by adding vectors $\{\ket{w_{k+1}}, \ket{w_{k+2}}, \ldots, \ket{w_n}\}$. We can show that the dual basis $\{\boldsf{\phi}_{k+1}, \boldsf{\phi}_{k+2}, \ldots, \boldsf{\phi}_n\}$ corresponding to the added vectors forms a basis for $\mathcal{W}^0$.
+To see this, let $\boldsf{\phi} \in \mathcal{W}^0$ be an annihilator of $\mathcal{W}$. Then, we can express $\boldsf{\phi}$ as
+
+$$
+\begin{equation}
+\boldsf{\phi} = \sum_{i=1}^n c_i \boldsf{\phi}_i,
+\end{equation}
+$$
+
+for some scalars $c_i \in \mathbb{F}$.
+Since $\boldsf{\phi}$ annihilates all vectors in $\mathcal{W}$, we have
+
+$$
+\begin{equation}
+0 = \boldsf{\phi}(\ket{w_j}) = \sum_{i=1}^n c_i \boldsf{\phi}_i(\ket{w_j}) = c_j,
+\end{equation}
+$$
+
+for all $j = 1, 2, \ldots, k$.
+Thus, $c_1 = c_2 = \cdots = c_k = 0$, and hence
+
+$$
+\begin{equation}
+\boldsf{\phi} = \sum_{i=k+1}^n c_i \boldsf{\phi}_i.
+\end{equation}
+$$
+
+This shows that $\{\boldsf{\phi}_{k+1}, \boldsf{\phi}_{k+2}, \ldots, \boldsf{\phi}_n\}$ spans $\mathcal{W}^0$. Moreover, these functionals are linearly independent by definition of the dual basis.
+Therefore, $\{\boldsf{\phi}_{k+1}, \boldsf{\phi}_{k+2}, \ldots, \boldsf{\phi}_n\}$ forms a basis for $\mathcal{W}^0$. It also follows that
+
+$$
+\begin{equation}
+\dim(\mathcal{V}) = \dim(\mathcal{W}) + \dim(\mathcal{W}^0).
+\end{equation}
+$$
+
+:::definition Definition 2.5.4 (Dual Map/Pullback)
+
+Let $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ be a linear map between two vector spaces $\mathcal{V}$ and $\mathcal{W}$ over the field $\mathbb{F}$. The dual map (or pullback) of $\boldsf{T}$ is a linear map $\boldsf{T}^*: \mathcal{W}^* \to \mathcal{V}^*$ defined as
+
+$$
+\begin{equation}
+[\boldsf{T}^*(\boldsf{\gamma})](\ket{a}) = \boldsf{\gamma}(\boldsf{T}(\ket{a})),
+\end{equation}
+$$
+
+for all $\boldsf{\gamma} \in \mathcal{W}^*$ and $\ket{a} \in \mathcal{V}$.
+
+:::
+
+Perhaps it helps to provide a concrete example. Suppose we have $\ket{v} = \mqty[2 \\ 3 \\ 4]$ and a linear map $\boldsf{T}: \mathbb{R}^3 \to \mathbb{R}^2$ defined via the matrix $\mqty[1 & 0 & 2 \\ 0 & 1 & 3]$. Then, we have $\boldsf{T}(\ket{v}) = \mqty[10 \\ 15]$.
+Now, let $\boldsf{\gamma} \in (\mathbb{R}^2)^*$ be a linear functional defined via the row vector $\mqty[4 & 5]$. So $\boldsf{\gamma}(\boldsf{T}(\ket{v})) = \mqty[4 & 5] \mqty[10 \\ 15] = 115$. The pullback $\boldsf{T}^*(\boldsf{\gamma}) \in (\mathbb{R}^3)^*$ is then a linear functional defined as $\boldsf{T}^*(\boldsf{\gamma}) = \boldsf{\gamma} \boldsf{T}$, so its matrix representation is given by
+
+$$
+\begin{equation}
+\mqty[4 & 5] \mqty[1 & 0 & 2 \\ 0 & 1 & 3] = \mqty[4 & 5 & 23].
+\end{equation}
+$$
+
+One can verify that $\boldsf{T}^*(\boldsf{\gamma})(\ket{v}) = \mqty[4 & 5 & 23] \mqty[2 \\ 3 \\ 4] = 115$, which is consistent with the definition of the dual map.
+
+There are a few important properties of the dual map worth mentioning.
+
+1. The dual map is linear. This is easily verified from the definition.
+2. $\boldsf{\gamma} \in \ker(\boldsf{T}^*)$ if and only if $\boldsf{\gamma}$ annihilates the image of $\boldsf{T}$. To see this, let $\boldsf{\gamma} \in \mathcal{W}^*$. Then, we have
+
+    $$
+    \begin{equation}
+    \boldsf{\gamma} \in \ker(\boldsf{T}^*) \iff \boldsf{T}^*(\boldsf{\gamma}) = 0 \iff [\boldsf{T}^*(\boldsf{\gamma})](\ket{a}) = 0, \; \forall \ket{a} \in \mathcal{V}.
+    \end{equation}
+    $$
+
+    By the definition of the dual map, this is equivalent to
+
+    $$
+    \begin{equation}
+    \boldsf{\gamma}(\boldsf{T}(\ket{a})) = 0, \; \forall \ket{a} \in \mathcal{V},
+    \end{equation}
+    $$
+
+    but this just means that for any vector in the image of $\boldsf{T}$, $\boldsf{\gamma}$ maps it to zero, i.e., $\boldsf{\gamma}$ annihilates the image of $\boldsf{T}$.
+
+    Notationally, $\boldsf{\gamma} \in \boldsf{T}(\mathcal{V})^0$ (the annihilator of the image of $\boldsf{T}$).
+
+3. If $\boldsf{T}$ is surjective (i.e., $\boldsf{T}(\mathcal{V}) = \mathcal{U}$), then $\boldsf{\gamma}$ annihilates all of $\mathcal{U}$. But this just means that $\boldsf{\gamma}$ is the zero functional. Thus, we have shown that if $\boldsf{T}$ is surjective, then $\ker(\boldsf{T}^*) = \{0\}$, which means that $\boldsf{T}^*$ is injective (Theorem 2.3.11).
+
+We shall summarize these properties in a proposition.
+
+:::proposition Proposition 2.5.5 (Properties of the Pullback)
+
+Let $\boldsf{T}: \mathcal{V} \to \mathcal{W}$ be a linear map between two vector spaces $\mathcal{V}$ and $\mathcal{W}$ over the field $\mathbb{F}$, and let $\boldsf{T}^*: \mathcal{W}^* \to \mathcal{V}^*$ be its dual map. Then, $\ker(\boldsf{T}^*) = \boldsf{T}(\mathcal{V})^0$. In particular, if $\boldsf{T}$ is surjective, then $\boldsf{T}^*$ is injective. If $\boldsf{T}$ is an isomorphism, then so is $\boldsf{T}^*$.
+
+:::
+
+In accordance with Dirac notation, we make some notational changes to make the duality between vectors and linear functionals more explicit. Let $\{\ket{a_i}\}_{i=1}^n$ be a basis for $\mathcal{V}$, and let the scalars $\alpha_i = \braket{a}{a_i}$ uniquely define a linear functional $\boldsf{\gamma}_a$ such that $\boldsf{\gamma}_a(\ket{a_i}) = \alpha_i$.
+
+Since $\boldsf{\gamma}_a(\ket{a_i}) = \braket{a}{a_i}$, we identify $\boldsf{\gamma}_a$ with the symbol $\bra{a}$, written as the association $\boldsf{\gamma}_a \mapsto \bra{a}$.
+It's common to refer to $\bra{a}$ as a bra vector, in contrast to the ket vector $\ket{a}$. We often use the notation
+
+$$
+\begin{equation}
+\bra{a} := \qty(\ket{a})^\dagger,
+\end{equation}
+$$
+
+where the $\dagger$ is called a dagger or dual operation. Let's see how $\dagger$ applies to linear combinations. Let $\ket{c} = \alpha \ket{a} + \beta \ket{b}$ be a linear combination of two vectors $\ket{a}, \ket{b} \in \mathcal{V}$. We can take the inner product of $\ket{c}$ with any basis vector $\ket{x}$ to get
+
+$$
+\begin{equation}
+\braket{x}{c} = \alpha \braket{x}{a} + \beta \braket{x}{b}.
+\end{equation}
+$$
+
+Taking the complex conjugate of both sides, we have
+
+$$
+\begin{equation}
+\braket{c}{x} = \alpha^* \braket{a}{x} + \beta^* \braket{b}{x} = \qty(\alpha \bra{a} + \beta \bra{b})(\ket{x}),
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\qty(\alpha \ket{a} + \beta \ket{b})^\dagger = \alpha^* \bra{a} + \beta^* \bra{b}.
+\end{equation}
+$$
+
+In other words, we have the first association $\ket{a} \mapsto \boldsf{\gamma}_a$, which is linear, and the second association $\boldsf{\gamma}_a \mapsto \bra{a}$, which is sesquilinear. In matrix form, we have
+
+$$
+\begin{equation}
+\bra{a} = \mqty[\alpha_1^* & \alpha_2^* & \cdots & \alpha_n^*].
+\end{equation}
+$$

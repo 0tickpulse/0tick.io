@@ -1,0 +1,58 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 1.2 Lagrangian Mechanics
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## d'Alembert's Principle
+
+In my own studies, I have seen many derivations of Lagrangian mechanics.
+There are a few approaches: we can start from Maupertuis' Principle of Least Action; we can simply posit that plugging $L = T - V$ into the Euler-Lagrange equations gives the correct equations of motion; we can show from Feynman's path integral formulation that the classical path extremizes the action; or we can see how a worldline minimizes the proper time and derive Lagrangian mechanics from there.
+
+Another approach is to start from Newtonian mechanics and derive Lagrangian mechanics using d'Alembert's Principle. The key idea is that in addition to the equations of motion, we also have constraint equations that restrict the motion of the system.
+For example, if we have a bead sliding on a frictionless wire, the bead's motion is constrained to lie along the wire.
+A rigid body is constrained such that the distances between its constituent particles remain constant.
+These constraints can be holonomic or non-holonomic, and they can be time-dependent or time-independent.
+
+:::definition Definition 1.2.1 (Holonomic Constraint)
+
+A **holonomic constraint** is a constraint that can be expressed as an equation relating the coordinates and time:
+
+$$
+\begin{equation}
+f(\vb{r}_1, \vb{r}_2, \ldots, \vb{r}_N, t) = 0,
+\end{equation}
+$$
+
+where $\vb{r}_i$ are the position vectors of the particles in the system.
+
+:::
+
+:::example Example 1.2.2 (Rigid Body Constraint)
+
+A rigid body is a system of particles where the distances between all pairs of particles are constant. For a system of $N$ particles, the rigid body constraints can be expressed as
+
+$$
+\begin{equation}
+|\vb{r}_i - \vb{r}_j|^2 - d_{ij}^2 = 0, \quad 1 \leq i < j \leq N,
+\end{equation}
+$$
+
+where $d_{ij}$ is the constant distance between particles $i$ and $j$.
+This is a holonomic constraint with $f := |\vb{r}_i - \vb{r}_j|^2 - d_{ij}^2$.
+
+:::

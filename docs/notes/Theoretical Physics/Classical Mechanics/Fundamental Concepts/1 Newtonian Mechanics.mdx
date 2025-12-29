@@ -1,0 +1,728 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 1.1 Newtonian Mechanics
+
+We begin our study of theoretical physics with a review of Newtonian mechanics.
+Although in modern physics we consider Newtonian mechanics to be superseded by more accurate theories such as special relativity and quantum mechanics, it remains an essential foundation for understanding the physical world.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Single-Particle Mechanics
+
+The position of a particle in three-dimensional space can be described by a vector function of time, where the vector lives within $\mathbb{R}^3$. The velocity is the time derivative of the position vector, and the linear momentum is defined as the product of mass and velocity. As we have seen these concepts before, we will now formalize them with precise definitions.
+
+:::definition Definition 1.1.1 Velocity
+
+The **velocity** $\vb{v}$ of a particle is defined as the time derivative of its position vector $\vb{r}(t)$;
+
+$$
+\begin{equation}
+\vb{v} := \dv{\vb{r}}{t}.
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 1.1.2 Linear Momentum
+
+The **linear momentum** $\vb{p}$ of a particle with mass $m$ and velocity $\vb{v}$ is defined as
+
+$$
+\begin{equation}
+\vb{p} := m \vb{v}.
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 1.1.3 Force
+
+The **force** $\vb{F}$ acting on a particle is defined as the time derivative of its linear momentum $\vb{p}$;
+
+$$
+\begin{equation}
+\vb{F} := \dv{\vb{p}}{t}.
+\end{equation}
+$$
+
+:::
+
+Newton's Second Law of Motion states that the force acting on a particle is equal to the time derivative of its linear momentum. For a particle with constant mass, this can be simplified to
+
+$$
+\begin{equation}
+\vb{F} = m \dv{\vb{v}}{t} = m \vb{a},
+\end{equation}
+$$
+
+where $\vb{a}$ is the acceleration of the particle.
+
+:::definition Definition 1.1.4 Acceleration
+
+The **acceleration** $\vb{a}$ of a particle is defined as the time derivative of its velocity $\vb{v}$;
+
+$$
+\begin{equation}
+\vb{a} := \dv{\vb{v}}{t}.
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 1.1.5 Reference Frame
+
+A **reference frame** is a coordinate system used to describe the position and motion of objects. It consists of an origin and a set of axes that define the spatial dimensions. A reference frame can be inertial or non-inertial.
+
+In Newtonian mechanics, an **inertial reference frame** is one in which Newton's laws of motion hold true. This means that a particle not subjected to any net external force will either remain at rest or continue to move at a constant velocity in a straight line.
+
+:::
+
+:::theorem Theorem 1.1.6 Conservation of Linear Momentum for a Particle
+
+In an inertial reference frame, if no external force acts on a particle, its linear momentum remains constant over time, so $\dv{\vb{p}}{t} = 0$.
+
+:::
+
+:::definition Definition 1.1.7 Angular Momentum
+
+The **angular momentum** $\vb{L}$ of a particle with position vector $\vb{r}$ and linear momentum $\vb{p}$ is defined as
+
+$$
+\begin{equation}
+\vb{L} := \vb{r} \times \vb{p}.
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 1.1.8 Torque
+
+The **torque** $\vb{\tau}$ is the cross product of the position vector $\vb{r}$ and the force $\vb{F}$ acting on a particle;
+
+$$
+\begin{equation}
+\vb{\tau} := \vb{r} \times \vb{F}.
+\end{equation}
+$$
+
+:::
+
+:::theorem Theorem 1.1.9 Torque is the Time Derivative of Angular Momentum
+
+In an inertial reference frame, the torque acting on a particle is equal to the time derivative of its angular momentum;
+
+$$
+\begin{equation}
+\vb{\tau} = \dv{\vb{L}}{t}.
+\end{equation}
+$$
+
+---
+
+*Proof.*
+
+Using the definitions of angular momentum and torque, we have
+
+$$
+\begin{equation}
+\dv{\vb{L}}{t} = \dv{t} (\vb{r} \times \vb{p}) = \dv{\vb{r}}{t} \times \vb{p} + \vb{r} \times \dv{\vb{p}}{t} = \vb{v} \times (m \vb{v}) + \vb{r} \times \vb{F} = \vb{0} + \vb{r} \times \vb{F} = \vb{\tau}.
+\end{equation}
+$$
+
+Thus, we have shown that $\vb{\tau} = \dv{\vb{L}}{t}$. $\blacksquare$
+
+---
+
+:::
+
+:::theorem Theorem 1.1.10 Conservation of Angular Momentum for a Particle
+
+In an inertial reference frame, if no external torque acts on a particle, its angular momentum remains constant over time, so $\dv{\vb{L}}{t} = 0$.
+
+:::
+
+### Energy and Work
+
+:::definition Definition 1.1.11 Work
+
+Suppose a force $\vb{F}$ acts on a particle that moves from position $\vb{r}_1$ to position $\vb{r}_2$ along a path $C$. The **work** $W$ done by the force on the particle is defined as the line integral
+
+$$
+\begin{equation}
+W := \int_{C} \vb{F} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 1.1.12 Kinetic Energy
+
+The **kinetic energy** $T$ of a particle with mass $m$ and velocity $\vb{v}$ is defined as
+
+$$
+\begin{equation}
+T := \frac{1}{2} m v^2,
+\end{equation}
+$$
+
+where $v = |\vb{v}|$ is the magnitude of the velocity.
+
+:::
+
+:::theorem Theorem 1.1.13 Work-Energy Theorem
+
+The work done by the net force acting on a particle with constant mass as it moves from position $\vb{r}_1$ to position $\vb{r}_2$ is equal to the change in its kinetic energy;
+
+$$
+\begin{equation}
+W = T_2 - T_1 = \frac{1}{2} m v_2^2 - \frac{1}{2} m v_1^2,
+\end{equation}
+$$
+
+where $T_1$ and $T_2$ are the kinetic energies at positions $\vb{r}_1$ and $\vb{r}_2$, respectively.
+
+---
+
+*Proof.*
+
+From the definition of work, we have
+
+$$
+\begin{equation}
+W = \int_{C} \vb{F} \cdot \dd{\vb{r}} = \int_{t_1}^{t_2} \vb{F} \cdot \dv{\vb{r}}{t} \dd{t} = \int_{t_1}^{t_2} \vb{F} \cdot \vb{v} \dd{t}.
+\end{equation}
+$$
+
+Using Newton's Second Law, we can substitute $\vb{F} = m \dv{\vb{v}}{t}$ into the integral, yielding
+
+$$
+\begin{equation}
+W = \int_{t_1}^{t_2} m \dv{\vb{v}}{t} \cdot \vb{v} \dd{t} = m \int_{t_1}^{t_2} \dv{\vb{v}}{t} \cdot \vb{v} \dd{t}.
+\end{equation}
+$$
+
+Finally, we recognize that $\dv{\vb{v}}{t} \cdot \vb{v} = \frac{1}{2} \dv{(v^2)}{t}$, allowing us to rewrite the integral as
+
+$$
+\begin{equation}
+W = m \int_{t_1}^{t_2} \frac{1}{2} \dv{(v^2)}{t} \dd{t} = \frac{m}{2} [v^2]_{t_1}^{t_2} = \frac{1}{2} m v_2^2 - \frac{1}{2} m v_1^2.
+\end{equation}
+$$
+
+Thus, we have shown that $W = T_2 - T_1$. $\blacksquare$
+
+---
+
+:::
+
+:::definition Definition 1.1.14 Force Field
+
+A **force field** is a vector field $\vb{F}(\vb{r}) \in \mathbb{R}^3$ that assigns a force vector to every point in space.
+
+:::
+
+:::definition Definition 1.1.15 Conservative Force Field
+
+A force field $\vb{F}(\vb{r})$ is said to be **conservative** if the work done by the force on a particle moving between any two points is independent of the path taken.
+
+:::
+
+:::theorem Theorem 1.1.16 Equivalent Conditions for Conservative Force Fields
+
+For a force field $\vb{F}(\vb{r})$ defined on a simply connected domain in $\mathbb{R}^3$, the following conditions are equivalent:
+
+1. The work done by the force on a particle moving between any two points is independent of the path taken.
+2. The line integral of the force around any closed loop is zero; that is, $\oint_{C} \vb{F} \cdot \dd{\vb{r}} = 0$ for any closed curve $C$.
+3. There exists a scalar potential function $V(\vb{r})$ such that $\vb{F}(\vb{r}) = -\nabla V(\vb{r})$. This function $V(\vb{r})$ is called the **potential energy** associated with the force field.
+
+---
+
+*Proof.*
+
+(1) $\implies$ (2): If the work done is independent of the path, then for any closed loop $C$, the work done must be zero, since the starting and ending points are the same.
+
+(2) $\implies$ (3): If the line integral around any closed loop is zero, we can define a scalar potential function $V(\vb{r})$ by choosing a reference point $\vb{r}_0$ and defining
+
+$$
+\begin{equation}
+V(\vb{r}) := -\int_{\vb{r}_0}^{\vb{r}} \vb{F} \cdot \dd{\vb{r}}.
+\end{equation}
+$$
+
+As the line integral is path-independent, $V(\vb{r})$ is well-defined. Taking the gradient of $V(\vb{r})$ gives $\vb{F}(\vb{r}) = -\nabla V(\vb{r})$.
+
+(3) $\implies$ (1): If there exists a scalar potential function $V(\vb{r})$ such that $\vb{F}(\vb{r}) = -\nabla V(\vb{r})$, then the work done by the force when moving from point $\vb{r}_1$ to point $\vb{r}_2$ is
+
+$$
+\begin{equation}
+W = \int_{C} \vb{F} \cdot \dd{\vb{r}} = -\int_{C} \nabla V(\vb{r}) \cdot \dd{\vb{r}} = V(\vb{r}_1) - V(\vb{r}_2),
+\end{equation}
+$$
+
+which depends only on the endpoints $\vb{r}_1$ and $\vb{r}_2$, and not on the path $C$ taken between them. Thus, the work done is independent of the path taken.
+
+Thus, we have shown the equivalence of the three conditions. $\blacksquare$
+
+---
+
+:::
+
+As the potential energy is the negative of the work done by the force, the force is in turn the negative gradient of the potential energy:
+
+$$
+\begin{equation}
+\vb{F}(\vb{r}) = -\nabla V(\vb{r}).
+\end{equation}
+$$
+
+:::theorem Theorem 1.1.17 Conservation of Mechanical Energy
+
+In an inertial reference frame, for a particle moving under the influence of a conservative force field, the total mechanical energy $E$, defined as the sum of kinetic energy $T$ and potential energy $V$, remains constant over time.
+
+$$
+\begin{equation}
+E = T + V = \text{constant}.
+\end{equation}
+$$
+
+---
+
+*Proof.* Let the particle move from position $\vb{r}_1$ to position $\vb{r}_2$ under the influence of a conservative force field. From the Work-Energy Theorem, we have
+
+$$
+\begin{equation}
+W = T_2 - T_1,
+\end{equation}
+$$
+
+where $T_1$ and $T_2$ are the kinetic energies at positions $\vb{r}_1$ and $\vb{r}_2$, respectively.
+
+Since the force is conservative, the work done by the force is equal to the negative change in potential energy:
+
+$$
+\begin{equation}
+W = V_1 - V_2,
+\end{equation}
+$$
+
+where $V_1$ and $V_2$ are the potential energies at positions $\vb{r}_1$ and $\vb{r}_2$, respectively.
+
+Equating the two expressions for work, we have
+
+$$
+\begin{equation}
+T_2 - T_1 = V_1 - V_2 \implies T_2 + V_2 = T_1 + V_1.
+\end{equation}
+$$
+
+Thus we have shown that the total mechanical energy $E = T + V$ remains constant over time. $\blacksquare$
+
+---
+
+:::
+
+## Systems of Particles
+
+In the case of a system of multiple particles, we can extend the definitions and theorems from single-particle mechanics to account for interactions between particles.
+
+Newton's second law for a system of $N$ particles can be split into external and internal forces. The external force $\vb{F}_i^{\text{(e)}}$ acts on particle $i$ from outside the system, while the internal force $\vb{F}_{ji}$ is the force exerted on particle $i$ by particle $j$ within the system. Thus, the total force acting on particle $i$ is given by
+
+$$
+\begin{equation}
+\vb{F}_i = \vb{F}_i^{\text{(e)}} + \sum_{j=1}^{N} \vb{F}_{ji}.
+\end{equation}
+$$
+
+Newton's second law can thus be stated as
+
+$$
+\begin{equation}
+\dv{\vb{p}_i}{t} = \vb{F}_i^{\text{(e)}} + \sum_{j=1}^{N} \vb{F}_{ji}. \label{eq:newtons-second-law-system}
+\end{equation}
+$$
+
+:::definition Definition 1.1.18 Law of Action and Reaction
+
+The **weak law of action and reaction**, or **Newton's Third Law**, states that for every action, there is an equal and opposite reaction. In the context of a system of particles, this means that the internal forces between any two particles are equal in magnitude and opposite in direction;
+
+$$
+\begin{equation}
+\vb{F}_{ij} = -\vb{F}_{ji}.
+\end{equation}
+$$
+
+The full action-reaction law also requires that the forces act along the line connecting the two particles. Note that the weak law is not always satisfied in certain physical situations, such as in electromagnetic interactions where forces can be non-central.
+
+:::
+
+Summing equation $\eqref{eq:newtons-second-law-system}$ over all particles in the system, we obtain
+
+$$
+\begin{equation}
+\sum_{i=1}^{N} \dv{\vb{p}_i}{t} = \sum_{i=1}^{N} \vb{F}_i^{\text{(e)}} + \sum_{i=1}^{N} \sum_{j=1}^{N} \vb{F}_{ji}.
+\end{equation}
+$$
+
+Using the weak law of action and reaction, the double sum on the right-hand side vanishes, leaving us with
+
+$$
+\begin{equation}
+\dv{t} \qty(\sum_{i=1}^{N} \vb{p}_i) = \sum_{i=1}^{N} \vb{F}_i^{\text{(e)}}.
+\end{equation}
+$$
+
+If we define a center of mass $\vb{R}$ for the system of particles as following:
+
+:::definition Definition 1.1.19 Center of Mass
+
+The **center of mass** $\vb{R}$ of a system of $N$ particles with masses $m_i$ and position vectors $\vb{r}_i$ is defined as a weighted average of their positions;
+
+$$
+\begin{equation}
+\vb{R} := \frac{1}{M} \sum_{i=1}^{N} m_i \vb{r}_i,
+\end{equation}
+$$
+
+where $M := \sum_{i=1}^{N} m_i$ is the total mass of the system.
+
+:::
+
+Then we can rewrite the equation as
+
+$$
+\begin{equation}
+M \dv[2]{\vb{R}}{t} = \sum_{i=1}^{N} \vb{F}_i^{\text{(e)}}.
+\end{equation}
+$$
+
+:::definition Definition 1.1.20 Total Linear Momentum
+
+The **total linear momentum** $\vb{P}$ of a system of $N$ particles is defined as the vector sum of the linear momenta of all the particles;
+
+$$
+\begin{equation}
+\vb{P} := \sum_{i=1}^{N} \vb{p}_i = \sum_{i=1}^{N} m_i \vb{v}_i = M \dv{\vb{R}}{t}.
+\end{equation}
+$$
+
+:::
+
+:::theorem Theorem 1.1.21 Conservation of Total Linear Momentum for a System of Particles
+
+In an inertial reference frame, if no external force acts on a system of particles, the total linear momentum of the system remains constant over time, so $\dv{\vb{P}}{t} = 0$.
+
+:::
+
+:::definition Definition 1.1.22 Total Angular Momentum
+
+The **total angular momentum** $\vb{L}$ of a system of $N$ particles with respect to a chosen origin is defined as the vector sum of the angular momenta of all the particles;
+
+$$
+\begin{equation}
+\vb{L} := \sum_{i=1}^{N} \vb{r}_i \times \vb{p}_i.
+\end{equation}
+$$
+
+:::
+
+:::definition Definition 1.1.23 Total Torque
+
+The **total torque** $\vb{\tau}$ acting on a system of $N$ particles with respect to a chosen origin is defined as the vector sum of the torques acting on all the particles;
+
+$$
+\begin{equation}
+\vb{\tau} := \sum_{i=1}^{N} \vb{r}_i \times \vb{F}_i.
+\end{equation}
+$$
+
+:::
+
+We can expand the total torque as follows:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{\tau} &= \sum_{i=1}^{N} \vb{r}_i \times \qty(\vb{F}_i^{\text{(e)}} + \sum_{j=1}^{N} \vb{F}_{ji}) \\
+&= \sum_{i=1}^{N} \vb{r}_i \times \vb{F}_i^{\text{(e)}} + \sum_{i=1}^{N} \sum_{j=1}^{N} \vb{r}_i \times \vb{F}_{ji} \\
+&= \sum_{i=1}^{N} \vb{r}_i \times \vb{F}_i^{\text{(e)}} + \frac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} (\vb{r}_i - \vb{r}_j) \times \vb{F}_{ji}.
+\end{split}
+\end{equation}
+$$
+
+If the internal forces $\vb{F}_{ji}$ are central forces, meaning they act along the line connecting particles $i$ and $j$ (thus obeying the full action-reaction law), then the second term vanishes, leaving us with
+
+$$
+\begin{equation}
+\vb{\tau} = \sum_{i=1}^{N} \vb{r}_i \times \vb{F}_i^{\text{(e)}}.
+\end{equation}
+$$
+
+In other words, internal forces do not contribute to the total torque when the full action-reaction law is satisfied.
+
+:::theorem Theorem 1.1.24 Conservation of Total Angular Momentum for a System of Particles
+
+In an inertial reference frame, if no external torque acts on a system of particles, the total angular momentum of the system remains constant over time, so $\dv{\vb{L}}{t} = 0$.
+
+:::
+
+To further analyze the motion of a system of particles, note that the total angular momentum is a combination of the angular momentum due to the motion of the center of mass and the angular momentum due to the motion of the particles relative to the center of mass. To see this, we define $\vb{r}_i' = \vb{r}_i - \vb{R}$ as the position vector of particle $i$ relative to the center of mass $\vb{R}$. Then we have the following theorem:
+
+:::theorem Theorem 1.1.25 Decomposition of Total Angular Momentum
+
+The total angular momentum $\vb{L}$ of a system of $N$ particles can be decomposed into the angular momentum due to the motion of the center of mass and the angular momentum due to the motion of the particles relative to the center of mass;
+
+$$
+\begin{equation}
+\vb{L} = M \vb{R} \times \vb{V} + \sum_{i=1}^{N} m_i \vb{r}_i' \times \vb{v}_i'.
+\end{equation}
+$$
+
+---
+
+*Proof.*
+We obviously have
+
+$$
+\begin{equation}
+\vb{v}_i = \vb{V} + \vb{v}_i',
+\end{equation}
+$$
+
+where $\vb{V} = \dv{\vb{R}}{t}$ is the velocity of the center of mass, and $\vb{v}_i' = \dv{\vb{r}_i'}{t}$ is the velocity of particle $i$ relative to the center of mass.
+
+The total angular momentum can thus be decomposed as follows:
+
+$$
+\begin{equation}
+\begin{split}
+\vb{L} &= \sum_{i=1}^{N} \vb{r}_i \times \vb{p}_i \\
+&= \sum_{i=1}^{N} (\vb{R} + \vb{r}_i') \times m_i (\vb{V} + \vb{v}_i') \\
+&= \sum_{i=1}^{N} \qty[\vb{R} \times m_i \vb{V} + \vb{R} \times m_i \vb{v}_i' + \vb{r}_i' \times m_i \vb{V} + \vb{r}_i' \times m_i \vb{v}_i'] \\
+&= \sum_{i=1}^{N} m_i \vb{R} \times \vb{V} + \vb{R} \times \sum_{i=1}^{N} m_i \vb{v}_i' + \qty(\sum_{i=1}^{N} m_i \vb{r}_i') \times \vb{V} + \sum_{i=1}^{N} m_i \vb{r}_i' \times \vb{v}_i'.
+\end{split}
+\end{equation}
+$$
+
+Noting that $\sum_{i=1}^{N} m_i \vb{r}_i' = \vb{0}$ by the definition of the center of mass, we have
+
+$$
+\begin{equation}
+\vb{L} = M \vb{R} \times \vb{V} + \sum_{i=1}^{N} m_i \vb{r}_i' \times \vb{v}_i'.
+\end{equation}
+$$
+
+The first term represents the angular momentum due to the motion of the center of mass, while the second term represents the angular momentum due to the motion of the particles relative to the center of mass. This means that $\vb{L}$ depends on the choice of origin for $\vb{R}$. $\blacksquare$
+
+---
+
+:::
+
+Next, we can analyze the work and energy for a system of particles. Suppose the system of particles moves from configuration $1$ to configuration $2$ under the influence of external forces $\vb{F}_i^{\text{(e)}}$ and internal forces $\vb{F}_{ji}$. The total work done on the system is given by
+
+$$
+\begin{equation}
+W_{12} = \sum_{i=1}^{N} \int_1^2 \vb{F}_i^{\text{(e)}} \cdot \dd{\vb{r}_i} + \frac{1}{2} \sum_{i=1}^{N} \sum_{j=1}^{N} \int_1^2 \vb{F}_{ji} \cdot \dd{\vb{r}_i}. \label{eq:work-system}
+\end{equation}
+$$
+
+Using Newton's second law for each particle and summing over all particles, we find that the total work done is equal to the change in the total kinetic energy of the system:
+
+$$
+\begin{equation}
+W_{12} = \sum_{i=1}^{N} \qty(\frac{1}{2} m_i v_{i2}^2 - \frac{1}{2} m_i v_{i1}^2) = T_2 - T_1,
+\end{equation}
+$$
+
+where $T_1$ and $T_2$ are the total kinetic energies of the system at configurations $1$ and $2$, respectively, defined as follows:
+
+:::definition Definition 1.1.26 Total Kinetic Energy
+
+The **total kinetic energy** $T$ of a system of $N$ particles is defined as the sum of the kinetic energies of all the particles;
+
+$$
+\begin{equation}
+T = \sum_{i=1}^{N} \frac{1}{2} m_i v_i^2.
+\end{equation}
+$$
+
+:::
+
+:::theorem Theorem 1.1.27 Work-Energy Theorem for a System of Particles
+
+The total work done by the external and internal forces on a system of particles as it moves from configuration $1$ to configuration $2$ is equal to the change in the total kinetic energy of the system;
+
+$$
+\begin{equation}
+W_{12} = T_2 - T_1,
+\end{equation}
+$$
+
+where $T_1$ and $T_2$ are the total kinetic energies at configurations $1$ and $2$, respectively.
+
+:::
+
+We can also use the center-of-mass coordinates $\vb{R}$ and $\vb{r}_i'$ to decompose the total kinetic energy into the kinetic energy due to the motion of the center of mass and the kinetic energy due to the motion of the particles relative to the center of mass:
+
+:::theorem Theorem 1.1.28 Decomposition of Total Kinetic Energy
+
+The total kinetic energy $T$ of a system of $N$ particles can be decomposed into the kinetic energy due to the motion of the center of mass and the kinetic energy due to the motion of the particles relative to the center of mass;
+
+$$
+\begin{equation}
+T = \frac{1}{2} M V^2 + \sum_{i=1}^{N} \frac{1}{2} m_i v_i'^2.
+\end{equation}
+$$
+
+---
+
+*Proof.* Expanding the total kinetic energy, we have
+
+$$
+\begin{equation}
+\begin{split}
+T &= \sum_{i=1}^{N} \frac{1}{2} m_i v_i^2 \\
+&= \sum_{i=1}^{N} \frac{1}{2} m_i (\vb{V} + \vb{v}_i') \cdot (\vb{V} + \vb{v}_i') \\
+&= \sum_{i=1}^{N} \frac{1}{2} m_i (V^2 + 2 \vb{V} \cdot \vb{v}_i' + v_i'^2) \\
+&= \frac{1}{2} M V^2 + \vb{V} \cdot \sum_{i=1}^{N} m_i \vb{v}_i' + \sum_{i=1}^{N} \frac{1}{2} m_i v_i'^2.
+\end{split}
+\end{equation}
+$$
+
+Noting that $\sum_{i=1}^{N} m_i \vb{v}_i' = \vb{0}$ by the definition of the center of mass, we have
+
+$$
+\begin{equation}
+T = \frac{1}{2} M V^2 + \sum_{i=1}^{N} \frac{1}{2} m_i v_i'^2.
+\end{equation}
+$$
+
+The first term represents the kinetic energy due to the motion of the center of mass, while the second term represents the kinetic energy due to the motion of the particles relative to the center of mass. $\blacksquare$
+
+---
+
+:::
+
+If the external forces are conservative, we can define a potential energy function for the internal forces, such that the first term in $\eqref{eq:work-system}$ can be rewritten as
+
+$$
+\begin{equation}
+\begin{split}
+\sum_{i=1}^{N} \int_1^2 \vb{F}_i^{\text{(e)}} \cdot \dd{\vb{r}_i} &= \sum_{i=1}^{N} \int_1^2 \nabla_i V_i \cdot \dd{\vb{r}_i} \\
+&= -\sum_{i=1}^{N} \eval{V_i}_{1}^{2},
+\end{split}
+\end{equation}
+$$
+
+where $\nabla_i$ indicates a gradient with respect to the position vector $\vb{r}_i$ of particle $i$, and $V_i$ is the potential energy associated with the external force acting on particle $i$. If the internal forces are also conservative, we can define a potential energy function for the internal forces, denoted $V_{ij}$. Note that the strong law of action and reaction means that $V_{ij}$ must only depend on the distance between particles $i$ and $j$:
+
+$$
+\begin{equation}
+V_{ij} = V_{ij} (|\vb{r}_i - \vb{r}_j|).
+\end{equation}
+$$
+
+:::theorem Theorem 1.1.29 Strong Law of Action and Reaction and Internal Forces
+
+If the strong law of action and reaction holds for a conservative internal force $\vb{F}_{ij}$ between particles $i$ and $j$, then the internal force automatically obeys Newton's Third Law, and the force pairs lie along the line connecting the two particles.
+
+---
+
+*Proof.* By definition, the internal force $\vb{F}_{ij}$ is related to the potential energy function $V_{ij}$ by
+
+$$
+\begin{equation}
+\vb{F}_{ij} = -\nabla_i V_{ij} (|\vb{r}_i - \vb{r}_j|) = \nabla_j V_{ij} (|\vb{r}_i - \vb{r}_j|) = -\vb{F}_{ji}.
+\end{equation}
+$$
+
+Thus, we have shown that $\vb{F}_{ij} = -\vb{F}_{ji}$. Furthermore, since $V_{ij}$ depends only on the distance between particles $i$ and $j$, the gradient $\nabla_i V_{ij}$ points along the line connecting the two particles, ensuring that the forces are central. $\blacksquare$
+
+---
+
+:::
+
+With this in mind, the second term of $\eqref{eq:work-system}$ can be rewritten as
+
+$$
+\begin{equation}
+\sum_{i=1}^{N} \sum_{j=1}^{N} \int_1^2 \vb{F}_{ji} \cdot \dd{\vb{r}_i} = -\sum_{\substack{i,j=1 \\ i \neq j}}^{N} \int_1^2 \qty[\nabla_i V_{ij} \cdot \dd{\vb{r}_i} + \nabla_j V_{ij} \cdot \dd{\vb{r}_j}].
+\end{equation}
+$$
+
+If we define $\vb{r}_{ij} = \vb{r}_i - \vb{r}_j$, and $\nabla_{ij}$ as the gradient with respect to $\vb{r}_{ij}$ (i.e., $\nabla_{ij} = \pdv{\vb{r}_i} - \pdv{\vb{r}_j}$), then we have
+
+$$
+\begin{equation}
+\begin{split}
+\sum_{i=1}^{N} \sum_{j=1}^{N} \int_1^2 \vb{F}_{ji} \cdot \dd{\vb{r}_i} &= -\frac{1}{2} \sum_{\substack{i,j=1 \\ i \neq j}}^{N} \int_1^2 \nabla_{ij} V_{ij} \cdot \dd{\vb{r}_{ij}} \\
+&= -\frac{1}{2} \sum_{\substack{i,j=1 \\ i \neq j}}^{N} \eval{V_{ij}}_{1}^{2}.
+\end{split}
+\end{equation}
+$$
+
+The half factor is included to avoid double counting the potential energy between each pair of particles. Therefore, combining both terms, we can define a total potential energy for the system as follows:
+
+:::definition Definition 1.1.30 Total Potential Energy
+
+The **total potential energy** $V$ of a system of $N$ particles is defined as the sum of the potential energies associated with the external forces acting on each particle and the potential energies associated with the internal forces between each pair of particles, provided that the internal forces are conservative and obey the strong law of action and reaction;
+
+$$
+\begin{equation}
+V = \sum_{i=1}^{N} V_i + \frac{1}{2} \sum_{\substack{i,j=1 \\ i \neq j}}^{N} V_{ij}.
+\end{equation}
+$$
+
+The first term represents the total potential energy due to external forces, while the second term represents the total potential energy due to internal forces.
+
+:::
+
+:::definition Definition 1.1.31 Rigid Body
+
+A **rigid body** is a system of particles in which the distances between all pairs of particles remain constant over time, regardless of the external forces acting on the system. This means that the shape and size of the rigid body do not change during its motion.
+
+Rigid bodies can undergo translational and rotational motion, but the relative positions of the particles within the body remain fixed. Thus, their internal potential energy remains constant, and any changes in the total energy of the system are due to changes in kinetic energy or external potential energy.
+
+:::
+
+:::theorem Theorem 1.1.32 Conservation of Mechanical Energy for a System of Particles
+
+In an inertial reference frame, for a system of particles moving under the influence of conservative external and internal forces, the total mechanical energy $E$, defined as the sum of total kinetic energy $T$ and total potential energy $V$, remains constant over time;
+
+$$
+\begin{equation}
+E = T + V = \text{constant}.
+\end{equation}
+$$
+
+:::
+
+## Summary and Next Steps
+
+In this section, we have established the fundamental principles of Newtonian mechanics for both single particles and systems of particles. We defined key concepts such as force, momentum, energy, and reference frames, and we derived important theorems including Newton's laws of motion, conservation of momentum, and conservation of energy.
+
+Here are the key takeaways:
+
+- Newton's Second Law relates the force acting on a particle to its rate of change of momentum.
+- Conservation laws for linear and angular momentum hold in inertial reference frames.
+- Work done by forces leads to changes in kinetic energy, as described by the Work-Energy Theorem.
+- Conservative forces allow for the definition of potential energy, leading to the conservation of mechanical energy.
+- Systems of particles can be analyzed by separating external and internal forces, with the center of mass playing a crucial role in simplifying the dynamics.
+
+With these foundations in place, the next section will explore d'Alembert's Principle and the formulation of Lagrangian mechanics, which provides a powerful framework for analyzing the dynamics of more complex systems, including those with constraints. This will pave the way for a deeper understanding of classical mechanics, which is important for our later discussions of field theory.
+
+
+

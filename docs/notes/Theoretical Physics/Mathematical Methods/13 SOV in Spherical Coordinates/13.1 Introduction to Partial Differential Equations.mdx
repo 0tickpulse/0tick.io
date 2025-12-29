@@ -1,0 +1,1002 @@
+---
+sidebar_position: 1
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 13.1 Introduction to Partial Differential Equations
+
+We have previously discussed a lot of linear algebra and complex analysis, and we have seen how these topics are useful in physics.
+In this section, we will introduce the topic of partial differential equations (PDEs), which are equations that involve functions of multiple variables and their partial derivatives.
+PDEs are ubiquitous in physics; almost every field of physics uses PDEs to describe physical phenomena.
+In electrostatics, we have Poisson's equation (in Gaussian units)
+
+$$
+\begin{equation}
+\nabla^2 \phi = -4 \pi \rho,
+\end{equation}
+$$
+
+and in electrodynamics, we have Maxwell's equations
+
+$$
+\begin{align}
+\nabla \cdot \vb{E} &= 4 \pi \rho, \\
+\nabla \cdot \vb{B} &= 0, \\
+\nabla \times \vb{E} &= -\pdv{\vb{B}}{t}, \\
+\nabla \times \vb{B} &= \frac{1}{c^2} \pdv{\vb{E}}{t} + \frac{4 \pi}{c} \vb{J}.
+\end{align}
+$$
+
+The wave equation
+
+$$
+\begin{equation}
+\pdv[2]{\vb{u}}{t} = c^2 \nabla^2 \vb{u}
+\end{equation}
+$$
+
+is used to describe wave propagation, and the Schrödinger wave equation
+
+$$
+\begin{equation}
+i \hbar \pdv{\psi}{t} = -\frac{\hbar^2}{2m} \nabla^2 \psi + V \psi
+\end{equation}
+$$
+
+is used to describe quantum mechanical systems.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Separation of Variables
+
+The first step in solving a PDE is to find a way to reduce the problem to a simpler one.
+One common technique is to use the method of separation of variables, which involves assuming that the solution can be written as a product of functions, each depending on only one of the variables.
+We typically assume that the solution can be written as
+
+$$
+\begin{equation}
+\psi(\vb{r}, t) = R(\vb{r}) T(t),
+\end{equation}
+$$
+
+where $R(\vb{r})$ is a function of the spatial coordinates $\vb{r}$ and $T(t)$ is a function of time $t$.
+If we let $\boldsf{S}$ be the spatial differetial operator that acts on $\psi$, then we can rewrite the PDE as
+
+$$
+\begin{equation}
+\boldsf{S} \psi = \boldsf{S} (R(\vb{r}) T(t)) = T(t) \boldsf{S} R(\vb{r}).
+\end{equation}
+$$
+
+The temporal component is usually a first or second order derivative, so most of our PDEs will look like
+
+$$
+\begin{equation}
+\boldsf{S} \psi = \pdv{\psi}{t}, \quad \text{or} \quad \boldsf{S} \psi = \pdv[2]{\psi}{t}.
+\end{equation}
+$$
+
+So we have, after separating variables,
+
+$$
+\begin{equation}
+T \boldsf{S} R = \pdv{T}{t}, \quad \text{or} \quad T \boldsf{S} R = \pdv[2]{T}{t}.
+\end{equation}
+$$
+
+We can then divide both sides by $T R$ to get
+
+$$
+\begin{equation}
+\frac{1}{R} \boldsf{S} R = \frac{1}{T} \pdv{T}{t}, \quad \text{or} \quad \frac{1}{R} \boldsf{S} R = \frac{1}{T} \pdv[2]{T}{t}.
+\end{equation}
+$$
+
+As the left-hand side depends only on the spatial coordinates and the right-hand side depends only on time, the only way this can be true is if both sides are equal to a constant, which we will denote by $\alpha$;
+
+$$
+\begin{equation}
+\frac{1}{R} \boldsf{S} R = \alpha = \frac{1}{T} \pdv{T}{t}, \quad \text{or} \quad \frac{1}{R} \boldsf{S} R = \alpha = \frac{1}{T} \pdv[2]{T}{t}.
+\end{equation}
+$$
+
+Notice that the time-dependent part of the equation is a first or second order ODE. The spatial part reduces to a PDE of the form
+
+$$
+\begin{equation}
+(\boldsf{S} - \alpha) R = 0.
+\end{equation}
+$$
+
+Generally, our expression for $\boldsf{S} - \alpha$ looks like
+
+$$
+\begin{equation}
+\boldsf{S} - \alpha = \nabla^2 + f(\vb{r}),
+\end{equation}
+$$
+
+where $f(\vb{r})$ is some function of the spatial coordinates, so
+
+$$
+\begin{equation}
+\boldsf{S} R + f(\vb{r}) R = 0.
+\end{equation}
+$$
+
+And rewriting $R = \psi(\vb{r})$ (i.e., the spatial part of the solution), we have
+
+$$
+\begin{equation}
+\boldsf{S} \psi + f(\vb{r}) \psi = 0.
+\end{equation}
+$$
+
+We have a homogeneous PDE, which we typically solve using further separation of variables. The rest of these sections will be devoted to separation of variables in different coordinate systems.
+
+## Separation of Angular Variables
+
+Define the momentum operator $\vec{\boldsf{p}} = -i \nabla$, and its $j$th component is given by $\boldsf{p}_j = -i \pdv{x_j}$. This is the momentum operator in quantum mechanics if we multiply by $\hbar$. The commutation relations for the momentum operator are given by
+
+$$
+\begin{align}
+\comm{x_i}{\boldsf{p}_j} &= i \delta_{ij}, \\
+\comm{\boldsf{p}_i}{\boldsf{p}_j} &= 0 = \comm{x_i}{x_j}.
+\end{align}
+$$
+
+The **angular momentum operator** is defined as $\vec{\boldsf{L}} = \vec{\boldsf{r}} \times \vec{\boldsf{p}}$, and its components are given by (with Einstein summation convention)
+
+$$
+\begin{equation}
+\boldsf{L}_i = \epsilon_{ijk} x_j \boldsf{p}_k = -i \epsilon_{ijk} x_j \pdv{x_k}.
+\end{equation}
+$$
+
+The commutation relations for the angular momentum operator are given by
+
+$$
+\begin{equation}
+\comm{\boldsf{L}_i}{\boldsf{L}_j} = i \epsilon_{ijk} \boldsf{L}_k.
+\end{equation}
+$$
+
+The reason we are interested in the angular momentum operator is that it is dependent only on the agular variables $\theta$ and $\varphi$, and not on the radial variable $r$. Moreover, as it is constructed from the momentum operator, its square is related to the Laplacian operator $\nabla^2$. Anyways, let's dot the angular momentum operator with itself to see what we get:
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}^2 &= \boldsf{L}_i \boldsf{L}_i \\
+&= (-i \epsilon_{ijk} x_j \boldsf{p}_k)(-i \epsilon_{ilm} x_l \boldsf{p}_m) \\
+&= - \epsilon_{ijk} \epsilon_{ilm} x_j \boldsf{p}_k x_l \boldsf{p}_m \\
+&= - (\delta_{jl} \delta_{km} - \delta_{jm} \delta_{kl}) x_j \boldsf{p}_k x_l \boldsf{p}_m \\
+&= x_j \boldsf{p}_k x_j \boldsf{p}_k - x_j \boldsf{p}_k x_k \boldsf{p}_j.
+\end{split}
+\end{equation}
+$$
+
+To proceed, we need to symmetrize the terms (so that we can collapse them back into a dot product). Therefore we use the commutation relations to write
+
+$$
+\begin{equation}
+\boldsf{L}^2 = x_j (x_j \boldsf{p}_k + i \delta_{jk}) \boldsf{p}_k - (\boldsf{p}_k x_j + i \delta_{jk}) x_k \boldsf{p}_j.
+\end{equation}
+$$
+
+which simplifies to
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}^2 &= x_j x_j \boldsf{p}_k \boldsf{p}_k + i x_j \delta_{jk} \boldsf{p}_k - \boldsf{p}_k x_j x_k \boldsf{p}_j - i \delta_{jk} x_k \boldsf{p}_j \\
+&= x_j x_j \boldsf{p}_k \boldsf{p}_k - \boldsf{p}_k x_j x_k \boldsf{p}_j + i x_j \boldsf{p}_j - i x_j \boldsf{p}_j \\
+&= x_j x_j \boldsf{p}_k \boldsf{p}_k - 2 i x_j \boldsf{p}_j - (x_k \boldsf{p}_k - i \delta_{kk}) x_j \boldsf{p}_j \\
+&= r^2 \boldsf{p}_k \boldsf{p}_k - 2 i x_j \boldsf{p}_j - x_k \boldsf{p}_k x_j \boldsf{p}_j + 3 i x_j \boldsf{p}_j \\
+&= r^2 \vec{\boldsf{p}} \cdot \vec{\boldsf{p}} + i \vec{\boldsf{r}} \cdot \vec{\boldsf{p}} - (\vec{\boldsf{r}} \cdot \vec{\boldsf{p}})^2.
+\end{split}
+\end{equation}
+$$
+
+Finally, substituting back $\vec{\boldsf{p}} = -i \nabla$, we have
+
+$$
+\begin{equation}
+\boldsf{L}^2 = -r^2 \nabla^2 + \vec{\boldsf{r}} \cdot \nabla + (\vec{\boldsf{r}} \cdot \nabla)(\vec{\boldsf{r}} \cdot \nabla).
+\end{equation}
+$$
+
+Rearranging this expression, and noting that $\vec{\boldsf{r}} \cdot \nabla = r \pdv{r}$, we get
+
+$$
+\begin{equation}
+\nabla^2 = -\frac{1}{r^2} \boldsf{L}^2 + \frac{1}{r} \pdv{r} \qty( r \pdv{r} ) + \frac{1}{r} \pdv{r}.
+\end{equation}
+$$
+
+So we have two important results here; first is a coordinate-independent expression for the Laplacian operator in terms of the angular momentum operator, and second is the expression for the Laplacian operator in spherical coordinates:
+
+$$
+\begin{align}
+\nabla^2 \psi &= -\frac{1}{r^2} \boldsf{L}^2 \psi + \frac{1}{r^2} (\vb{r} \cdot \nabla) (\vb{r} \cdot \nabla) \psi + \frac{1}{r^2} (\vb{r} \cdot \nabla) \psi, \\
+\nabla^2 \psi &= -\frac{1}{r^2} \boldsf{L}^2 \psi + \frac{1}{r^2} r \pdv{r} \qty( r \pdv{\psi}{r} ) + \frac{1}{r^2} r \pdv{\psi}{r}.
+\end{align}
+$$
+
+Going back to our homogeneous PDE $\nabla^2 \psi(\vb{r}) + f(\vb{r}) \psi(\vb{r}) = 0$, assuming that $f$ only depends on $r$, we can substitute in the expression for the Laplacian in spherical coordinates to get
+
+$$
+\begin{equation}
+-\frac{1}{r^2} \boldsf{L}^2 \psi + \frac{1}{r^2} r \pdv{r} \qty( r \pdv{\psi}{r} ) + \frac{1}{r^2} r \pdv{\psi}{r} + f(r) \psi = 0.
+\end{equation}
+$$
+
+Let's now perform further separation of variables by assuming that $\psi(\vb{r}) = R(r) Y(\theta, \varphi)$, where $R(r)$ is the radial part of the solution and $Y(\theta, \varphi)$ is the angular part of the solution.
+Then substituting this into the PDE gives
+
+$$
+\begin{equation}
+-\frac{1}{r^2} \boldsf{L}^2 (R Y) + \frac{1}{r^2} r \pdv{r} \qty( r \pdv{(R Y)}{r} ) + \frac{1}{r^2} r \pdv{(R Y)}{r} + f(r) R Y = 0.
+\end{equation}
+$$
+
+Assuming, once again, that $\boldsf{L}^2$ only acts on the angular part $Y$, we have after multiplying through by $r^2/(R Y)$,
+
+$$
+\begin{equation}
+-\frac{1}{Y} \boldsf{L}^2 Y + \frac{1}{R} r \pdv{r} \qty( r \pdv{R}{r} ) + \frac{1}{R} r \pdv{R}{r} + r^2 f(r) = 0.
+\end{equation}
+$$
+
+(See the appendix for a justification of this step.)
+Letting the first term be $-\frac{1}{Y} \boldsf{L}^2 Y = -\alpha$ and the rest be equal to $\alpha$, we have two separate equations:
+
+$$
+\begin{align}
+\boldsf{L}^2 Y &= \alpha Y, \\
+\frac{1}{R} r \pdv{r} \qty( r \pdv{R}{r} ) + \frac{1}{R} r \pdv{R}{r} + r^2 f(r) &= \alpha.
+\end{align}
+$$
+
+The second equation is an ODE for the radial part $R(r)$, while the first equation is an eigenvalue equation for the angular part $Y(\theta, \varphi)$. We shall focus on the angular equation first.
+To do so, we need to find the eigenvalues and eigenfunctions of the operator $\boldsf{L}^2$.
+
+## Eigenvalues of L² in Abstract Space (Ladder Operators)
+
+Let's consider an abstract vector space where a ket $\ket{Y}$ represents the angular part of the solution $Y(\theta, \varphi)$.
+The equation above is
+
+$$
+\begin{equation}
+\boldsf{L}^2 \ket{Y} = \alpha \ket{Y}.
+\end{equation}
+$$
+
+Since $\boldsf{L}^2$ is a derivative operator, it does not have a finite dimensional matrix representation, so we cannot find its eigenvalues by computing the characteristic polynomial.
+
+Recall that a degenerate eigenvalue is one that corresponds to multiple linearly independent eigenvectors. In order to distinguish between these eigenvectors, we need to find another operator that commutes with $\boldsf{L}^2$ so that we can simultaneously diagonalize both operators. A natural choice is another component of the angular momentum operator, $\boldsf{L}_z = \boldsf{L}_3$. This is due to Theorem 6.4.18, which states that two normal operators are simultaneously diagonalizable if and only if they commute, as well as the fact that $\boldsf{L}^2$ and $\boldsf{L}_z$ are both Hermitian (self-adjoint) operators.
+
+Anyways we have
+
+$$
+\begin{equation}
+\boldsf{L}^2 \ket{Y_{\alpha, \beta}} = \alpha \ket{Y_{\alpha, \beta}}, \quad \boldsf{L}_z \ket{Y_{\alpha, \beta}} = \beta \ket{Y_{\alpha, \beta}},
+\end{equation}
+$$
+
+where $\beta$ is the eigenvalue corresponding to $\boldsf{L}_z$.
+
+In order to find the possible values of $\alpha$ and $\beta$, we can define the ladder operators. These are used in quantum mechanics to raise and lower the eigenvalues of angular momentum operators. For instance, a spin-1/2 particle has two possible spin states, spin-up and spin-down. The ladder operators can be used to transition between these two states. These are defined as
+
+$$
+\begin{align}
+\boldsf{L}_+ &= \boldsf{L}_x + i \boldsf{L}_y, \\
+\boldsf{L}_- &= \boldsf{L}_x - i \boldsf{L}_y,
+\end{align}
+$$
+
+and they are Hermitian conjugates of each other, i.e., $\boldsf{L}_+^\dagger = \boldsf{L}_-$ and $\boldsf{L}_-^\dagger = \boldsf{L}_+$.
+The commutation relations for the ladder operators are given by
+
+$$
+\begin{align}
+\comm{\boldsf{L}_z}{\boldsf{L}_+} &= \boldsf{L}_+, \\
+\comm{\boldsf{L}_z}{\boldsf{L}_-} &= -\boldsf{L}_-, \\
+\comm{\boldsf{L}_+}{\boldsf{L}_-} &= 2 \boldsf{L}_z \\
+\comm{\boldsf{L}^2}{\boldsf{L}_+} &= 0, \\
+\comm{\boldsf{L}^2}{\boldsf{L}_-} &= 0.
+\end{align}
+$$
+
+Since $\boldsf{L}^2$ commutes with either ladder operator, applying either ladder operator to an eigenvector of $\boldsf{L}^2$ will yield another eigenvector with the same eigenvalue:
+
+$$
+\begin{equation}
+\boldsf{L}^2 (\boldsf{L}_\pm \ket{Y_{\alpha, \beta}}) = \boldsf{L}_\pm (\boldsf{L}^2 \ket{Y_{\alpha, \beta}}) = \alpha (\boldsf{L}_\pm \ket{Y_{\alpha, \beta}}).
+\end{equation}
+$$
+
+To verify that ladder operators do indeed raise and lower the eigenvalues of $\boldsf{L}_z$, we can compute
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_z (\boldsf{L}_+ \ket{Y_{\alpha, \beta}}) &= (\boldsf{L}_+ \boldsf{L}_z + \comm{\boldsf{L}_z}{\boldsf{L}_+}) \ket{Y_{\alpha, \beta}} \\
+&= \boldsf{L}_+ (\boldsf{L}_z \ket{Y_{\alpha, \beta}}) + \boldsf{L}_+ \ket{Y_{\alpha, \beta}} \\
+&= (\beta + 1) (\boldsf{L}_+ \ket{Y_{\alpha, \beta}}),
+\end{split}
+\end{equation}
+$$
+
+and similarly,
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_z (\boldsf{L}_- \ket{Y_{\alpha, \beta}}) &= (\boldsf{L}_- \boldsf{L}_z + \comm{\boldsf{L}_z}{\boldsf{L}_-}) \ket{Y_{\alpha, \beta}} \\
+&= \boldsf{L}_- (\boldsf{L}_z \ket{Y_{\alpha, \beta}}) - \boldsf{L}_- \ket{Y_{\alpha, \beta}} \\
+&= (\beta - 1) (\boldsf{L}_- \ket{Y_{\alpha, \beta}}).
+\end{split}
+\end{equation}
+$$
+
+Combining these results, we see that
+
+$$
+\begin{equation}
+\boldsf{L}_z (\boldsf{L}_\pm \ket{Y_{\alpha, \beta}}) = C_\pm \boldsf{L}_\pm \ket{Y_{\alpha, \beta \pm 1}},
+\end{equation}
+$$
+
+with $C_\pm$ being some constant that depends on the normalization of the eigenvectors.
+(In the context of group theory, the $\boldsf{L}^2$ operator is known as a Casimir operator, which is an operator that commutes with all the generators of a Lie algebra. We will explore this topic further in later sections.)
+
+### Restricting the Eigenvalues
+
+To find the possible values of $\alpha$ and $\beta$, we need to use the properties of the angular momentum operators. In every system like this, there exist maximum and minimum eigenvalues for $\beta$; in a spin-1/2 system with $2 \times 2$ matrices, the maximum eigenvalue is $+1/2$ and the minimum eigenvalue is $-1/2$. We shall try to find these maximum and minimum eigenvalues for the angular momentum operators.
+
+First, we note that $\boldsf{L}^2$ is a positive semi-definite operator, since it is the sum of squares of Hermitian operators. A positive operator is characterized by $\bra{v} \boldsf{L}^2 \ket{v} \geq 0$ for all vectors $\ket{v}$ in the vector space. Therefore, we have
+
+$$
+\begin{equation}
+\bra{Y_{\alpha, \beta}} \boldsf{L}^2 \ket{Y_{\alpha, \beta}} = \alpha \braket{Y_{\alpha, \beta}}{Y_{\alpha, \beta}} \geq 0,
+\end{equation}
+$$
+
+so $\alpha \geq 0$.
+
+Next, we can express $\boldsf{L}^2$ in terms of the ladder operators. To do so we first compute
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_+ \boldsf{L}_- &= (\boldsf{L}_x + i \boldsf{L}_y)(\boldsf{L}_x - i \boldsf{L}_y) \\
+&= \boldsf{L}_x^2 + \boldsf{L}_y^2 + i [\boldsf{L}_y, \boldsf{L}_x] \\
+&= \boldsf{L}_x^2 + \boldsf{L}_y^2 - \boldsf{L}_z,
+\end{split}
+\end{equation}
+$$
+
+and similarly,
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_- \boldsf{L}_+ &= (\boldsf{L}_x - i \boldsf{L}_y)(\boldsf{L}_x + i \boldsf{L}_y) \\
+&= \boldsf{L}_x^2 + \boldsf{L}_y^2 + i [\boldsf{L}_x, \boldsf{L}_y] \\
+&= \boldsf{L}_x^2 + \boldsf{L}_y^2 + \boldsf{L}_z.
+\end{split}
+\end{equation}
+$$
+
+Adding these two expressions together gives
+
+$$
+\begin{equation}
+\boldsf{L}^2 = \boldsf{L}_x^2 + \boldsf{L}_y^2 + \boldsf{L}_z^2 = \boldsf{L}_+ \boldsf{L}_- + \boldsf{L}_z + \boldsf{L}_z^2 = \boldsf{L}_- \boldsf{L}_+ - \boldsf{L}_z + \boldsf{L}_z^2.
+\end{equation}
+$$
+
+Therefore we have
+
+$$
+\begin{equation}
+\bra{Y_{\alpha, \beta}} \boldsf{L}^2 \ket{Y_{\alpha, \beta}} = \bra{Y_{\alpha, \beta}} \boldsf{L}_+ \boldsf{L}_- + \boldsf{L}_z + \boldsf{L}_z^2 \ket{Y_{\alpha, \beta}},
+\end{equation}
+$$
+
+which simplifies to
+
+$$
+\begin{equation}
+\alpha \braket{Y_{\alpha, \beta}}{Y_{\alpha, \beta}} = \bra{Y_{\alpha, \beta}} \boldsf{L}_+ \boldsf{L}_- \ket{Y_{\alpha, \beta}} + \beta \braket{Y_{\alpha, \beta}}{Y_{\alpha, \beta}} + \beta^2 \braket{Y_{\alpha, \beta}}{Y_{\alpha, \beta}}.
+\end{equation}
+$$
+
+Since $\bra{Y_{\alpha, \beta}} \boldsf{L}_+ \boldsf{L}_- \ket{Y_{\alpha, \beta}} = \norm{\boldsf{L}_\mp \ket{Y_{\alpha, \beta}}}^2$, we have
+
+$$
+\begin{equation}
+\alpha = \beta^2 + \beta + \norm{\boldsf{L}_- \ket{Y_{\alpha, \beta}}}^2 / \braket{Y_{\alpha, \beta}}{Y_{\alpha, \beta}}.
+\end{equation}
+$$
+
+As the norm term is non-negative, we have
+
+$$
+\begin{equation}
+\alpha \geq \beta^2 + \beta, \quad \alpha \geq \beta^2 - \beta.
+\end{equation}
+$$
+
+We can add these two inequalities together to get
+
+$$
+\begin{equation}
+2 \alpha \geq 2 \beta^2 \implies -\sqrt{\alpha} \leq \beta \leq \sqrt{\alpha}.
+\end{equation}
+$$
+
+So this places a restriction on the possible values of $\beta$ given a value of $\alpha$.
+Let the highest eigenvalue of $\beta$ be $\beta_+$ and the lowest eigenvalue be $\beta_-$. Then applying the ladder operators to these eigenvectors must give zero, otherwise we would be able to raise or lower the eigenvalues indefinitely, which contradicts our assumption that $\beta_+$ and $\beta_-$ are the maximum and minimum eigenvalues, respectively. Therefore we have
+
+$$
+\begin{equation}
+\boldsf{L}_+ \ket{Y_{\alpha, \beta_+}} = 0, \quad \boldsf{L}_- \ket{Y_{\alpha, \beta_-}} = 0.
+\end{equation}
+$$
+
+Plugging in $\beta_+$ into the earlier expression for $\alpha$, we have
+
+$$
+\begin{equation}
+\alpha = \beta_+^2 + \beta_+,
+\end{equation}
+$$
+
+and plugging in $\beta_-$ gives
+
+$$
+\begin{equation}
+\alpha = \beta_-^2 - \beta_-.
+\end{equation}
+$$
+
+Solving these two equations simultaneously gives
+
+$$
+\begin{align}
+\beta_+ &= \frac{1}{2} (-1 \pm \sqrt{1 + 4 \alpha} ), \\
+\beta_- &= \frac{1}{2} (1 \pm \sqrt{1 + 4 \alpha} ).
+\end{align}
+$$
+
+We must have $\beta_+ \geq \beta_-$, so we take the positive sign for $\beta_+$ and the negative sign for $\beta_-$, giving
+
+$$
+\begin{align}
+\beta_+ &= \frac{1}{2} (-1 + \sqrt{1 + 4 \alpha} ), \\
+\beta_- &= \frac{1}{2} (1 - \sqrt{1 + 4 \alpha} ).
+\end{align}
+$$
+
+The takeaway is this: if we have any eigenvector $\ket{Y_{\alpha, \beta}}$, we can apply the ladder operators to reach the maximum and minimum eigenvectors. Therefore, there must be some integer $k$ such that repeated application of the lowering operator $\boldsf{L}_-$ on the highest eigenvector gives the minimum eigenvector:
+
+$$
+\begin{equation}
+(\boldsf{L}_-)^{k + 1} \ket{Y_{\alpha, \beta_+}} = \boldsf{L}_- \qty( \boldsf{L}_-^k \ket{Y_{\alpha, \beta_+}} ) = 0.
+\end{equation}
+$$
+
+This means that $\boldsf{L}_-^k \ket{Y_{\alpha, \beta}}$ is the minimum eigenvector, so
+
+$$
+\begin{equation}
+\beta_- = \beta_+ - k.
+\end{equation}
+$$
+
+Since $\beta_- = -\beta_+$, we have
+
+$$
+\begin{equation}
+\beta_+ = \frac{k}{2} =: j.
+\end{equation}
+$$
+
+Substituting this back into the expression for $\alpha$, we have
+
+$$
+\begin{equation}
+\alpha = j (j + 1).
+\end{equation}
+$$
+
+These results can be stated in theorem form.
+
+:::theorem Theorem 13.3.1 (Eigenvalues of L² and Lz)
+
+The eigenvalues of the operator $\boldsf{L}^2$, denoted $\ket{Y_{j, m}}$, are given by the relations
+
+$$
+\begin{align}
+\boldsf{L}^2 \ket{Y_{j, m}} &= j (j + 1) \ket{Y_{j, m}}, \\
+\boldsf{L}_z \ket{Y_{j, m}} &= m \ket{Y_{j, m}},
+\end{align}
+$$
+
+where $j$ is a non-negative integer or half-integer (i.e., $j = 0, \frac{1}{2}, 1, \frac{3}{2}, 2, \ldots$) and $m$ takes values in the set $\{-j, -j + 1, \ldots, j - 1, j\}$.
+
+:::
+
+We also need to address the normalization of the eigenvectors. We know that the eigenvalues of $\boldsf{L}^2$ are orthogonal, since $\boldsf{L}^2$ is a Hermitian operator. By convention, we will normalize the eigenvectors such that
+
+$$
+\begin{equation}
+\braket{Y_{j, m}}{Y_{j', m'}} = \delta_{j j'} \delta_{m m'}.
+\end{equation}
+$$
+
+Let's find the norm of the laddered eigenvectors. We have
+
+$$
+\begin{equation}
+\begin{split}
+\norm{\boldsf{L}_\pm \ket{Y_{j, m}}}^2 &= \bra{Y_{j, m}} \boldsf{L}_\mp \boldsf{L}_\pm \ket{Y_{j, m}} \\
+&= \bra{Y_{j, m}} C_\pm \ket{Y_{j, m}} \\
+&= |C_\pm|^2 \braket{Y_{j, m}}{Y_{j, m}} \\
+&= |C_\pm|^2.
+\end{split}
+\end{equation}
+$$
+
+Thus,
+
+$$
+\begin{equation}
+|C_\pm|^2 = \bra{Y_{j, m}} \boldsf{L}_\mp \boldsf{L}_\pm \ket{Y_{j, m}}.
+\end{equation}
+$$
+
+Substituting in the earlier expression for $\boldsf{L}^2$ in terms of the ladder operators, then using the theorem, we obtain
+
+$$
+\begin{equation}
+C_\pm = \sqrt{j(j + 1) - m (m \pm 1)}.
+\end{equation}
+$$
+
+We drop the phase factor by choosing $C_\pm$ to be real.
+
+:::box Box 13.3.2 (Ladder Operator Action on Eigenvectors)
+
+The action of the ladder operators on the eigenvectors $\ket{Y_{j, m}}$ is given by
+
+$$
+\begin{align}
+\boldsf{L}_+ \ket{Y_{j, m}} &= \sqrt{j(j + 1) - m (m + 1)} \ket{Y_{j, m + 1}}, \\
+\boldsf{L}_- \ket{Y_{j, m}} &= \sqrt{j(j + 1) - m (m - 1)} \ket{Y_{j, m - 1}}.
+\end{align}
+$$
+
+:::
+
+:::example Example 13.3.3 (Positive Integer j)
+
+Let $j = \ell$ be a positive integer. Then the possible values of $m$ are $-\ell, -\ell + 1, \ldots, \ell - 1, \ell$, giving a total of $2 \ell + 1$ eigenvectors for each value of $\ell$.
+
+We can find a closed-form expression for the eigenvectors $\ket{Y_{\ell, m}}$ by starting from the highest eigenvector $\ket{Y_{\ell, \ell}}$ and applying the lowering operator $\boldsf{L}_-$ repeatedly. We have
+
+$$
+\begin{equation}
+\ket{Y_{\ell, m}} = \sqrt{\frac{(\ell + m)!}{(2 \ell)! (\ell - m)!}} (\boldsf{L}_-)^{\ell - m} \ket{Y_{\ell, \ell}}.
+\end{equation}
+$$
+
+:::
+
+## Eigenvalues of L² in Function Space (Spherical Harmonics)
+
+Now we can return to the original problem of finding the angular part of the solution $Y(\theta, \varphi)$ by solving the eigenvalue equation
+
+$$
+\begin{equation}
+\boldsf{L}^2 Y(\theta, \varphi) = j (j + 1) Y(\theta, \varphi).
+\end{equation}
+$$
+
+Let's consider each component of the angular momentum operator in spherical coordinates. The eigenvalue equation for $\boldsf{L}_z$ is given by
+
+$$
+\begin{equation}
+-i \pdv{\varphi} Y_{jm}(\theta, \varphi) = m Y_{jm}(\theta, \varphi).
+\end{equation}
+$$
+
+Let's separate variables by assuming that $Y_{jm}(\theta, \varphi) = P_{jm}(\theta) Q_{jm}(\varphi)$. Substituting this into the eigenvalue equation and dividing through by $P_{jm}(\theta) Q_{jm}(\varphi)$ gives
+
+$$
+\begin{equation}
+-i \frac{1}{Q_{jm}(\varphi)} \pdv{Q_{jm}(\varphi)}{\varphi} = m.
+\end{equation}
+$$
+
+This is an ODE for $Q_{jm}(\varphi)$, and its solution is
+
+$$
+\begin{equation}
+Q_{jm}(\varphi) = C_{jm} e^{i m \varphi},
+\end{equation}
+$$
+
+where $C_{jm} = \frac{1}{\sqrt{2 \pi}}$ is a constant, which we can absorb into the normalization of $P_{jm}(\theta)$ later. Anyways we now have
+
+$$
+\begin{equation}
+Y_{jm}(\theta, \varphi) = P_{jm}(\theta) e^{i m \varphi}.
+\end{equation}
+$$
+
+### Integer Values of m
+
+We will first consider the case where $m$ is an integer. This is to make the solution single-valued, since $\varphi$ is periodic with period $2 \pi$, as classical physics requires. In quantum mechanics, however, half-integer values of $m$ are also allowed, which leads to the concept of spin. To distinguish between these two cases, we will denote the integer case with $Y_{\ell m}(\theta, \varphi)$, where $\ell$ is a non-negative integer.
+
+We will need to find expressions for the ladder operators in spherical coordinates. Using the earlier expressions for $\boldsf{L}_x$ and $\boldsf{L}_y$, we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_\pm &= \boldsf{L}_x \pm i \boldsf{L}_y \\
+&= i \qty( \sin\varphi \pdv{}{\theta} + \cot\theta \cos\varphi \pdv{}{\varphi} ) \pm i \qty( -\cos\varphi \pdv{}{\theta} + \cot\theta \sin\varphi \pdv{}{\varphi} ) \\
+&= i e^{\pm i \varphi} \qty( \pm i \pdv{}{\theta} - \cot\theta \pdv{}{\varphi} ) \\
+&= e^{\pm i \varphi} \qty( \pm \pdv{}{\theta} + i \cot\theta \pdv{}{\varphi} ).
+\end{split}
+\end{equation}
+$$
+
+Recall that $\ell$ is the maximum eigenvalue of $m$. Therefore, applying the raising operator $\boldsf{L}_+$ to $Y_{\ell \ell}(\theta, \varphi)$ must give zero:
+
+$$
+\begin{equation}
+\boldsf{L}_+ Y_{\ell \ell}(\theta, \varphi) = 0 \implies \qty( \pdv{}{\theta} + i \cot\theta \pdv{}{\varphi} ) \qty( P_{\ell \ell}(\theta) e^{i \ell \varphi} ) = 0.
+\end{equation}
+$$
+
+This simplifies to
+
+$$
+\begin{equation}
+\dv{P_{\ell \ell}(\theta)}{\theta} - \ell \cot\theta P_{\ell \ell}(\theta) = 0,
+\end{equation}
+$$
+
+which is an ODE for $P_{\ell \ell}(\theta)$ with solution
+
+$$
+\begin{equation}
+P_{\ell \ell}(\theta) = C_\ell \sin^\ell \theta,
+\end{equation}
+$$
+
+So the highest eigenfunction is
+
+$$
+\begin{equation}
+Y_{\ell \ell}(\theta, \varphi) = C_\ell \sin^\ell \theta e^{i \ell \varphi}.
+\end{equation}
+$$
+
+To find the rest of the eigenfunctions, we simply apply the lowering operator $\boldsf{L}_-$ repeatedly. Using the earlier expression for $\boldsf{L}_-$, we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_- Y_{\ell \ell}(\theta, \varphi) &= e^{-i \varphi} \qty( -\pdv{}{\theta} + i \cot\theta \pdv{}{\varphi} ) \qty( P_{\ell \ell}(\theta) e^{i \ell \varphi} ) \\
+&= -e^{-i(\ell - 1) \varphi} \qty( \dv{\theta} + \ell \cot\theta ) P_{\ell \ell}(\theta).
+\end{split}
+\end{equation}
+$$
+
+It can be shown that applying the term in parentheses gives
+
+$$
+\begin{equation}
+\qty( \dv{\theta} + \ell \cot\theta ) P_{\ell \ell}(\theta) = \frac{1}{\sin^\ell \theta} \dv{\theta} \qty( \sin^\ell \theta P_{\ell \ell}(\theta) ).
+\end{equation}
+$$
+
+So using that and $P_{\ell \ell}(\theta) = C_\ell \sin^\ell \theta$, we have
+
+$$
+\begin{equation}
+\boldsf{L}_- Y_{\ell \ell}(\theta, \varphi) = -C_\ell e^{-i(\ell - 1) \varphi} \frac{1}{\sin^\ell \theta} \dv{\theta} \qty( \sin^{2 \ell} \theta ).
+\end{equation}
+$$
+
+Repeatedly applying the lowering operator will lead to the general expression
+
+$$
+\begin{equation}
+\boldsf{L}_-^k Y_{\ell \ell}(\theta, \varphi) = C_\ell \frac{e^{i(\ell - k)\phi}}{(1 - u^2)^{(l - k)/2}} \dv[k]{u} \qty( (1 - u^2)^\ell ),
+\end{equation}
+$$
+
+where we have made the substitution $u = \cos\theta$. Letting $k = \ell - m$, we have (using Example 13.3.3)
+
+$$
+\begin{equation}
+Y_{\ell m}(\theta, \varphi) = \sqrt{\frac{(\ell + m)!}{(2 \ell)! (\ell - m)!}} C_\ell e^{i m \varphi} (1 - u^2)^{m/2} \dv[\ell - m]{u} \qty( (1 - u^2)^\ell ).
+\end{equation}
+$$
+
+Finally, we can determine the normalization constant $C_\ell$ by taking $m = 0$ (since the constant is independent of $m$) and obtaining
+
+$$
+\begin{equation}
+Y_{\ell 0}(\theta, \varphi) = \sqrt{\frac{1}{2 \pi (2 \ell)!}} C_\ell \dv[\ell]{u} \qty( (1 - u^2)^\ell ).
+\end{equation}
+$$
+
+This is just the Legendre polynomial $P_\ell(u)$ multiplied by a constant;
+
+$$
+\begin{equation}
+Y_{\ell 0}(\theta, \varphi) = A_\ell P_\ell(\cos\theta),
+\end{equation}
+$$
+
+so we can use the normalization condition for Legendre polynomials to find $C_\ell$. Using
+
+$$
+\begin{equation}
+\int_0^{2 \pi} \dd{\phi} \int_0^\pi \sin\theta \dd{\theta} \ket{\theta, \varphi} \bra{\theta, \varphi} = 1
+\end{equation}
+$$
+
+(the completeness relation for spherical coordinates), we have
+
+$$
+\begin{equation}
+\begin{split}
+\delta_{\ell \ell'} \delta_{m m'} &= \braket{Y_{\ell m}}{Y_{\ell' m'}} \\
+&= \bra{Y_{\ell m}} \qty( \int_0^{2 \pi} \dd{\varphi} \int_0^\pi \sin\theta \dd{\theta} \ket{\theta, \varphi} \bra{\theta, \varphi} ) \ket{Y_{\ell' m'}} \\
+&= \int_0^{2 \pi} \dd{\varphi} \int_0^\pi \sin\theta \dd{\theta} Y_{\ell m}^*(\theta, \varphi) Y_{\ell' m'}(\theta, \varphi).
+\end{split}
+\end{equation}
+$$
+
+Substituting $u = \cos\theta$ gives
+
+$$
+\begin{equation}
+\delta_{\ell \ell'} \delta_{m m'} = \int_0^{2 \pi} \dd{\varphi} \int_{-1}^1 \dd{u} Y_{\ell m}^*(u, \varphi) Y_{\ell' m'}(u, \varphi).
+\end{equation}
+$$
+
+It can be shown that this leads to
+
+$$
+\begin{equation}
+A_\ell = \sqrt{\frac{2 \ell + 1}{4 \pi}}.
+\end{equation}
+$$
+
+Thus, the final expression for the eigenfunctions is
+
+$$
+\begin{equation}
+Y_{\ell m}(\theta, \varphi) = (-1)^ell \sqrt{\frac{2 \ell + 1}{4 \pi}} \frac{e^{im \varphi}}{2^\ell \ell!} \sqrt{\frac{(\ell - m)!}{(\ell + m)!}} (1 - u^2)^{m/2} \dv[\ell - m]{u} \qty( (1 - u^2)^\ell ),
+\end{equation}
+$$
+
+with $u = \cos\theta$. This set of functions $\{ Y_{\ell m}(\theta, \varphi) \}$ are known as the **spherical harmonics**. They appear frequently in physics, anywhere the Laplacian is expressed in systems with spherical symmetry. The atomic orbitals of electrons in atoms are described by spherical harmonics, for example.
+
+The $\theta$ part is
+
+$$
+\begin{equation}
+P_{\ell m}(\theta) = (-1)^\ell \frac{1}{2^\ell \ell!} \sqrt{\frac{(\ell - m)!}{(\ell + m)!}} (1 - u^2)^{m/2} \dv[\ell - m]{u} \qty( (1 - u^2)^\ell ),
+\end{equation}
+$$
+
+but for historical reasons, we use the associated Legendre functions defined by
+
+$$
+\begin{equation}
+P_\ell^m(u) = (-1)^m \sqrt{\frac{(\ell - m)!}{(\ell + m)!}} \sqrt{\frac{4\pi}{2 \ell + 1}} \, P_{\ell m}(\theta).
+\end{equation}
+$$
+
+We thus have
+
+:::box Box 13.3.4 (Spherical Harmonics)
+
+The spherical harmonics, which are solutions to the angular part of the Laplace equation in spherical coordinates, are given by
+
+$$
+\begin{equation}
+Y_{\ell m}(\theta, \varphi) = (-1)^m \sqrt{\frac{2 \ell + 1}{4 \pi} \frac{(\ell - m)!}{(\ell + m)!}} P_\ell^m(\cos\theta) e^{i m \varphi},
+\end{equation}
+$$
+
+where $\ell$ is a non-negative integer, $m$ takes values in the set $\{-\ell, -\ell + 1, \ldots, \ell - 1, \ell\}$, and $P_\ell^m(u)$ are the associated Legendre functions defined by
+
+$$
+\begin{equation}
+P_\ell^m(u) = (-1)^m \sqrt{\frac{(\ell - m)!}{(\ell + m)!}} \sqrt{\frac{4\pi}{2 \ell + 1}} \, P_{\ell m}(\theta).
+\end{equation}
+$$
+
+:::
+
+<figure>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/6/62/Spherical_Harmonics.png" alt="Spherical Harmonics" />
+    <figcaption>Visualization of spherical harmonics for $\ell = 0$ to $3$ and $m = -\ell$ to $\ell$. The color indicates the phase of the function, while the radius indicates the magnitude. (Source: Wikimedia Commons)</figcaption>
+</figure>
+
+## Appendix: L Only Depends on Angular Variables
+
+To justify the step where we assumed that $\boldsf{L}^2$ only acts on the angular part $Y$, we can express $\boldsf{L}^2$ in spherical coordinates.
+
+Let $\boldsf{L}_i$ be the $i$th component of the angular momentum operator. Acting on a function $f$, we have
+
+$$
+\begin{equation}
+\boldsf{L}_i f = -i \epsilon_{ijk} x_j \pdv{f}{x_k}.
+\end{equation}
+$$
+
+Let's convert this to spherical coordinates using the respective transformations
+
+$$
+\begin{align}
+x &= r \sin\theta \cos\varphi, \\
+y &= r \sin\theta \sin\varphi, \\
+z &= r \cos\theta, \\
+r &= \sqrt{x^2 + y^2 + z^2}, \\
+\theta &= \arccos\qty(\frac{z}{r}), \\
+\varphi &= \arctan\qty(\frac{y}{x}).
+\end{align}
+$$
+
+Using the chain rule, we have
+
+$$
+\begin{align}
+\pdv{f}{x} &= \pdv{f}{r} \pdv{r}{x} + \pdv{f}{\theta} \pdv{\theta}{x} + \pdv{f}{\varphi} \pdv{\varphi}{x}, \\
+\pdv{f}{y} &= \pdv{f}{r} \pdv{r}{y} + \pdv{f}{\theta} \pdv{\theta}{y} + \pdv{f}{\varphi} \pdv{\varphi}{y}, \\
+\pdv{f}{z} &= \pdv{f}{r} \pdv{r}{z} + \pdv{f}{\theta} \pdv{\theta}{z} + \pdv{f}{\varphi} \pdv{\varphi}{z}.
+\end{align}
+$$
+
+Calculating the partial derivatives (using the transformations above), we have
+
+$$
+\begin{align}
+\pdv{f}{x} &= \sin\theta \cos\varphi \pdv{f}{r} + \frac{\cos\theta \cos\varphi}{r} \pdv{f}{\theta} - \frac{\sin\varphi}{r \sin\theta} \pdv{f}{\varphi}, \\
+\pdv{f}{y} &= \sin\theta \sin\varphi \pdv{f}{r} + \frac{\cos\theta \sin\varphi}{r} \pdv{f}{\theta} + \frac{\cos\varphi}{r \sin\theta} \pdv{f}{\varphi}, \\
+\pdv{f}{z} &= \cos\theta \pdv{f}{r} - \frac{\sin\theta}{r} \pdv{f}{\theta}.
+\end{align}
+$$
+
+Now we can use these expressions to rewrite $\boldsf{L}_i f$ in spherical coordinates. First, for $\boldsf{L}_x f$ we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_x f &= -i \qty(y \pdv{f}{z} - z \pdv{f}{y}) \\
+&= -i \qty( r \sin\theta \sin\varphi \qty( \cos\theta \pdv{f}{r} - \frac{\sin\theta}{r} \pdv{f}{\theta} ) - r \cos\theta \qty( \sin\theta \sin\varphi \pdv{f}{r} + \frac{\cos\theta \sin\varphi}{r} \pdv{f}{\theta} + \frac{\cos\varphi}{r \sin\theta} \pdv{f}{\varphi} ) ) \\
+&= i \qty( \sin\varphi \pdv{f}{\theta} + \cot\theta \cos\varphi \pdv{f}{\varphi} ),
+\end{split}
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\boldsf{L}_x = i \qty( \sin\varphi \pdv{}{\theta} + \cot\theta \cos\varphi \pdv{}{\varphi} ).
+\end{equation}
+$$
+
+Similarly, for $\boldsf{L}_y f$ we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_y f &= -i \qty(z \pdv{f}{x} - x \pdv{f}{z}) \\
+&= -i \qty( r \cos\theta \qty( \sin\theta \cos\varphi \pdv{f}{r} + \frac{\cos\theta \cos\varphi}{r} \pdv{f}{\theta} - \frac{\sin\varphi}{r \sin\theta} \pdv{f}{\varphi} ) - r \sin\theta \cos\varphi \qty( \cos\theta \pdv{f}{r} - \frac{\sin\theta}{r} \pdv{f}{\theta} ) ) \\
+&= -i \qty( -\cos\varphi \pdv{f}{\theta} + \cot\theta \sin\varphi \pdv{f}{\varphi} ),
+\end{split}
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\boldsf{L}_y = -i \qty( -\cos\varphi \pdv{}{\theta} + \cot\theta \sin\varphi \pdv{}{\varphi} ).
+\end{equation}
+$$
+
+Finally, for $\boldsf{L}_z f$ we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_z f &= -i \qty(x \pdv{f}{y} - y \pdv{f}{x}) \\
+&= -i \qty( r \sin\theta \cos\varphi \qty( \sin\theta \sin\varphi \pdv{f}{r} + \frac{\cos\theta \sin\varphi}{r} \pdv{f}{\theta} + \frac{\cos\varphi}{r \sin\theta} \pdv{f}{\varphi} ) - r \sin\theta \sin\varphi \qty( \sin\theta \cos\varphi \pdv{f}{r} + \frac{\cos\theta \cos\varphi}{r} \pdv{f}{\theta} - \frac{\sin\varphi}{r \sin\theta} \pdv{f}{\varphi} ) ) \\
+&= -i \pdv{f}{\varphi},
+\end{split}
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\boldsf{L}_z = -i \pdv{}{\varphi}.
+\end{equation}
+$$
+
+Now we can compute $\boldsf{L}^2 = \boldsf{L}_x^2 + \boldsf{L}_y^2 + \boldsf{L}_z^2$. For $\boldsf{L}_x^2$ we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_x^2 &= - \qty( \sin\varphi \pdv{}{\theta} + \cot\theta \cos\varphi \pdv{}{\varphi} ) \qty( \sin\varphi \pdv{}{\theta} + \cot\theta \cos\varphi \pdv{}{\varphi} ) \\
+&= - \qty[ \sin[2]\varphi \pdv[2]{}{\theta} + \sin\varphi \pdv{\theta} \qty( \cot\theta \cos\varphi \pdv{}{\varphi} ) + \cot\theta \cos\varphi \pdv{}{\varphi} \qty( \sin\varphi \pdv{}{\theta} ) + \cot^2\theta \cos^2\varphi \pdv[2]{}{\varphi} ] \\
+&= - \qty[ \sin[2]\varphi \pdv[2]{}{\theta} + \sin\varphi \cos\varphi \qty(-\csc[2]\theta \pdv{\varphi} + \cot\theta \pdv{}{\theta}{\varphi}) + \cot\theta \cos\varphi \qty( \cos\varphi \pdv{\theta} + \sin\varphi \pdv{}{\varphi}{\theta} ) + \cot^2\theta \cos^2\varphi \pdv[2]{}{\varphi} ] \\
+&= - \qty[ \sin[2]\varphi \pdv[2]{}{\theta} + 2 \cot\theta \sin\varphi \cos\varphi \pdv{}{\theta}{\varphi} + \cot^2\theta \cos^2\varphi \pdv[2]{}{\varphi} - \sin\varphi \cos\varphi \csc[2]\theta \pdv{\varphi} + \cot\theta \cos[2]\varphi \pdv{\theta} ].
+\end{split}
+\end{equation}
+$$
+
+Similarly, for $\boldsf{L}_y^2$ we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}_y^2 &= - \qty( -\cos\varphi \pdv{}{\theta} + \cot\theta \sin\varphi \pdv{}{\varphi} ) \qty( -\cos\varphi \pdv{}{\theta} + \cot\theta \sin\varphi \pdv{}{\varphi} ) \\
+&= - \qty[ \cos[2]\varphi \pdv[2]{}{\theta} - \cos\varphi \pdv{\theta} \qty( \cot\theta \sin\varphi \pdv{}{\varphi} ) - \cot\theta \sin\varphi \pdv{}{\varphi} \qty( -\cos\varphi \pdv{}{\theta} ) + \cot^2\theta \sin^2\varphi \pdv[2]{}{\varphi} ] \\
+&= - \qty[ \cos[2]\varphi \pdv[2]{}{\theta} - \cos\varphi \sin\varphi \qty(-\csc[2]\theta \pdv{\varphi} + \cot\theta \pdv{}{\theta}{\varphi}) + \cot\theta \sin\varphi \qty( -\sin\varphi \pdv{\theta} + \cos\varphi \pdv{}{\varphi}{\theta} ) + \cot^2\theta \sin[2]\varphi \pdv[2]{}{\varphi} ] \\
+&= - \qty[ \cos[2]\varphi \pdv[2]{}{\theta} - 2 \cot\theta \sin\varphi \cos\varphi \pdv{}{\theta}{\varphi} + \cot^2\theta \sin[2]\varphi \pdv[2]{}{\varphi} + \sin\varphi \cos\varphi \csc[2]\theta \pdv{\varphi} - \cot\theta \sin[2]\varphi \pdv{\theta} ].
+\end{split}
+\end{equation}
+$$
+
+And for $\boldsf{L}_z^2$ we have
+
+$$
+\begin{equation}
+\boldsf{L}_z^2 = - \pdv[2]{}{\varphi}.
+\end{equation}
+$$
+
+Adding these three expressions together, we have
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{L}^2 &= \boldsf{L}_x^2 + \boldsf{L}_y^2 + \boldsf{L}_z^2 \\
+&= - \qty[ \sin[2]\varphi \pdv[2]{}{\theta} + 2 \cot\theta \sin\varphi \cos\varphi \pdv{}{\theta}{\varphi} + \cot^2\theta \cos^2\varphi \pdv[2]{}{\varphi} - \sin\varphi \cos\varphi \csc[2]\theta \pdv{\varphi} + \cot\theta \cos[2]\varphi \pdv{\theta} ] \\
+&\quad - \qty[ \cos[2]\varphi \pdv[2]{}{\theta} - 2 \cot\theta \sin\varphi \cos\varphi \pdv{}{\theta}{\varphi} + \cot^2\theta \sin[2]\varphi \pdv[2]{}{\varphi} + \sin\varphi \cos\varphi \csc[2]\theta \pdv{\varphi} - \cot\theta \sin[2]\varphi \pdv{\theta} ] - \pdv[2]{}{\varphi} \\
+&= - \qty[ (\sin[2]\varphi + \cos[2]\varphi) \pdv[2]{}{\theta} + (\cot^2\theta (\cos^2\varphi + \sin^2\varphi) - 1) \pdv[2]{}{\varphi} + (\cot\theta (\cos[2]\varphi - \sin[2]\varphi)) \pdv{\theta} ] \\
+&= - \qty[ \pdv[2]{}{\theta} + \cot\theta \pdv{\theta} + \qty( \cot^2\theta - 1 ) \pdv[2]{}{\varphi} ] \\
+&= - \qty[ \frac{1}{\sin\theta} \pdv{\theta} \qty( \sin\theta \pdv{}{\theta} ) + \frac{1}{\sin^2\theta} \pdv[2]{}{\varphi} ].
+\end{split}
+\end{equation}
+$$
+
+In the last step we used a reverse product rule to rewrite the first two terms.
+This final expression for $\boldsf{L}^2$ only involves derivatives with respect to the angular variables $\theta$ and $\varphi$, confirming our earlier assumption.

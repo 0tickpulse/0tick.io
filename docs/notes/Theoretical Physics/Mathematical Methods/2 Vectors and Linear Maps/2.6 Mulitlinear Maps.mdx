@@ -1,0 +1,500 @@
+---
+sidebar_position: 6
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# 2.6 Mulitlinear Maps
+
+Previously, we discussed linear maps and linear functionals.
+A multilinear map is a natural generalization of these concepts, where the map takes multiple vector inputs and is linear in each argument separately.
+We shall use this extensively in our study of tensor analysis in later chapters.
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+:::definition Definition 2.6.1 ($p$-Linear Map)
+
+A map $\boldsf{\theta} : \mathcal{V}_1 \times \mathcal{V}_2 \times \cdots \times \mathcal{V}_p \to \mathcal{W}$ is called a $p$-linear map if it is linear in each of its $p$ arguments separately.
+
+If $\mathcal{W} = \mathbb{F}$, the field over which the vector spaces are defined, then $\boldsf{\theta}$ is called a $p$-linear function.
+
+:::
+
+:::definition Definition 2.6.1 (Skew-Symmetric $p$-Linear Map)
+
+A $p$-linear map $\boldsf{\omega}: \mathcal{V}^p \to \mathcal{W}$ is called skew-symmetric if for any permutation $\sigma$ of the set $\{1, 2, \ldots, p\}$, we have
+
+$$
+\begin{equation}
+\boldsf{\omega}( \boldsymbol{v}_{\sigma(1)}, \boldsymbol{v}_{\sigma(2)}, \ldots, \boldsymbol{v}_{\sigma(p)} ) = \operatorname{sgn}(\sigma) \boldsf{\omega}( \boldsymbol{v}_1, \boldsymbol{v}_2, \ldots, \boldsymbol{v}_p ),
+\end{equation}
+$$
+
+where $\operatorname{sgn}(\sigma)$ is the sign of the permutation, equal to $+1$ for even permutations and $-1$ for odd permutations. It is often written as $\epsilon_{\sigma}$. Thus, more succinctly, we have
+
+$$
+\begin{equation}
+\sigma \boldsf{\omega} = \epsilon_{\sigma} \cdot \boldsf{\omega}.
+\end{equation}
+$$
+
+The set of skew-symmetric $p$-linear maps from $\mathcal{V}^p$ to $\mathcal{W}$ is denoted by $\Lambda^p(\mathcal{V}, \mathcal{W})$.
+
+The set of skew-symmetric $p$-linear functions from $\mathcal{V}^p$ to $\mathbb{F}$ is denoted by $\Lambda^p(\mathcal{V})$.
+
+:::
+
+To breakdown the definition, we need to establish some notational conventions. If we have a list of vectors $\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p} \in \mathcal{V}$, a permutation $\pi$ of the set $\{1, 2, \ldots, p\}$ acts on the list of vectors by rearranging them according to the permutation. For example, if $\pi$ is the permutation that swaps $1$ and $2$, then
+
+$$
+\begin{equation}
+\pi(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}) = (\ket{a_2}, \ket{a_1}, \ldots, \ket{a_p}).
+\end{equation}
+$$
+
+The idenitity permutation $\iota$ (iota) leaves the list unchanged:
+
+$$
+\begin{equation}
+\iota(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}) = (\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}).
+\end{equation}
+$$
+
+Acting $\pi$ on a single vector in the list means applying $\pi$ to the entire list and then extracting the corresponding vector. For example,
+
+$$
+\begin{equation}
+\pi \ket{a_1} := \text{first element of } \pi(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}) = \ket{a_2}.
+\end{equation}
+$$
+
+Acting $\pi$ on a $p$-linear map $\boldsf{\theta}$ means rearranging the arguments of $\boldsf{\theta}$ according to the permutation. For example,
+
+$$
+\begin{equation}
+\pi \boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}) := \boldsf{\theta}(\pi \ket{a_1}, \pi \ket{a_2}, \ldots, \pi \ket{a_p}) = \boldsf{\theta}(\ket{a_2}, \ket{a_1}, \ldots, \ket{a_p}).
+\end{equation}
+$$
+
+Finally, the sign of a permutation $\pi$, denoted by $\epsilon_{\pi}$, is defined as $+1$ if $\pi$ is an even permutation (can be expressed as an even number of transpositions) and $-1$ if $\pi$ is an odd permutation (can be expressed as an odd number of transpositions).
+
+Summing over permutations means taking the sum of the results of applying each permutation to the object in question. For example, if we sum over all permutations $\pi$ of the set $\{1, 2, 3, 4\}$ and act on a $4$-linear map $\boldsf{\theta}$, we get
+
+$$
+\begin{equation}
+\sum_\pi \pi \boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ket{a_3}, \ket{a_4}) = \boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ket{a_3}, \ket{a_4}) + \boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ket{a_4}, \ket{a_3}) + \cdots + \boldsf{\theta}(\ket{a_4}, \ket{a_3}, \ket{a_2}, \ket{a_1}).
+\end{equation}
+$$
+
+The Kronecker delta can be defined for permutations as
+
+$$
+\begin{equation}
+\delta_{\pi, \sigma} := \begin{cases}
+1 & \text{if } \pi = \sigma, \\
+0 & \text{if } \pi \neq \sigma.
+\end{cases}
+\end{equation}
+$$
+
+In other words, it acts like a filter that only "selects" the term where $\pi$ does the same thing as $\sigma$.
+
+---
+
+A map is skew-symmetric if swapping any two of its arguments changes the sign of the output.
+We can always construct a skew-symmetric $p$-linear map from any $p$-linear map $\boldsf{\theta}$ by defining
+
+$$
+\begin{equation}
+\boldsf{\omega} := \sum_\pi \epsilon_{\pi} \pi \boldsf{\theta}.
+\end{equation}
+$$
+
+Here, the sum is over all permutations $\pi$ of the set $\{1, 2, \ldots, p\}$. To take a simple example, consider a bilinear map $\boldsf{\theta} : \mathcal{V} \times \mathcal{V} \to \mathcal{W}$. The corresponding skew-symmetric bilinear map is given by
+
+$$
+\begin{equation}
+\boldsf{\omega}(\ket{a}, \ket{b}) = \boldsf{\theta}(\ket{a}, \ket{b}) - \boldsf{\theta}(\ket{b}, \ket{a}).
+\end{equation}
+$$
+
+For a $3$-linear map $\boldsf{\theta} : \mathcal{V} \times \mathcal{V} \times \mathcal{V} \to \mathcal{W}$, the corresponding skew-symmetric trilinear map is given by
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{\omega}(\ket{a}, \ket{b}, \ket{c}) &= \boldsf{\theta}(\ket{a}, \ket{b}, \ket{c}) - \boldsf{\theta}(\ket{a}, \ket{c}, \ket{b}) - \boldsf{\theta}(\ket{b}, \ket{a}, \ket{c}) \\
+&\quad {}+ \boldsf{\theta}(\ket{b}, \ket{c}, \ket{a}) + \boldsf{\theta}(\ket{c}, \ket{a}, \ket{b}) - \boldsf{\theta}(\ket{c}, \ket{b}, \ket{a}).
+\end{split}
+\end{equation}
+$$
+
+:::theorem Theorem 2.6.3 (Equivalent Statements for Skew-Symmetry)
+
+For any $\boldsf{\omega} \in \Lambda^p(\mathcal{V}, \mathcal{W})$, the following statements are equivalent:
+
+1. $\boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}) = 0$ whenever two of the vectors $\ket{a_i}$ are equal.
+2. $\boldsf{\omega}(\ket{a_{\sigma(1)}}, \ket{a_{\sigma(2)}}, \ldots, \ket{a_{\sigma(p)}}) = \epsilon_{\sigma} \boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p})$ for any permutation $\sigma$ of the set $\{1, 2, \ldots, p\}$.
+3. $\boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}) = 0$ whenever the set $\{\ket{a_1}, \ket{a_2}, \ldots, \ket{a_p}\}$ is linearly dependent.
+
+:::
+
+:::proposition Proposition 2.6.4
+
+Let $\boldsf{\omega} \in \Lambda^N(\mathcal{V}, \mathcal{W})$ be a skew-symmetric $N$-linear map, where $N = \dim(\mathcal{V})$. $\boldsf{\omega}$ is completely determined by its action on any basis of $\mathcal{V}$. If $\boldsf{\omega}$ annihilates all basis elements, then $\boldsf{\omega} = \boldsf{0}$.
+
+---
+
+*Proof.* Denote the basis of $\mathcal{V}$ by $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}\}$. Let $\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N} \in \mathcal{V}$ be arbitrary vectors. Then, the action of $\boldsf{\omega}$ on these vectors can be expressed as
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) &= \boldsf{\omega}\qty( \sum_{i_1=1}^N a_{1 i_1} \ket{e_{i_1}}, \sum_{i_2=1}^N a_{2 i_2} \ket{e_{i_2}}, \ldots, \sum_{i_N=1}^N a_{N i_N} \ket{e_{i_N}} ) \\
+&= \sum_{i_1=1, i_2=1, \ldots, i_N=1}^N a_{1 i_1} a_{2 i_2} \cdots a_{N i_N} \boldsf{\omega}(\ket{e_{i_1}}, \ket{e_{i_2}}, \ldots, \ket{e_{i_N}}) \\
+&= \sum_\pi a_{1 \pi(1)} a_{2 \pi(2)} \cdots a_{N \pi(N)} \boldsf{\omega}(\ket{e_{\pi(1)}}, \ket{e_{\pi(2)}}, \ldots, \ket{e_{\pi(N)}}).
+\end{split}
+\end{equation}
+$$
+
+The summation is a constant, so if $\boldsf{\omega}$ annihilates all basis elements, then $\boldsf{\omega} = \boldsf{0}$. $\blacksquare$
+
+---
+
+:::
+
+:::definition Definition 2.6.5 (Determinant Map)
+
+A determinant map in $\mathcal{V}$ is a skew-symmetric $N$-linear function $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$.
+
+:::
+
+There are special determinant maps we shall consider. Let $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}\}$ be a basis of $\mathcal{V}$, and $\ket{\boldsf{\epsilon}_1}, \ket{\boldsf{\epsilon}_2}, \ldots, \ket{\boldsf{\epsilon}_N} \in \mathcal{V}^*$ be the corresponding dual basis. For a set of $N$ vectors $\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N} \in \mathcal{V}$, we define the map
+
+$$
+\begin{equation}
+\boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) := \boldsf{\epsilon}_1(\ket{a_1}) \boldsf{\epsilon}_2(\ket{a_2}) \cdots \boldsf{\epsilon}_N(\ket{a_N}).
+\end{equation}
+$$
+
+Applying a permutation $\pi$ to the arguments of $\boldsf{\theta}$ gives
+
+$$
+\begin{equation}
+\pi \boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) = \boldsf{\epsilon}_1(\ket{a_{\pi(1)}}) \boldsf{\epsilon}_2(\ket{a_{\pi(2)}}) \cdots \boldsf{\epsilon}_N(\ket{a_{\pi(N)}}).
+\end{equation}
+$$
+
+If $\pi$ changes the order of the vectors, we will get $\boldsf{\epsilon}_i$ acting on $\ket{a_j}$ where $i \neq j$ for at least one $i$. Since the dual basis satisfies $\boldsf{\epsilon}_i(\ket{e_j}) = \delta_{ij}$, this means that at least one of the terms in the product will be zero.
+Only if $\pi$ is the identity permutation $\iota$ do we get a non-zero result;
+
+$$
+\begin{equation}
+\pi \boldsf{\theta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) = \delta_{\pi, \iota}.
+\end{equation}
+$$
+
+We define a determinant map $\boldsf{\Delta} = \sum_\pi \epsilon_{\pi} \pi \boldsf{\theta}$, which is a skew-symmetric $N$-linear function. Applying it on the basis vectors, we get
+
+$$
+\begin{equation}
+\boldsf{\Delta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) = \sum_\pi \epsilon_{\pi} \pi \boldsf{\theta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) = \sum_\pi \epsilon_{\pi} \delta_{\pi, \iota} = 1.
+\end{equation}
+$$
+
+:::box Box 2.6.6 (Existence of Determinant Maps)
+
+In an $N$-dimensional vector space $\mathcal{V}$ (where $N$ is finite), there exists a determinant map $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$ which is not the zero map.
+
+:::
+
+:::proposition Proposition 2.6.7
+
+Suppose $\boldsf{\omega} \in \Lambda^N(\mathcal{V}, \mathcal{U})$ is a skew-symmetric $N$-linear map, where $N = \dim(\mathcal{V})$ and $\mathcal{U}$ is another vector space.
+
+Then there exists a unique vector $\ket{u_\Delta} \in \mathcal{U}$ such that
+
+$$
+\begin{equation}
+\boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) = \boldsf{\Delta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) \ket{u_\Delta},
+\end{equation}
+$$
+
+for all $\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N} \in \mathcal{V}$, where $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$ is a determinant map.
+
+---
+
+*Proof.* Denote the basis of $\mathcal{V}$ by $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}\}$, where $\boldsf{\Delta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) \neq 0$. We can always scale $\boldsf{\Delta}$ or one of the basis vectors to ensure $\boldsf{\Delta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) = 1$.
+
+If we denote the output of $\boldsf{\omega}$ on the basis vectors by
+
+$$
+\begin{equation}
+\ket{u_\Delta} := \boldsf{\omega}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}),
+\end{equation}
+$$
+
+then
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{\omega}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) - \boldsf{\Delta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) \ket{u_\Delta} &= \ket{u_\Delta} - 1 \cdot \ket{u_\Delta} \\
+&= 0.
+\end{split}
+\end{equation}
+$$
+
+Recall from Proposition 2.6.4 that if a skew-symmetric $N$-linear map annihilates all basis elements, then it is the zero map. Therefore, we have
+
+$$
+\begin{equation}
+\boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) - \boldsf{\Delta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) \ket{u_\Delta} = \boldsf{0},
+\end{equation}
+$$
+
+and thus
+
+$$
+\begin{equation}
+\boldsf{\omega}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) = \boldsf{\Delta}(\ket{a_1}, \ket{a_2}, \ldots, \ket{a_N}) \ket{u_\Delta}.
+\end{equation}
+$$
+
+$\blacksquare$
+
+---
+
+:::
+
+To see an application of Proposition 2.6.7, consider the following corollary, where we just replace the codomain vector space $\mathcal{U}$ with the field $\mathbb{F}$.
+
+:::corollary Corollary 2.6.8
+
+Every skew-symmetric $N$-linear functional $\boldsf{\omega} \in \Lambda^N(\mathcal{V})$ is a scalar multiple of the determinant map $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$.
+
+:::
+
+This is significant because it tells us that in an $N$-dimensional vector space, there is essentially only one way (up to a scalar multiple) to define a skew-symmetric $N$-linear functional, which is through the determinant map. We will see later how this relates to volume forms and orientations in differential geometry.
+
+:::proposition Proposition 2.6.9
+
+Let $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$ be a determinant map in an $N$-dimensional vector space $\mathcal{V}$. Let $\ket{a}$ and $\{\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}\}$ be vectors in $\mathcal{V}$. Then,
+
+$$
+\begin{equation}
+\sum_{j = 1}^N (-1)^{j - 1} \boldsf{\Delta}(\ket{a}, \ket{v_1}, \ldots, \widehat{\ket{v_j}}, \ldots, \ket{v_N}) \ket{v_j} = \boldsf{\Delta}(\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}) \ket{a},
+\end{equation}
+$$
+
+where the notation $\widehat{\ket{v_j}}$ indicates that the vector $\ket{v_j}$ is omitted from the list of arguments.
+
+:::
+
+### Determinants
+
+In the previous section, we introduced the concept of determinant maps as skew-symmetric $N$-linear functionals in an $N$-dimensional vector space. We will now connect this abstract definition to the more familiar notion of determinants of linear operators.
+
+Let $\boldsf{A} \in \text{End}(\mathcal{V})$ be a linear operator on an $N$-dimensional vector space $\mathcal{V}$, and let $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$ be a nonzero determinant map. If the basis of $\mathcal{V}$ is given by $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}\}$, we define the determinant $\boldsf{\Delta}_A$ as
+
+$$
+\begin{equation}
+\boldsf{\Delta}_A(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) := \boldsf{\Delta}(\boldsf{A} \ket{e_1}, \boldsf{A} \ket{e_2}, \ldots, \boldsf{A} \ket{e_N}).
+\end{equation}
+$$
+
+$\boldsf{\Delta}_A$ is also a determinant map, since it is the composition of a linear operator with a skew-symmetric $N$-linear functional. It is thus (by Corollary 2.6.8) a scalar multiple of $\boldsf{\Delta}$;
+
+$$
+\begin{equation}
+\boldsf{\Delta}_A = \alpha \boldsf{\Delta}.
+\end{equation}
+$$
+
+Note that our choice of $\boldsf{\Delta}$ was arbitrary; had we chosen another determinant map $\boldsf{\Delta}'$, we would have obtained the another scalar multiple of $\boldsf{\Delta}'$;
+
+$$
+\begin{equation}
+\boldsf{\Delta}'_A = \lambda \boldsf{\Delta}_A = \lambda \alpha \boldsf{\Delta} = \alpha \boldsf{\Delta}',
+\end{equation}
+$$
+
+for some non-zero scalar $\lambda$ such that $\boldsf{\Delta}' = \lambda \boldsf{\Delta}$. Thus, the scalar $\alpha$ is independent of the choice of determinant map, and we define the determinant of the linear operator $\boldsf{A}$ as this scalar.
+
+:::definition Definition 2.6.10 (Determinant of a Linear Operator)
+
+For a linear operator $\boldsf{A} \in \text{End}(\mathcal{V})$ on an $N$-dimensional vector space $\mathcal{V}$, and a nonzero determinant map $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$, then define a determinant map $\boldsf{\Delta}_A$ as
+
+$$
+\begin{equation}
+\boldsf{\Delta}_A := \boldsf{\Delta}(\boldsf{A} \ket{e_1}, \boldsf{A} \ket{e_2}, \ldots, \boldsf{A} \ket{e_N}),
+\end{equation}
+$$
+
+where $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}\}$ is any basis of $\mathcal{V}$. Then, the determinant of the linear operator $\boldsf{A}$, denoted by $\det{\boldsf{A}}$, is the unique scalar $\alpha := \det{\boldsf{A}}$ such that
+
+$$
+\begin{equation}
+\boldsf{\Delta}_A = \alpha \boldsf{\Delta}.
+\end{equation}
+$$
+
+:::
+
+Geometrically, the determinant of a linear operator can be interpreted as the scaling factor by which the operator changes volumes in the vector space.
+
+:::theorem Theorem 2.6.11 (Properties of Determinants)
+
+Let $\boldsf{A}, \boldsf{B} \in \text{End}(\mathcal{V})$ be linear operators on an $N$-dimensional vector space $\mathcal{V}$. The determinant map satisfies the following properties:
+
+1. $\det(\lambda \boldsf{1}) = \lambda^N$ for any scalar $\lambda \in \mathbb{F}$, where $\boldsf{1}$ is the identity operator on $\mathcal{V}$.
+2. $\det(\boldsf{A} \circ \boldsf{B}) = \det{\boldsf{A}} \cdot \det(\boldsf{B})$.
+3. $\det{\boldsf{A}} \neq 0$ if and only if $\boldsf{A}$ is invertible.
+
+---
+
+*Proof.* These should be intuitively clear from the geometric interpretation of determinants as volume scaling factors. A rigorous proof can be constructed using the properties of multilinear maps and the definition of determinants.
+
+First, for any scalar $\lambda$ and the identity operator $\boldsf{1}$, we have
+
+$$
+\begin{equation}
+\boldsf{\Delta}_{\lambda \boldsf{1}} = \det(\lambda \boldsf{1}) \boldsf{\Delta}.
+\end{equation}
+$$
+
+To proceed, recall the definition of $\boldsf{\Delta}_{\lambda \boldsf{1}}$:
+
+$$
+\begin{equation}
+\boldsf{\Delta}_{\lambda \boldsf{1}}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) = \boldsf{\Delta}((\lambda \boldsf{1}) \ket{e_1}, (\lambda \boldsf{1}) \ket{e_2}, \ldots, (\lambda \boldsf{1}) \ket{e_N}).
+\end{equation}
+$$
+
+As $(\lambda \boldsf{1}) \ket{e_i} = \lambda \ket{e_i}$ for each basis vector $\ket{e_i}$, we can factor out $\lambda$ from each argument of $\boldsf{\Delta}$ (as it is multilinear):
+
+$$
+\begin{equation}
+\boldsf{\Delta}_{\lambda \boldsf{1}}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) = \lambda^N \boldsf{\Delta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}).
+\end{equation}
+$$
+
+Plugging this back into the definition of $\boldsf{\Delta}_{\lambda \boldsf{1}}$, we find
+
+$$
+\begin{equation}
+\det(\lambda \boldsf{1}) \boldsf{\Delta} = \lambda^N \boldsf{\Delta} \implies \det(\lambda \boldsf{1}) = \lambda^N.
+\end{equation}
+$$
+
+For the second property, we use the same definition of the determinant map;
+
+$$
+\begin{equation}
+\boldsf{\Delta}_{\boldsf{A} \circ \boldsf{B}} = \det(\boldsf{A} \circ \boldsf{B}) \boldsf{\Delta}.
+\end{equation}
+$$
+
+The left-hand side can be expanded as
+
+$$
+\begin{equation}
+\begin{split}
+\boldsf{\Delta}_{\boldsf{A} \circ \boldsf{B}}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) &= \boldsf{\Delta}((\boldsf{A} \circ \boldsf{B}) \ket{e_1}, (\boldsf{A} \circ \boldsf{B}) \ket{e_2}, \ldots, (\boldsf{A} \circ \boldsf{B}) \ket{e_N}) \\
+&= \boldsf{\Delta}(\boldsf{A}(\boldsf{B} \ket{e_1}), \boldsf{A}(\boldsf{B} \ket{e_2}), \ldots, \boldsf{A}(\boldsf{B} \ket{e_N})) \\
+&= \boldsf{\Delta}_A (\boldsf{B} \ket{e_1}, \boldsf{B} \ket{e_2}, \ldots, \boldsf{B} \ket{e_N}) \\
+&= \boldsf{\Delta}_A \circ \boldsf{\Delta}_B (\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) \\
+&= \det{\boldsf{A}} \cdot \det(\boldsf{B}) \boldsf{\Delta}(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}).
+\end{split}
+\end{equation}
+$$
+
+Thus we have
+
+$$
+\begin{equation}
+\det(\boldsf{A} \circ \boldsf{B}) \boldsf{\Delta} = \det{\boldsf{A}} \cdot \det(\boldsf{B}) \boldsf{\Delta} \implies \det(\boldsf{A} \circ \boldsf{B}) = \det{\boldsf{A}} \cdot \det(\boldsf{B}).
+\end{equation}
+$$
+
+For the last property, recall that for an invertible operator $\boldsf{A}$, acting on a set of linearly independent vectors produces another set of linearly independent vectors.
+
+($\Rightarrow$) If $\boldsf{A}$ is invertible, then $\boldsf{A} \ket{e_1}, \boldsf{A} \ket{e_2}, \ldots, \boldsf{A} \ket{e_N}$ are linearly independent. Since $\boldsf{\Delta}$ is a determinant map, it does not annihilate linearly independent sets of vectors. Therefore, $\boldsf{\Delta}_A(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) \neq 0$, which implies $\det{\boldsf{A}} \neq 0$.
+
+($\Leftarrow$) Conversely, if $\det{\boldsf{A}} \neq 0$, then $\boldsf{\Delta}_A(\ket{e_1}, \ket{e_2}, \ldots, \ket{e_N}) \neq 0$. This means that the set $\{\boldsf{A} \ket{e_1}, \boldsf{A} \ket{e_2}, \ldots, \boldsf{A} \ket{e_N}\}$ is linearly independent. Hence, $\boldsf{A}$ must be invertible.
+
+Thus all three properties are proven. $\blacksquare$
+
+---
+
+:::
+
+## Classical Adjoints
+
+In the previous theorem, we said that an invertible linear operator has a non-zero determinant. We will now explore a way to reach the inverse of a linear operator using determinants, through the concept of the classical adjoint.
+
+Suppose we have a linear operator $\boldsf{A} \in \text{End}(\mathcal{V})$ on an $N$-dimensional vector space $\mathcal{V}$.
+
+Define a new map $\Phi: \mathcal{V}^N \to \text{End}(\mathcal{V})$ by setting, for any $\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}$ and $\ket{a} \in \mathcal{V}$,
+
+$$
+\begin{equation}
+\Phi(\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}) \ket{a} = \sum_{j = 1}^N (-1)^{j - 1} \boldsf{\Delta}(\ket{a}, \ket{v_1}, \ldots, \widehat{\ket{v_j}}, \ldots, \ket{v_N}) \ket{v_j},
+\end{equation}
+$$
+
+where $\boldsf{\Delta} \in \Lambda^N(\mathcal{V})$ is a determinant map. To see a concrete example, consider five vectors $\ket{a}, \ket{v_1}, \ket{v_2}, \ket{v_3}, \ket{v_4} \in \mathcal{V}$, where $\dim(\mathcal{V}) = 4$. Then,
+
+$$
+\begin{equation}
+\begin{split}
+\Phi(\ket{v_1}, \ket{v_2}, \ket{v_3}, \ket{v_4}) \ket{a} &= \boldsf{\Delta}(\ket{a}, \ket{v_2}, \ket{v_3}, \ket{v_4}) \ket{v_1} - \boldsf{\Delta}(\ket{a}, \ket{v_1}, \ket{v_3}, \ket{v_4}) \ket{v_2} \\
+&\quad {}+ \boldsf{\Delta}(\ket{a}, \ket{v_1}, \ket{v_2}, \ket{v_4}) \ket{v_3} - \boldsf{\Delta}(\ket{a}, \ket{v_1}, \ket{v_2}, \ket{v_3}) \ket{v_4}.
+\end{split}
+\end{equation}
+$$
+
+As $\Phi$ is skew-symmetric, it is a multiple of the determinant map by Proposition 2.6.7. Thus, there exists a unique linear operator $\text{ad}(\boldsf{A}) \in \text{End}(\mathcal{V})$ such that
+
+$$
+\begin{equation}
+\Phi(\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}) = \text{ad}(\boldsf{A}) \cdot \boldsf{\Delta}(\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}).
+\end{equation}
+$$
+
+$\text{ad}(\boldsf{A})$ is called the classical adjoint of the linear operator $\boldsf{A}$.
+To reword the definition, the adjoint $\text{ad}(\boldsf{A})$ is the unique linear operator satisfying
+
+$$
+\begin{equation}
+\sum_{j = 1}^N (-1)^{j - 1} \boldsf{\Delta}(\ket{a}, \ket{v_1}, \ldots, \widehat{\ket{v_j}}, \ldots, \ket{v_N}) \ket{v_j} = \boldsf{\Delta}(\ket{v_1}, \ket{v_2}, \ldots, \ket{v_N}) \cdot \text{ad}(\boldsf{A}) \ket{a}
+\end{equation}
+$$
+
+for all $\ket{a}, \ket{v_1}, \ket{v_2}, \ldots, \ket{v_N} \in \mathcal{V}$.
+
+:::proposition Proposition 2.6.12 (Relations involving the Classical Adjoint)
+
+The classical adjoint of a linear operator $\boldsf{A} \in \text{End}(\mathcal{V})$ satisfies
+
+$$
+\begin{equation}
+\text{ad}(\boldsf{A}) \circ \boldsf{A} = \det{\boldsf{A}} \circ \boldsf{1} = \boldsf{A} \circ \text{ad}(\boldsf{A}),
+\end{equation}
+$$
+
+where $\boldsf{1}$ is the identity operator on $\mathcal{V}$.
+
+:::
