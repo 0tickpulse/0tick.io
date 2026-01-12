@@ -24,12 +24,117 @@ In this section, we will introduce the concept of algebras over vector spaces.
 
 In many physical applications, there are often natural ways to "multiply" vectors together.
 We can multiply matrices together, we can take the cross product of vectors in $\mathbb{R}^3$, and we can multiply complex numbers together.
+Pauli matrices, used in quantum mechanics, act as a set of basis elements for a vector space.
+Quaternions, which extend complex numbers, also form a vector space with a natural multiplication operation.
+So we can see that in many cases, vector spaces come equipped with a natural multiplication operation, where the product of two vectors is another vector in the same space.
+We call any vector space endowed with such a multiplication operation an **algebra over a field**.
 
-**Definition 3.1.1** (algebra over a field) An **algebra** $\mathcal{A}$ over a field $\mathbb{F}$ is a vector space over $\mathbb{F}$ equipped with a bilinear map (called multiplication) $\cdot : \mathcal{A} \times \mathcal{A} \to \mathcal{A}$.
+:::definition Definition 3.1.1 (Algebra over a Field)
+
+An **algebra** $\mathcal{A}$ over a field $\mathbb{F}$ is a vector space over $\mathbb{F}$ equipped with a bilinear map (called multiplication) $\cdot : \mathcal{A} \times \mathcal{A} \to \mathcal{A}$.
 The image of $(\vb{a}, \vb{b})$ under this map is denoted by $\vb{a} \vb{b}$ for all $\vb{a}, \vb{b} \in \mathcal{A}$.
 This multiplication must satisfy the following properties for all $\vb{a}, \vb{b}, \vb{c} \in \mathcal{A}$ and all $\alpha, \beta \in \mathbb{F}$:
 
 1. Linearity in the first argument: $(\alpha \vb{a} + \beta \vb{b}) \vb{c} = \alpha (\vb{a} \vb{c}) + \beta (\vb{b} \vb{c})$,
 2. Linearity in the second argument: $\vb{a} (\alpha \vb{b} + \beta \vb{c}) = \alpha (\vb{a} \vb{b}) + \beta (\vb{a} \vb{c})$.
 
+$\mathcal{A}$ is
+
+- **associative** if $(\vb{a} \vb{b}) \vb{c} = \vb{a} (\vb{b} \vb{c})$ for all $\vb{a}, \vb{b}, \vb{c} \in \mathcal{A}$,
+- **commutative** if $\vb{a} \vb{b} = \vb{b} \vb{a}$ for all $\vb{a}, \vb{b} \in \mathcal{A}$, and
+- **unital** if there exists an element $\vb{1} \in \mathcal{A}$ such that $\vb{1} \vb{a} = \vb{a} \vb{1} = \vb{a}$ for all $\vb{a} \in \mathcal{A}$.
+    The identity element is sometimes also denoted by $\vb{e}$.
+
+:::
+
+As multiplication is not necessarily commutative or associative, the notion of inverses becomes more complicated.
+Leting $\vb{a} \in \mathcal{A}$, we say that $\vb{b} \in \mathcal{A}$ is a **left inverse** of $\vb{a}$ if $\vb{b} \vb{a} = \vb{1}$, and a **right inverse** of $\vb{a}$ if $\vb{a} \vb{b} = \vb{1}$.
+
+### Properties of Algebras
+
+First, if $\vb{0}$ is the zero vector in $\mathcal{A}$ (which always exists as $\mathcal{A}$ is a vector space), then for any $\vb{a} \in \mathcal{A}$, we have $\vb{0} \vb{a} = \vb{a} \vb{0} = \vb{0}$.
+This follows from the bilinearity of the multiplication operation:
+
+$$
+\begin{equation}
+\vb{0} \vb{a} = (0 \cdot \vb{0}) \vb{a} = 0 (\vb{0} \vb{a}) = \vb{0},
+\end{equation}
+$$
+
+and similarly for $\vb{a} \vb{0}$.
+
+Second, in an associative algebra, left and right inverses coincide.
+If $\vb{b}$ is a left inverse of $\vb{a}$ and $\vb{c}$ is a right inverse of $\vb{a}$, then
+
+$$
+\begin{equation}
+\vb{b} = \vb{b} (\vb{a} \vb{c}) = (\vb{b} \vb{a}) \vb{c} = \vb{1} \vb{c} = \vb{c}.
+\end{equation}
+$$
+
+Third, in an associative algebra, this (both-sided) inverse is unique.
+
+Fourth, the identity element in a unital algebra is unique.
+If $\vb{1}$ and $\vb{e}$ are both identity elements, then obviously
+
+$$
+\begin{equation}
+\vb{1} = \vb{1} \vb{e} = \vb{e}.
+\end{equation}
+$$
+
+Let's put this together in a theorem.
+
+:::theorem Theorem 3.1.2 (Properties of Associative Algebras)
+
+Let $\mathcal{A}$ be an associative algebra over a field $\mathbb{F}$.
+Let $\vb{a}, \vb{b} \in \mathcal{A}$.
+Then,
+
+1. If $\vb{a}$ has a left inverse $\vb{b}$ and a right inverse $\vb{c}$, then $\vb{b} = \vb{c}$.
+2. If $\vb{a}$ has an inverse, then it is unique.
+3. If $\vb{a}$ and $\vb{b}$ are invertible, then so is their product $\vb{a} \vb{b}$, and we have
+    $$
+    \begin{equation}
+    (\vb{a} \vb{b})^{-1} = \vb{b}^{-1} \vb{a}^{-1}.
+    \end{equation}
+    $$
+
+---
+
+*Proof.* We have already shown parts 1 and 2 from above.
+For part 3, we can verify that $\vb{b}^{-1} \vb{a}^{-1}$ is indeed the inverse of $\vb{a} \vb{b}$ by showing that they multiply to identity:
+
+$$
+\begin{equation}
+(\vb{a} \vb{b}) (\vb{b}^{-1} \vb{a}^{-1}) = \vb{a} (\vb{b} \vb{b}^{-1}) \vb{a}^{-1} = \vb{a} \vb{1} \vb{a}^{-1} = \vb{a} \vb{a}^{-1} = \vb{1},
+\end{equation}
+$$
+
+and similarly,
+
+$$
+\begin{equation}
+(\vb{b}^{-1} \vb{a}^{-1}) (\vb{a} \vb{b}) = \vb{b}^{-1} (\vb{a}^{-1} \vb{a}) \vb{b} = \vb{b}^{-1} \vb{1} \vb{b} = \vb{b}^{-1} \vb{b} = \vb{1}.
+\end{equation}
+$$
+
+Thus part 3 is proven. $\blacksquare$
+
+---
+
+:::
+
+Next, as vector spaces have subspaces, we can also define subsets of algebras that are closed under the multiplication operation.
+
+:::definition Definition 3.1.3 (Subalgebra)
+
+A **subalgebra** $\mathcal{A}'$ of an algebra $\mathcal{A}$ over a field $\mathbb{F}$ is a subset $\mathcal{A}' \subseteq \mathcal{A}$ that is itself an algebra over $\mathbb{F}$ with the same multiplication operation as $\mathcal{A}$.
+Trivially, $\mathcal{A}'$ is closed under addition, scalar multiplication, and the multiplication operation of $\mathcal{A}$.
+
+A **subalgebra generated by a subset** $S \subseteq \mathcal{A}$ is the smallest subalgebra of $\mathcal{A}$ that contains $S$.
+It is formed by taking all finite linear combinations and products of elements in $S$.
+If $S$ contains a single element $\{\vb{s}\}$, then the subalgebra generated by $S$ is just the set of all polynomials in $\vb{s}$ with coefficients from the field $\mathbb{F}$.
+
+:::
 

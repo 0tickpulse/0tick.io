@@ -1,0 +1,362 @@
+---
+sidebar_position: 7
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors"
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+
+# Chapter 2 Solutions
+
+Here are the solutions to the exercises in Chapter 2 of Mathematical Physics: A Modern Introduction to Its Foundations by Sadri Hassani.
+
+<TOCInline toc={toc} />
+
+<details>
+
+<summary>
+
+## 2.1
+
+Let $\mathbb{R}^+$ denote the set of positive real numbers. Define the “sum” of two elements of $\mathbb{R}^+$ to be their usual product, and define scalar multiplication by elements of $\mathbb{R}$ as being given by $r \cdot p = p^r$ where $r \in \mathbb{R}$ and $p \in \mathbb{R}^+$. With these operations, show that $\mathbb{R}^+$ is a vector space over $\mathbb{R}$.
+
+</summary>
+
+To show that $\mathbb{R}^+$ is a vector space over $\mathbb{R}$ with the given operations, we need to verify that it satisfies the vector space axioms.
+That is, we need to check that it is an abelian group under the defined addition, and that scalar multiplication satisfies the necessary properties.
+
+Let $p, q \in \mathbb{R}^+$ and $r, s \in \mathbb{R}$.
+To avoid confusion, we will denote the newly defined addition by $\oplus$, so that $p \oplus q = pq$.
+
+As $\mathbb{R}^+$ is a field, the usual multiplication operation forms an abelian group.
+The identity element is $1$, since for any $p \in \mathbb{R}^+$, we have $p \cdot 1 = p$.
+The inverse of any $p \in \mathbb{R}^+$ is $\frac{1}{p}$, since $p \cdot \frac{1}{p} = 1$.
+Therefore, the newly defined addition satisfies the axioms for an abelian group.
+
+Next, we need to verify the properties of scalar multiplication: $r \cdot p = p^r$.
+
+1. As $p > 0$, $p^r > 0$ for any $r \in \mathbb{R}$ (closure),
+2. $r \cdot (s \cdot p) = r \cdot (p^s) = (p^s)^r = p^{sr} = (rs) \cdot p$ (compatibility), and
+3. $1 \cdot p = p^1 = p$ (identity).
+
+Finally, we need to check the distributive properties:
+
+1. $r \cdot (p \oplus q) = r \cdot (pq) = (pq)^r = p^r q^r = (r \cdot p) \oplus (r \cdot q)$, and
+2. $(r + s) \cdot p = p^{r + s} = p^r p^s = (r \cdot p) \oplus (s \cdot p)$.
+
+Since all the vector space axioms are satisfied, we conclude that $\mathbb{R}^+$ is indeed a vector space over $\mathbb{R}$ with the given operations. $\blacksquare$
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.2
+
+Show that the intersection of two subspaces is also a subspace.
+
+</summary>
+
+Let $\mathcal{U}$ and $\mathcal{V}$ be two subspaces of a vector space $\mathcal{W}$.
+Let $\mathcal{S} := \mathcal{U} \cap \mathcal{V}$ be their intersection.
+
+Let $\ket{s_1}, \ket{s_2} \in \mathcal{S}$ be two arbitrary vectors in the intersection, and let $\alpha, \beta \in \mathbb{F}$ be two scalars from the underlying field.
+
+As the vectors are in the intersection, we have $\ket{s_1}, \ket{s_2} \in \mathcal{U}$ and $\ket{s_1}, \ket{s_2} \in \mathcal{V}$.
+Therefore, $\alpha \ket{s_1} + \beta \ket{s_2} \in \mathcal{U}$, since $\mathcal{U}$ is a subspace, and similarly, $\alpha \ket{s_1} + \beta \ket{s_2} \in \mathcal{V}$.
+As $\alpha \ket{s_1} + \beta \ket{s_2}$ is in both $\mathcal{U}$ and $\mathcal{V}$, it must also be in their intersection $\mathcal{S}$.
+Thus, we have shown that for any $\ket{s_1}, \ket{s_2} \in \mathcal{S}$ and any $\alpha, \beta \in \mathbb{F}$, $\alpha \ket{s_1} + \beta \ket{s_2} \in \mathcal{S}$.
+Therefore, $\mathcal{S}$ is cloesd under vector addition and scalar multiplication, and is thus a subspace of $\mathcal{W}$. $\blacksquare$
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.3
+
+For each of the following sub*sets* of $\mathbb{R}^3$, determine whether it is a sub*space* of $\mathbb{R}^3$:
+
+1. $\{(x, y, z) \in \mathbb{R}^3 \mid x + y - 2z = 0\}$
+2. $\{(x, y, z) \in \mathbb{R}^3 \mid x + y - 2z = 3\}$
+3. $\{(x, y, z) \in \mathbb{R}^3 \mid x y z = 0\}$
+
+</summary>
+
+Let $\ket{u} = (x_1, y_1, z_1)$ and $\ket{v} = (x_2, y_2, z_2)$ be two arbitrary vectors in $\mathbb{R}^3$, and let $\alpha, \beta \in \mathbb{R}$ be two scalars.
+Let's call the sets in the question $\mathcal{S}_1$, $\mathcal{S}_2$, and $\mathcal{S}_3$ respectively.
+
+1. Let $\ket{u}, \ket{v} \in \mathcal{S}_1$.
+    Then, we have $x_1 + y_1 - 2z_1 = 0$ and $x_2 + y_2 - 2z_2 = 0$.
+    We have
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \alpha \ket{u} + \beta \ket{v} &= \alpha (x_1, y_1, z_1) + \beta (x_2, y_2, z_2) \\
+    &= (\alpha x_1 + \beta x_2, \alpha y_1 + \beta y_2, \alpha z_1 + \beta z_2).
+    \end{split}
+    \end{equation}
+    $$
+
+    Does this vector belong to $\mathcal{S}_1$?
+
+    $$
+    \begin{equation}
+    \begin{split}
+    &(\alpha x_1 + \beta x_2) + (\alpha y_1 + \beta y_2) - 2(\alpha z_1 + \beta z_2) \\
+    &= \alpha (x_1 + y_1 - 2z_1) + \beta (x_2 + y_2 - 2z_2) \\
+    &= \alpha \cdot 0 + \beta \cdot 0 = 0.
+    \end{split}
+    \end{equation}
+    $$
+
+    Therefore, $\alpha \ket{u} + \beta \ket{v} \in \mathcal{S}_1$, and $\mathcal{S}_1$ is a subspace of $\mathbb{R}^3$.
+
+2. Let $\ket{u}, \ket{v} \in \mathcal{S}_2$.
+    Then, we have $x_1 + y_1 - 2z_1 = 3$ and $x_2 + y_2 - 2z_2 = 3$.
+
+    $$
+    \begin{equation}
+    \begin{split}
+    &(\alpha x_1 + \beta x_2) + (\alpha y_1 + \beta y_2) - 2(\alpha z_1 + \beta z_2) \\
+    &= \alpha (x_1 + y_1 - 2z_1) + \beta (x_2 + y_2 - 2z_2) \\
+    &= \alpha \cdot 3 + \beta \cdot 3 = 3(\alpha + \beta).
+    \end{split}
+    \end{equation}
+    $$
+
+    For this to be equal to $3$, we need $\alpha + \beta = 1$.
+    However, this is not true for arbitrary $\alpha, \beta \in \mathbb{R}$.
+    Therefore, $\mathcal{S}_2$ is not closed under vector addition and scalar multiplication, and is not a subspace of $\mathbb{R}^3$.
+
+3. Let $\ket{u}, \ket{v} \in \mathcal{S}_3$.
+    Then, we have $x_1 y_1 z_1 = 0$ and $x_2 y_2 z_2 = 0$.
+
+    $$
+    \begin{equation}
+    \begin{split}
+    &(\alpha x_1 + \beta x_2)(\alpha y_1 + \beta y_2)(\alpha z_1 + \beta z_2) \\
+    &= \alpha^3 x_1 y_1 z_1 + \alpha^2 \beta (x_1 y_1 z_2 + x_1 y_2 z_1 + x_2 y_1 z_1) + \alpha \beta^2 (x_1 y_2 z_2 + x_2 y_1 z_2 + x_2 y_2 z_1) + \beta^3 x_2 y_2 z_2 \\
+    &= \alpha^2 \beta (x_1 y_1 z_2 + x_1 y_2 z_1 + x_2 y_1 z_1) + \alpha \beta^2 (x_1 y_2 z_2 + x_2 y_1 z_2 + x_2 y_2 z_1).
+    \end{split}
+    \end{equation}
+    $$
+
+    This expression is not necessarily equal to $0$ for arbitrary $\alpha, \beta \in \mathbb{R}$.
+    Therefore, $\mathcal{S}_3$ is not closed under vector addition and scalar multiplication, and is not a subspace of $\mathbb{R}^3$.
+
+    We can also show this with a simple counterexample. Let $\ket{u} = (1, 0, 1)$ and $\ket{v} = (0, 1, 0)$.
+    Both vectors are in $\mathcal{S}_3$, but their sum $\ket{u} + \ket{v} = (1, 1, 1)$ is not in $\mathcal{S}_3$ since $1 \cdot 1 \cdot 1 \neq 0$.
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.4
+
+Prove that the components of a vector in a given basis are unique.
+
+</summary>
+
+Let $\mathcal{V}$ be a vector space over a field $\mathbb{F}$, and let $\{\ket{e_1}, \ket{e_2}, \ldots, \ket{e_n}\}$ be a basis for $\mathcal{V}$.
+Assume that a vector $\ket{v} \in \mathcal{V}$ can be expressed in two different ways in this basis:
+
+$$
+\begin{align}
+\ket{v} &= \alpha_1 \ket{e_1} + \alpha_2 \ket{e_2} + \ldots + \alpha_n \ket{e_n}, \\
+\ket{v} &= \beta_1 \ket{e_1} + \beta_2 \ket{e_2} + \ldots + \beta_n \ket{e_n},
+\end{align}
+$$
+
+where $\alpha_i, \beta_i \in \mathbb{F}$ for $i = 1, 2, \ldots, n$.
+
+Subtracting the second equation from the first gives
+
+$$
+\begin{equation}
+\vb{0} = (\alpha_1 - \beta_1) \ket{e_1} + (\alpha_2 - \beta_2) \ket{e_2} + \ldots + (\alpha_n - \beta_n) \ket{e_n}.
+\end{equation}
+$$
+
+As the basis is linearly independent by definition, the only solution to this equation is $\alpha_i - \beta_i = 0$ for all $i = 1, 2, \ldots, n$.
+This implies that $\alpha_i = \beta_i$ for all $i = 1, 2, \ldots, n$.
+Therefore, the components of the vector $\ket{v}$ in the given basis are unique. $\blacksquare$
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.5
+
+Show that the following vectors form a basis for $\mathbb{C}^n$ (or $\mathbb{R}^{n}$):
+
+$$
+\begin{equation}
+\ket{\alpha_1} = \mqty(1 \\ 1 \\ \vdots \\ 1 \\ 1), \quad
+\ket{\alpha_2} = \mqty(1 \\ 1 \\ \vdots \\ 1 \\ 0), \quad
+\ldots, \quad
+\ket{\alpha_n} = \mqty(1 \\ 0 \\ \vdots \\ 0 \\ 0).
+\end{equation}
+$$
+
+</summary>
+
+$$
+\begin{equation}
+\ket{v} = \mqty(v_1 \\ v_2 \\ \vdots \\ v_{n-1} \\ v_n) = v_n \ket{\alpha_1} + (v_{n-1} - v_n) \ket{\alpha_2} + (v_{n-2} - v_{n-1} - v_n) \ket{\alpha_3} + \ldots + (v_1 - v_2 - \ldots - v_n) \ket{\alpha_n}.
+\end{equation}
+$$
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.6
+
+Prove Theorem 2.1.6.
+
+</summary>
+
+[Here](./2%20Vectors%20and%20Linear%20Maps/2.1%20Vector%20Spaces#2-1-6) is the proof.
+The TL;DR is as follows:
+
+Let $S = \{\ket{s_i}\}_{i=1}^m \subseteq \mathcal{V}$ be a set of vectors in a vector space $\mathcal{V}$ over a field $\mathbb{F}$.
+Trivially, $S \subseteq \text{span}(S)$ as $\ket{s_i} = \sum_k \delta_{ik} \ket{s_k}$.
+And $\alpha \ket{v} + \beta \ket{w} \in \text{span}(S)$, so $\text{span}(S)$ is a subspace of $\mathcal{V}$. $\blacksquare$
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.7
+
+Let $\mathcal{W}$ be a subspace of $\mathbb{R}^5$ defined by
+
+$$
+\begin{equation}
+W = \{(x_1, \ldots, x_5) \in \mathbb{R}^5 \mid x_1 = 3x_2 + x_3, x_2 = x_5, \text{ and } x_4 = 2x_3 \}.
+\end{equation}
+$$
+
+Find a basis for $W$.
+
+</summary>
+
+Notice that choosing $x_3$ determines $x_4$, and choosing $x_5$ determines $x_2$.
+And $x_3$ and $x_2$ determine $x_1$. Therefore, the only free variables are $x_3$ and $x_5$.
+Letting $x_3 = a$ and $x_5 = b$, we have
+
+$$
+\begin{equation}
+\ket{w} = \mqty(x_1 \\ x_2 \\ x_3 \\ x_4 \\ x_5) = \mqty(3b + a \\ b \\ a \\ 2a \\ b) = a \mqty(1 \\ 0 \\ 1 \\ 2 \\ 0) + b \mqty(3 \\ 1 \\ 0 \\ 0 \\ 1).
+\end{equation}
+$$
+
+Thus, a basis for $W$ is given by the set
+
+$$
+\begin{equation}
+B = \qty{\mqty(1 \\ 0 \\ 1 \\ 2 \\ 0), \mqty(3 \\ 1 \\ 0 \\ 0 \\ 1)}.
+\end{equation}
+$$
+
+</details>
+
+<details>
+
+<summary>
+
+## 2.8
+
+Let $\mathcal{U}_1$ and $\mathcal{U}_2$ be subspaces of $\mathcal{V}$.
+Show that
+
+1. $\dim(\mathcal{U}_1 + \mathcal{U}_2) = \dim \mathcal{U}_1 + \dim \mathcal{U}_2 - \dim(\mathcal{U}_1 \cap \mathcal{U}_2)$. Hint: Let $\{\ket{a_i}\}_{i=1}^m$ be a basis of $\mathcal{U}_1 \cap \mathcal{U}_2$. Extend this to $\{\{\ket{a_i}\}_{i=1}^m, \{\ket{b_i}\}_{i=1}^k\}$, a basis for $\mathcal{U}_1$, and to $\{\{\ket{a_i}\}_{i=1}^m, \{\ket{c_i}\}_{i=1}^l\}$, a basis for $\mathcal{U}_2$. Now show that $\{\{\ket{a_i}\}_{i=1}^m, \{\ket{b_i}\}_{i=1}^k, \{\ket{c_i}\}_{i=1}^l\}$ is a basis for $\mathcal{U}_1 + \mathcal{U}_2$.
+2. If $\mathcal{U}_1 + \mathcal{U}_2 = \mathcal{V}$ and $\dim \mathcal{U}_1 + \dim \mathcal{U}_2 = \dim \mathcal{V}$, then $\mathcal{V} = \mathcal{U}_1 \oplus \mathcal{U}_2$.
+3. If $\dim \mathcal{U}_1 + \dim \mathcal{U}_2 > \dim \mathcal{V}$, then $\mathcal{U}_1 \cap \mathcal{U}_2 \neq \{\vb{0}\}$.
+
+</summary>
+
+1. Let $\ket{v} \in \mathcal{U}_1 + \mathcal{U}_2$ be an arbitrary vector in the sum of the two subspaces.
+    Then, we can write $\ket{v} = \ket{u_1} + \ket{u_2}$ where $\ket{u_1} \in \mathcal{U}_1$ and $\ket{u_2} \in \mathcal{U}_2$.
+    Using the bases given in the hint, we can express $\ket{u_1}$ and $\ket{u_2}$ as follows:
+
+    $$
+    \begin{equation}
+    \begin{split}
+    \ket{u_1} &= \alpha_1 \ket{a_1} + \ldots + \alpha_m \ket{a_m} + \alpha_{m+1} \ket{b_1} + \ldots + \alpha_{m+k} \ket{b_k}, \\
+    \ket{u_2} &= \beta_1 \ket{a_1} + \ldots + \beta_m \ket{a_m} + \beta_{m+1} \ket{c_1} + \ldots + \beta_{m+l} \ket{c_l},
+    \end{split}
+    \end{equation}
+    $$
+
+    where $\alpha_i, \beta_i \in \mathbb{F}$ for $i = 1, 2, \ldots, m+k$ and $i = 1, 2, \ldots, m+l$ respectively.
+    Therefore, we have
+
+    $$
+    \begin{equation}
+    \ket{v} = \sum_{i=1}^m (\alpha_i + \beta_i) \ket{a_i} + \sum_{i=1}^k \alpha_{m+i} \ket{b_i} + \sum_{i=1}^l \beta_{m+i} \ket{c_i}.
+    \end{equation}
+    $$
+
+    This shows that any vector in $\mathcal{U}_1 + \mathcal{U}_2$ can be expressed as a linear combination of the vectors in the set $\{\ket{a_i}\}_{i=1}^m, \{\ket{b_i}\}_{i=1}^k, \{\ket{c_i}\}_{i=1}^l$.
+    Next, we need to show that this set is linearly independent.
+    Suppose $\ket{v} = \ket{0}$. Then,
+
+    $$
+    \begin{equation}
+    \ket{0} = \sum_{i=1}^m \gamma_i \ket{a_i} + \sum_{i=1}^k \delta_i \ket{b_i} + \sum_{i=1}^l \epsilon_i \ket{c_i},
+    \end{equation}
+    $$
+
+    where $\gamma_i, \delta_i, \epsilon_i \in \mathbb{F}$ for $i = 1, 2, \ldots, m$, $i = 1, 2, \ldots, k$, and $i = 1, 2, \ldots, l$ respectively.
+    Rearranging gives
+
+    $$
+    \begin{equation}
+    -\sum_{i=1}^m \gamma_i \ket{a_i} = \sum_{i=1}^k \delta_i \ket{b_i} + \sum_{i=1}^l \epsilon_i \ket{c_i}.
+    \end{equation}
+    $$
+
+    The left-hand side is in $\mathcal{U}_1 \cap \mathcal{U}_2$, while the right-hand side is in $\mathcal{U}_1 + \mathcal{U}_2$.
+    Since the basis vectors $\{\ket{b_i}\}_{i=1}^k$ and $\{\ket{c_i}\}_{i=1}^l$ are not in $\mathcal{U}_1 \cap \mathcal{U}_2$, the only solution is $\gamma_i = 0$ for all $i = 1, 2, \ldots, m$, $\delta_i = 0$ for all $i = 1, 2, \ldots, k$, and $\epsilon_i = 0$ for all $i = 1, 2, \ldots, l$.
+    Therefore, the set $\{\{\ket{a_i}\}_{i=1}^m, \{\ket{b_i}\}_{i=1}^k, \{\ket{c_i}\}_{i=1}^l\}$ is linearly independent.
+
+    As such, it forms a basis for $\mathcal{U}_1 + \mathcal{U}_2$, and we have
+
+    $$
+    \begin{equation}
+    \dim(\mathcal{U}_1 + \mathcal{U}_2) = m + k + l = (m + k) + (m + l) - m = \dim \mathcal{U}_1 + \dim \mathcal{U}_2 - \dim(\mathcal{U}_1 \cap \mathcal{U}_2).
+    \end{equation}
+    $$
+
+    This completes the proof. $\blacksquare$
+
+2. Given that $\mathcal{U}_1 + \mathcal{U}_2 = \mathcal{V}$ and $\dim \mathcal{U}_1 + \dim \mathcal{U}_2 = \dim \mathcal{V}$, using the result from the first part, we have $\dim(\mathcal{U}_1 \cap \mathcal{U}_2) = 0$.
+    This implies that the only vector in the intersection is the zero vector, i.e., $\mathcal{U}_1 \cap \mathcal{U}_2 = \{\vb{0}\}$.
+    Therefore, by definition, $\mathcal{V} = \mathcal{U}_1 \oplus \mathcal{U}_2$. $\blacksquare$
+
+3. From the first part, we have $\dim \mathcal{V} - (\dim \mathcal{U}_1 + \dim \mathcal{U}_2) = \dim(\mathcal{U}_1 \cap \mathcal{U}_2)$.
+    If $\dim \mathcal{U}_1 + \dim \mathcal{U}_2 > \dim \mathcal{V}$, then $\dim(\mathcal{U}_1 \cap \mathcal{U}_2) > 0$.
+    This implies that there exists at least one non-zero vector in the intersection, i.e., $\mathcal{U}_1 \cap \mathcal{U}_2 \neq \{\vb{0}\}$. $\blacksquare$
+
+</details>
+
+

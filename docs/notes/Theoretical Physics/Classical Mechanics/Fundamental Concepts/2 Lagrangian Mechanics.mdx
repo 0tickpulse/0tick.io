@@ -28,31 +28,753 @@ For example, if we have a bead sliding on a frictionless wire, the bead's motion
 A rigid body is constrained such that the distances between its constituent particles remain constant.
 These constraints can be holonomic or non-holonomic, and they can be time-dependent or time-independent.
 
+When we abstract away the physical system, we use a set of quantities $\xi_1, \xi_2, \ldots, \xi_n$ to describe the configuration of the system.
+
 :::definition Definition 1.2.1 (Holonomic Constraint)
 
 A **holonomic constraint** is a constraint that can be expressed as an equation relating the coordinates and time:
 
 $$
 \begin{equation}
-f(\vb{r}_1, \vb{r}_2, \ldots, \vb{r}_N, t) = 0,
+f(\xi_1, \xi_2, \ldots, \xi_N, t) = 0,
 \end{equation}
 $$
 
-where $\vb{r}_i$ are the position vectors of the particles in the system.
+where $\xi_i$ describe the configuration of the system.
 
 :::
 
-:::example Example 1.2.2 (Rigid Body Constraint)
+Holonomic constraints reduce the number of degrees of freedom of a system.
+A set of $k$ holonomic constraints are independent if and only if the Jacobian matrix
 
-A rigid body is a system of particles where the distances between all pairs of particles are constant. For a system of $N$ particles, the rigid body constraints can be expressed as
+$$
+\pdv{(f_1, f_2, \ldots, f_k)}{(\xi_1, \xi_2, \ldots, \xi_N)}
+$$
+
+has rank $k$. Meaning, the gradients $\nabla f_1, \nabla f_2, \ldots, \nabla f_k$ are linearly independent.
+
+:::example Example 1.2.2 (Examples of Constraints)
+
+- A rigid body is a system of particles where the distances between all pairs of particles are constant. For a system of $N$ particles, the rigid body constraints can be expressed as
+
+    $$
+    \begin{equation}
+    |\vb{r}_i - \vb{r}_j|^2 - d_{ij}^2 = 0, \quad 1 \leq i < j \leq N,
+    \end{equation}
+    $$
+
+    where $d_{ij}$ is the constant distance between particles $i$ and $j$.
+    This is a holonomic constraint with $f := |\vb{r}_i - \vb{r}_j|^2 - d_{ij}^2$.
+
+- A double pendulum consists of two masses connected by rigid rods.
+    The lengths of the rods impose constraints on the motion of the masses.
+    If $\vb{r}_1$ and $\vb{r}_2$ are the position vectors of the two masses, and $l_1$ and $l_2$ are the lengths of the rods, the constraints can be expressed as
+
+    $$
+    \begin{equation}
+    |\vb{r}_1|^2 - l_1^2 = 0,
+    \end{equation}
+    $$
+
+    $$
+    \begin{equation}
+    |\xi_2 - \xi_1|^2 - l_2^2 = 0.
+    \end{equation}
+    $$
+
+    These are holonomic constraints.
+
+- Suppose a cylinder of radius $R$ rolls without slipping on a flat plane.
+    Let $(x, y)$ be the position of the center of the cylinder.
+    Let $\theta$ be the angle the cylinder makes with the horizontal axis, and let $\phi$ be the angle of rotation of the cylinder about its center.
+    The no-slip condition imposes a constraint on the motion of the cylinder, which can be expressed as
+
+    $$
+    \begin{equation}
+    \dot{x} - R \dot{\phi} \cos \theta = 0, \quad \dot{y} - R \dot{\phi} \sin \theta = 0.
+    \end{equation}
+    $$
+
+- For a set of gas particles confined in a box, the walls of the box impose constraints on the motion of the particles.
+    These constraints can be expressed as inequalities, such as
+
+    $$
+    \begin{equation}
+    x_i \geq 0, \quad x_i \leq L_x, \quad y_i \geq 0, \quad y_i \leq L_y, \quad z_i \geq 0, \quad z_i \leq L_z,
+    \end{equation}
+    $$
+
+    where $(x_i, y_i, z_i)$ are the coordinates of particle $i$ and $(L_x, L_y, L_z)$ are the dimensions of the box.
+    These are non-holonomic constraints.
+
+:::
+
+Non-holonomic constraints cannot be expressed solely in terms of coordinates and time; they often involve inequalities or differential relationships.
+If we include differential relationships, we have a general form
 
 $$
 \begin{equation}
-|\vb{r}_i - \vb{r}_j|^2 - d_{ij}^2 = 0, \quad 1 \leq i < j \leq N,
+f(\xi_1, \xi_2, \ldots, \xi_N, \dot{\xi}_1, \dot{\xi}_2, \ldots, \dot{\xi}_N, t) = 0.
 \end{equation}
 $$
 
-where $d_{ij}$ is the constant distance between particles $i$ and $j$.
-This is a holonomic constraint with $f := |\vb{r}_i - \vb{r}_j|^2 - d_{ij}^2$.
+A differential relationship can be written as such because we can always integrate it to obtain a relationship between coordinates and time.
+If we cannot integrate the relationship to obtain such a form, then the constraint is non-holonomic.
+Recall from the Frobenius Theorem that a set of differential constraints is integrable (and thus holonomic) if and only if the distribution defined by the constraints is involutive. To take an example, let's prove that the no-slip condition for a rolling cylinder is non-holonomic.
+
+:::example Example 1.2.3 (Non-holonomic Constraint: Rolling Cylinder)
+
+Consider a cylinder of radius $R$ rolling without slipping on a flat plane, as described in Example 1.2.2.
+The no-slip condition imposes the following constraints on the motion of the cylinder:
+
+$$
+\begin{equation}
+\dot{x} - R \dot{\phi} \cos \theta = 0, \quad \dot{y} - R \dot{\phi} \sin \theta = 0.
+\end{equation}
+$$
+
+We need to show that these constraints are non-holonomic.
+
+---
+
+*Proof.* Define the one-forms
+
+$$
+\begin{align}
+\omega^1 &:= \dd{x} - R \cos(\theta) \dd{\phi}, \\
+\omega^2 &:= \dd{y} - R \sin(\theta) \dd{\phi}.
+\end{align}
+$$
+
+The constraints can be expressed as $\omega^1 = 0$ and $\omega^2 = 0$.
+Next, define the 2-form
+
+$$
+\begin{equation}
+\Omega := \omega^1 \wedge \omega^2.
+\end{equation}
+$$
+
+Calculating $\Omega$, we have
+
+$$
+\begin{equation}
+\begin{split}
+\Omega &= (\dd{x} - R \cos(\theta) \dd{\phi}) \wedge (\dd{y} - R \sin(\theta) \dd{\phi}) \\
+&= \dd{x} \wedge \dd{y} - R \sin(\theta) \dd{x} \wedge \dd{\phi} - R \cos(\theta) \dd{\phi} \wedge \dd{y} + R^2 \cos(\theta) \sin(\theta) \dd{\phi} \wedge \dd{\phi} \\
+&= \dd{x} \wedge \dd{y} - R \sin(\theta) \dd{x} \wedge \dd{\phi} - R \cos(\theta) \dd{\phi} \wedge \dd{y}
+\end{split}
+\end{equation}
+$$
+
+since $\dd{\phi} \wedge \dd{\phi} = 0$.
+The exterior derivatives of the one-forms are
+
+$$
+\begin{align}
+\dd{\omega^1} &= R \sin(\theta) \dd{\theta} \wedge \dd{\phi}, \\
+\dd{\omega^2} &= -R \cos(\theta) \dd{\theta} \wedge \dd{\phi}.
+\end{align}
+$$
+
+Therefore,
+
+$$
+\begin{align}
+\dd{\omega^1} \wedge \Omega &= R \sin(\theta) \dd{x} \wedge \dd{y} \wedge \dd{z}, \\
+\dd{\omega^2} \wedge \Omega &= -R \cos(\theta) \dd{x} \wedge \dd{y} \wedge \dd{z}.
+\end{align}
+$$
+
+Since neither $\dd{\omega^1} \wedge \Omega$ nor $\dd{\omega^2} \wedge \Omega$ is zero, by the Frobenius Theorem, the distribution defined by the constraints is not involutive.
+Thus, the constraints are non-holonomic. $\blacksquare$
+{/* Thus, the constraints are non-holonomic. &#x25A1; */}
+
+---
 
 :::
+
+### Generalized Forces and Virtual Work
+
+Recall that we describe the state of a mechanical system using its configuration, which is specified by a configuration $\xi_1, \xi_2, \ldots, \xi_n$.
+Suppose we have a set of coordinates that describe a system at some time $t$.
+At the same instant $t$, we can apply some infinitesimal displacements that do not violate the constraints of the system.
+Let's return to physical coordinates for a moment.
+Let $\vb{r}_i$ be the position vector of particle $i$ in the system, and let $\delta \vb{r}_i$ be an infinitesimal displacement of particle $i$ that does not violate the constraints.
+Such displacements are called **virtual displacements**. (Also, don't confuse the $\delta$ notation with variations.)
+
+:::definition Definition 1.2.4 (Virtual Displacement)
+
+A **virtual displacement** $\delta \vb{r}_i$ of particle $i$ in a mechanical system is an infinitesimal change in the position of the particle that is consistent with the constraints of the system at a fixed time $t$.
+
+:::
+
+:::example Example 1.2.5 (Virtual Displacement: Particle on a Surface)
+
+Consider a particle constrained to move on some surface defined by $f(\vb{r}, t) = 0$.
+At a fixed time $t$, a virtual displacement $\delta \vb{r}$ must satisfy
+
+$$
+\begin{equation}
+f(\vb{r} + \delta \vb{r}, t) = 0.
+\end{equation}
+$$
+
+If we perform a first-order Taylor expansion (perfectly valid since $\delta \vb{r}$ is infinitesimal), we have
+
+$$
+\begin{equation}
+f(\vb{r}, t) + \nabla f(\vb{r}, t) \cdot \delta \vb{r} = 0.
+\end{equation}
+$$
+
+Since $f(\vb{r}, t) = 0$ by the constraint, we have
+
+$$
+\begin{equation}
+\nabla f(\vb{r}, t) \cdot \delta \vb{r} = 0.
+\end{equation}
+$$
+
+This shows that the virtual displacement $\delta \vb{r}$ is orthogonal to the gradient of the constraint function $f$ at the point $\vb{r}$.
+
+:::
+
+By the previous example, any smooth surface leads to virtual displacements that are tangent to the surface.
+The constraining forces that keep the particle on the surface act normal to the surface.
+This means that **constraining forces do no work as a result of virtual displacements**.
+
+:::definition Definition 1.2.6 (Ideal Constraint)
+
+An **ideal constraint** is a constraint for which the total work done by the constraining forces during any virtual displacement is zero.
+
+:::
+
+Why make this definition? Friction is an example of a non-ideal constraint, since frictional forces can do work during virtual displacements.
+However, friction is an emergent phenomenon that arises from microscopic interactions between molecules.
+As we are studying theoretical physics at a fundamental level, we are less concerned with emergent phenomena and more concerned with fundamental interactions.
+Thus, we will assume that all constraints we consider are ideal constraints.
+
+### d'Alembert's Principle
+
+We know that sometimes, we need to introduce more coordinates than the number of degrees of freedom in order to describe a system while accounting for constraints.
+For example, a bead sliding on a wire in three-dimensional space has three coordinates $(x, y, z)$, but only one degree of freedom (the position along the wire).
+The other two coordinates are constrained by the shape of the wire.
+
+When there are constraining forces present, we can write Newton's Second Law for each particle $i$ in the system as
+
+$$
+\begin{equation}
+m_i \vb{a}_i = \vb{F}_i^{(a)} + \vb{f}_i,
+\end{equation}
+$$
+
+where $\vb{F}_i^{(a)}$ is the applied (non-constraining) force on particle $i$, and $\vb{f}_i$ is the constraining force on particle $i$.
+The problem is that we cannot know $\vb{f}_i$ *a priori* because the constraining forces depend on the specific constraints of the system.
+
+So we seek a new formulation of classical mechanics that eliminates the constraining forces from consideration.
+If we have Newton's Second Law written as $\vb{F}_i - \dot{\vb{p}}_i = 0$, we can think of $-\dot{\vb{p}}_i$ a virtual "reversed force" that, when added to the real force $\vb{F}_i$, gives equilibrium. To proceed, we need a theorem.
+
+:::theorem Theorem 1.2.7 (Principle of Virtual Work)
+
+Systems in equilibrium satisfy the **Principle of Virtual Work**:
+
+$$
+\begin{equation}
+\sum_i \vb{F}_i \cdot \delta \vb{r}_i = 0,
+\end{equation}
+$$
+
+where $\vb{F}_i$ are the forces acting on particle $i$, and $\delta \vb{r}_i$ are the virtual displacements of particle $i$.
+
+---
+
+*Proof.* For a system with equilibrium, the forces $\vb{F}_i$ are zero, so the virtual work is automatically zero:
+
+$$
+\begin{equation}
+\sum_i \vb{F}_i \cdot \delta \vb{r}_i = \sum_i \vb{F}_i^{(a)} \cdot \delta \vb{r}_i + \sum_i \vb{f}_i \cdot \delta \vb{r}_i = 0.
+\end{equation}
+$$
+
+By the definition of ideal constraints, the second term is zero, so we have
+
+$$
+\begin{equation}
+\sum_i \vb{F}_i^{(a)} \cdot \delta \vb{r}_i = 0.
+\end{equation}
+$$
+
+---
+
+:::
+
+Using the Principle of Virtual Work, we can now plug $\vb{F}_i - \dot{\vb{p}}_i$ into the theorem to obtain
+
+$$
+\begin{equation}
+\sum_i \qty(\vb{F}_i^{(a)} - \dot{\vb{p}}_i) \cdot \delta \vb{r}_i = 0.
+\end{equation}
+$$
+
+This is known as **d'Alembert's Principle**.
+
+:::theorem Theorem 1.2.8 (d'Alembert's Principle)
+
+A system of particles subject to ideal constraints satisfies **d'Alembert's Principle**:
+
+$$
+\begin{equation}
+\sum_i \qty(\vb{F}_i^{(a)} - \dot{\vb{p}}_i) \cdot \delta \vb{r}_i = 0.
+\end{equation}
+$$
+
+---
+
+*Proof.* Substitute $\vb{F}_i^{(a)} - \dot{\vb{p}}_i$ into the Principle of Virtual Work.
+
+---
+
+:::
+
+d'Alembert's Principle allows us to eliminate the constraining forces from consideration, as they do no work during virtual displacements.
+
+:::example Example 1.2.9 (d'Alembert's Principle: Atwood's Machine)
+
+A classic example encountered in introductory physics courses is the Atwood's machine, which consists of two masses $m_1$ and $m_2$ connected by a massless, inextensible string that passes over a frictionless pulley.
+Let $x_1$ and $x_2$ be the vertical positions of masses $m_1$ and $m_2$, respectively, measured from some reference point.
+Our masses have positions $\vb{r}_1 = x_1 \hat{\vb{x}}$ and $\vb{r}_2 = x_2 \hat{\vb{x}}$, where $\hat{\vb{x}}$ points downwards.
+The constraint imposed by the inextensible string is
+
+$$
+\begin{equation}
+x_1 + x_2 = l,
+\end{equation}
+$$
+
+where $l$ is the length of the string.
+
+---
+
+We will analyze the system with d'Alembert's Principle.
+But first, let's derive the equations of motion using Newtonian mechanics to make sure we get the same result.
+The net forces on the masses are
+
+$$
+\begin{align}
+m_1 \ddot{x}_1 &= m_1 g - T, \\
+m_2 \ddot{x}_2 &= m_2 g - T.
+\end{align}
+$$
+
+Here, $T$ is the tension in the string, which acts as a constraining force.
+To eliminate $T$, we can take an additional step by differentiating the constraint twice to obtain
+
+$$
+\begin{equation}
+\ddot{x}_1 + \ddot{x}_2 = 0.
+\end{equation}
+$$
+
+Substituting $\ddot{x}_2 = -\ddot{x}_1$ into the second equation of motion, we have
+
+$$
+\begin{equation}
+m_2 (-\ddot{x}_1) = m_2 g - T.
+\end{equation}
+$$
+
+Adding this to the first equation of motion, we get
+
+$$
+\begin{equation}
+(m_1 + m_2) \ddot{x}_1 = (m_1 - m_2) g.
+\end{equation}
+$$
+
+Finally, we can solve for the equation of motion for mass $m_1$:
+
+$$
+\begin{equation}
+\ddot{x}_1 = \frac{(m_1 - m_2) g}{m_1 + m_2}.
+\end{equation}
+$$
+
+The second equation of motion can be obtained by substituting $\ddot{x}_1$ back into the constraint equation.
+
+---
+
+Now, let's use d'Alembert's Principle to analyze the same system.
+Any virtual displacement $\delta x_1$ of mass $m_1$ must be accompanied by a virtual displacement $\delta x_2$ of mass $m_2$ such that the constraint is satisfied.
+Thus we have
+
+$$
+\begin{equation}
+\delta x_1 + \delta x_2 = 0 \implies \delta x_2 = -\delta x_1.
+\end{equation}
+$$
+
+In vector form, the virtual displacements are
+
+$$
+\begin{equation}
+\delta \vb{r}_1 = \delta x_1 \hat{\vb{x}}, \quad \delta \vb{r}_2 = -\delta x_1 \hat{\vb{x}}.
+\end{equation}
+$$
+
+Now we are ready to apply d'Alembert's Principle.
+The forces acting on the masses are just gravity (as the tension is a constraining force). Thus we have
+
+$$
+\begin{equation}
+(\vb{F}_1 - \dot{\vb{p}}_1) = m_1 g \hat{\vb{x}} - m_1 \ddot{x}_1 \hat{\vb{x}}, \quad (\vb{F}_2 - \dot{\vb{p}}_2) = m_2 g \hat{\vb{x}} - m_2 \ddot{x}_2 \hat{\vb{x}}.
+\end{equation}
+$$
+
+Substituting into d'Alembert's Principle, we have
+
+$$
+\begin{equation}
+\sum_{i=1}^2 (\vb{F}_i - \dot{\vb{p}}_i) \cdot \delta \vb{r}_i = \qty(m_1 g - m_1 \ddot{x}_1) \delta x_1 + \qty(m_2 g - m_2 \ddot{x}_2)(-\delta x_1) = 0.
+\end{equation}
+$$
+
+Since $\delta x_1$ is arbitrary, we have
+
+$$
+\begin{equation}
+m_1 g - m_1 \ddot{x}_1 - m_2 g + m_2 \ddot{x}_2 = 0.
+\end{equation}
+$$
+
+Substituting $\ddot{x}_2 = -\ddot{x}_1$ from the constraint, we get
+
+$$
+\begin{equation}
+(m_1 - m_2) g - (m_1 + m_2) \ddot{x}_1 = 0,
+\end{equation}
+$$
+
+which simplifies to the same equation of motion we derived earlier using Newtonian mechanics.
+
+:::
+
+### Generalized Coordinates
+
+Given a system with $N$ particles and $k$ holonomic constraints, the number of degrees of freedom of the system is $n = 3N - k$.
+Geometrically speaking, if the configuration space of the unconstrained system is $\mathbb{R}^{3N}$, then the constraints restrict the motion of the system to an $n$-dimensional submanifold of $\mathbb{R}^{3N}$.
+If we choose a set of $n$ parameters $q_1, q_2, \ldots, q_n$ that act as local coordinates on this submanifold, then we call these parameters the **generalized coordinates** of the system.
+
+:::theorem Theorem 1.2.10 (Generalized Coordinates)
+
+A system with $N$ particles and $k$ independent holonomic constraints has $n = 3N - k$ degrees of freedom.
+The configuration of the system can be described by a set of $n$ parameters $q_1, q_2, \ldots, q_n$, called the **generalized coordinates**.
+The position of any particle is uniquely determined by the generalized coordinates and time, and constraints can be expressed as functions of the generalized coordinates and time.
+
+---
+
+*Proof.* Let $\vb{r}_i$ be the position vector of particle $i$ in the system, where $i = 1, 2, \ldots, N$.
+As the Jacobian matrix of the constraints has rank $k$, we can partition the coordinates into two sets: a set of $k$ dependent coordinates $\{x_i\}_{i=1}^k$ and a set of $n = 3N - k$ independent coordinates $\{q_j\}_{j=1}^n$.
+The constraints can then be written as
+
+$$
+\begin{equation}
+f_m(x_1, x_2, \ldots, x_k, q_1, q_2, \ldots, q_n, t) = 0, \quad m = 1, 2, \ldots, k.
+\end{equation}
+$$
+
+By the Implicit Function Theorem, there exists a unique smooth function $g_m$ in the neighborhood of any point (satisfying the constraints) such that
+
+$$
+\begin{equation}
+x_m = g_m(q_1, q_2, \ldots, q_n, t), \quad m = 1, 2, \ldots, k.
+\end{equation}
+$$
+
+So the configuration of the system can be described by the $n$ independent generalized coordinates $q_1, q_2, \ldots, q_n$.
+Let's call $(q_1, q_2, \ldots, q_n)$ the **generalized coordinates** of the system.
+If so, then we can express the position of any particle $i$ using the generalized coordinates and time as discussed above.
+
+Also, as the original constraints are expressed as
+
+$$
+\begin{equation}
+f_m(x_1, x_2, \ldots, x_k, q_1, q_2, \ldots, q_n, t) = 0,
+\end{equation}
+$$
+
+we can substitute $x_m = g_m(q_1, q_2, \ldots, q_n, t)$ into the constraints to express them solely in terms of the generalized coordinates and time:
+
+$$
+\begin{equation}
+f_m(g_1(q_1, q_2, \ldots, q_n, t), g_2(q_1, q_2, \ldots, q_n, t), \ldots, g_k(q_1, q_2, \ldots, q_n, t), q_1, q_2, \ldots, q_n, t) = 0.
+\end{equation}
+$$
+
+By the definition of $g_m$ from the Implicit Function Theorem, the expression on the left is identically zero for all $q$ in its domain.
+As such, both claims are proven. $\blacksquare$
+
+---
+
+:::
+
+:::example Example 1.2.11 (Examples of Generalized Coordinates)
+
+- For a simple pendulum consisting of a mass $m$ attached to a massless rod of length $l$ swinging in a plane, the position of the mass can be described using a single generalized coordinate: the angle $\theta$ the rod makes with the vertical.
+    The Cartesian coordinates $(x, y)$ of the mass can be expressed in terms of $\theta$ as
+
+    $$
+    \begin{align}
+    x &= l \sin \theta, \\
+    y &= -l \cos \theta.
+    \end{align}
+    $$
+
+    The constraint $x^2 + y^2 - l^2 = 0$ can be expressed in terms of the generalized coordinate $\theta$:
+
+    $$
+    \begin{equation}
+    (l \sin \theta)^2 + (-l \cos \theta)^2 - l^2 = 0.
+    \end{equation}
+    $$
+
+    This is automatically satisfied for all $\theta$.
+
+- For a double pendulum consisting of two masses $m_1$ and $m_2$ connected by massless rods of lengths $l_1$ and $l_2$, respectively, the positions of the masses can be described using two generalized coordinates: the angles $\theta_1$ and $\theta_2$ that the rods make with the vertical.
+    The Cartesian coordinates $(x_1, y_1)$ of mass $m_1 and $(x_2, y_2)$ of mass $m_2$ can be expressed in terms of $\theta_1$ and $\theta_2$ as
+
+    $$
+    \begin{align}
+    x_1 &= l_1 \sin \theta_1, \\
+    y_1 &= -l_1 \cos \theta_1, \\
+    x_2 &= l_1 \sin \theta_1 + l_2 \sin \theta_2, \\
+    y_2 &= -l_1 \cos \theta_1 - l_2 \cos \theta_2.
+    \end{align}
+    $$
+
+    The constraints $x_1^2 + y_1^2 - l_1^2 = 0$ and $(x_2 - x_1)^2 + (y_2 - y_1)^2 - l_2^2 = 0$ can be expressed in terms of the generalized coordinates $\theta_1$ and $\theta_2$:
+
+    $$
+    \begin{align}
+    (l_1 \sin \theta_1)^2 + (-l_1 \cos \theta_1)^2 - l_1^2 &= 0, \\
+    \qty(l_1 \sin \theta_1 + l_2 \sin \theta_2 - l_1 \sin \theta_1)^2 + \qty(-l_1 \cos \theta_1 - l_2 \cos \theta_2 + l_1 \cos \theta_1)^2 - l_2^2 &= 0.
+    \end{align}
+    $$
+
+- The Atwood's machine described in Example 1.2.9 has two masses connected by an inextensible string.
+    The positions of the masses can be described using a single generalized coordinate: the vertical position $x_1$ of mass $m_1$.
+    The vertical position $x_2$ of mass $m_2$ can be expressed in terms of $x_1$ using the constraint imposed by the string:
+
+    $$
+    \begin{equation}
+    x_2 = l - x_1.
+    \end{equation}
+    $$
+
+    The constraint $x_1 + x_2 - l = 0$ can be expressed in terms of the generalized coordinate $x_1$:
+
+    $$
+    \begin{equation}
+    x_1 + (l - x_1) - l = 0.
+    \end{equation}
+    $$
+
+    This is automatically satisfied for all $x_1$.
+
+- A particle constrained to move on the surface of a sphere of radius $R$ can have its position described using two generalized coordinates: the polar angle $\theta$ and the azimuthal angle $\phi$.
+    The Cartesian coordinates $(x, y, z)$ of the particle can be expressed in terms of $\theta$ and $\phi$ as
+
+    $$
+    \begin{align}
+    x &= R \sin \theta \cos \phi, \\
+    y &= R \sin \theta \sin \phi, \\
+    z &= R \cos \theta.
+    \end{align}
+    $$
+
+    The constraint $x^2 + y^2 + z^2 - R^2 = 0$ can be expressed in terms of the generalized coordinates $\theta$ and $\phi$:
+
+    $$
+    \begin{equation}
+    (R \sin \theta \cos \phi)^2 + (R \sin \theta \sin \phi)^2 + (R \cos \theta)^2 - R^2 = 0.
+    \end{equation}
+    $$
+
+    This is automatically satisfied for all $\theta$ and $\phi$.
+
+:::
+
+:::definition Definition 1.2.12 (Configuration Space, Configuration Manifold)
+
+The **configuration space** of a mechanical system is defined as the set of all possible configurations of the system, represented by the generalized coordinates.
+If the system has $n$ degrees of freedom, the configuration space is an $n$-dimensional manifold.
+
+:::
+
+Virtual displacements can also be expressed in terms of generalized coordinates via the chain rule.
+If we have a virtual displacement $\delta \vb{r}_i$ of particle $i$, we can write
+
+$$
+\begin{equation}
+\delta \vb{r}_i = \sum_{j=1}^n \pdv{\vb{r}_i}{q_j} \delta q_j,
+\end{equation}
+$$
+
+where $\delta q_j$ are the virtual displacements in the generalized coordinates.
+Mathematically speaking, letting the point $\{q_1, q_2, \ldots, q_n\}$ at time $t$ represent the configuration of the system, the virtual displacements $\delta q_j$ represent a tangent vector in the tangent space $T_{(q_1, q_2, \ldots, q_n)} \mathcal{C}$ of the configuration manifold $\mathcal{C}$ at the point $(q_1, q_2, \ldots, q_n)$.
+
+Velocities can be expressed as
+
+$$
+\begin{equation}
+\dot{\vb{r}}_i = \sum_{j=1}^n \pdv{\vb{r}_i}{q_j} \dot{q}_j + \pdv{\vb{r}_i}{t}. \label{eq:velocity-generalized-coordinates}
+\end{equation}
+$$
+
+The virtual work of the forces acting on the system can now be expressed as
+
+$$
+\begin{equation}
+\vb{F}_i^{(a)} \cdot \delta \vb{r}_i = \vb{F}_i^{(a)} \cdot \sum_{j=1}^n \pdv{\vb{r}_i}{q_j} \delta q_j = \sum_{j=1}^n \qty(\vb{F}_i^{(a)} \cdot \pdv{\vb{r}_i}{q_j}) \delta q_j.
+\end{equation}
+$$
+
+Comparing this to the definition of virtual work in physical coordinates $\vb{F}_i^{(a)} \cdot \delta \vb{r}_i$, we can identify the quantity in parentheses as the **generalized force** $Q_j$ associated with the generalized coordinate $q_j$. This allows us to define generalized forces in a similar manner as virtual displacements:
+
+$$
+\begin{equation}
+\vb{F}_i^{(a)} \cdot \delta \vb{r}_i = \sum_{j=1}^n Q_j \delta q_j, \quad \text{where} \quad Q_j := \sum_{i=1}^N \vb{F}_i^{(a)} \cdot \pdv{\vb{r}_i}{q_j}.
+\end{equation}
+$$
+
+Thus, the generalized force $Q_j$ represents the component of the applied forces $\vb{F}_i^{(a)}$ in the direction of the generalized coordinate $q_j$.
+
+:::definition Definition 1.2.13 (Generalized Force)
+
+The **generalized force** $Q_j$ associated with the generalized coordinate $q_j$ is defined as
+
+$$
+\begin{equation}
+Q_j := \sum_{i=1}^N \vb{F}_i^{(a)} \cdot \pdv{\vb{r}_i}{q_j},
+\end{equation}
+$$
+
+where $\vb{F}_i^{(a)}$ are the applied (non-constraining) forces acting on particle $i$, and $\vb{r}_i$ is the position vector of particle $i$ expressed in terms of the generalized coordinates.
+
+:::
+
+:::theorem Theorem 1.2.14 (Equations from d'Alembert's Principle)
+
+In generalized coordinates, d'Alembert's Principle can be expressed as
+
+$$
+\begin{equation}
+\dv{t} \qty(\pdv{T}{\dot{q}_j}) - \pdv{T}{q_j} = Q_j,
+\end{equation}
+$$
+
+where $T$ is the kinetic energy of the system, and $Q_j$ is the generalized force associated with the generalized coordinate $q_j$.
+
+---
+
+*Proof.* Starting from d'Alembert's Principle in physical coordinates:
+
+$$
+\begin{equation}
+\sum_{i=1}^N \qty(\vb{F}_i^{(a)} - \dot{\vb{p}}_i) \cdot \delta \vb{r}_i = 0,
+\end{equation}
+$$
+
+we have already expressed the work done by the applied forces in terms of generalized coordinates.
+Now consider the term involving the time derivative of momentum. We have
+
+$$
+\begin{equation}
+\sum_{i=1}^N \dot{\vb{p}}_i \cdot \delta \vb{r}_i = \sum_{i=1}^N m_i \dot{\vb{v}}_i \cdot \delta \vb{r}_i = \sum_{i=1}^N m_i \dot{\vb{v}}_i \cdot \sum_{j=1}^n \pdv{\vb{r}_i}{q_j} \delta q_j = \sum_{j=1}^n \qty(\sum_{i=1}^N m_i \dot{\vb{v}}_i \cdot \pdv{\vb{r}_i}{q_j}) \delta q_j.
+\end{equation}
+$$
+
+Let's rewrite the term in parentheses using integration by parts:
+
+$$
+\begin{equation}
+\sum_{i=1}^N m_i \dot{\vb{v}}_i \cdot \pdv{\vb{r}_i}{q_j} = \sum_{i=1}^N \dv{t} \qty(m_i \vb{v}_i \cdot \pdv{\vb{r}_i}{q_j}) - \sum_{i=1}^N m_i \vb{v}_i \cdot \dv{t} \qty(\pdv{\vb{r}_i}{q_j}).
+\end{equation}
+$$
+
+To expand the last term $\dv{t} \qty(\pdv{\vb{r}_i}{q_j})$, we use the chain rule:
+
+$$
+\begin{equation}
+\begin{split}
+\dv{t} \qty(\pdv{\vb{r}_i}{q_j}) &= \sum_{k=1}^n \pdv[2]{\vb{r}_i}{q_j}{q_k} \dot{q}_k + \pdv[2]{\vb{r}_i}{q_j}{t} \\
+&= \pdv{q_j} \qty(\sum_{k=1}^n \pdv{\vb{r}_i}{q_k} \dot{q}_k + \pdv{\vb{r}_i}{t}) \\
+&= \pdv{\dot{\vb{r}}_i}{q_j}.
+\end{split}
+\end{equation}
+$$
+
+Turning to the term $\pdv{\vb{r}_i}{q_j}$, we can use $\eqref{eq:velocity-generalized-coordinates}$ to write
+
+$$
+\begin{equation}
+\pdv{\vb{r}_i}{q_j} = \pdv{\dot{\vb{r}}_i}{\dot{q}_j}.
+\end{equation}
+$$
+
+Substituting these results back into the expression for $\sum_{i=1}^N \dot{\vb{p}}_i \cdot \delta \vb{r}_i$, we have
+
+$$
+\begin{equation}
+\begin{split}
+\sum_{i=1}^N \dot{\vb{p}}_i \cdot \delta \vb{r}_i &= \sum_{j=1}^n \qty(\sum_{i=1}^N \dv{t} \qty(m_i \vb{v}_i \cdot \pdv{\vb{r}_i}{q_j}) - \sum_{i=1}^N m_i \vb{v}_i \cdot \dv{t} \qty(\pdv{\vb{r}_i}{q_j})) \delta q_j \\
+&= \sum_{j=1}^n \qty(\sum_{i=1}^N \dv{t} \qty(m_i \vb{v}_i \cdot \pdv{\dot{\vb{r}}_i}{\dot{q}_j}) - \sum_{i=1}^N m_i \vb{v}_i \cdot \pdv{\dot{\vb{r}}_i}{q_j}) \delta q_j \\
+&= \sum_{j=1}^n \qty(\dv{t} \qty[\pdv{\dot{q}_j} \sum_{i=1}^N \qty(\frac{1}{2} m_i \vb{v}_i^2)] - \pdv{q_j} \sum_{i=1}^N \qty(\frac{1}{2} m_i \vb{v}_i^2)) \delta q_j \\
+&= \sum_{j=1}^n \qty(\dv{t} \qty(\pdv{T}{\dot{q}_j}) - \pdv{T}{q_j}) \delta q_j,
+\end{split}
+\end{equation}
+$$
+
+where we have identified the kinetic energy of the system as $T = \sum_{i=1}^N \frac{1}{2} m_i \vb{v}_i^2$.
+d'Alembert's Principle now reads
+
+$$
+\begin{equation}
+\sum_{j=1}^n \qty[Q_j - \qty(\dv{t} \qty(\pdv{T}{\dot{q}_j}) - \pdv{T}{q_j})] \delta q_j = 0.
+\end{equation}
+$$
+
+Since the virtual displacements $\delta q_j$ are independent and arbitrary, the expression in brackets must be zero for each $j$.
+Thus, we have
+
+$$
+\begin{equation}
+\dv{t} \qty(\pdv{T}{\dot{q}_j}) - \pdv{T}{q_j} = Q_j,
+\end{equation}
+$$
+
+which completes the proof. $\blacksquare$
+
+---
+
+:::
+
+:::example Example 1.2.15 (Examples of Using Equations from d'Alembert's Principle)
+
+:::
+
+:::theorem Theorem 1.2.16 (Euler-Lagrange Equations)
+
+In the case where all forces are conservative (i.e., can be derived from a potential energy function $V(q_1, q_2, \ldots, q_n, t)$), the equations from d'Alembert's Principle reduce to the **Euler-Lagrange Equations**:
+
+$$
+\begin{equation}
+\dv{t} \qty(\pdv{L}{\dot{q}_j}) - \pdv{L}{q_j} = 0,
+\end{equation}
+$$
+
+where $L = T - V$ is the **Lagrangian** of the system.
+
+:::
+
+It is interesting that the Euler-Lagrange equations appear in classical mechanics, because it implies that the dynamics of a mechanical system can be derived from a variational principle. More specifically, physical paths must be extremal paths of a certain variational problem.
