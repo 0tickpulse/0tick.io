@@ -1,0 +1,689 @@
+---
+sidebar_position: 2
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# First-Order ODEs
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Classification of Differential Equations
+
+A differential equation is an equation that relates a function to its derivatives.
+The solution to a differential equation is a function that satisfies the equation.
+
+A **general solution** to a differential equation is a family of functions that contains all possible solutions to the equation.
+A **particular solution** is a specific function that satisfies the differential equation, often determined by initial or boundary conditions.
+
+Differential equations can be classified in several ways, including by their order, linearity, and whether they are ordinary or partial differential equations.
+
+- **Ordinary Differential Equations** (ODEs) involve derivatives with respect to a single independent variable, typically time.
+    They are used to model systems that evolve over time, such as the motion of a particle or the growth of a population.
+
+    Here's an example of an ODE, perhaps modeling a damped harmonic oscillator:
+
+    $$
+    \begin{equation}
+    m \dv[2]{x}{x} + c \dv{x}{x} + k x = 0.
+    \end{equation}
+    $$
+
+- **Partial Differential Equations** (PDEs) involve derivatives with respect to multiple independent variables, such as time and space.
+    They are used to model systems that vary in both time and space, such as the propagation of waves or the diffusion of heat.
+
+    An example of a PDE is the wave equation
+
+    $$
+    \begin{equation}
+    \frac{1}{c^2} \pdv[2]{u}{x} - \nabla^2 u = \partial^\mu \partial_\mu u = 0,
+    \end{equation}
+    $$
+
+    which describes the propagation of waves in a medium.
+
+- **Order** refers to the highest derivative present in the equation.
+    For example, the equation $m \dv[2]{x}{x} + c \dv{x}{x} + k x = 0$ is a second-order ODE because it involves the second derivative of $x$ with respect to $t$.
+- **Degree** refers to the power of the highest derivative present in the equation.
+    For example, the equation $\qty(\dv{y}{x})^3 + y = 0$ is a third-degree ODE because the highest derivative $\dv{y}{x}$ is raised to the third power.
+- **Linearity** refers to whether the equation is linear or nonlinear.
+    A linear differential equation is one in which the dependent variable and its derivatives appear only to the first power and are not multiplied together.
+    For example,
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + p(x) y = q(x)
+    \end{equation}
+    $$
+
+    is a linear first-order ODE, while
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + y^2 = 0
+    \end{equation}
+    $$
+
+    is a nonlinear first-order ODE because of the $y^2$ term.
+
+- A **homogeneous** differential equation is one in which all terms involve the dependent variable or its derivatives.
+    For example,
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + 2y = 0
+    \end{equation}
+    $$
+
+    is a homogeneous first-order ODE, while
+
+    $$
+    \begin{equation}
+    \dv{y}{x} + 2y = \sin(x)
+    \end{equation}
+    $$
+
+    is a non-homogeneous first-order ODE because of the $\sin(x)$ term.
+
+- An **autonomous** differential equation is one in which the independent variable does not explicitly appear in the equation.
+    For example,
+
+    $$
+    \begin{equation}
+    \dv{y}{x} = y^2 - 4
+    \end{equation}
+    $$
+
+    is an autonomous first-order ODE, while
+
+    $$
+    \begin{equation}
+    \dv{y}{x} = xy^2 - 4
+    \end{equation}
+    $$
+
+    is a non-autonomous first-order ODE because of the $x$ term.
+
+Below is a table of some examples of differential equations, classified by their type, order, linearity, and whether they are homogeneous or autonomous.
+
+| Equation                                       | Type | Order | Degree | Linearity | Homogeneous | Autonomous |
+|------------------------------------------------|------|-------|--------|-----------|-------------|------------|
+| $m \dv[2]{x}{x} + c \dv{x}{x} + k x = 0$       | ODE  | 2     | 1      | Linear    | Yes         | Yes        |
+| $\frac{1}{c^2} \pdv[2]{u}{x} - \nabla^2 u = 0$ | PDE  | 2     | 1      | Linear    | Yes         | Yes        |
+| $\dv{y}{x} + p(x) y = q(x)$                    | ODE  | 1     | 1      | Linear    | No          | No         |
+| $\dv{y}{x} + y^2 = 0$                          | ODE  | 1     | 1      | Nonlinear | Yes         | Yes        |
+| $\dv{y}{x} + 2y = 0$                           | ODE  | 1     | 1      | Linear    | Yes         | Yes        |
+| $\qty(\dv{y}{x})^3 + 2y = \sin(x)$             | ODE  | 1     | 3      | Linear    | No          | No         |
+| $\dv{y}{x} = y^2 - 4$                          | ODE  | 1     | 1      | Nonlinear | Yes         | Yes        |
+| $\dv{u}{x} = \alpha \nabla^2 u$                | PDE  | 1     | 1      | Linear    | Yes         | No         |
+| $i\hbar \pdv{\psi}{x} = E \psi$                | PDE  | 1     | 1      | Linear    | Yes         | Yes        |
+
+## First-Order Differential Equations
+
+Let's start with first-order differential equations, which involve the first derivative of a function.
+A general first-order ODE can be written in the form
+
+$$
+\begin{equation}
+\dv{y}{x} = f(x, y),
+\end{equation}
+$$
+
+where $y(x)$ is the unknown function, and $f(x, y)$ is a given function that describes how $y$ changes with respect to $t$.
+We will look at five different cases of first-order ODEs: separable equations, linear equations, exact equations, homogeneous equations, and Bernoulli equations.
+The hardest part of solving a first-order ODE is usually recognizing which type of equation it is.
+
+### Separable Equations
+
+If we can write $f(x, y)$ as a product of two functions, one depending only on $t$ and the other only on $y$, i.e.,
+
+$$
+\begin{equation}
+f(x, y) = g(x) h(y),
+\end{equation}
+$$
+
+then we can separate the variables and write the equation as
+
+$$
+\begin{equation}
+\frac{1}{h(y)} \dd{y} = g(x) \dd{x}.
+\end{equation}
+$$
+
+(Is this step rigorously justified? Well, there are a few ways to go about this. One way is to use differential forms as we'll see when we study manifolds.)
+We can then integrate both sides to find the solution:
+
+$$
+\begin{equation}
+\int \frac{1}{h(y)} \dd{y} = \int g(x) \dd{x} + C,
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant of integration.
+
+<details>
+<summary>
+
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{y}{x} = \frac{x[y^2 + 9]}{x^2 + 3}.
+\end{equation}
+$$
+
+</summary>
+
+We can separate the variables as follows:
+
+$$
+\begin{equation}
+\frac{1}{y^2 + 9} \dd{y} = \frac{x}{x^2 + 3} \dd{x}.
+\end{equation}
+$$
+
+Now, we can integrate both sides:
+
+$$
+\begin{equation}
+\int \frac{1}{y^2 + 9} \dd{y} = \int \frac{x}{x^2 + 3} \dd{x} + C.
+\end{equation}
+$$
+
+This is just
+
+$$
+\begin{equation}
+\frac{1}{3} \arctan(\frac{y}{3}) = \frac{1}{2} \ln(x^2 + 3) + C,
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+y = 3 \tan(3C + \frac{3}{2} \ln(x^2 + 3) + C).
+\end{equation}
+$$
+
+This is a **general solution** to the differential equation, where $C$ is an arbitrary constant.
+
+</details>
+
+### Linear First-Order Equations (Integrating Factor Method)
+
+Recall that a linear ODE is one in which the dependent variable and its derivatives appear only to the first power and are not multiplied together.
+A general linear first-order ODE can be written in the form
+
+$$
+\begin{equation}
+\dv{y}{x} + p(x) y = q(x),
+\end{equation}
+$$
+
+where $p(x)$ and $q(x)$ are given functions.
+One convenient method to solve such equations is to multiply both sides by an **integrating factor** $I(x)$, which is defined as
+
+$$
+\begin{equation}
+I(x) := \exp(\int p(x) \dd{x}).
+\end{equation}
+$$
+
+Its derivative is
+
+$$
+\begin{equation}
+\dv{\mu}{x} = p(x) I(x).
+\end{equation}
+$$
+
+This is because $I(x)$ allows us to rewrite the left-hand side of the equation as the derivative of a product, which simplifies the integration process.
+Multiplying both sides of the equation by $I(x)$, we get
+
+$$
+\begin{equation}
+I(x) \dv{y}{x} + I(x) p(x) y = I(x) q(x).
+\end{equation}
+$$
+
+As $I(x) p(x) = \dv{\mu}{x}$, we can rewrite the left-hand side as
+
+$$
+\begin{equation}
+\dv{x} [I(x) y] = I(x) q(x).
+\end{equation}
+$$
+
+We can then integrate both sides to yield
+
+$$
+\begin{equation}
+y = \frac{1}{I(x)} \qty(\int I(x) q(x) \dd{x} + C).
+\end{equation}
+$$
+
+<details>
+<summary>
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{y}{x} + 2t y = t.
+\end{equation}
+$$
+</summary>
+
+This is a non-separable equation, but it is linear.
+We can identify $p(x) = 2t$ and $q(x) = t$.
+The integrating factor is
+
+$$
+\begin{equation}
+I(x) = \exp(\int 2t \dd{x}) = \exp(x^2).
+\end{equation}
+$$
+
+Multiplying both sides of the equation by $I(x)$, we get
+
+$$
+\begin{equation}
+\exp(x^2) \dv{y}{x} + 2t \exp(x^2) y = x \exp(x^2).
+\end{equation}
+$$
+
+The left-hand side can be rewritten to give
+
+$$
+\begin{equation}
+\dv{x} [\exp(x^2) y] = x \exp(x^2),
+\end{equation}
+$$
+
+which means
+
+$$
+\begin{equation}
+y = \exp(-x^2) \qty(\int x \exp(x^2) \dd{x} + C) = \frac{1}{2} + C \exp(-x^2).
+\end{equation}
+$$
+
+</details>
+
+### Exact First-Order Equations
+
+Consider a first-order ODE of the form
+
+$$
+\begin{equation}
+M(x, y) \dd{x} + N(x, y) \dd{y} = 0.
+\end{equation}
+$$
+
+To derive the solution to such an equation, consider an equation of the form
+
+$$
+\begin{equation}
+f(x, y) = c_0,
+\end{equation}
+$$
+
+where $c_0$ is a constant.
+The solution to this equation is a contour line of $f(x, y)$ at $f = c_0$.
+
+Taking the total differential of both sides, we have
+
+$$
+\begin{equation}
+\pdv{f}{x} \dd{x} + \pdv{f}{y} \dd{y} = 0,
+\end{equation}
+$$
+
+which is in the form of an exact first-order ODE with $M(x, y) = \pdv{f}{x}$ and $N(x, y) = \pdv{f}{y}$.
+
+The equation can be rearranged to give
+
+$$
+\begin{equation}
+\dv{y}{x} = -\frac{M(x, y)}{N(x, y)},
+\end{equation}
+$$
+
+where $M(x, y) = \pdv{f}{x}$ and $N(x, y) = \pdv{f}{y}$.
+Under Schwarz's theorem, the mixed partial derivatives of $f(x, y)$ are equal, so
+
+$$
+\begin{equation}
+\pdv{M}{y} = \pdv{N}{x}.
+\end{equation}
+$$
+
+This is the condition for the equation to be **exact**, meaning that there exists a function $f(x, y)$ such that $M(x, y) = \pdv{f}{x}$ and $N(x, y) = \pdv{f}{y}$.
+To solve an exact first-order ODE, we can integrate $M(x, y)$ with respect to $t$ to find $f(x, y)$, and then set $f(x, y) = c_0$ to find the solution.
+
+<details>
+<summary>
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{y}{x} = -\frac{2t y^2 + 1}{2x^2 y}.
+\end{equation}
+$$
+
+</summary>
+
+We can identify $M(x, y) = 2t y^2 + 1$ and $N(x, y) = 2x^2 y$, so
+
+$$
+\begin{equation}
+(2t y^2 + 1) \dd{x} + (2x^2 y) \dd{y} = 0.
+\end{equation}
+$$
+
+We can check that the equation is exact by verifying that $\pdv{M}{y} = \pdv{N}{x}$.
+The partial derivatives are
+
+$$
+\begin{align}
+\pdv{M}{y} &= 4t y, \\
+\pdv{N}{x} &= 4t y,
+\end{align}
+$$
+
+so the equation is indeed exact.
+To find $f(x, y)$, we just integrate $M(x, y)$ with respect to $t$:
+
+$$
+\begin{equation}
+f(x, y) = \int (2t y^2 + 1) \dd{x} = x^2 y^2 + x + g(y),
+\end{equation}
+$$
+
+where $g(y)$ is an arbitrary function of $y$.
+To determine $g(y)$, we can differentiate $f(x, y)$ with respect to $y$ and set it equal to $N(x, y)$:
+
+$$
+\begin{equation}
+\pdv{f}{y} = 2x^2 y + g'(y) = 2x^2 y,
+\end{equation}
+$$
+
+which implies that $g'(y) = 0$, so $g(y)$ is a constant.
+Thus, we have
+
+$$
+\begin{equation}
+f(x, y) = x^2 y^2 + x + C,
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant.
+The solution to the differential equation is then given by the contour lines of $f(x, y)$:
+
+$$
+\begin{equation}
+x^2 y^2 + x = c_0,
+\end{equation}
+$$
+
+where $c_0$ is a constant.
+
+</details>
+
+### Homogeneous Differential Equations
+
+Previously, we defined a homogeneous differential equation as one in which all terms involve the dependent variable or its derivatives.
+However, there is another definition of homogeneity that is more general as it also applies to nonlinear differential equations.
+
+A **homogeneous function** of degree $n$ is a function $f(x, y)$ that satisfies the property
+
+$$
+\begin{equation}
+f(\lambda t, \lambda y) = \lambda^n f(x, y).
+\end{equation}
+$$
+
+For example, the function $f(x, y) = x^2 + y^2$ is a homogeneous function of degree 2, since
+
+$$
+\begin{equation}
+f(\lambda t, \lambda y) = (x\lambda)^2 + (y\lambda)^2 = \lambda^2 (x^2 + y^2) = \lambda^2 f(x, y).
+\end{equation}
+$$
+
+Now, a **homogeneous differential equation** is a first-order ODE of the form
+
+$$
+\begin{equation}
+f(x, y) \dd{x} = g(x, y) \dd{y} \iff \dv{y}{x} = \frac{f(x, y)}{g(x, y)},
+\end{equation}
+$$
+
+where $f(x, y)$ and $g(x, y)$ are homogeneous functions of the same degree.
+This is important because the quotient of two homogeneous functions of the same degree is a homogeneous function of degree 0.
+To show this, suppose $f(x, y)$ and $g(x, y)$ are homogeneous functions of degree $n$. Then, by definition, we have
+
+$$
+\begin{align}
+f(\lambda t, \lambda y) &= \lambda^n f(x, y) \\
+g(\lambda t, \lambda y) &= \lambda^n g(x, y).
+\end{align}
+$$
+
+So
+
+$$
+\begin{equation}
+\frac{f(\lambda t, \lambda y)}{g(\lambda t, \lambda y)} = \frac{\lambda^n f(x, y)}{\lambda^n g(x, y)} = \frac{f(x, y)}{g(x, y)},
+\end{equation}
+$$
+
+which shows that the quotient is a homogeneous function of degree 0.
+Let's label this function $h(x, y) := \frac{f(x, y)}{g(x, y)}$.
+Then, by the property of homogeneous functions of degree 0, we have
+
+$$
+\begin{equation}
+h(\lambda t, \lambda y) = h(x, y).
+\end{equation}
+$$
+
+We can choose any scaling factor $\lambda$ we want, so let's cleverly choose $\lambda = \frac{1}{x}$ (assuming $t \neq 0$).
+This gives
+
+$$
+\begin{equation}
+h\qty(1, \frac{y}{x}) = h(x, y).
+\end{equation}
+$$
+
+Plugging this back into our differential equation, we have
+
+$$
+\begin{equation}
+\dv{y}{x} = h\qty(1, \frac{y}{x}).
+\end{equation}
+$$
+
+The term $h(1, \frac{y}{x})$ now only depends on the ratio $\frac{y}{x}$.
+To solve this equation, we can define $h(1, \frac{y}{x}) = k(v)$, where $v = \frac{y}{x}$.
+The derivative of $y$ with respect to $t$ can be expressed in terms of $v$ as follows:
+
+$$
+\begin{equation}
+\dv{y}{x} = \dv{(xv)}{x} = v + x \dv{v}{x}
+\end{equation}
+$$
+
+Thus, we can rewrite the equation as
+
+$$
+\begin{equation}
+v + x \dv{v}{x} = k(v).
+\end{equation}
+$$
+
+This is a separable equation with the general solution
+
+$$
+\begin{equation}
+\int \frac{1}{k(v) - v} \dd{v} = \int \frac{1}{x} \dd{x} + C,
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant of integration.
+To proceed, we would need to know the specific form of $k(v)$.
+
+<details>
+<summary>
+Example: Consider the first-order ODE
+
+$$
+\begin{equation}
+\dv{y}{x} = \frac{y}{x} + \frac{x}{y}.
+\end{equation}
+$$
+
+</summary>
+
+We need to first check if the equation is homogeneous.
+We can identify $f(x, y) = y^2 + x^2$ and $g(x, y) = x y$, which are both homogeneous functions of degree 2.
+Thus, the equation is indeed homogeneous.
+
+We can then define $h(x, y) = \frac{f(x, y)}{g(x, y)} = \frac{y^2 + x^2}{x y}$.
+This is, as expected, a homogeneous function of degree 0.
+Making the substitution $v = \frac{y}{x}$, we have
+
+$$
+\begin{equation}
+h(1, v) = k(v) = v + \frac{1}{v}.
+\end{equation}
+$$
+
+The differential equation can then be rewritten as
+
+$$
+\begin{equation}
+v + x \dv{v}{x} = v + \frac{1}{v},
+\end{equation}
+$$
+
+which simplifies to
+
+$$
+\begin{equation}
+x \dv{v}{x} = \frac{1}{v}.
+\end{equation}
+$$
+
+This is a separable equation with the general solution
+
+$$
+\begin{equation}
+\frac{v^2}{2} = \ln\abs{x} + C,
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+y = x \sqrt{2\ln\abs{x} + C}.
+\end{equation}
+$$
+
+</details>
+
+### Bernoulli Equations
+
+To reiterate what we have so far, a first-order ODE can be
+
+- Separable: $\dv{y}{x} = g(x) h(y)$
+- Linear: $\dv{y}{x} + p(x) y = q(x)$
+- Exact: $M(x, y) \dd{x} + N(x, y) \dd{y} = 0$ with $\pdv{M}{y} = \pdv{N}{x}$
+
+When a first-order ODE is homogeneous, we can make the substitution $v = \frac{y}{x}$ to convert it into a separable equation.
+When a first-order ODE is a **Bernoulli equation**, we can make the substitution $u = y^{1 - n}$ to convert it into a linear equation.
+
+A Bernoulli equation is a first-order ODE of the form
+
+$$
+\begin{equation}
+\dv{y}{x} + p(x) y = q(x) y^n,
+\end{equation}
+$$
+
+where $p(x)$ and $q(x)$ are given functions, and $n$ is a real number.
+To tackle such an equation, we need to tackle the problematic nonlinear term $y^n$.
+First, we can divide both sides by $y^n$ (assuming $y \neq 0$) to get
+
+$$
+\begin{equation}
+y^{-n} \dv{y}{x} + p(x) y^{1 - n} = q(x). \label{eq:bern1}
+\end{equation}
+$$
+
+Now if we define $u = y^{1 - n}$, the second term just becomes $p(x) u$, which looks perfectly linear.
+Differentiating $u$ with respect to $t$, we have
+
+$$
+\begin{equation}
+\dv{u}{x} = (1 - n) y^{-n} \dv{y}{x},
+\end{equation}
+$$
+
+Notice that this is just the first term of Equation $\eqref{eq:bern1}$ multiplied by $(1 - n)$.
+Therefore, we can rewrite Equation $\eqref{eq:bern1}$ as
+
+$$
+\begin{equation}
+\frac{1}{1 - n} \dv{u}{x} + p(x) u = q(x),
+\end{equation}
+$$
+
+so
+
+$$
+\begin{equation}
+\dv{u}{x} + (1 - n) p(x) u = (1 - n) q(x).
+\end{equation}
+$$
+
+This is a linear first-order ODE in $u$ whose coefficients are $p_u(x) = (1 - n) p(x)$ and $q_u(x) = (1 - n) q(x)$.
+We can then solve this equation using the integrating factor method described earlier, in which the integrating factor is
+
+$$
+\begin{equation}
+I(x) = \exp(\int (1 - n) p(x) \dd{x}) = \exp((1 - n) \int p(x) \dd{x}).
+\end{equation}
+$$
+
+The general solution is then given by
+
+$$
+\begin{equation}
+u = \frac{1}{I(x)} \qty(\int I(x) (1 - n) q(x) \dd{x} + C),
+\end{equation}
+$$
+
+where $C$ is an arbitrary constant of integration.
+Finally, we can substitute back $u = y^{1 - n}$ to find the solution for $y$.
+
+
+

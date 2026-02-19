@@ -1,0 +1,618 @@
+---
+sidebar_position: 3
+---
+
+import { Mafs, Coordinates, Plot, Line, Circle, Theme, useMovablePoint, useStopwatch, vec, Vector, LaTeX, Polygon, Transform } from "mafs";
+
+import { useState, useEffect, useCallback } from "react";
+import { lineLabel } from "@site/src/utilities/lines";
+import { color } from "@site/src/utilities/colors";
+import { Fragment } from "react";
+import TOCInline from '@theme/TOCInline';
+import * as MB from "mathbox-react"
+import * as THREE from "three"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
+import { TransformControls } from "three/addons/controls/TransformControls";
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Second-Order Linear ODEs
+
+## Table of Contents
+
+<TOCInline toc={toc} />
+
+## Introduction
+
+Second-order linear ordinary differential equations (ODEs) are equations of the form
+
+$$
+\begin{equation}
+a(x) \dv[2]{y}{x} + b(x) \dv{y}{x} + c(x) y = g(x),
+\end{equation}
+$$
+
+where $a(x)$, $b(x)$, $c(x)$, and $g(x)$ are given functions of the independent variable $x$, and $y$ is the unknown function we want to solve for.
+These are ubiquitous in various applications. A damped, driven harmonic oscillator, for instance, is described by a second-order linear ODE of this form.
+In this section, we will explore methods for solving second-order linear ODEs, including the method of undetermined coefficients and variation of parameters.
+
+## Homogeneous Equations
+
+We first consider the homogeneous case, where $g(x) = 0$, and consider the case of constant coefficients, where $a$, $b$, and $c$ are constants.
+The general form of such an equation is
+
+$$
+\begin{equation}
+a \dv[2]{y}{x} + b \dv{y}{x} + c y = 0.
+\end{equation}
+$$
+
+We make the ansatz $y = e^{rx}$, where $r$ is a constant to be determined.
+There are a few justifications for this choice.
+If we treat the left-hand side as a linear operator $L$ acting on $y$, i.e.,
+
+$$
+\begin{equation}
+L[y] = \qty(a \dv[2]{}{x} + b \dv{}{x} + c) y,
+\end{equation}
+$$
+
+then exponentials are eigenfunctions of differential operators, meaning that applying the operator to an exponential function results in the same function multiplied by a constant (the eigenvalue).
+This property makes exponentials a natural choice for solving linear differential equations.
+Another line of reasoning comes from Laplace transforms.
+
+Anyways, plugging in our ansatz into the ODE gives the **characteristic equation**
+
+$$
+\begin{equation}
+a r^2 + b r + c = 0.
+\end{equation}
+$$
+
+The nature of the roots of this quadratic equation determines the form of the general solution to the ODE:
+
+1. Distinct real roots: $y = c_1 e^{r_1 x} + c_2 e^{r_2 x}$,
+2. Repeated real root: $y = c_1 e^{r x} + c_2 x e^{r x}$, and
+3. Complex conjugate roots ($r = \alpha \pm i \beta$): $y = e^{\alpha x} \qty(c_1 \cos{\beta x} + c_2 \sin{\beta x})$.
+
+We can see that the general solution is a linear combination of two linearly independent solutions, as expected for a second-order ODE.
+To see whether two roots are linearly independent, we recall that linear independence means that no non-trivial linear combination of the two solutions can yield the zero function.
+This means that if we have two solutions $y_1$ and $y_2$, they are linearly independent if the only solution to the equation
+
+$$
+\begin{equation}
+c_1 y_1 + c_2 y_2 = 0
+\end{equation}
+$$
+
+is $c_1 = c_2 = 0$. Differentiating this gives
+
+$$
+\begin{equation}
+c_1 y_1' + c_2 y_2' = 0.
+\end{equation}
+$$
+
+Combining these two equations, we can write the system in matrix form:
+
+$$
+\begin{equation}
+\mqty(y_1 & y_2 \\ y_1' & y_2') \mqty(c_1 \\ c_2) = \mqty(0 \\ 0).
+\end{equation}
+$$
+
+If $y_1$ and $y_2$ are linearly independent, the only solution is the trivial one, which means that the determinant of the coefficient matrix must be non-zero.
+This determinant is known as the **Wronskian** $W(y_1, y_2)$:
+
+$$
+\begin{equation}
+W(y_1, y_2) = \det{\mqty(y_1 & y_2 \\ y_1' & y_2')} = y_1 y_2' - y_2 y_1'.
+\end{equation}
+$$
+
+If $W(y_1, y_2) \neq 0$ for some value of $x$, then $y_1$ and $y_2$ are linearly independent.
+
+## Non-Homogeneous Equations
+
+Next, we consider the non-homogeneous case, where $g(x) \neq 0$. If we divide the entire equation by $a(x)$, we can write the ODE in standard form:
+
+$$
+\begin{equation}
+\dv[2]{y}{x} + P(x) \dv{y}{x} + Q(x) y = g(x),
+\end{equation}
+$$
+
+where $P(x) = \frac{b(x)}{a(x)}$ and $Q(x) = \frac{c(x)}{a(x)}$.
+To solve this equation, we define its corresponding homogeneous equation by setting $g(x) = 0$:
+
+$$
+\begin{equation}
+\dv[2]{y}{x} + P(x) \dv{y}{x} + Q(x) y = 0.
+\end{equation}
+$$
+
+Notice that if we have a $y_h(x)$ that solves the homogeneous equation and a $y_p(x)$ that solves the non-homogeneous equation, then their sum $y(x) = y_h(x) + y_p(x)$ also solves the non-homogeneous equation.
+This means that to get a general solution to the non-homogeneous equation, we can find the general solution to the homogeneous equation and add it to a particular solution of the non-homogeneous equation.
+
+To find the particular solution $y_p(x)$, we can use methods such as undetermined coefficients or variation of parameters.
+
+### Method of Undetermined Coefficients
+
+In this method, we make an ansatz for the particular solution $y_p(x)$ based on the form of $g(x)$ (typically using a table of common forms), and then determine the coefficients by substituting $y_p(x)$ into the non-homogeneous equation.
+The ansatz must be linearly independent of the homogeneous solution $y_h(x)$.
+
+| $g(x)$ | Form of $y_p(x)$ |
+|--------|------------------|
+| $1$    | $c$ |
+| $x^n$  | $c_n x^n + c_{n-1} x^{n-1} + \dots + c_0$ |
+| $k^x$ | $A k^x$ |
+| $e^{ax}$ | $A e^{ax}$ |
+| $xe^{ax}$ | $(A x + B) e^{ax}$ |
+| $x^n e^{ax}$ | $(A_n x^n + A_{n-1} x^{n-1} + \dots + A_0) e^{ax}$ |
+| $\sin{bx}$ or $\cos{bx}$ | $A \sin{bx} + B \cos{bx}$ |
+| $e^{ax} \sin{bx}$ or $e^{ax} \cos{bx}$ | $e^{ax} (A \sin{bx} + B \cos{bx})$ |
+| $x^n e^{ax} \sin{bx}$ or $x^n e^{ax} \cos{bx}$ | $x^n e^{ax} (A_n \sin{bx} + B_n \cos{bx} + \dots + A_0 \sin{bx} + B_0 \cos{bx})$ |
+
+### Method of Variation of Parameters
+
+In this method, we use the homogeneous solution $y_h(x)$ to construct a particular solution $y_p(x)$.
+Suppose the complementary functions are given by $y_1(x)$ and $y_2(x)$, so that the general solution to the homogeneous equation is $y_h(x) = u_1(x) y_1(x) + u_2(x) y_2(x)$, where $u_1(x)$ and $u_2(x)$ are functions to be determined.
+Then, we use the Wronskian defined earlier as
+
+$$
+\begin{equation}
+W(x) = \det \mqty(
+    y_1(x) & y_2(x) \\
+    \dv{y_1}{x} & \dv{y_2}{x}
+) = y_1(x) \dv{y_2}{x} - y_2(x) \dv{y_1}{x}.
+\end{equation}
+$$
+
+Then, we can find a particular solution $y_p(x)$ using the formulas
+
+$$
+\begin{align}
+u_1(x) &= -\int \frac{y_2(x) g(x)}{W(x)} \dd{x}, \\
+u_2(x) &= \int \frac{y_1(x) g(x)}{W(x)} \dd{x}.
+\end{align}
+$$
+
+The proof of this method involves substituting $y_p(x)$ into the non-homogeneous equation and using the properties of the Wronskian to simplify the resulting expressions.
+
+### Examples
+
+<details>
+<summary>
+Example: Consider the non-homogeneous equation
+
+$$
+\begin{equation}
+y'' + y = \sec{x}.
+\end{equation}
+$$
+</summary>
+
+As $\sec{x}$ is not in the table of common forms, we will use the method of variation of parameters.
+The corresponding homogeneous equation is
+
+$$
+\begin{equation}
+y'' + y = 0,
+\end{equation}
+$$
+
+whose characteristic equation is
+
+$$
+\begin{equation}
+r^2 + 1 = 0,
+\end{equation}
+$$
+
+with roots $r = \pm i$. Thus, the complementary functions are
+
+$$
+\begin{equation}
+y_1(x) = \cos{x}, \quad y_2(x) = \sin{x}.
+\end{equation}
+$$
+
+The Wronskian is
+
+$$
+\begin{equation}
+W(x) = \det \mqty(
+    \cos{x} & \sin{x} \\
+    -\sin{x} & \cos{x}
+) = \cos^2{x} + \sin^2{x} = 1.
+\end{equation}
+$$
+
+Our particular solution is then given by
+
+$$
+\begin{equation}
+\begin{split}
+y_p(x) &= y_1 \int \frac{y_2 g}{W} \dd{x} - y_2 \int \frac{y_1 g}{W} \dd{x} \\
+&= \cos{x} \int \sin{x} \sec{x} \dd{x} - \sin{x} \int \cos{x} \sec{x} \dd{x} \\
+&= \cos{x} \int \tan{x} \dd{x} - \sin{x} \int 1 \dd{x} \\
+&= \cos{x} \ln{|\sec{x}|} - \sin{x} x.
+\end{split}
+\end{equation}
+$$
+
+Thus, the general solution to the non-homogeneous equation is
+
+$$
+\begin{equation}
+y(x) = C_1 \cos{x} + C_2 \sin{x} + \cos{x} \ln{|\sec{x}|} - \sin{x} x.
+\end{equation}
+$$
+
+</details>
+
+<details>
+<summary>
+Example: Consider the non-homogeneous equation
+
+$$
+\begin{equation}
+y'' - 4y' - 5y = e^{3ix}.
+\end{equation}
+$$
+</summary>
+
+This is an equation where the inhomogeneous term is an oscillatory function, perhaps modeling a driven system with a complex exponential driving force.
+The corresponding homogeneous equation is
+
+$$
+\begin{equation}
+y'' - 4y' - 5y = 0,
+\end{equation}
+$$
+
+whose characteristic equation is
+
+$$
+\begin{equation}
+r^2 - 4r - 5 = 0,
+\end{equation}
+$$
+
+with roots $r = 5$ and $r = -1$. Thus, the complementary functions are
+
+$$
+\begin{equation}
+y_1(x) = e^{5x}, \quad y_2(x) = e^{-x}.
+\end{equation}
+$$
+
+Next, we use the trial function for the particular solution based on the form of the inhomogeneous term.
+Since $e^{3ix}$ is $e^{ax}$ with $a = 3i$, we try
+
+$$
+\begin{equation}
+y_p(x) = A e^{3ix}, \quad y' = 3i A e^{3ix}, \quad y'' = -9 A e^{3ix}.
+\end{equation}
+$$
+
+Plugging this into the non-homogeneous equation gives
+
+$$
+\begin{equation}
+-9 A e^{3ix} - 4 (3i A e^{3ix}) - 5 (A e^{3ix}) = e^{3ix}.
+\end{equation}
+$$
+
+Simplifying, we have
+
+$$
+\begin{equation}
+\begin{split}
+A &= -\frac{1}{14 + 12i} \frac{14 - 12i}{14 - 12i} \\
+&= -\frac{14 - 12i}{340} \\
+&= -\frac{7 - 6i}{170}.
+\end{split}
+\end{equation}
+$$
+
+Thus, the general solution to the non-homogeneous equation is
+
+$$
+\begin{equation}
+y(x) = C_1 e^{5x} + C_2 e^{-x} - \frac{7 - 6i}{170} e^{3ix}.
+\end{equation}
+$$
+
+</details>
+
+## Special Second-Order ODEs
+
+There are some special forms of second-order ODEs that can be solved using specific techniques.
+
+### Cauchy-Euler Equations
+
+Cauchy-Euler equations are second-order ODEs where the coefficients of the derivatives are powers of the independent variable. They have the general form
+
+$$
+\begin{equation}
+ax^2 \dv[2]{y}{x} + bx \dv{y}{x} + cy = 0,
+\end{equation}
+$$
+
+where $a$, $b$, and $c$ are constants.
+We will see this form arise in problems with spherical or cylindrical symmetry (e.g., Laplace's equation in spherical coordinates).
+
+To solve a Cauchy-Euler equation, we make the ansatz $y = x^r$, where $r$ is a constant to be determined.
+Its derivatives are
+
+$$
+\begin{align}
+y' &= r x^{r-1}, \\
+y'' &= r (r-1) x^{r-2}.
+\end{align}
+$$
+
+Plugging these into the ODE gives the auxiliary equation
+
+$$
+\begin{equation}
+a r (r-1) + b r + c = 0.
+\end{equation}
+$$
+
+Once again, the nature of the roots of this quadratic equation determines the form of the general solution to the ODE:
+
+1. Distinct real roots: $y = c_1 x^{r_1} + c_2 x^{r_2}$,
+2. Repeated real root: $y = c_1 x^{r} + c_2 x^{r} \ln{x}$, and
+3. Complex conjugate roots ($r = \alpha \pm i \beta$): $y = x^{\alpha} \qty(c_1 \cos{(\beta \ln{x})} + c_2 \sin{(\beta \ln{x})})$.
+
+### Nonlinear Equations (Reducing to First-Order)
+
+Sometimes, a second-order ODE may be nonlinear and hence more difficult to solve. Generally they have the form
+
+$$
+\begin{equation}
+F(x, y, y', y'') = 0.
+\end{equation}
+$$
+
+However, if some conditions are met, we can reduce the order of the equation.
+
+If the equation does not explicitly depend on $y$, i.e.,
+
+$$
+\begin{equation}
+F(x, y', y'') = 0,
+\end{equation}
+$$
+
+we can make the substitution $v = y'$, which gives $y'' = v'$. Then, we can rewrite the equation as
+
+$$
+\begin{equation}
+F(x, v, v') = 0.
+\end{equation}
+$$
+
+This is now a first-order ODE in terms of $v$ and $x$, which we can attempt to solve using methods for first-order ODEs. You have probably seen this used extensively in mechanics problems.
+
+Next, if the equation does not explicitly depend on $x$, i.e.,
+
+$$
+\begin{equation}
+F(y, y', y'') = 0,
+\end{equation}
+$$
+
+we can again make the substitution $v = y'$, which gives $y'' = v \dv{v}{y}$. Then, we can rewrite the equation as
+
+$$
+\begin{equation}
+F(y, v, v \dv{v}{y}) = 0.
+\end{equation}
+$$
+
+This is now a first-order ODE in terms of $v$ and $y$, which we can attempt to solve using methods for first-order ODEs.
+
+### Physics
+
+Second-order ODEs arise frequently in physics, especially in classical mechanics. There are many situations where special functions arise as solutions to second-order ODEs.
+
+In systems with cylindrical symmetry, such as heat conduction in a cylindrical rod or wave propagation in a circular membrane, Bessel's equation often appears. The standard form of Bessel's equation is
+
+$$
+\begin{equation}
+x^2 y'' + x y' + (x^2 - n^2) y = 0,
+\end{equation}
+$$
+
+where $n$ is a constant (the order of the Bessel function). The solutions to this equation are the Bessel functions of the first and second kind, denoted by $J_n(x)$ and $Y_n(x)$, respectively. The first kind is finite at the origin, while the second kind diverges there.
+
+In systems with spherical symmetry, such as gravitational and electrostatic potentials, Legendre's equation often appears. The standard form of Legendre's equation is
+
+$$
+\begin{equation}
+(1 - x^2) y'' - 2x y' + n(n + 1) y = 0,
+\end{equation}
+$$
+
+where $n$ is a non-negative integer. The solutions to this equation are the Legendre polynomials, denoted by $P_n(x)$. These polynomials are orthogonal over the interval $[-1, 1]$.
+
+In the quantum mechanics of the hydrogen atom, the radial part of the Schrödinger equation leads to the associated Laguerre equation. The standard form of the associated Laguerre equation is
+
+$$
+\begin{equation}
+x y'' + (k + 1 - x) y' + n y = 0,
+\end{equation}
+$$
+
+where $n$ is a non-negative integer and $k$ is a parameter related to the angular momentum quantum number. The solutions to this equation are the associated Laguerre polynomials, denoted by $L_n^k(x)$.
+
+## Power-Series Solutions
+
+When the coefficients of a second-order linear ODE are not constant, many of the methods discussed earlier may not be applicable. In such cases, we can attempt to find a solution in the form of a power series expansion about a point $x = x_0$.
+
+Some terminology: a point $x_0$ is an ordinary point of the ODE if the functions $P(x)$ and $Q(x)$ (from the standard form) are analytic (i.e., can be expressed as convergent power series) at $x = x_0$. If $x_0$ is not an ordinary point, it is a singular point. A singular point is regular if both $(x - x_0) P(x)$ and $(x - x_0)^2 Q(x)$ are analytic at $x = x_0$; otherwise, it is an irregular singular point.
+
+### Leibniz-Maclaurin Method
+
+This method is used to find power-series solutions about ordinary points.
+We will just consider the case where $x_0 = 0$ for simplicity; the method can easily be generalized to other points. We assume a solution of the form
+
+$$
+\begin{equation}
+y(x) = \sum_{n=0}^{\infty} a_n x^n,
+\end{equation}
+$$
+
+where $a_n$ are coefficients to be determined.
+Its derivatives are
+
+$$
+\begin{align}
+\dv{y}{x} &= \sum_{n=0}^{\infty} n a_n x^{n-1}, \\
+\dv[2]{y}{x} &= \sum_{n=0}^{\infty} n (n-1) a_n x^{n-2}.
+\end{align}
+$$
+
+Next, we plug these into the ODE and shift the indices of the sums so that all terms are expressed as powers of $x^n$.
+Then, we equate the coefficients of each power of $x^n$ to zero, yielding a recurrence relation for the coefficients $a_n$.
+By solving this recurrence relation, we can find the coefficients $a_n$ and thus construct the power-series solution to the ODE.
+
+<details>
+<summary>
+Example: The Airy equation is given by
+
+$$
+\begin{equation}
+y'' - xy = 0.
+\end{equation}
+$$
+
+Using a power series expansion about the ordinary point $x = 0$, derive the recurrence relation for the coefficients of the series solution.
+
+</summary>
+
+We assume a solution of the form
+
+$$
+\begin{align}
+y(x) &= \sum_{n=0}^{\infty} a_n x^n, \\
+y'(x) &= \sum_{n=0}^{\infty} n a_n x^{n-1}, \\
+y''(x) &= \sum_{n=0}^{\infty} n (n-1) a_n x^{n-2}.
+\end{align}
+$$
+
+Then plugging these into the Airy equation gives
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} n (n-1) a_n x^{n-2} - x \sum_{n=0}^{\infty} a_n x^n = 0,
+\end{equation}
+$$
+
+or equivalently
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} n (n-1) a_n x^{n-2} - \sum_{n=0}^{\infty} a_n x^{n+1} = 0.
+\end{equation}
+$$
+
+In the second sum, we shift the index by letting $m = n + 3$ (so that $n = m - 3$), giving
+
+$$
+\begin{equation}
+\sum_{n=0}^{\infty} n (n-1) a_n x^{n-2} - \sum_{m=3}^{\infty} a_{m-3} x^{m-2} = 0.
+\end{equation}
+$$
+
+Now the powers of $x$ match. We pull out the first two terms of the first sum to start both sums from $n = 2$:
+
+$$
+\begin{equation}
+0 + 0 + 2a_2 + \sum_{n=3}^{\infty} \qty[n (n-1) a_n - a_{n-3}] x^{n-2} = 0.
+\end{equation}
+$$
+
+This gives us $a_2 = 0$ and $n(n - 1)a_n - a_{n-3} = 0$ for $n \geq 3$, leading to the recurrence relation
+
+$$
+\begin{equation}
+a_n = \frac{a_{n-3}}{n (n-1)} \quad \text{for } n \geq 3.
+\end{equation}
+$$
+
+This relation allows us to compute all coefficients $a_n$ in terms of the initial coefficients $a_0$, $a_1$, and $a_2$ (with $a_2 = 0$). Recall that since $y$ is analytic at $x = 0$, it must be equal to its Taylor series expansion there, so $a_n = \frac{y^{(n)}(0)}{n!}$. This tells us that
+
+$$
+\begin{equation}
+a_0 = y(0), \quad a_1 = y'(0), \quad a_2 = \frac{y''(0)}{2} = 0.
+\end{equation}
+$$
+
+As such, $a_0$ and $a_1$ are arbitrary constants that depend on the initial conditions of the problem. Two linearly independent solutions can be obtained as follows:
+
+| $a_0$ | $a_1$ | $a_2$ | $a_3$ | $a_4$ |
+|-------|-------|-------|-------|-------|
+| $1$   | $0$   | $0$   | $1/6$ | $0$   |
+| $0$   | $1$   | $0$   | $0$   | $1/12$|
+
+These correspond to the two linearly independent solutions of the Airy equation, known as the Airy functions of the first and second kind, denoted by $\text{Ai}(x)$ and $\text{Bi}(x)$, respectively.
+
+</details>
+
+### Frobenius Method
+
+This method is used to find power-series solutions about regular singular points.
+We again consider the case where $x_0 = 0$ for simplicity; the method can easily be generalized to other points. Essentially, we assume a solution allowing noninteger powers to account for the singularity:
+
+$$
+\begin{equation}
+y(x) = x^r \sum_{n=0}^{\infty} a_n x^n = \sum_{n=0}^{\infty} a_n x^{n+r},
+\end{equation}
+$$
+
+where $r$ is a constant to be determined, and $a_n$ are coefficients to be determined.
+Its derivatives are
+
+$$
+\begin{align}
+\dv{y}{x} &= \sum_{n=0}^{\infty} (n + r) a_n x^{n + r - 1}, \\
+\dv[2]{y}{x} &= \sum_{n=0}^{\infty} (n + r)(n + r - 1) a_n x^{n + r - 2}.
+\end{align}
+$$
+
+Plugging these into the ODE will yield a quadratic equation in $r$, known as the **indicial equation**, which looks like
+
+$$
+\begin{equation}
+r (r - 1) + P_0 r + Q_0 = 0,
+\end{equation}
+$$
+
+where $P_0$ and $Q_0$ are the coefficients of the lowest-order terms in the power series expansions of $P(x)$ and $Q(x)$ about $x = 0$ (i.e., $P_0 = \lim_{x \to 0} x P(x)$ and $Q_0 = \lim_{x \to 0} x^2 Q(x)$). This is why we require $x = 0$ to be a regular singular point by the way. If the point was not $0$, we would shift the variable accordingly, with $P_0 = \lim_{x \to x_0} (x - x_0) P(x)$ and $Q_0 = \lim_{x \to x_0} (x - x_0)^2 Q(x)$.
+
+The nature of the roots of the indicial equation determines the form of the general solution to the ODE:
+
+1. Distinct roots not differing by an integer ($r_1 - r_2 \notin \mathbb{Z}$): two linearly independent solutions of the form
+
+    $$
+    \begin{equation}
+    y_1(x) = \sum_{n=0}^{\infty} a_n^{(1)} (x - x_0)^{n+r_1}, \quad y_2(x) = \sum_{n=0}^{\infty} a_n^{(2)} (x - x_0)^{n+r_2},
+    \end{equation}
+    $$
+
+2. Repeated root ($r_1 = r_2 = r$): one solution uses $r$, the other involves a logarithmic term:
+
+    $$
+    \begin{equation}
+    y_1(x) = \sum_{n=0}^{\infty} a_n^{(1)} (x - x_0)^{n+r}, \quad y_2(x) = y_1(x) \ln{(x - x_0)} + \sum_{n=0}^{\infty} a_n^{(2)} (x - x_0)^{n+r},
+    \end{equation}
+    $$
+
+3. Roots differing by a positive integer ($r_1 - r_2 = N \in \mathbb{Z}^+$): one solution uses $r_1$, the other is more complicated and may involve logarithmic terms depending on the specific equation.
+
+Then, by plugging the assumed solution into the ODE and equating coefficients of like powers, we can derive recurrence relations for the coefficients $a_n^{(1)}$. To find the coefficients $a_n^{(2)}$, we may need to differentiate with respect to $r$ and evaluate at $r = r_2$.
+
