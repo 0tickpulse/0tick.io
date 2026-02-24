@@ -129,7 +129,7 @@ Below is a table of some examples of differential equations, classified by their
 | $\dv{y}{x} + 2y = 0$                           | ODE  | 1     | 1      | Linear    | Yes         | Yes        |
 | $\qty(\dv{y}{x})^3 + 2y = \sin(x)$             | ODE  | 1     | 3      | Linear    | No          | No         |
 | $\dv{y}{x} = y^2 - 4$                          | ODE  | 1     | 1      | Nonlinear | Yes         | Yes        |
-| $\dv{u}{x} = \alpha \nabla^2 u$                | PDE  | 1     | 1      | Linear    | Yes         | No         |
+| $\pdv{u}{x} = \alpha \nabla^2 u$                | PDE  | 1     | 1      | Linear    | Yes         | No         |
 | $i\hbar \pdv{\psi}{x} = E \psi$                | PDE  | 1     | 1      | Linear    | Yes         | Yes        |
 
 ## First-Order Differential Equations
@@ -284,18 +284,18 @@ Example: Consider the first-order ODE
 
 $$
 \begin{equation}
-\dv{y}{x} + 2t y = t.
+\dv{y}{x} + 2x y = x.
 \end{equation}
 $$
 </summary>
 
 This is a non-separable equation, but it is linear.
-We can identify $p(x) = 2t$ and $q(x) = t$.
+We can identify $p(x) = 2x$ and $q(x) = x$.
 The integrating factor is
 
 $$
 \begin{equation}
-I(x) = \exp(\int 2t \dd{x}) = \exp(x^2).
+I(x) = \exp(\int 2x \dd{x}) = \exp(x^2).
 \end{equation}
 $$
 
@@ -303,7 +303,7 @@ Multiplying both sides of the equation by $I(x)$, we get
 
 $$
 \begin{equation}
-\exp(x^2) \dv{y}{x} + 2t \exp(x^2) y = x \exp(x^2).
+\exp(x^2) \dv{y}{x} + 2x \exp(x^2) y = x \exp(x^2).
 \end{equation}
 $$
 
@@ -374,7 +374,7 @@ $$
 $$
 
 This is the condition for the equation to be **exact**, meaning that there exists a function $f(x, y)$ such that $M(x, y) = \pdv{f}{x}$ and $N(x, y) = \pdv{f}{y}$.
-To solve an exact first-order ODE, we can integrate $M(x, y)$ with respect to $t$ to find $f(x, y)$, and then set $f(x, y) = c_0$ to find the solution.
+To solve an exact first-order ODE, we can integrate $M(x, y)$ with respect to $x$ to find $f(x, y)$, and then set $f(x, y) = c_0$ to find the solution.
 
 <details>
 <summary>
@@ -382,17 +382,17 @@ Example: Consider the first-order ODE
 
 $$
 \begin{equation}
-\dv{y}{x} = -\frac{2t y^2 + 1}{2x^2 y}.
+\dv{y}{x} = -\frac{2x y^2 + 1}{2x^2 y}.
 \end{equation}
 $$
 
 </summary>
 
-We can identify $M(x, y) = 2t y^2 + 1$ and $N(x, y) = 2x^2 y$, so
+We can identify $M(x, y) = 2x y^2 + 1$ and $N(x, y) = 2x^2 y$, so
 
 $$
 \begin{equation}
-(2t y^2 + 1) \dd{x} + (2x^2 y) \dd{y} = 0.
+(2x y^2 + 1) \dd{x} + (2x^2 y) \dd{y} = 0.
 \end{equation}
 $$
 
@@ -401,17 +401,17 @@ The partial derivatives are
 
 $$
 \begin{align}
-\pdv{M}{y} &= 4t y, \\
-\pdv{N}{x} &= 4t y,
+\pdv{M}{y} &= 4xy, \\
+\pdv{N}{x} &= 4xy,
 \end{align}
 $$
 
 so the equation is indeed exact.
-To find $f(x, y)$, we just integrate $M(x, y)$ with respect to $t$:
+To find $f(x, y)$, we just integrate $M(x, y)$ with respect to $x$:
 
 $$
 \begin{equation}
-f(x, y) = \int (2t y^2 + 1) \dd{x} = x^2 y^2 + x + g(y),
+f(x, y) = \int (2x y^2 + 1) \dd{x} = x^2 y^2 + x + g(y),
 \end{equation}
 $$
 
@@ -455,7 +455,7 @@ A **homogeneous function** of degree $n$ is a function $f(x, y)$ that satisfies 
 
 $$
 \begin{equation}
-f(\lambda t, \lambda y) = \lambda^n f(x, y).
+f(\lambda x, \lambda y) = \lambda^n f(x, y).
 \end{equation}
 $$
 
@@ -463,7 +463,7 @@ For example, the function $f(x, y) = x^2 + y^2$ is a homogeneous function of deg
 
 $$
 \begin{equation}
-f(\lambda t, \lambda y) = (x\lambda)^2 + (y\lambda)^2 = \lambda^2 (x^2 + y^2) = \lambda^2 f(x, y).
+f(\lambda x, \lambda y) = (x\lambda)^2 + (y\lambda)^2 = \lambda^2 (x^2 + y^2) = \lambda^2 f(x, y).
 \end{equation}
 $$
 
@@ -481,8 +481,8 @@ To show this, suppose $f(x, y)$ and $g(x, y)$ are homogeneous functions of degre
 
 $$
 \begin{align}
-f(\lambda t, \lambda y) &= \lambda^n f(x, y) \\
-g(\lambda t, \lambda y) &= \lambda^n g(x, y).
+f(\lambda x, \lambda y) &= \lambda^n f(x, y) \\
+g(\lambda x, \lambda y) &= \lambda^n g(x, y).
 \end{align}
 $$
 
@@ -490,7 +490,7 @@ So
 
 $$
 \begin{equation}
-\frac{f(\lambda t, \lambda y)}{g(\lambda t, \lambda y)} = \frac{\lambda^n f(x, y)}{\lambda^n g(x, y)} = \frac{f(x, y)}{g(x, y)},
+\frac{f(\lambda x, \lambda y)}{g(\lambda x, \lambda y)} = \frac{\lambda^n f(x, y)}{\lambda^n g(x, y)} = \frac{f(x, y)}{g(x, y)},
 \end{equation}
 $$
 
@@ -500,7 +500,7 @@ Then, by the property of homogeneous functions of degree 0, we have
 
 $$
 \begin{equation}
-h(\lambda t, \lambda y) = h(x, y).
+h(\lambda x, \lambda y) = h(x, y).
 \end{equation}
 $$
 
